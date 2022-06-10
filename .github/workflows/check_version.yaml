@@ -1,0 +1,21 @@
+name: Check if versions are consistent
+
+on: [push]
+
+jobs:
+  check-version-numbers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.1.13
+      - name: Check Release
+        run: ./scripts/build/check_release.sh "python3.8"

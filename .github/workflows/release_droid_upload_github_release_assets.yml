@@ -1,0 +1,52 @@
+name: Release Droid - Upload GitHub Release Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_url:
+        description: 'Upload URL'
+        required: true
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Python 3.8 for integration-test-docker-environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.1.13
+      - name: Build Release
+        run: ./scripts/build/check_release.sh "python3.8"
+
+  upload:
+    needs: check-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.1.13
+
+      - name: Build Release
+        run: bash ./scripts/build/build_release.sh "python3.8"
+      - name: Generate sha512sum files
+        run: find ./dist -maxdepth 1 -type f -exec bash -c 'sha512sum {} > {}.sha512' \;
+        shell: bash
+      - name: Upload assets to the GitHub release draft
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.inputs.upload_url }}
+          asset_path: dist/*
