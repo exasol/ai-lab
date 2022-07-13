@@ -1,0 +1,34 @@
+Resources:
+  Ec2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2 Instance access
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+      Tags:
+        - Key: "exasol:project"
+          Value: "ScriptLanguages"
+        - Key: "exasol:owner"
+          Value: {{user_name}}
+
+  EC2Instance:
+      Type: AWS::EC2::Instance
+      Properties:
+          ImageId: "ami-0c9354388bb36c088"
+          KeyName: {{key_name}}
+          InstanceType: "t2.medium"
+          SecurityGroups:
+          - !Ref Ec2SecurityGroup
+          BlockDeviceMappings:
+          -
+            DeviceName: /dev/sda1
+            Ebs:
+              VolumeSize: 100
+          Tags:
+            - Key: "exasol:project"
+              Value: "ScriptLanguages"
+            - Key: "exasol:owner"
+              Value: {{user_name}}

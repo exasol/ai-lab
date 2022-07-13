@@ -12,7 +12,7 @@ n/a
 
 ## Features / Enhancements
 
-n/a
+ - #2: Implemented launch of an EC2 instance
 
 ## Documentation
 
