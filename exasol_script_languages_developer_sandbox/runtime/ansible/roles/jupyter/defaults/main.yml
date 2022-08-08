@@ -1,0 +1,12 @@
+---
+
+
+jupyterlab:
+  ip: '*'
+  config: "{{user_home}}/.jupyter/jupyter_lab_config.py"
+  virtualenv: "{{user_home}}/jupyterenv"
+  password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='script-languages') }}"
+  notebook_folder: "{{user_home}}/notebooks"
+
+apt_dependencies:
+  - virtualenv=20.0.17-1ubuntu0.4

@@ -13,6 +13,7 @@ n/a
 ## Features / Enhancements
 
  - #2: Implemented launch of an EC2 instance
+ - #3: Installed SLC dependencies via Ansible
 
 ## Documentation
 

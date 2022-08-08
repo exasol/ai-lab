@@ -1,0 +1,23 @@
+- name: Prepare environment
+  hosts: localhost
+  gather_facts: false
+  vars:
+      ansible_python_interpreter: python3
+  tasks:
+
+    - name: add docker container to inventory
+      add_host:
+        name: "{{test_docker_container}}"
+        ansible_connection: docker
+
+- name: Run test
+  hosts: ansible-test
+  gather_facts: false
+  vars:
+      ansible_python_interpreter: python3
+      user_name: root
+      user_home: /root
+      need_sudo: false
+      docker_integration_test: true
+  tasks:
+    - import_tasks: slc_setup_tasks.yml

@@ -1,0 +1,22 @@
+---
+
+- name: Put jupyter systemd service file into place
+  ansible.builtin.template:
+    src: '{{ item }}'
+    dest: '/{{ item }}'
+    owner: root
+    group: root
+    mode: u=rw,go=r
+  become: "{{need_sudo}}"
+  with_items:
+    - 'etc/systemd/system/jupyter.service'
+
+- name: Enable and start the Jupyter systemd job
+  ansible.builtin.systemd:
+    enabled: yes
+    state: started
+    name: "jupyter.service"
+    scope: system
+    daemon_reload: yes
+  become: "{{need_sudo}}"
+  when: docker_integration_test is not defined #Systemd is not available in Docker.

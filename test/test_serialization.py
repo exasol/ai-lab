@@ -1,7 +1,6 @@
 import contextlib
 import os.path
 import pickle
-import sys
 import traceback
 from pathlib import Path
 

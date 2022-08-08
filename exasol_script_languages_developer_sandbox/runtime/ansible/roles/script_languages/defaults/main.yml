@@ -1,0 +1,6 @@
+---
+
+apt_dependencies:
+  - git=1:2.25.1-1ubuntu3.5
+
+slc_dest_folder: "{{user_home}}/script-languages-release"

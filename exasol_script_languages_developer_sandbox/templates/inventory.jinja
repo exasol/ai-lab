@@ -1,0 +1,4 @@
+[ec2]
+{% for host_info in host_infos %}
+{{host_info.host_name}} ansible_ssh_private_key_file={{host_info.ssh_private_key}}
+{% endfor %}

@@ -1,0 +1,13 @@
+[Unit]
+Description=Jupyter Notebook
+
+[Service]
+Type=simple
+PIDFile=/run/jupyter.pid
+ExecStart="{{jupyterlab.virtualenv}}/bin/jupyter-lab" --notebook-dir="{{jupyterlab.notebook_folder}}" --no-browser
+User={{user_name}}
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
