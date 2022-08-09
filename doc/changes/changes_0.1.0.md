@@ -14,6 +14,7 @@ n/a
 
  - #2: Implemented launch of an EC2 instance
  - #3: Installed SLC dependencies via Ansible
+ - #4: Implemented deployment and access of S3 Bucket for VM's
 
 ## Documentation
 

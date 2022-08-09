@@ -7,10 +7,17 @@ import pytest
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from importlib.metadata import version
 
+from exasol_script_languages_developer_sandbox.lib.vm_slc_bucket import BUCKET_NAME
+
 
 @pytest.fixture
 def ec2_cloudformation_yml():
     return render_template("ec2_cloudformation.jinja.yaml", key_name="test_key", user_name="test_user")
+
+
+@pytest.fixture
+def vm_bucket_cloudformation_yml():
+    return render_template("vm_bucket_cloudformation.jinja.yaml", bucket_name=BUCKET_NAME)
 
 
 @pytest.fixture(scope="session")
