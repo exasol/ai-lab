@@ -4,16 +4,17 @@ import pickle
 import traceback
 from pathlib import Path
 
-from exasol_script_languages_developer_sandbox.lib.cf_stack import CloudformationStack
-from exasol_script_languages_developer_sandbox.lib.key_file_manager import KeyFileManager
+from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.key_file_manager import KeyFileManager
 from test.aws_local_stack_access import AwsLocalStackAccess
 import multiprocessing as mp
 
 
-def create_key_pair_and_serialize(tmp_location: Path, q: mp.Queue):
+def create_key_pair_and_serialize(tmp_location: Path, q: mp.Queue, default_asset_id: AssetId):
     try:
         aws_access = AwsLocalStackAccess(None)
-        key_file_manager = KeyFileManager(aws_access, None, None)
+        key_file_manager = KeyFileManager(aws_access, None, None, default_asset_id.tag_value)
         key_file_manager.create_key_if_needed()
         q.put(key_file_manager.key_name)
         q.put(key_file_manager.key_file_location)
@@ -24,13 +25,13 @@ def create_key_pair_and_serialize(tmp_location: Path, q: mp.Queue):
         raise e
 
 
-def test_keypair_manager_with_local_stack(tmp_path, local_stack):
+def test_keypair_manager_with_local_stack(tmp_path, local_stack, default_asset_id):
     """
     Test that serialization and deserialization of KeyFileManager work!
     """
     tmp_file = Path(tmp_path) / "key_file_manager.data"
     q = mp.Queue()
-    p = mp.Process(target=create_key_pair_and_serialize, args=(tmp_file, q))
+    p = mp.Process(target=create_key_pair_and_serialize, args=(tmp_file, q, default_asset_id))
     p.start()
     p.join()
     assert p.exitcode == 0
@@ -48,14 +49,15 @@ def test_keypair_manager_with_local_stack(tmp_path, local_stack):
 
 
 def create_cloudformation_stack_and_serialize(tmp_location_key_manager: Path, tmp_location_cloudformation: Path,
-                                              q: mp.Queue):
+                                              q: mp.Queue, default_asset_id: AssetId):
     try:
         aws_access = AwsLocalStackAccess(None)
-        key_file_manager = KeyFileManager(aws_access, None, None)
+        key_file_manager = KeyFileManager(aws_access, None, None, default_asset_id.tag_value)
         key_file_manager.create_key_if_needed()
         with open(tmp_location_key_manager, "wb") as f:
             pickle.dump(key_file_manager, f)
-        cloudformation = CloudformationStack(aws_access, key_file_manager.key_name, aws_access.get_user(), None)
+        cloudformation = CloudformationStack(aws_access, key_file_manager.key_name,
+                                             aws_access.get_user(), None, default_asset_id.tag_value)
         cloudformation.upload_cloudformation_stack()
         with open(tmp_location_cloudformation, "wb") as f:
             pickle.dump(cloudformation, f)
@@ -66,7 +68,7 @@ def create_cloudformation_stack_and_serialize(tmp_location_key_manager: Path, tm
         raise e
 
 
-def test_cloudformation_stack_with_local_stack(tmp_path, local_stack):
+def test_cloudformation_stack_with_local_stack(tmp_path, local_stack, default_asset_id):
     """
     Test that serialization and deserialization of CloudformationStack work!
     """
@@ -74,7 +76,7 @@ def test_cloudformation_stack_with_local_stack(tmp_path, local_stack):
     tmp_file_cloud_formation = Path(tmp_path) / "cloudformation.data"
     q = mp.Queue()
     p = mp.Process(target=create_cloudformation_stack_and_serialize,
-                   args=(tmp_file_key_file, tmp_file_cloud_formation, q))
+                   args=(tmp_file_key_file, tmp_file_cloud_formation, q, default_asset_id))
     p.start()
     p.join()
     assert p.exitcode == 0

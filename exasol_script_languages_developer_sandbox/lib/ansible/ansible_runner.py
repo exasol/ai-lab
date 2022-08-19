@@ -4,7 +4,7 @@ from typing import Tuple
 
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol_script_languages_developer_sandbox.lib.host_info import HostInfo
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 
 

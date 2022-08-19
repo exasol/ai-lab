@@ -3,8 +3,8 @@ import os
 from tempfile import mkstemp
 from typing import Optional
 
-from exasol_script_languages_developer_sandbox.lib.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.random_string_generator import get_random_str
+from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.random_string_generator import get_random_str
 
 
 class KeyFileManager:
@@ -15,11 +15,13 @@ class KeyFileManager:
     This key and temporary file will then be deleted during close.
     """
     def __init__(self, aws_access: AwsAccess,
-                 external_ec2_key_name: Optional[str], external_ec2_key_file: Optional[str]):
+                 external_ec2_key_name: Optional[str],
+                 external_ec2_key_file: Optional[str], tag_value: str):
         self._ec2_key_file = external_ec2_key_file
         self._aws_access = aws_access
         self._remove_key_on_close = False
         self._key_name = external_ec2_key_name
+        self._tag_value = tag_value
 
     def create_key_if_needed(self) -> None:
         if self._ec2_key_file is None:
@@ -27,7 +29,7 @@ class KeyFileManager:
             self._key_name = f"ec2-key-{get_random_str()}"
             ec2_key_file_handle, self._ec2_key_file = mkstemp(text=True)
             with os.fdopen(ec2_key_file_handle, 'w') as f:
-                f.write(self._aws_access.create_new_ec2_key_pair(key_name=self._key_name))
+                f.write(self._aws_access.create_new_ec2_key_pair(key_name=self._key_name, tag_value=self._tag_value))
             self._remove_key_on_close = True
             logging.debug(f"Created new key-pair: key-name={self._key_name}, key-file={self._ec2_key_file}")
             os.chmod(self._ec2_key_file, 0o400)

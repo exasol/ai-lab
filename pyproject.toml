@@ -18,6 +18,8 @@ ansible-runner = "^2.2.1"
 ansible = "^6.1.0"
 importlib_resources = ">=5.4.0"
 exasol_script_languages_release = { git = "https://github.com/exasol/script-languages-release.git", branch = "develop"}
+rich = "^12.5.1"
+pandas = "^1.4.0"
 
 
 [build-system]
@@ -32,7 +34,7 @@ pytest-mock = "^3.7.0"
 cfn-lint = "^0.61.0"
 gitpython = ">=2.1.0"
 localstack = "^0.14.0"
-docker = "^5.0.0"
+docker = {version = ">=5.0.0", markers = "sys_platform != 'win32'"}
 
 [tool.pytest.ini_options]
 minversion = "6.0"

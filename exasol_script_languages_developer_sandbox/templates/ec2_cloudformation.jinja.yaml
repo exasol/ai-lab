@@ -17,6 +17,8 @@ Resources:
           Value: "ScriptLanguages"
         - Key: "exasol:owner"
           Value: {{user_name}}
+        - Key: {{trace_tag}}
+          Value: {{trace_tag_value}}
 
   EC2Instance:
       Type: AWS::EC2::Instance
@@ -36,3 +38,6 @@ Resources:
               Value: "ScriptLanguages"
             - Key: "exasol:owner"
               Value: {{user_name}}
+            - Key: {{trace_tag}}
+              Value: {{trace_tag_value}}
+

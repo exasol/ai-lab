@@ -8,6 +8,11 @@ packages = \
  'exasol_script_languages_developer_sandbox.cli.options',
  'exasol_script_languages_developer_sandbox.lib',
  'exasol_script_languages_developer_sandbox.lib.ansible',
+ 'exasol_script_languages_developer_sandbox.lib.asset_printing',
+ 'exasol_script_languages_developer_sandbox.lib.aws_access',
+ 'exasol_script_languages_developer_sandbox.lib.export_vm',
+ 'exasol_script_languages_developer_sandbox.lib.setup_ec2',
+ 'exasol_script_languages_developer_sandbox.lib.vm_bucket',
  'exasol_script_languages_developer_sandbox.runtime']
 
 package_data = \
@@ -33,7 +38,9 @@ install_requires = \
  'exasol_script_languages_release @ '
  'git+https://github.com/exasol/script-languages-release.git@develop',
  'importlib_resources>=5.4.0',
- 'jinja2>=3.1.0']
+ 'jinja2>=3.1.0',
+ 'pandas>=1.4.0,<2.0.0',
+ 'rich>=12.5.1,<13.0.0']
 
 setup_kwargs = {
     'name': 'exasol-script-languages-developer-sandbox',

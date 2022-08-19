@@ -12,7 +12,7 @@ from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_repository import AnsibleResourceRepository, \
     default_repositories
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol_script_languages_developer_sandbox.lib.run_install_dependencies import run_install_dependencies
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 import test.ansible
 
 TEST_CONTAINER_NAME = "ansible-test"

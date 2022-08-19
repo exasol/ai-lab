@@ -2,8 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.vm_slc_bucket import run_setup_vm_bucket, find_vm_bucket
+from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.aws_access.stack_resource import StackResource
+from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import run_setup_vm_bucket, find_vm_bucket
 from test.cloudformation_validation import validate_using_cfn_lint
 from test.aws_local_stack_access import AwsLocalStackAccess
 
@@ -27,10 +28,10 @@ def test_find_bucket_with_mock():
 
     stack_resources_mock = \
         [
-            {"ResourceType": "AWS::S3::Bucket",
-             "ResourceStatus": "CREATE_COMPLETE",
-             "LogicalResourceId": "VMSLCBucket",
-             "PhysicalResourceId": "abc"}
+            StackResource({"ResourceType": "AWS::S3::Bucket",
+                           "ResourceStatus": "CREATE_COMPLETE",
+                           "LogicalResourceId": "VMSLCBucket",
+                           "PhysicalResourceId": "abc"})
         ]
 
     aws_access_mock.get_all_stack_resources.return_value = stack_resources_mock
@@ -49,10 +50,10 @@ def test_find_fails_with_mock():
 
     stack_resources_mock = \
         [
-            {"ResourceType": "AWS::S3::Bucket",
-             "ResourceStatus": "CREATE_COMPLETE",
-             "LogicalResourceId": "OtherBucket",
-             "PhysicalResourceId": "abc"}
+            StackResource({"ResourceType": "AWS::S3::Bucket",
+                           "ResourceStatus": "CREATE_COMPLETE",
+                           "LogicalResourceId": "OtherBucket",
+                           "PhysicalResourceId": "abc"})
         ]
 
     aws_access_mock.get_all_stack_resources.return_value = stack_resources_mock
@@ -69,5 +70,3 @@ def test_find_bucket(local_stack):
     run_setup_vm_bucket(aws_access)
     bucket = find_vm_bucket(aws_access)
     assert len(bucket) > 0
-
-

@@ -9,6 +9,44 @@ Resources:
         RestrictPublicBuckets: true
     DeletionPolicy: Retain
     UpdateReplacePolicy : Retain
+  {{role_name}}:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Principal:
+                  Service:
+                    - vmie.amazonaws.com
+              Action:
+                - sts:AssumeRole
+      Description: "IAM Role to run VM image exports on the S3-Bucket"
+      Path: '/'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetBucketAcl
+                Resource:
+                  - !Sub "arn:aws:s3:::${ {{bucket_name}} }/*"
+                  - !Sub "arn:aws:s3:::${ {{bucket_name}} }"
+              - Effect: Allow
+                Action:
+                  - ec2:ModifySnapshotAttribute
+                  - ec2:CopySnapshot
+                  - ec2:RegisterImage
+                  - ec2:Describe*
+                Resource:
+                  - "*"
+
 Outputs:
   S3BucketSecureURL:
     Value: !Join

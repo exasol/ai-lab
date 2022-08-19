@@ -1,11 +1,24 @@
 import logging
 from typing import Optional
 
-from exasol_script_languages_developer_sandbox.lib.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.random_string_generator import get_random_str_of_length_n
+from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.random_string_generator import get_random_str_of_length_n
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
+from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY, create_default_asset_tag
 
 _MAX_ATTEMPTS_TO_FIND_STACK_NAME = 3
+
+
+def find_ec2_instance_in_cf_stack(aws_access: AwsAccess, stack_name: str) -> str:
+    stack_resources = aws_access.get_all_stack_resources(stack_name)
+    ec2_instance = [i for i in stack_resources if i.is_ec2_instance]
+    if len(ec2_instance) == 0:
+        raise RuntimeError("Error starting or retrieving ec2 instance of stack %s" % stack_name)
+    elif len(ec2_instance) > 1:
+        raise RuntimeError("Multiple ec2 instances of stack %s" % stack_name)
+    ec2_instance_id = ec2_instance[0].physical_id
+    logging.info(f"Started EC2 with physical id {ec2_instance_id}")
+    return ec2_instance_id
 
 
 class CloudformationStack:
@@ -15,12 +28,14 @@ class CloudformationStack:
     and when exiting the stack will be destroyed.
     """
 
-    def __init__(self, aws_access: AwsAccess, ec2_key_name: str, user_name: str, stack_prefix: Optional[str]):
+    def __init__(self, aws_access: AwsAccess, ec2_key_name: str, user_name: str, stack_prefix: Optional[str],
+                 tag_value: str):
         self._aws_access = aws_access
         self._stack_name = None
         self._ec2_key_name = ec2_key_name
         self._user_name = user_name
         self._stack_prefix = stack_prefix or "EC2-SLC-DEV-SANDBOX-"
+        self._tag_value = tag_value
 
     def _generate_stack_name(self) -> str:
         """
@@ -41,22 +56,17 @@ class CloudformationStack:
                 return stack_name
 
     def upload_cloudformation_stack(self):
-        yml = render_template("ec2_cloudformation.jinja.yaml", key_name=self._ec2_key_name, user_name=self._user_name)
+        yml = render_template("ec2_cloudformation.jinja.yaml",
+                              key_name=self._ec2_key_name, user_name=self._user_name,
+                              trace_tag=DEFAULT_TAG_KEY, trace_tag_value=self._tag_value)
         self._stack_name = self._find_new_stack_name()
-        self._aws_access.upload_cloudformation_stack(yml, self._stack_name)
-        logging.info(f"Deployed cloudformation stack {self._stack_name}")
+        self._aws_access.upload_cloudformation_stack(yml, self._stack_name,
+                                                     tags=tuple(create_default_asset_tag(self._tag_value)))
+        logging.info(f"Deployed cloudformation stack {self._stack_name} with tag value '{self._tag_value}'")
         return self
 
     def get_ec2_instance_id(self) -> str:
-        stack_resources = self._aws_access.get_all_stack_resources(self._stack_name)
-        ec2_instance = [i for i in stack_resources if i["ResourceType"] == "AWS::EC2::Instance"]
-        if len(ec2_instance) == 0:
-            raise RuntimeError("Error starting or retrieving ec2 instance of stack %s" % self._stack_name)
-        elif len(ec2_instance) > 1:
-            raise RuntimeError("Multiple ec2 instances of stack %s" % self._stack_name)
-        ec2_instance_id = ec2_instance[0]["PhysicalResourceId"]
-        logging.info(f"Started EC2 with physical id {ec2_instance_id}")
-        return ec2_instance_id
+        return find_ec2_instance_in_cf_stack(self._aws_access, self._stack_name)
 
     def close(self) -> None:
         if self._stack_name is not None:

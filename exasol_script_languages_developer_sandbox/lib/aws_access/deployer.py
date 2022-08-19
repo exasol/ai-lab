@@ -202,11 +202,11 @@ class Deployer(object):
 
     def create_and_wait_for_changeset(self, stack_name, cfn_template,
                                       parameter_values, capabilities, role_arn,
-                                      notification_arns, tags):
+                                      notification_arns, tags=tuple()):
 
         result = self.create_changeset(
             stack_name, cfn_template, parameter_values, capabilities,
-            role_arn, notification_arns, tags)
+            role_arn, notification_arns, list(tags))
         self.wait_for_changeset(result.changeset_id, stack_name)
 
         return result
