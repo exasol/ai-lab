@@ -23,7 +23,7 @@ Resources:
   EC2Instance:
       Type: AWS::EC2::Instance
       Properties:
-          ImageId: "ami-0c9354388bb36c088"
+          ImageId: {{ami_id}}
           KeyName: {{key_name}}
           InstanceType: "t2.medium"
           SecurityGroups:

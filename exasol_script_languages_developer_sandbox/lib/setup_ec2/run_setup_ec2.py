@@ -15,10 +15,11 @@ from exasol_script_languages_developer_sandbox.lib.setup_ec2.key_file_manager im
 
 def run_lifecycle_for_ec2(aws_access: AwsAccess,
                           ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                          stack_prefix: Optional[str], tag_value: str) -> Tuple[str, str, str, str]:
+                          stack_prefix: Optional[str], tag_value: str, ami_id: str) -> Generator:
     with KeyFileManagerContextManager(KeyFileManager(aws_access, ec2_key_name, ec2_key_file, tag_value)) as km:
         with CloudformationStackContextManager(CloudformationStack(aws_access, km.key_name,
-                                                                   aws_access.get_user(), stack_prefix, tag_value)) \
+                                                                   aws_access.get_user(), stack_prefix,
+                                                                   tag_value, ami_id)) \
                 as cf_stack:
             ec2_instance_id = cf_stack.get_ec2_instance_id()
 
@@ -50,7 +51,8 @@ class EC2StackLifecycleContextManager:
 
 def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_name: Optional[str],
                   asset_id: AssetId) -> None:
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None, asset_id.tag_value)
+    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None,
+                                                asset_id.tag_value, config.global_config.source_ami_id)
     with EC2StackLifecycleContextManager(execution_generator) as res:
         ec2_instance_description, key_file_location = res
 

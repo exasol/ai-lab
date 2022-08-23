@@ -14,4 +14,7 @@ class AssetId:
     def ami_name(self):
         return f"Exasol-SLC-Developer-Sandbox-{self._asset_id}"
 
+    def __repr__(self):
+        return self._asset_id
+
     BUCKET_PREFIX = "slc_developer_sandbox"

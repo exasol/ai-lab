@@ -31,7 +31,8 @@ def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
     gives you time to login into the machine and identify any setup issues.
     You can stop the EC-2 machine by pressing Ctrl-C.
     """
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None, asset_id.tag_value)
+    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None,
+                                                asset_id.tag_value, config.global_config.source_ami_id)
     with EC2StackLifecycleContextManager(execution_generator) as res:
         ec2_instance_description, key_file_location = res
 

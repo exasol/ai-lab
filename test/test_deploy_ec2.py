@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
@@ -14,7 +15,8 @@ def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id):
     """
     aws_access_mock = MagicMock()
     with CloudformationStackContextManager(CloudformationStack(aws_access_mock, "test_key", "test_user",
-                                                               None, default_asset_id.tag_value)) \
+                                                               None, default_asset_id.tag_value,
+                                                               config.global_config.source_ami_id)) \
             as cf_access:
         pass
     default_tag = tuple(create_default_asset_tag(default_asset_id.tag_value))
@@ -31,7 +33,8 @@ def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id):
     aws_access_mock.stack_exists.return_value = False
     with CloudformationStackContextManager(CloudformationStack(aws_access_mock,
                                                                "test_key", "test_user", "test_prefix",
-                                                               default_asset_id.tag_value)) as cf_access:
+                                                               default_asset_id.tag_value,
+                                                               config.global_config.source_ami_id)) as cf_access:
         assert cf_access.stack_name.startswith("test_prefix")
 
 

@@ -8,6 +8,7 @@ from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
 from exasol_script_languages_developer_sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
 from exasol_script_languages_developer_sandbox.lib.aws_access.deployer import Deployer
 from exasol_script_languages_developer_sandbox.lib.aws_access.ec2_instance import EC2Instance
+from exasol_script_languages_developer_sandbox.lib.aws_access.ec2_instance_status import EC2InstanceStatus
 from exasol_script_languages_developer_sandbox.lib.aws_access.export_image_task import ExportImageTask
 from exasol_script_languages_developer_sandbox.lib.aws_access.key_pair import KeyPair
 from exasol_script_languages_developer_sandbox.lib.aws_access.s3_object import S3Object
@@ -210,6 +211,20 @@ class AwsAccess(object):
             raise RuntimeError(f"AwsAccess.get_ami() for image_id='{image_id}' returned {len(images)} elements: {images}")
         return Ami(images[0])
 
+    def get_instance_status(self, instance_id: str) -> EC2InstanceStatus:
+        """
+        Get EC-2 instance status for given instance_id
+        """
+        logging.debug(f"Running get_instance_status for aws profile {self.aws_profile_for_logging}")
+        cloud_client = self._get_aws_client("ec2")
+
+        response = cloud_client.describe_instance_status(InstanceIds=[instance_id])
+        instance_statuses = response["InstanceStatuses"]
+        if len(instance_statuses) != 1:
+            raise RuntimeError(f"AwsAccess.get_instance_status() for instance_id='{instance_id}'"
+                               f" returned {len(instance_statuses)} elements: {instance_statuses}")
+        return EC2InstanceStatus(instance_statuses[0])
+
     def list_amis(self, filters: list) -> List[Ami]:
         """
         List AMI images with given tag filter
@@ -274,6 +289,22 @@ class AwsAccess(object):
         response = cloud_client.get_bucket_location(Bucket=bucket)
         if "LocationConstraint" in response:
             return response["LocationConstraint"]
+
+    def deregister_ami(self, ami_d: str) -> None:
+        """
+        De-registers an AMI
+        """
+        logging.debug(f"Running deregister_ami for aws profile {self.aws_profile_for_logging}")
+        cloud_client = self._get_aws_client("ec2")
+        cloud_client.deregister_image(ImageId=ami_d)
+
+    def remove_snapshot(self, snapshot_id: str) -> None:
+        """
+        Removes a snapshot
+        """
+        logging.debug(f"Running remove_snapshot for aws profile {self.aws_profile_for_logging}")
+        cloud_client = self._get_aws_client("ec2")
+        cloud_client.delete_snapshot(SnapshotId=snapshot_id)
 
     def get_user(self) -> str:
         """

@@ -26,7 +26,8 @@ def default_asset_id():
 def ec2_cloudformation_yml():
 
     return render_template("ec2_cloudformation.jinja.yaml", key_name="test_key", user_name="test_user",
-                           trace_tag=DEFAULT_TAG_KEY, trace_tag_value=DEFAULT_ASSET_ID.tag_value)
+                           trace_tag=DEFAULT_TAG_KEY, trace_tag_value=DEFAULT_ASSET_ID.tag_value,
+                           ami_id=config.global_config.source_ami_id)
 
 
 @pytest.fixture
@@ -63,5 +64,6 @@ def local_stack():
 def override_config():
     test_config = {
         "time_to_wait_for_polling": 0.01,
+        "source_ami_id": config.global_config.source_ami_id
     }
     config.global_config = ConfigObject(**test_config)

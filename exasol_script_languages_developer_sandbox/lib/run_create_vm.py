@@ -32,7 +32,8 @@ def run_create_vm(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
     If anything goes wrong the cloudformation stack of the EC-2 instance will be removed.
     For debuging you can use the available debug commands.
     """
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None, asset_id.tag_value)
+    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None,
+                                                asset_id.tag_value, config.global_config.source_ami_id)
 
     with EC2StackLifecycleContextManager(execution_generator) as ec2_data:
         ec2_instance_description, key_file_location = ec2_data

@@ -29,13 +29,14 @@ class CloudformationStack:
     """
 
     def __init__(self, aws_access: AwsAccess, ec2_key_name: str, user_name: str, stack_prefix: Optional[str],
-                 tag_value: str):
+                 tag_value: str, ami_id: str):
         self._aws_access = aws_access
         self._stack_name = None
         self._ec2_key_name = ec2_key_name
         self._user_name = user_name
         self._stack_prefix = stack_prefix or "EC2-SLC-DEV-SANDBOX-"
         self._tag_value = tag_value
+        self._ami_id = ami_id
 
     def _generate_stack_name(self) -> str:
         """
@@ -58,7 +59,8 @@ class CloudformationStack:
     def upload_cloudformation_stack(self):
         yml = render_template("ec2_cloudformation.jinja.yaml",
                               key_name=self._ec2_key_name, user_name=self._user_name,
-                              trace_tag=DEFAULT_TAG_KEY, trace_tag_value=self._tag_value)
+                              trace_tag=DEFAULT_TAG_KEY, trace_tag_value=self._tag_value,
+                              ami_id=self._ami_id)
         self._stack_name = self._find_new_stack_name()
         self._aws_access.upload_cloudformation_stack(yml, self._stack_name,
                                                      tags=tuple(create_default_asset_tag(self._tag_value)))
