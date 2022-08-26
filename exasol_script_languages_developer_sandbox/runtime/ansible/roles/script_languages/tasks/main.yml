@@ -4,8 +4,8 @@
   apt:
     name: "{{apt_dependencies}}"
     state: present
+    update_cache: yes
   become: "{{need_sudo}}"
-
 - name: Git checkout script-languages-release
   ansible.builtin.git:
     repo: 'https://github.com/exasol/script-languages-release.git'

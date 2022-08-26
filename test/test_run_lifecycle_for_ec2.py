@@ -32,8 +32,8 @@ def test_run_lifecycle_for_ec2(default_asset_id, test_dummy_ami_id):
             EC2Instance({"InstanceId": "abc", "State": {"Name": "running"}, "PublicDnsName": "public_host"})
         ]
     aws_access_mock.describe_instance.side_effect = instances_states
-    res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key", None,
-                                    default_asset_id.tag_value, test_dummy_ami_id)
+    res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key",
+                                    default_asset_id, test_dummy_ami_id)
     res = next(res_gen)
     ec2_instance_description, key_file_loc = res
 
@@ -90,8 +90,8 @@ def test_run_lifecycle_for_ec2_with_context_manager(default_asset_id, test_dummy
             EC2Instance({"InstanceId": "abc", "State": {"Name": "running"}, "PublicDnsName": "public_host"})
         ]
     aws_access_mock.describe_instance.side_effect = instances_states
-    res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key", None,
-                                    default_asset_id.tag_value, test_dummy_ami_id)
+    res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key",
+                                    default_asset_id, test_dummy_ami_id)
     with EC2StackLifecycleContextManager(res_gen, test_config) as res:
         ec2_instance_description, key_file_location = res
         assert not aws_access_mock.create_new_ec2_key_pair.called

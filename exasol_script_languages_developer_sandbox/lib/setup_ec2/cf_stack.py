@@ -1,5 +1,6 @@
 from typing import Optional
 
+from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.random_string_generator import get_random_str_of_length_n
@@ -30,14 +31,13 @@ class CloudformationStack:
     and when exiting the stack will be destroyed.
     """
 
-    def __init__(self, aws_access: AwsAccess, ec2_key_name: str, user_name: str, stack_prefix: Optional[str],
-                 tag_value: str, ami_id: str):
+    def __init__(self, aws_access: AwsAccess, ec2_key_name: str, user_name: str, asset_id: AssetId, ami_id: str):
         self._aws_access = aws_access
         self._stack_name = None
         self._ec2_key_name = ec2_key_name
         self._user_name = user_name
-        self._stack_prefix = stack_prefix or "EC2-SLC-DEV-SANDBOX-"
-        self._tag_value = tag_value
+        self._stack_prefix = asset_id.stack_prefix
+        self._tag_value = asset_id.tag_value
         self._ami_id = ami_id
 
     def _generate_stack_name(self) -> str:

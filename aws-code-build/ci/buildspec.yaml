@@ -1,0 +1,25 @@
+version: 0.2
+
+env:
+  shell: bash
+  variables:
+    RUN_DEVELOPER_SANDBOX_CI_TEST: "true"
+
+phases:
+
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - git submodule update --init --recursive
+      - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+      - export PATH=$PATH:$HOME/.poetry/bin
+      - poetry env use $(command -v "python3.8")
+      - poetry install
+
+  pre_build:
+      commands:
+        - echo RUN_DEVELOPER_SANDBOX_CI_TEST is "$RUN_DEVELOPER_SANDBOX_CI_TEST" #supposed to be true
+  build:
+      commands:
+        - poetry run python3 -m pytest -s test/test_ci*.py

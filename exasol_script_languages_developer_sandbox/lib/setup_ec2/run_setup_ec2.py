@@ -19,11 +19,10 @@ LOG = get_status_logger(LogType.SETUP)
 
 def run_lifecycle_for_ec2(aws_access: AwsAccess,
                           ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                          stack_prefix: Optional[str], tag_value: str, ami_id: str) -> Generator:
-    with KeyFileManagerContextManager(KeyFileManager(aws_access, ec2_key_name, ec2_key_file, tag_value)) as km:
+                          asset_id: AssetId, ami_id: str) -> Generator:
+    with KeyFileManagerContextManager(KeyFileManager(aws_access, ec2_key_name, ec2_key_file, asset_id.tag_value)) as km:
         with CloudformationStackContextManager(CloudformationStack(aws_access, km.key_name,
-                                                                   aws_access.get_user(), stack_prefix,
-                                                                   tag_value, ami_id)) \
+                                                                   aws_access.get_user(), asset_id, ami_id)) \
                 as cf_stack:
             ec2_instance_id = cf_stack.get_ec2_instance_id()
 
@@ -58,8 +57,8 @@ def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
                   asset_id: AssetId, configuration: ConfigObject) -> None:
     source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
     LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None,
-                                                asset_id.tag_value, source_ami.id)
+    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name,
+                                                asset_id, source_ami.id)
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance_description, key_file_location = res
 

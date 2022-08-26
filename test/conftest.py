@@ -13,7 +13,7 @@ from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket impor
 
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 
-DEFAULT_ASSET_ID = AssetId("test")
+DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 
 TEST_DUMMY_AMI_ID = "ami-123"
 
@@ -34,6 +34,11 @@ def ec2_cloudformation_yml():
 @pytest.fixture
 def vm_bucket_cloudformation_yml():
     return render_template("vm_bucket_cloudformation.jinja.yaml", bucket_name=BUCKET_NAME, role_name=ROLE_NAME)
+
+
+@pytest.fixture
+def codebuild_cloudformation_yml():
+    return render_template("ci_code_build.jinja.yaml", vm_bucket="test-bucket-123")
 
 
 @pytest.fixture(scope="session")

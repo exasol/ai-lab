@@ -14,7 +14,7 @@ def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id, tes
     """
     aws_access_mock = MagicMock()
     with CloudformationStackContextManager(CloudformationStack(aws_access_mock, "test_key", "test_user",
-                                                               None, default_asset_id.tag_value,
+                                                               default_asset_id,
                                                                test_dummy_ami_id)) \
             as cf_access:
         pass
@@ -31,10 +31,9 @@ def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id, test
     aws_access_mock = MagicMock()
     aws_access_mock.stack_exists.return_value = False
     with CloudformationStackContextManager(CloudformationStack(aws_access_mock,
-                                                               "test_key", "test_user", "test_prefix",
-                                                               default_asset_id.tag_value,
+                                                               "test_key", "test_user", default_asset_id,
                                                                test_dummy_ami_id)) as cf_access:
-        assert cf_access.stack_name.startswith("test_prefix")
+        assert cf_access.stack_name.startswith("test-stack")
 
 
 def test_deploy_ec2_template(ec2_cloudformation_yml):

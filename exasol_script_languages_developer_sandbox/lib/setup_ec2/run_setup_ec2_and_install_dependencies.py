@@ -1,4 +1,3 @@
-import logging
 import signal
 import time
 from typing import Tuple, Optional
@@ -38,8 +37,8 @@ def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
     """
     source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
     LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None,
-                                                asset_id.tag_value, source_ami.id)
+    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name,
+                                                asset_id, source_ami.id)
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance_description, key_file_location = res
 
