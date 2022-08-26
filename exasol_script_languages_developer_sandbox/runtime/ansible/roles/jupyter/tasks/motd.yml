@@ -1,0 +1,29 @@
+---
+
+- name: read current server config file
+  shell: "cat {{user_home}}/.jupyter/jupyter_server_config.json"
+  register: jupyter_server_config
+
+- name: save the Json data to a Variable as a Fact
+  set_fact:
+    jupyter_server_config_jsondata: "{{ jupyter_server_config.stdout | from_json }}"
+
+- name: parse hashed password
+  set_fact:
+    jupyter_server_hashed_password: "{{ jupyter_server_config_jsondata | json_query(password_query) }}"
+  vars:
+    password_query: 'ServerApp.password'
+
+- name: Put motd python script in place
+  ansible.builtin.template:
+    src: '{{ item }}'
+    dest: '/{{ item }}'
+    owner: root
+    group: root
+    mode: u=rwx,go=rx
+  become: "{{need_sudo}}"
+  with_items:
+    - 'etc/update-motd.d/999-jupyter'
+  vars:
+    jupyter_server_config_file: "{{user_home}}/.jupyter/jupyter_server_config.json"
+    heading_jupyter_update_password: "{{lookup('ansible.builtin.file', 'heading_jupyter_update_password.txt') }}"

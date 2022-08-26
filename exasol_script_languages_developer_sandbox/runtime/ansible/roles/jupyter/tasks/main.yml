@@ -26,3 +26,6 @@
 
     - name: Setup Systemd service
       ansible.builtin.import_tasks: systemd.yml
+
+    - name: Setup motd
+      ansible.builtin.import_tasks: motd.yml

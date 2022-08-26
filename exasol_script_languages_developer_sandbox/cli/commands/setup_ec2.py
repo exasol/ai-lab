@@ -8,6 +8,7 @@ from exasol_script_languages_developer_sandbox.cli.options.id_options import id_
 from exasol_script_languages_developer_sandbox.cli.options.logging import logging_options
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.config import default_config_object
 from exasol_script_languages_developer_sandbox.lib.logging import set_log_level
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_setup_ec2
 

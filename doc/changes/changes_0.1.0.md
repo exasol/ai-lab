@@ -17,6 +17,7 @@ n/a
  - #4: Implemented deployment and access of S3 Bucket for VM's
  - #5: Implemented export of VM's
  - #24: Move CI test to AWS Codebuild
+ - #25: Implemented motd message about Jupyter password change
 
 ## Documentation
 

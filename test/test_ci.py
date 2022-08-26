@@ -2,6 +2,7 @@ import os
 import time
 
 from datetime import datetime
+from pathlib import Path
 
 import botocore
 import paramiko
@@ -157,3 +158,40 @@ def test_password_changed_on_new_ami(new_ec2_from_ami):
     with fabric.Connection(ec2_instance, user='ubuntu',
                            connect_kwargs={"password": password}) as con:
         con.run("uname")
+
+
+@pytest.mark.skipif(os.environ.get('RUN_DEVELOPER_SANDBOX_CI_TEST') != 'true',
+                    reason="CI test need to be activated by env variable RUN_DEVELOPER_SANDBOX_CI_TEST")
+def test_jupyter_password_message_shown(new_ec2_from_ami):
+    """
+    This test validates that the motd password message for Jupyterlab is working as expected.
+    """
+    ec2_instance, password, old_password = new_ec2_from_ami
+
+    motd_message_watermark = "/bin/jupyter server password"
+
+    # 1. Initially the jupyter password message is expected to appear in the welcome message
+    with fabric.Connection(ec2_instance, user='ubuntu',
+                           connect_kwargs={"password": password}) as con:
+        result = con.run("cat /var/run/motd.dynamic")
+        assert result.ok
+        assert motd_message_watermark in result.stdout
+
+    # 2. Now we create a new password for jupyterlab
+    random_jupyter_password = generate_random_password(12)
+    with fabric.Connection(ec2_instance, user='ubuntu',
+                           connect_kwargs={"password": password}) as con:
+        prompts = ((r"Enter password: ", f"{random_jupyter_password}\n"),
+                   (r"Verify password: ", f"{random_jupyter_password}\n"))
+        responders = [Responder(pattern=prompt, response=response) for prompt, response in prompts]
+        res = con.run("./jupyterenv/bin/jupyter server password",
+                      watchers=responders,
+                      pty=True)
+        assert res.ok
+
+    # 3. On the next login, the update message for the Jupyter password must not appear!
+    with fabric.Connection(ec2_instance, user='ubuntu',
+                           connect_kwargs={"password": password}) as con:
+        result = con.run("cat /var/run/motd.dynamic")
+        assert result.ok
+        assert motd_message_watermark not in result.stdout

@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+import pathlib
+import json
+
+motd_message = """{{heading_jupyter_update_password}}
+
+Run as user {{user_name}}:
+"{{jupyterlab.virtualenv}}/bin/jupyter server password"
+to update the password. (The default password is "{{jupyterlab.password}}")
+"""
+
+server_config_file = pathlib.Path("{{jupyter_server_config_file}}")
+
+if server_config_file.exists():
+    with open(server_config_file) as f:
+        hashed_server_password = json.load(f)["ServerApp"]["password"]
+    # server_hashed_password was set by ansible (see motd.yml)
+    if hashed_server_password == "{{jupyter_server_hashed_password}}":
+        print(motd_message)

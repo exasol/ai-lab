@@ -26,6 +26,7 @@ package_data = \
                                                        'ansible/roles/jupyter/files/*',
                                                        'ansible/roles/jupyter/tasks/*',
                                                        'ansible/roles/jupyter/templates/etc/systemd/system/*',
+                                                       'ansible/roles/jupyter/templates/etc/update-motd.d/*',
                                                        'ansible/roles/poetry/defaults/*',
                                                        'ansible/roles/poetry/tasks/*',
                                                        'ansible/roles/script_languages/defaults/*',
