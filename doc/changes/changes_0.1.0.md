@@ -24,3 +24,4 @@ n/a
 ## Refactoring
 
  - #22: Improved logging
+ - #26: Implemented search for latest AMI

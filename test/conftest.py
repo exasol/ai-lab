@@ -4,8 +4,7 @@ import subprocess
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib import config
-from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
+from exasol_script_languages_developer_sandbox.lib.config import ConfigObject, default_config_object
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from importlib.metadata import version
 
@@ -15,6 +14,8 @@ from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket impor
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 
 DEFAULT_ASSET_ID = AssetId("test")
+
+TEST_DUMMY_AMI_ID = "ami-123"
 
 
 @pytest.fixture
@@ -27,7 +28,7 @@ def ec2_cloudformation_yml():
 
     return render_template("ec2_cloudformation.jinja.yaml", key_name="test_key", user_name="test_user",
                            trace_tag=DEFAULT_TAG_KEY, trace_tag_value=DEFAULT_ASSET_ID.tag_value,
-                           ami_id=config.global_config.source_ami_id)
+                           ami_id=TEST_DUMMY_AMI_ID)
 
 
 @pytest.fixture
@@ -61,9 +62,14 @@ def local_stack():
 
 
 @pytest.fixture(autouse=True)
-def override_config():
+def test_config():
     test_config = {
         "time_to_wait_for_polling": 0.01,
-        "source_ami_id": config.global_config.source_ami_id
+        "source_ami_filters": default_config_object.source_ami_filters
     }
-    config.global_config = ConfigObject(**test_config)
+    return ConfigObject(**test_config)
+
+
+@pytest.fixture()
+def test_dummy_ami_id():
+    return TEST_DUMMY_AMI_ID

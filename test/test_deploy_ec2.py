@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
@@ -8,7 +7,7 @@ from exasol_script_languages_developer_sandbox.lib.tags import create_default_as
 from test.cloudformation_validation import validate_using_cfn_lint
 
 
-def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id):
+def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id, test_dummy_ami_id):
     """"
     Test if function upload_cloudformation_stack() will be invoked
     with expected values when we run run_deploy_ci_build()
@@ -16,7 +15,7 @@ def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id):
     aws_access_mock = MagicMock()
     with CloudformationStackContextManager(CloudformationStack(aws_access_mock, "test_key", "test_user",
                                                                None, default_asset_id.tag_value,
-                                                               config.global_config.source_ami_id)) \
+                                                               test_dummy_ami_id)) \
             as cf_access:
         pass
     default_tag = tuple(create_default_asset_tag(default_asset_id.tag_value))
@@ -25,7 +24,7 @@ def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id):
                                                                         tags=default_tag)
 
 
-def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id):
+def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id, test_dummy_ami_id):
     """"
     Test that the custom prefix will be used for the cloudformation stack name.
     """
@@ -34,7 +33,7 @@ def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id):
     with CloudformationStackContextManager(CloudformationStack(aws_access_mock,
                                                                "test_key", "test_user", "test_prefix",
                                                                default_asset_id.tag_value,
-                                                               config.global_config.source_ami_id)) as cf_access:
+                                                               test_dummy_ami_id)) as cf_access:
         assert cf_access.stack_name.startswith("test_prefix")
 
 

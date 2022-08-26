@@ -13,6 +13,7 @@ class LogType(Enum):
     CI_CODEBUILD = "ci_codebuild"
     AWS_ACCESS = "aws_access"
     ANSIBLE = "ansible"
+    CREATE_VM = "create_vm"
 
 
 def get_status_logger(log_type: LogType) -> logging.Logger:

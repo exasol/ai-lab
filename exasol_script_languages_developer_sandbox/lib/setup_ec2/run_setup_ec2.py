@@ -2,15 +2,16 @@ import signal
 import time
 from typing import Optional, Tuple, Generator
 
-from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.aws_access.ec2_instance import EC2Instance
+from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, \
     KeyFileManagerContextManager
+from exasol_script_languages_developer_sandbox.lib.setup_ec2.source_ami import find_source_ami
 
 
 LOG = get_status_logger(LogType.SETUP)
@@ -36,14 +37,15 @@ def run_lifecycle_for_ec2(aws_access: AwsAccess,
 
 
 class EC2StackLifecycleContextManager:
-    def __init__(self, lifecycle_generator: Generator):
+    def __init__(self, lifecycle_generator: Generator, configuration: ConfigObject):
         self._lifecycle_generator = lifecycle_generator
+        self._config = configuration
 
     def __enter__(self) -> Tuple[EC2Instance, str]:
         res = next(self._lifecycle_generator)
         while res[0].is_pending:
             LOG.info(f"EC2 instance not ready yet.")
-            time.sleep(config.global_config.time_to_wait_for_polling)
+            time.sleep(self._config.time_to_wait_for_polling)
             res = next(self._lifecycle_generator)
         ec2_instance_description, key_file_location = res
         return ec2_instance_description, key_file_location
@@ -53,10 +55,12 @@ class EC2StackLifecycleContextManager:
 
 
 def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                  asset_id: AssetId) -> None:
+                  asset_id: AssetId, configuration: ConfigObject) -> None:
+    source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
+    LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
     execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name, None,
-                                                asset_id.tag_value, config.global_config.source_ami_id)
-    with EC2StackLifecycleContextManager(execution_generator) as res:
+                                                asset_id.tag_value, source_ami.id)
+    with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance_description, key_file_location = res
 
         if not ec2_instance_description.is_running:

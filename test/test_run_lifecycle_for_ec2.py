@@ -2,14 +2,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.aws_access.ec2_instance import EC2Instance
 from exasol_script_languages_developer_sandbox.lib.aws_access.stack_resource import StackResource
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
 
 
-def test_run_lifecycle_for_ec2(default_asset_id):
+def test_run_lifecycle_for_ec2(default_asset_id, test_dummy_ami_id):
     """
     Test that the EC2 deployment and cleanup works as expected. The test calls execute_setup_ec2() and simulates
     the return states from AWS (2x pending, 1x running) for the EC2 instance.
@@ -34,7 +33,7 @@ def test_run_lifecycle_for_ec2(default_asset_id):
         ]
     aws_access_mock.describe_instance.side_effect = instances_states
     res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key", None,
-                                    default_asset_id.tag_value, config.global_config.source_ami_id)
+                                    default_asset_id.tag_value, test_dummy_ami_id)
     res = next(res_gen)
     ec2_instance_description, key_file_loc = res
 
@@ -66,7 +65,7 @@ def test_run_lifecycle_for_ec2(default_asset_id):
         next(res_gen)
 
 
-def test_run_lifecycle_for_ec2_with_context_manager(default_asset_id):
+def test_run_lifecycle_for_ec2_with_context_manager(default_asset_id, test_dummy_ami_id, test_config):
     """
     Test that the EC2 deployment and cleanup works as expected, by using the context manager helper class.
     The test calls execute_setup_ec2() and simulates
@@ -92,8 +91,8 @@ def test_run_lifecycle_for_ec2_with_context_manager(default_asset_id):
         ]
     aws_access_mock.describe_instance.side_effect = instances_states
     res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key", None,
-                                    default_asset_id.tag_value, config.global_config.source_ami_id)
-    with EC2StackLifecycleContextManager(res_gen) as res:
+                                    default_asset_id.tag_value, test_dummy_ami_id)
+    with EC2StackLifecycleContextManager(res_gen, test_config) as res:
         ec2_instance_description, key_file_location = res
         assert not aws_access_mock.create_new_ec2_key_pair.called
         assert aws_access_mock.upload_cloudformation_stack.called

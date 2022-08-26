@@ -10,6 +10,7 @@ from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.logging import set_log_level
+from exasol_script_languages_developer_sandbox.lib.config import default_config_object
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2_and_install_dependencies import \
     run_setup_ec2_and_install_dependencies
 
@@ -30,4 +31,4 @@ def setup_ec2_and_install_dependencies(
     """
     set_log_level(log_level)
     run_setup_ec2_and_install_dependencies(AwsAccess(aws_profile), ec2_key_file, ec2_key_name,
-                                           AssetId(asset_id), AnsibleAccess())
+                                           AssetId(asset_id), AnsibleAccess(), default_config_object)

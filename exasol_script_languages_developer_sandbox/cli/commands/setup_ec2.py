@@ -27,4 +27,4 @@ def setup_ec2(
     Debug command to test setup of an EC-2 instance.
     """
     set_log_level(log_level)
-    run_setup_ec2(AwsAccess(aws_profile), ec2_key_file, ec2_key_name, AssetId(asset_id))
+    run_setup_ec2(AwsAccess(aws_profile), ec2_key_file, ec2_key_name, AssetId(asset_id), default_config_object)

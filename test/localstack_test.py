@@ -1,7 +1,6 @@
 import botocore
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2
@@ -9,13 +8,13 @@ from exasol_script_languages_developer_sandbox.lib.tags import create_default_as
 from test.aws_local_stack_access import AwsLocalStackAccess
 
 
-def test_ec2_lifecycle_with_local_stack(local_stack, default_asset_id):
+def test_ec2_lifecycle_with_local_stack(local_stack, default_asset_id, test_dummy_ami_id):
     """
     This test uses localstack to simulate lifecycle of an EC-2 instance
     """
     print("run ec2_setup!")
     execution_generator = run_lifecycle_for_ec2(AwsLocalStackAccess(None), None, None, None,
-                                                default_asset_id.tag_value, config.global_config.source_ami_id)
+                                                default_asset_id.tag_value, test_dummy_ami_id)
     ec2_data = next(execution_generator)
     ec2_instance_description, key_file_location = ec2_data
     while ec2_instance_description.is_pending:
@@ -102,11 +101,11 @@ Resources:
         aws_access.validate_cloudformation_template(wrong_cloudformation_template)
 
 
-def test_cloudformation_access_with_local_stack(local_stack, default_asset_id):
+def test_cloudformation_access_with_local_stack(local_stack, default_asset_id, test_dummy_ami_id):
     aws_access = AwsLocalStackAccess(None)
     with CloudformationStackContextManager(CloudformationStack(aws_access, "test_key", aws_access.get_user(),
                                                                None, default_asset_id.tag_value,
-                                                               config.global_config.source_ami_id)) \
+                                                               test_dummy_ami_id)) \
             as cf_stack:
         ec2_instance_id = cf_stack.get_ec2_instance_id()
         ec2_instance_description = aws_access.describe_instance(ec2_instance_id)

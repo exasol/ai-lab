@@ -41,4 +41,3 @@ def test_generated_key(default_asset_id):
     # Now call close. After that we expect that the key has been removed from AWS and the temporary file was removed.
     aws_access_mock.delete_ec2_key_pair.assert_called_once_with(key_name=key_name)
     assert not os.path.exists(km.key_file_location)
-

@@ -15,6 +15,7 @@ from exasol_script_languages_developer_sandbox.cli.options.id_options import DEF
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.config import default_config_object
 from exasol_script_languages_developer_sandbox.lib.run_create_vm import run_create_vm
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
@@ -60,7 +61,7 @@ def new_ec2_from_ami():
     asset_id = AssetId("ci-test-{suffix}-{now}".format(now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
                                                        suffix=DEFAULT_ID))
     run_create_vm(aws_access, None, None,
-                  AnsibleAccess(), default_password, tuple(), asset_id)
+                  AnsibleAccess(), default_password, tuple(), asset_id, default_config_object)
 
     # Use the ami_name to find the AMI id (alternatively we could use the tag here)
     amis = aws_access.list_amis(filters=[{'Name': 'name', 'Values': [asset_id.ami_name]}])
@@ -72,7 +73,7 @@ def new_ec2_from_ami():
                                                 tag_value=asset_id.tag_value, ami_id=ami.id)
 
     try:
-        with EC2StackLifecycleContextManager(lifecycle_generator) as ec2_data:
+        with EC2StackLifecycleContextManager(lifecycle_generator, default_config_object) as ec2_data:
             ec2_instance_description, key_file_location = ec2_data
             assert ec2_instance_description.is_running
 
