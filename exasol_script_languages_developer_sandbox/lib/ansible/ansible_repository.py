@@ -1,7 +1,9 @@
-import logging
 from pathlib import Path
 import importlib_resources as ir
 import exasol_script_languages_developer_sandbox.runtime.ansible
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
+
+LOG = get_status_logger(LogType.ANSIBLE)
 
 
 class AnsibleRepository:
@@ -30,7 +32,7 @@ class AnsibleResourceRepository(AnsibleRepository):
         :raises RuntimeError if parameter target_file already exists.
         """
         if src_file.name == "__init__.py":
-            logging.debug(f"Ignoring {src_file} for repository.")
+            LOG.debug(f"Ignoring {src_file} for repository.")
             return
         if target_file.exists():
             raise RuntimeError(f"Repository target: {target_file} already exists.")

@@ -1,17 +1,18 @@
-import logging
 import time
 from dataclasses import dataclass
-from sys import stderr
 from typing import Tuple
 
 from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.aws_access.export_image_task import ExportImageTask
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import find_ec2_instance_in_cf_stack
 from exasol_script_languages_developer_sandbox.lib.asset_printing.print_assets import print_assets
 from exasol_script_languages_developer_sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket, find_vm_import_role
+
+LOG = get_status_logger(LogType.EXPORT)
 
 
 @dataclass(init=True, repr=True, eq=True)
@@ -42,8 +43,9 @@ def poll_export_image_task(aws_access: AwsAccess, export_image_task: ExportImage
         export_image_task = aws_access.get_export_image_task(export_image_task.id)
         progress = ExportImageTaskProgress.from_export_image_task(export_image_task)
         if last_progress != progress:
-            logging.info(f"still running export of vm image to "
-                         f"{export_image_task.s3_bucket}/{export_image_task.s3_prefix}: {progress} ")
+            LOG.info(f"still running export of vm image to "
+                                                   f"{export_image_task.s3_bucket}/{export_image_task.s3_prefix}: "
+                                                   f"{progress} ")
             last_progress = progress
     return export_image_task
 
@@ -56,7 +58,7 @@ def export_vm_image(aws_access: AwsAccess, vm_image_format: VmDiskImageFormat, t
     The export-image-task will be tagged with parameter tag_value. This action requires a AWS-role with sufficient
     permissions; this role needs to be defined by parameter vmimport_role.
     """
-    logging.info(f"export ami to vm with format '{vm_image_format}'")
+    LOG.info(f"export ami to vm with format '{vm_image_format}'")
     export_image_task_id = \
         aws_access.export_ami_image_to_vm(image_id=ami_id, tag_value=tag_value,
                                           description="VM Description", role_name=vmimport_role,
@@ -64,8 +66,8 @@ def export_vm_image(aws_access: AwsAccess, vm_image_format: VmDiskImageFormat, t
                                           s3_bucket=vm_bucket, s3_prefix=bucket_prefix)
 
     export_image_task = aws_access.get_export_image_task(export_image_task_id)
-    logging.info(f"Started export of vm image to {vm_bucket}/{bucket_prefix}. "
-                 f"Status message is {export_image_task.status_message}.")
+    LOG.info(f"Started export of vm image to {vm_bucket}/{bucket_prefix}. "
+             f"Status message is {export_image_task.status_message}.")
     export_image_task = poll_export_image_task(aws_access, export_image_task)
     if not export_image_task.is_completed:
         raise RuntimeError(f"Export of VM failed: status message was {export_image_task.status_message}")
@@ -78,13 +80,13 @@ def create_ami(aws_access: AwsAccess, ami_name: str, tag_value: str, instance_id
     :raises RuntimeError if an error occured during creation of the AMI
     Returns the ami_id if the export-image-task succeeded.
     """
-    logging.info(f"create ami with name '{ami_name}' and tag(s) '{tag_value}'")
+    LOG.info(f"create ami with name '{ami_name}' and tag(s) '{tag_value}'")
     ami_id = aws_access.create_image_from_ec2_instance(instance_id, name=ami_name, tag_value=tag_value,
                                                        description="Image Description")
 
     ami = aws_access.get_ami(ami_id)
     while ami.is_pending:
-        logging.info(f"ami  with name '{ami.name}' and tag(s) '{tag_value}'  still pending...")
+        LOG.info(f"ami  with name '{ami.name}' and tag(s) '{tag_value}'  still pending...")
         time.sleep(config.global_config.time_to_wait_for_polling)
         ami = aws_access.get_ami(ami_id)
     if not ami.is_available:
@@ -105,7 +107,7 @@ def export_vm(aws_access: AwsAccess,
         try:
             ami_id = create_ami(aws_access, asset_id.ami_name, tag_value, instance_id)
         except Exception:
-            logging.exception("Could not create AMI. Please remove snapshot if necessary!")
+            LOG.exception("Could not create AMI. Please remove snapshot if necessary!")
             has_errors = True
             return
         for vm_image_format in vm_image_formats:
@@ -113,15 +115,15 @@ def export_vm(aws_access: AwsAccess,
                 export_vm_image(aws_access, VmDiskImageFormat[vm_image_format], tag_value,
                                 ami_id, vmimport_role, vm_bucket, bucket_prefix)
             except Exception:
-                logging.exception(f"Failed to export VM to bucket {vm_bucket} at {bucket_prefix}\n")
+                LOG.exception(f"Failed to export VM to bucket {vm_bucket} at {bucket_prefix}\n")
                 has_errors = True
                 break
     finally:
         if has_errors:
-            print(f"VM Export finished for: {asset_id.ami_name}. There were errors. "
-                  f"You might want to delete some of the assets created.", file=stderr)
+            LOG.warning(f"VM Export finished for: {asset_id.ami_name}. There were errors. "
+                        f"You might want to delete some of the assets created.")
         else:
-            print(f"VM Export finished for: {asset_id.ami_name} without any errors", file=stderr)
+            LOG.info(f"VM Export finished for: {asset_id.ami_name} without any errors")
         print_assets(aws_access=aws_access, asset_id=asset_id, outfile=None)
 
 

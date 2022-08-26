@@ -1,11 +1,13 @@
-import logging
 from pathlib import Path
 from typing import Tuple
 
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
+
+LOG = get_status_logger(LogType.ANSIBLE)
 
 
 class AnsibleRunner:
@@ -18,7 +20,7 @@ class AnsibleRunner:
 
     @staticmethod
     def printer(msg: str):
-        logging.info(msg)
+        LOG.info(msg)
 
     def run(self, ansible_run_context: AnsibleRunContext, host_infos: Tuple[HostInfo]):
         inventory_content = render_template("inventory.jinja", host_infos=host_infos)

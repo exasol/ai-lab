@@ -1,17 +1,18 @@
-import logging
-
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 
 STACK_NAME = "VM-SLC-Bucket"
 BUCKET_NAME = "VMSLCBucket"
 ROLE_NAME = "VMImportRole"
 
+LOG = get_status_logger(LogType.VM_BUCKET)
+
 
 def run_setup_vm_bucket(aws_access: AwsAccess) -> None:
     yml = render_template("vm_bucket_cloudformation.jinja.yaml", bucket_name=BUCKET_NAME, role_name=ROLE_NAME)
     aws_access.upload_cloudformation_stack(yml, STACK_NAME)
-    logging.info(f"Deployed cloudformation stack {STACK_NAME}")
+    LOG.info(f"Deployed cloudformation stack {STACK_NAME}")
 
 
 def find_vm_bucket(aws_access: AwsAccess) -> str:

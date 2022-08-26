@@ -1,4 +1,3 @@
-import logging
 import signal
 import time
 from typing import Optional, Tuple, Generator
@@ -7,10 +6,14 @@ from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.aws_access.ec2_instance import EC2Instance
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, \
     KeyFileManagerContextManager
+
+
+LOG = get_status_logger(LogType.SETUP)
 
 
 def run_lifecycle_for_ec2(aws_access: AwsAccess,
@@ -23,7 +26,7 @@ def run_lifecycle_for_ec2(aws_access: AwsAccess,
                 as cf_stack:
             ec2_instance_id = cf_stack.get_ec2_instance_id()
 
-            logging.info(f"Waiting for EC2 instance ({ec2_instance_id}) to start...")
+            LOG.info(f"Waiting for EC2 instance ({ec2_instance_id}) to start...")
             while True:
                 ec2_instance_description = aws_access.describe_instance(ec2_instance_id)
                 yield ec2_instance_description, km.key_file_location
@@ -39,7 +42,7 @@ class EC2StackLifecycleContextManager:
     def __enter__(self) -> Tuple[EC2Instance, str]:
         res = next(self._lifecycle_generator)
         while res[0].is_pending:
-            logging.info(f"EC2 instance not ready yet.")
+            LOG.info(f"EC2 instance not ready yet.")
             time.sleep(config.global_config.time_to_wait_for_polling)
             res = next(self._lifecycle_generator)
         ec2_instance_description, key_file_location = res
@@ -57,17 +60,19 @@ def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
         ec2_instance_description, key_file_location = res
 
         if not ec2_instance_description.is_running:
-            print(f"Error during startup of EC2 instance '{ec2_instance_description.id}'. "
-                  f"Status is {ec2_instance_description.state_name}")
+            LOG.error(f"Error during startup of EC2 instance "
+                      f"'{ec2_instance_description.id}'. "
+                      f"Status is {ec2_instance_description.state_name}")
         else:
-            print(f"You can now login to the ec2 machine with 'ssh -i {key_file_location}  "
-                  f"ubuntu@{ec2_instance_description.public_dns_name}'")
-        print('Press Ctrl+C to stop and cleanup.')
+            LOG.info(f"You can now login to the ec2 machine with "
+                     f"'ssh -i {key_file_location} "
+                     f"ubuntu@{ec2_instance_description.public_dns_name}'")
+        LOG.info('Press Ctrl+C to stop and cleanup.')
 
         def signal_handler(sig, frame):
-            print('Start cleanup.')
+            LOG.info('Start cleanup.')
 
         signal.signal(signal.SIGINT, signal_handler)
         signal.pause()
 
-    print('Cleanup done.')
+    LOG.info('Cleanup done.')

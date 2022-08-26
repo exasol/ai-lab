@@ -5,10 +5,11 @@ from exasol_script_languages_developer_sandbox.cli.common import add_options
 from exasol_script_languages_developer_sandbox.cli.options.aws_options import aws_options
 from exasol_script_languages_developer_sandbox.cli.options.ec2_options import ec2_key_options
 from exasol_script_languages_developer_sandbox.cli.options.id_options import id_options
-from exasol_script_languages_developer_sandbox.cli.options.logging import logging_options, set_log_level
+from exasol_script_languages_developer_sandbox.cli.options.logging import logging_options
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.logging import set_log_level
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2_and_install_dependencies import \
     run_setup_ec2_and_install_dependencies
 

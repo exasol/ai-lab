@@ -1,10 +1,12 @@
-import logging
 import os
 from tempfile import mkstemp
 from typing import Optional
 
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.random_string_generator import get_random_str
+
+LOG = get_status_logger(LogType.SETUP)
 
 
 class KeyFileManager:
@@ -25,16 +27,16 @@ class KeyFileManager:
 
     def create_key_if_needed(self) -> None:
         if self._ec2_key_file is None:
-            logging.debug("Creating new key-pair")
+            LOG.debug("Creating new key-pair")
             self._key_name = f"ec2-key-{get_random_str()}"
             ec2_key_file_handle, self._ec2_key_file = mkstemp(text=True)
             with os.fdopen(ec2_key_file_handle, 'w') as f:
                 f.write(self._aws_access.create_new_ec2_key_pair(key_name=self._key_name, tag_value=self._tag_value))
             self._remove_key_on_close = True
-            logging.debug(f"Created new key-pair: key-name={self._key_name}, key-file={self._ec2_key_file}")
+            LOG.debug(f"Created new key-pair: key-name={self._key_name}, key-file={self._ec2_key_file}")
             os.chmod(self._ec2_key_file, 0o400)
         else:
-            logging.debug("Using existing key-pair")
+            LOG.debug("Using existing key-pair")
 
     @property
     def key_file_location(self) -> Optional[str]:

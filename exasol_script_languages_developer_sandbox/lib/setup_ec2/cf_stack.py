@@ -1,12 +1,14 @@
-import logging
 from typing import Optional
 
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.random_string_generator import get_random_str_of_length_n
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY, create_default_asset_tag
 
 _MAX_ATTEMPTS_TO_FIND_STACK_NAME = 3
+
+LOG = get_status_logger(LogType.SETUP)
 
 
 def find_ec2_instance_in_cf_stack(aws_access: AwsAccess, stack_name: str) -> str:
@@ -17,7 +19,7 @@ def find_ec2_instance_in_cf_stack(aws_access: AwsAccess, stack_name: str) -> str
     elif len(ec2_instance) > 1:
         raise RuntimeError("Multiple ec2 instances of stack %s" % stack_name)
     ec2_instance_id = ec2_instance[0].physical_id
-    logging.info(f"Started EC2 with physical id {ec2_instance_id}")
+    LOG.info(f"Started EC2 with physical id {ec2_instance_id}")
     return ec2_instance_id
 
 
@@ -64,7 +66,8 @@ class CloudformationStack:
         self._stack_name = self._find_new_stack_name()
         self._aws_access.upload_cloudformation_stack(yml, self._stack_name,
                                                      tags=tuple(create_default_asset_tag(self._tag_value)))
-        logging.info(f"Deployed cloudformation stack {self._stack_name} with tag value '{self._tag_value}'")
+        LOG.info(f"Deployed cloudformation stack "
+                 f"{self._stack_name} with tag value '{self._tag_value}'")
         return self
 
     def get_ec2_instance_id(self) -> str:

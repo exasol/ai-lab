@@ -23,4 +23,4 @@ n/a
 
 ## Refactoring
 
-n/a
+ - #22: Improved logging
