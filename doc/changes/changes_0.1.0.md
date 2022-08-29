@@ -27,3 +27,4 @@ n/a
 
  - #22: Improved logging
  - #26: Implemented search for latest AMI
+ - #12: Updated the script-languages-release tag with the correct version

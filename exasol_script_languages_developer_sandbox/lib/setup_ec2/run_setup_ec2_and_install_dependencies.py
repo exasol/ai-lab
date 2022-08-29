@@ -52,7 +52,8 @@ def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
         time.sleep(configuration.time_to_wait_for_polling)
         host_name = ec2_instance_description.public_dns_name
         try:
-            run_install_dependencies(ansible_access, (HostInfo(host_name, key_file_location),),
+            run_install_dependencies(ansible_access, configuration,
+                                     (HostInfo(host_name, key_file_location),),
                                      ansible_run_context, ansible_repositories)
         except Exception as e:
             LOG.exception("Install dependencies failed.")

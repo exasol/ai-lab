@@ -20,7 +20,7 @@ TEST_CONTAINER_IMAGE_TAG = "script_languages_developer_sandbox_test_container:la
 
 
 @pytest.fixture(scope="session")
-def docker_test_container():
+def docker_test_container(test_config):
     with tempfile.TemporaryDirectory() as tmp_dir:
         docker_env = docker.from_env()
         p = Path(__file__).parent / "test_container"
@@ -37,7 +37,8 @@ def docker_test_container():
             AnsibleRunContext(playbook="slc_setup_test.yml",
                               extra_vars={"test_docker_container": test_container.name,
                                           "slc_dest_folder": f"{tmp_dir}/script-languages-release"})
-        run_install_dependencies(AnsibleAccess(), host_infos=tuple(), ansible_run_context=ansible_run_context,
+        run_install_dependencies(AnsibleAccess(), configuration=test_config,
+                                 host_infos=tuple(), ansible_run_context=ansible_run_context,
                                  ansible_repositories=repos)
         yield test_container, tmp_dir
         # Note: script-languages-release will be cloned by ansible within the docker container.

@@ -1,3 +1,6 @@
+from importlib_metadata import version
+
+SLC_VERSION = version("exasol_script_languages_release")
 
 default_config = {
     "time_to_wait_for_polling": 10.0,
@@ -7,7 +10,8 @@ default_config = {
         "owner-id": "099720109477",
         "architecture": "x86_64",
         "state": "available"
-    }
+    },
+    "slc_version": SLC_VERSION
 }
 
 

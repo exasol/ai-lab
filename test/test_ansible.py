@@ -29,45 +29,48 @@ class AnsibleTestAccess:
             self.delegate(private_data_dir, run_ctx)
 
 
-def test_run_ansible_default_values():
+def test_run_ansible_default_values(test_config):
     """
     Test which executes run_install_dependencies with default values (default playbook and default ansible variables)
     """
     ansible_access = AnsibleTestAccess()
-    run_install_dependencies(ansible_access)
-    expected_ansible_run_context = AnsibleRunContext(playbook="slc_setup.yml", extra_vars={"slc_version": "master"})
+    run_install_dependencies(ansible_access, test_config)
+    expected_ansible_run_context = AnsibleRunContext(playbook="slc_setup.yml",
+                                                     extra_vars={"slc_version": test_config.slc_version})
     assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
     assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
 
 
-def test_run_ansible_custom_playbook():
+def test_run_ansible_custom_playbook(test_config):
     """
     Test which executes run_install_dependencies with default ansible variable, but a custom playbook
     """
     ansible_access = AnsibleTestAccess()
     ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml", extra_vars=dict())
-    run_install_dependencies(ansible_access, host_infos=tuple(), ansible_run_context=ansible_run_context)
+    run_install_dependencies(ansible_access, test_config, host_infos=tuple(), ansible_run_context=ansible_run_context)
 
-    expected_ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml", extra_vars={"slc_version": "master"})
+    expected_ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml",
+                                                     extra_vars={"slc_version": test_config.slc_version})
     assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
     assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
 
 
-def test_run_ansible_custom_variables():
+def test_run_ansible_custom_variables(test_config):
     """
     Test which executes run_install_dependencies with custam playbook and custom ansible variables
     """
     ansible_access = AnsibleTestAccess()
     ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml", extra_vars={"my_var": True})
-    run_install_dependencies(ansible_access, host_infos=tuple(), ansible_run_context=ansible_run_context)
+    run_install_dependencies(ansible_access, test_config, host_infos=tuple(), ansible_run_context=ansible_run_context)
 
     expected_ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml",
-                                                     extra_vars={"slc_version": "master", "my_var": True})
+                                                     extra_vars={"slc_version": test_config.slc_version,
+                                                                 "my_var": True})
     assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
     assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
 
 
-def test_run_ansible_check_inventory_empty_host():
+def test_run_ansible_check_inventory_empty_host(test_config):
     empty_inventory = "[ec2]\n\n"
 
     def check_inventory(work_dir: str, ansible_run_context: AnsibleRunContext):
@@ -75,10 +78,10 @@ def test_run_ansible_check_inventory_empty_host():
             inventory_content = f.read()
         assert inventory_content == empty_inventory
 
-    run_install_dependencies(AnsibleTestAccess(check_inventory))
+    run_install_dependencies(AnsibleTestAccess(check_inventory), test_config)
 
 
-def test_run_ansible_check_inventory_custom_host():
+def test_run_ansible_check_inventory_custom_host(test_config):
     custom_inventory = "[ec2]\n\nmy_host ansible_ssh_private_key_file=my_key\n\n"
 
     def check_inventory(work_dir: str, ansible_run_context: AnsibleRunContext):
@@ -86,10 +89,11 @@ def test_run_ansible_check_inventory_custom_host():
             inventory_content = f.read()
         assert inventory_content == custom_inventory
 
-    run_install_dependencies(AnsibleTestAccess(check_inventory), host_infos=(HostInfo("my_host", "my_key"),))
+    run_install_dependencies(AnsibleTestAccess(check_inventory), test_config,
+                             host_infos=(HostInfo("my_host", "my_key"),))
 
 
-def test_run_ansible_check_default_repository():
+def test_run_ansible_check_default_repository(test_config):
     """
     Test that default repository is being copied correctly.
     For simplicity, we check only if:
@@ -102,10 +106,10 @@ def test_run_ansible_check_default_repository():
         p = pathlib.Path(work_dir) / "roles" / "script_languages" / "tasks" / "main.yml"
         assert p.exists()
 
-    run_install_dependencies(AnsibleTestAccess(check_playbook))
+    run_install_dependencies(AnsibleTestAccess(check_playbook), test_config)
 
 
-def test_run_ansible_check_multiple_repositories():
+def test_run_ansible_check_multiple_repositories(test_config):
     """
     Test that multiple repositories are being copied correctly.
     For simplicity, we check only if the playbook of the repositories exists on target.
@@ -117,16 +121,16 @@ def test_run_ansible_check_multiple_repositories():
         assert p.exists()
 
     test_repositories = default_repositories + (AnsibleResourceRepository(test.ansible),)
-    run_install_dependencies(AnsibleTestAccess(check_playbooks), host_infos=tuple(),
+    run_install_dependencies(AnsibleTestAccess(check_playbooks), test_config, host_infos=tuple(),
                              ansible_run_context=default_ansible_run_context, ansible_repositories=test_repositories)
 
 
-def test_run_ansible_check_multiple_repositories_with_same_content_causes_exception():
+def test_run_ansible_check_multiple_repositories_with_same_content_causes_exception(test_config):
     """
     Test that multiple repositories containing same files raises an runtime exception.
     """
     test_repositories = default_repositories + (AnsibleResourceRepository(test.ansible_conflict),)
     with pytest.raises(RuntimeError):
-        run_install_dependencies(AnsibleTestAccess(), host_infos=tuple(),
+        run_install_dependencies(AnsibleTestAccess(), test_config, host_infos=tuple(),
                                  ansible_run_context=default_ansible_run_context,
                                  ansible_repositories=test_repositories)

@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from typing import Tuple
 
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
@@ -6,11 +7,14 @@ from exasol_script_languages_developer_sandbox.lib.ansible.ansible_repository im
     default_repositories
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_run_context import AnsibleRunContext, \
     default_ansible_run_context
+from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
 
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.host_info import HostInfo
 
 
-def run_install_dependencies(ansible_access: AnsibleAccess, host_infos: Tuple[HostInfo, ...] = tuple(),
+def run_install_dependencies(ansible_access: AnsibleAccess,
+                             configuration: ConfigObject,
+                             host_infos: Tuple[HostInfo, ...] = tuple(),
                              ansible_run_context: AnsibleRunContext = default_ansible_run_context,
                              ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) -> None:
     """
@@ -20,10 +24,7 @@ def run_install_dependencies(ansible_access: AnsibleAccess, host_infos: Tuple[Ho
     are copied as flat copy to the dynamic working copy, too.
     The playbook is indicated by variable ansible_run_context, which also might contain additional ansible variables.
     """
-    # TODO: Awaiting release 5.0.0 of slc!!!
-    # Check https://github.com/exasol/script-languages-developer-sandbox/issues/12)
-    # new_extra_vars = {"slc_version": meta.version("exasol_script_languages_release")}
-    new_extra_vars = {"slc_version": "master"}
+    new_extra_vars = {"slc_version": configuration.slc_version}
     if ansible_run_context.extra_vars is not None:
         new_extra_vars.update(ansible_run_context.extra_vars)
     new_ansible_run_context = AnsibleRunContext(ansible_run_context.playbook, new_extra_vars)

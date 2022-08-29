@@ -2,7 +2,6 @@ import os
 import time
 
 from datetime import datetime
-from pathlib import Path
 
 import botocore
 import paramiko
@@ -13,11 +12,10 @@ import requests
 
 from invoke import Responder
 
-from exasol_script_languages_developer_sandbox.cli.options.id_options import DEFAULT_ID
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.config import default_config_object
+from exasol_script_languages_developer_sandbox.lib.config import default_config_object, SLC_VERSION
 from exasol_script_languages_developer_sandbox.lib.run_create_vm import run_create_vm
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
@@ -75,7 +73,7 @@ def new_ec2_from_ami():
     assert default_password != new_password
     aws_access = AwsCiAccess(aws_profile=None)
     asset_id = AssetId("ci-test-{suffix}-{now}".format(now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
-                                                       suffix=DEFAULT_ID),
+                                                       suffix=SLC_VERSION),
                        stack_prefix="stack",
                        ami_prefix="ami")
     run_create_vm(aws_access, None, None,

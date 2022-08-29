@@ -66,11 +66,12 @@ def local_stack():
     subprocess.run(shlex.split(command), env=env_variables)
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session")
 def test_config():
     test_config = {
         "time_to_wait_for_polling": 0.01,
-        "source_ami_filters": default_config_object.source_ami_filters
+        "source_ami_filters": default_config_object.source_ami_filters,
+        "slc_version": default_config_object.slc_version
     }
     return ConfigObject(**test_config)
 

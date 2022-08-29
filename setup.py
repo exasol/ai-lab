@@ -38,7 +38,7 @@ install_requires = \
  'boto3>=1.22.0,<2.0.0',
  'click>=8.1.3,<9.0.0',
  'exasol_script_languages_release @ '
- 'git+https://github.com/exasol/script-languages-release.git@develop',
+ 'git+https://github.com/exasol/script-languages-release.git@5.0.0',
  'importlib_resources>=5.4.0',
  'jinja2>=3.1.0',
  'pandas>=1.4.0,<2.0.0',

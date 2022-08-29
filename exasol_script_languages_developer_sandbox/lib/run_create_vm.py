@@ -54,7 +54,7 @@ def run_create_vm(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
         time.sleep(configuration.time_to_wait_for_polling)
 
         host_name = ec2_instance_description.public_dns_name
-        run_install_dependencies(ansible_access, (HostInfo(host_name, key_file_location),),
+        run_install_dependencies(ansible_access, configuration, (HostInfo(host_name, key_file_location),),
                                  ansible_run_context, ansible_repositories)
         run_reset_password(ansible_access, default_password,
                            (HostInfo(host_name, key_file_location),), ansible_reset_password_context,
