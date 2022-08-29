@@ -20,4 +20,9 @@
       need_sudo: false
       docker_integration_test: true
   tasks:
+    - name: Install netplan.io
+      apt:
+        name: netplan.io
+        state: present
+        update_cache: yes
     - import_tasks: slc_setup_tasks.yml

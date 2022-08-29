@@ -7,8 +7,8 @@ Code name: Initial release
 t.b.d.
 
 ## Bug Fixes
-
-n/a
+ 
+ - #18: Fixed network connection 
 
 ## Features / Enhancements
 

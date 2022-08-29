@@ -1,0 +1,16 @@
+- name: Copy netplan file
+  ansible.builtin.copy:
+    src: "{{item}}"
+    dest: "/{{item}}"
+    mode: 0644
+  become: "{{need_sudo}}"
+  with_items:
+    - 'etc/netplan'
+
+- name:  Run netplan generate
+  shell: "netplan generate"
+  become: "{{need_sudo}}"
+
+- name:  Run netplan apply
+  shell: "netplan apply"
+  become: "{{need_sudo}}"
