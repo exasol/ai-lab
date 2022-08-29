@@ -1,6 +1,6 @@
 import signal
 import time
-from typing import Optional, Tuple, Generator
+from typing import Optional, Tuple, Iterator
 
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
@@ -16,10 +16,26 @@ from exasol_script_languages_developer_sandbox.lib.setup_ec2.source_ami import f
 
 LOG = get_status_logger(LogType.SETUP)
 
+# Python version of a typedef: Defines a type for the tuple and the iterator (of the tuple) we use for the state machine
+EC2LifecycleData = Tuple[Optional[EC2Instance], Optional[str]]
+EC2LifecycleDataIterator = Iterator[EC2LifecycleData]
+
 
 def run_lifecycle_for_ec2(aws_access: AwsAccess,
                           ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                          asset_id: AssetId, ami_id: str) -> Generator:
+                          asset_id: AssetId, ami_id: str) -> EC2LifecycleDataIterator:
+    """
+    This method launches a new EC-2 instance, using the given AMI (parameter ami_id), and yields every status:
+    (pending, running). After it has yielded any other status than 'pending',
+    when calling next() on the iterator object again, it will shutdown the instance.
+    The client must check if the instance was launched successfully (by checking EC2Instance's state).
+    :param aws_access: AwsAccess proxy.
+    :param ec2_key_file:  The private key file to use for the EC2-Instance.
+    :param ec2_key_name:  The key name of the key to use for the EC2-Instance.
+    :param asset_id: The asset id to use: Will use the tags (for the cloudformation stack and the key) and the prefix of the cloudformation stack
+    :param ami_id: The id of the AMI to use.
+    :return: An iterator which can be used to control the lifecycle of the EC2-instance.
+    """
     with KeyFileManagerContextManager(KeyFileManager(aws_access, ec2_key_name, ec2_key_file, asset_id.tag_value)) as km:
         with CloudformationStackContextManager(CloudformationStack(aws_access, km.key_name,
                                                                    aws_access.get_user(), asset_id, ami_id)) \
@@ -36,7 +52,12 @@ def run_lifecycle_for_ec2(aws_access: AwsAccess,
 
 
 class EC2StackLifecycleContextManager:
-    def __init__(self, lifecycle_generator: Generator, configuration: ConfigObject):
+    """
+    Helper class which can be used to shutdown the EC2-instance automatically after it has been launched.
+    It will call next() on the EC2LifecycleDataIterator when leaving the context.
+    """
+    def __init__(self, lifecycle_generator: EC2LifecycleDataIterator,
+                 configuration: ConfigObject):
         self._lifecycle_generator = lifecycle_generator
         self._config = configuration
 
@@ -55,11 +76,21 @@ class EC2StackLifecycleContextManager:
 
 def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_name: Optional[str],
                   asset_id: AssetId, configuration: ConfigObject) -> None:
+    """
+    Launches an EC2-instance and then waits until the user presses Ctrl-C, then shuts down the instance again.
+    :param aws_access: AWSAccess proxy.
+    :param ec2_key_file:  The private key file to use for the EC2-Instance.
+    :param ec2_key_name:  The key name of the key to use for the EC2-Instance.
+    :param asset_id: The asset id to use: Will use the tags (for the cloudformation stack and the key) and the prefix of the cloudformation stack
+    :param configuration: The global configuration to use.
+    """
     source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
     LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
     execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name,
                                                 asset_id, source_ami.id)
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
+        ec2_instance_description: Optional[EC2Instance]
+        key_file_location: Optional[str]
         ec2_instance_description, key_file_location = res
 
         if not ec2_instance_description.is_running:

@@ -76,6 +76,17 @@ def export_vm_image(aws_access: AwsAccess, vm_image_format: VmDiskImageFormat, t
         raise RuntimeError(f"Export of VM failed: status message was {export_image_task.status_message}")
 
 
+def export_vm_images(aws_access: AwsAccess, vm_image_formats: Tuple[str, ...], tag_value: str,
+                     ami_id: str, vmimport_role: str, vm_bucket: str,
+                     bucket_prefix: str, configuration: ConfigObject):
+    for vm_image_format in vm_image_formats:
+        try:
+            export_vm_image(aws_access, VmDiskImageFormat[vm_image_format], tag_value,
+                            ami_id, vmimport_role, vm_bucket, bucket_prefix, configuration)
+        except Exception as e:
+            raise RuntimeError(f"Failed to export VM to bucket {vm_bucket} at {bucket_prefix}\n") from e
+
+
 def create_ami(aws_access: AwsAccess, ami_name: str, tag_value: str,
                instance_id: str, configuration: ConfigObject) -> str:
     """
@@ -109,20 +120,12 @@ def export_vm(aws_access: AwsAccess,
     bucket_prefix = f"{asset_id.bucket_prefix}/"
     has_errors = False
     try:
-        try:
-            ami_id = create_ami(aws_access, asset_id.ami_name, tag_value, instance_id, configuration)
-        except Exception:
-            LOG.exception("Could not create AMI. Please remove snapshot if necessary!")
-            has_errors = True
-            return
-        for vm_image_format in vm_image_formats:
-            try:
-                export_vm_image(aws_access, VmDiskImageFormat[vm_image_format], tag_value,
-                                ami_id, vmimport_role, vm_bucket, bucket_prefix, configuration)
-            except Exception:
-                LOG.exception(f"Failed to export VM to bucket {vm_bucket} at {bucket_prefix}\n")
-                has_errors = True
-                break
+        ami_id = create_ami(aws_access, asset_id.ami_name, tag_value, instance_id, configuration)
+        export_vm_images(aws_access, vm_image_formats, tag_value, ami_id, vmimport_role, vm_bucket,
+                         bucket_prefix, configuration)
+    except Exception:
+        LOG.exception("export_vm failed.")
+        has_errors = True
     finally:
         if has_errors:
             LOG.warning(f"VM Export finished for: {asset_id.ami_name}. There were errors. "

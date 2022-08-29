@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional
 
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
@@ -52,13 +53,13 @@ class CloudformationStack:
     def stack_name(self) -> Optional[str]:
         return self._stack_name
 
-    def _find_new_stack_name(self):
+    def _find_new_stack_name(self) -> str:
         for i in range(_MAX_ATTEMPTS_TO_FIND_STACK_NAME):
             stack_name = self._generate_stack_name()
             if not self._aws_access.stack_exists(stack_name=stack_name):
                 return stack_name
 
-    def upload_cloudformation_stack(self):
+    def upload_cloudformation_stack(self) -> CloudformationStack:
         yml = render_template("ec2_cloudformation.jinja.yaml",
                               key_name=self._ec2_key_name, user_name=self._user_name,
                               trace_tag=DEFAULT_TAG_KEY, trace_tag_value=self._tag_value,
