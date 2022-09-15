@@ -18,6 +18,7 @@ t.b.d.
  - #5: Implemented export of VM's
  - #24: Move CI test to AWS Codebuild
  - #25: Implemented motd message about Jupyter password change
+ - #8: Implemented a release workflow
 
 ## Documentation
 

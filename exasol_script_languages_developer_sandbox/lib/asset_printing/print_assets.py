@@ -1,4 +1,5 @@
 import fnmatch
+import urllib.parse
 from typing import Tuple, Optional, List, Dict
 
 import humanfriendly
@@ -168,7 +169,7 @@ def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printin
             obj_size = humanfriendly.format_size(s3_object.size)
             key = s3_object.key
             s3_uri = s3_bucket_uri.format(object=key)
-            https_url = https_bucket_url.format(object=key)
+            https_url = https_bucket_url.format(object=urllib.parse.quote(key))
             table_printer.add_row(key, obj_size, s3_uri, https_url)
 
     table_printer.finish()

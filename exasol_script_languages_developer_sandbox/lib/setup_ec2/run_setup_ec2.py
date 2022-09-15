@@ -21,9 +21,25 @@ EC2LifecycleData = Tuple[Optional[EC2Instance], Optional[str]]
 EC2LifecycleDataIterator = Iterator[EC2LifecycleData]
 
 
+def retrieve_user_name(user_name: Optional[str], aws_access: AwsAccess) -> str:
+    """
+    This function returns parameter "user_name" if valid. Otherwise, it tries to identify the user name from the AWS
+    profile.
+    Background: Within AWS codebuilds, which run under an IAM role,
+                the user name cannot be retrieved from the AWS profile, and we need to set it in the environment.
+    """
+    if user_name:
+        LOG.info(f"Using user name {user_name}")
+        return user_name
+    else:
+        user_name_from_aws = aws_access.get_user()
+        LOG.info(f"Using registered AWS user name: {user_name_from_aws}")
+        return user_name_from_aws
+
+
 def run_lifecycle_for_ec2(aws_access: AwsAccess,
                           ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                          asset_id: AssetId, ami_id: str) -> EC2LifecycleDataIterator:
+                          asset_id: AssetId, ami_id: str, user_name: Optional[str]) -> EC2LifecycleDataIterator:
     """
     This method launches a new EC-2 instance, using the given AMI (parameter ami_id), and yields every status:
     (pending, running). After it has yielded any other status than 'pending',
@@ -34,11 +50,13 @@ def run_lifecycle_for_ec2(aws_access: AwsAccess,
     :param ec2_key_name:  The key name of the key to use for the EC2-Instance.
     :param asset_id: The asset id to use: Will use the tags (for the cloudformation stack and the key) and the prefix of the cloudformation stack
     :param ami_id: The id of the AMI to use.
+    :param user_name: Optional username to be used. If not given, the function will try to retrieve the user name from the AWS profile (however, this does not work for IAM roles).
     :return: An iterator which can be used to control the lifecycle of the EC2-instance.
     """
     with KeyFileManagerContextManager(KeyFileManager(aws_access, ec2_key_name, ec2_key_file, asset_id.tag_value)) as km:
         with CloudformationStackContextManager(CloudformationStack(aws_access, km.key_name,
-                                                                   aws_access.get_user(), asset_id, ami_id)) \
+                                                                   retrieve_user_name(user_name, aws_access),
+                                                                   asset_id, ami_id)) \
                 as cf_stack:
             ec2_instance_id = cf_stack.get_ec2_instance_id()
 
@@ -87,7 +105,7 @@ def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
     source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
     LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
     execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name,
-                                                asset_id, source_ami.id)
+                                                asset_id, source_ami.id, user_name=None)
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance_description: Optional[EC2Instance]
         key_file_location: Optional[str]

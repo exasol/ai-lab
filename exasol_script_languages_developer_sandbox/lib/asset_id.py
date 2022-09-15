@@ -18,7 +18,7 @@ class AssetId:
 
     @property
     def stack_prefix(self):
-        return f"{self._stack_prefix}-{self._asset_id}".replace("_", "-").replace(".", "-")
+        return f"{self._stack_prefix}-{self._asset_id}".replace("_", "-").replace(".", "-").replace(" ", "-")
 
     def __repr__(self):
         return self._asset_id

@@ -5,7 +5,7 @@ from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket impor
 
 STACK_NAME = "CI-TEST-CODEBUILD"
 
-LOG = get_status_logger(LogType.CI_CODEBUILD)
+LOG = get_status_logger(LogType.SETUP_CI_CODEBUILD)
 
 
 def run_setup_ci_codebuild(aws_access: AwsAccess) -> None:

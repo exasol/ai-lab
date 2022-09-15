@@ -4,6 +4,7 @@ env:
   shell: bash
   variables:
     RUN_DEVELOPER_SANDBOX_CI_TEST: "true"
+    AWS_USER_NAME: "ci_user"
 
 phases:
 
@@ -12,8 +13,8 @@ phases:
       python: 3.8
     commands:
       - git submodule update --init --recursive
-      - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
-      - export PATH=$PATH:$HOME/.poetry/bin
+      - curl -sSL https://install.python-poetry.org | python3 -
+      - export PATH=$PATH:$HOME/.local/bin
       - poetry env use $(command -v "python3.8")
       - poetry install
 

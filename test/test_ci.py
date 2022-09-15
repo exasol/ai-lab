@@ -26,20 +26,6 @@ import random
 from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY
 
 
-class AwsCiAccess(AwsAccess):
-    """
-    We can't use AwsAccess.getUser() without parameters when executing from within an IAM Role, and not a User account.
-    (Boto3 throws an exception).
-    Hence, we overwrite the default implementation and return a standard value.
-    """
-    def get_user(self) -> str:
-        try:
-            user = super().get_user()
-        except botocore.exceptions.ClientError:
-            user = "ci_user"
-        return user
-
-
 def generate_random_password(length) -> str:
     return ''.join(random.sample(string.ascii_letters, length))
 
@@ -71,20 +57,23 @@ def new_ec2_from_ami():
     # both passwords differ in length, so it can't happen that both are equal.
     # However, just as a safeguard check for inequality.
     assert default_password != new_password
-    aws_access = AwsCiAccess(aws_profile=None)
+    aws_access = AwsAccess(aws_profile=None)
+    user_name = os.getenv("AWS_USER_NAME")
     asset_id = AssetId("ci-test-{suffix}-{now}".format(now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
                                                        suffix=SLC_VERSION),
                        stack_prefix="stack",
                        ami_prefix="ami")
     run_create_vm(aws_access, None, None,
-                  AnsibleAccess(), default_password, tuple(), asset_id, default_config_object)
+                  AnsibleAccess(), default_password, tuple(), asset_id,
+                  default_config_object, user_name)
 
     # Use the ami_name to find the AMI id (alternatively we could use the tag here)
     amis = aws_access.list_amis(filters=[{'Name': 'name', 'Values': [asset_id.ami_name]}])
     assert len(amis) == 1
     ami = amis[0]
 
-    lifecycle_generator = run_lifecycle_for_ec2(aws_access, None, None, asset_id=asset_id, ami_id=ami.id)
+    lifecycle_generator = run_lifecycle_for_ec2(aws_access, None, None, asset_id=asset_id,
+                                                ami_id=ami.id, user_name=user_name)
 
     try:
         with EC2StackLifecycleContextManager(lifecycle_generator, default_config_object) as ec2_data:

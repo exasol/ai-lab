@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Tuple
 
 import click
@@ -41,4 +42,4 @@ def create_vm(
     set_log_level(log_level)
     run_create_vm(AwsAccess(aws_profile), ec2_key_file, ec2_key_name,
                   AnsibleAccess(), default_password, current_vm_image_formats,
-                  AssetId(asset_id), default_config_object)
+                  AssetId(asset_id), default_config_object, os.getenv("AWS_USER_NAME"))

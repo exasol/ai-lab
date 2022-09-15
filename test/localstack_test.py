@@ -14,7 +14,7 @@ def test_ec2_lifecycle_with_local_stack(local_stack, default_asset_id, test_dumm
     """
     print("run ec2_setup!")
     execution_generator = run_lifecycle_for_ec2(AwsLocalStackAccess(None), None, None,
-                                                default_asset_id, test_dummy_ami_id)
+                                                default_asset_id, test_dummy_ami_id, user_name=None)
     ec2_data = next(execution_generator)
     ec2_instance_description, key_file_location = ec2_data
     while ec2_instance_description.is_pending:

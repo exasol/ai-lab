@@ -7,3 +7,7 @@ from .export_vm import export_vm
 from .create_vm import create_vm
 from .show_aws_assets import show_aws_assets
 from .setup_ci_codebuild import setup_ci_codebuild
+from .setup_release_codebuild import setup_release_codebuild
+from .start_release_build import start_release_build
+from .start_test_release_build import start_test_release_build
+from .update_release import update_release

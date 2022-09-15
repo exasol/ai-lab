@@ -12,9 +12,9 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - uses: abatilo/actions-poetry@v2.0.0
+    - uses: abatilo/actions-poetry@v2
       with:
-        poetry-version: 1.1.13
+        poetry-version: 1.2.0
     - name: Setup poetry env
       run:  bash scripts/build/setup_poetry_env.sh "python3.8"
 

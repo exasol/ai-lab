@@ -36,11 +36,6 @@ def vm_bucket_cloudformation_yml():
     return render_template("vm_bucket_cloudformation.jinja.yaml", bucket_name=BUCKET_NAME, role_name=ROLE_NAME)
 
 
-@pytest.fixture
-def codebuild_cloudformation_yml():
-    return render_template("ci_code_build.jinja.yaml", vm_bucket="test-bucket-123")
-
-
 @pytest.fixture(scope="session")
 def local_stack():
     """

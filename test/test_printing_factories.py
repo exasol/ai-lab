@@ -23,7 +23,7 @@ def test_printing_markdown(tmp_path):
     with open(test_file, "r") as f:
         text = cleandoc(f.read())
         expected_text = cleandoc("""
-# test-table
+#### test-table
 |    | col-1   | col-2   |
 |---:|:--------|:--------|
 |  0 | a       | b       |

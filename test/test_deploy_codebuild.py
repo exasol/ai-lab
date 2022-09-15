@@ -1,11 +1,21 @@
+import pytest
+
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from test.cloudformation_validation import validate_using_cfn_lint
 
 
-def test_deploy_ec2_template(codebuild_cloudformation_yml):
+codebuild_cloudformation_templates = [
+    render_template("ci_code_build.jinja.yaml", vm_bucket="test-bucket-123"),
+    render_template("release_code_build.jinja.yaml", vm_bucket="test-bucket-123")]
+
+
+@pytest.mark.parametrize("cloudformation_template", codebuild_cloudformation_templates)
+def test_deploy_ci_codebuild_template(cloudformation_template):
     aws_access = AwsAccess(None)
-    aws_access.validate_cloudformation_template(codebuild_cloudformation_yml)
+    aws_access.validate_cloudformation_template(cloudformation_template)
 
 
-def test_deploy_cec2_template_with_cnf_lint(tmp_path, codebuild_cloudformation_yml):
-    validate_using_cfn_lint(tmp_path, codebuild_cloudformation_yml)
+@pytest.mark.parametrize("cloudformation_template", codebuild_cloudformation_templates)
+def test_deploy_ci_codebuild_template_with_cnf_lint(tmp_path, cloudformation_template):
+    validate_using_cfn_lint(tmp_path, cloudformation_template)

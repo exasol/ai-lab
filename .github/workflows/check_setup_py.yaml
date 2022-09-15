@@ -11,9 +11,9 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - uses: abatilo/actions-poetry@v2.0.0
+    - uses: abatilo/actions-poetry@v2
       with:
-        poetry-version: 1.1.13
+        poetry-version: 1.2.0
     - name: Run packaging update
       run: bash githooks/update_packaging.sh "python3.8"
     - name: Check git status

@@ -24,7 +24,7 @@ class MarkdownTablePrinter(TablePrinter, ABC):
 
     def finish(self):
         df = pd.DataFrame(self.rows, columns=self.columns)
-        print(f'# {self.title}\n{df.to_markdown()}', file=self.target)
+        print(f'#### {self.title}\n{df.to_markdown()}', file=self.target)
 
 
 class MarkdownTextPrinter(TextPrinter, ABC):

@@ -19,14 +19,15 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.0.0
+        uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: 1.1.13
+          poetry-version: 1.2.0
       - name: Build Release
         run: ./scripts/build/check_release.sh "python3.8"
 
   upload:
     needs: check-release
+    environment: AWS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,17 +37,15 @@ jobs:
         with:
           python-version: 3.8
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.0.0
+        uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: 1.1.13
-
+          poetry-version: 1.2.0
+      - name: Setup poetry env
+        run: bash scripts/build/setup_poetry_env.sh "python3.8"
       - name: Build Release
-        run: bash ./scripts/build/build_release.sh "python3.8"
-      - name: Generate sha512sum files
-        run: find ./dist -maxdepth 1 -type f -exec bash -c 'sha512sum {} > {}.sha512' \;
-        shell: bash
-      - name: Upload assets to the GitHub release draft
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.inputs.upload_url }}
-          asset_path: dist/*
+        run: poetry run python3 -m exasol_script_languages_developer_sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
+        env: # Set the secret as an env variable
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          GITHUB_TOKEN: ${{ github.token }}

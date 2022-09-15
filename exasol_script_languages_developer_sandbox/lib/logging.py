@@ -10,10 +10,13 @@ class LogType(Enum):
     SETUP = "setup"
     EXPORT = "export"
     VM_BUCKET = "vm_bucket"
-    CI_CODEBUILD = "ci_codebuild"
+    SETUP_CI_CODEBUILD = "setup_ci_codebuild"
     AWS_ACCESS = "aws_access"
     ANSIBLE = "ansible"
     CREATE_VM = "create_vm"
+    SETUP_RELEASE_BUILD = "setup_release_build"
+    RELEASE_BUILD = "release_build"
+    RELEASE_ACCESS = "release_access"
 
 
 def get_status_logger(log_type: LogType) -> logging.Logger:

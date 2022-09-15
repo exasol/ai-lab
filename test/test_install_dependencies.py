@@ -69,7 +69,7 @@ def test_install_dependencies_script_languages(docker_test_container):
     Test that script-languages-release is configured properly
     """
     container, tmp_dir = docker_test_container
-    slc_command = "./exaslct build --flavor-path ./flavors/python-3.8-minimal-EXASOL-6.2.0 --force-rebuild"
+    slc_command = "./exaslct build --flavor-path ./flavors/python-3.8-minimal-EXASOL-6.2.0"
     exit_code_build, output = container.exec_run(slc_command, workdir=f"{tmp_dir}/script-languages-release")
     print("------------ begin output build -------------------------")
     print(output)

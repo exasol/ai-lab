@@ -118,21 +118,17 @@ def export_vm(aws_access: AwsAccess,
     vmimport_role = find_vm_import_role(aws_access)
     tag_value = asset_id.tag_value
     bucket_prefix = f"{asset_id.bucket_prefix}/"
-    has_errors = False
     try:
         ami_id = create_ami(aws_access, asset_id.ami_name, tag_value, instance_id, configuration)
         export_vm_images(aws_access, vm_image_formats, tag_value, ami_id, vmimport_role, vm_bucket,
                          bucket_prefix, configuration)
-    except Exception:
-        LOG.exception("export_vm failed.")
-        has_errors = True
-    finally:
-        if has_errors:
-            LOG.warning(f"VM Export finished for: {asset_id.ami_name}. There were errors. "
-                        f"You might want to delete some of the assets created.")
-        else:
-            LOG.info(f"VM Export finished for: {asset_id.ami_name} without any errors")
+    except Exception as e:
         print_assets(aws_access=aws_access, asset_id=asset_id, outfile=None)
+        LOG.warning(f"VM Export finished for: {asset_id.ami_name}. There were errors. "
+                    f"You might want to delete some of the assets created.")
+        raise RuntimeError("Export failed") from e
+    print_assets(aws_access=aws_access, asset_id=asset_id, outfile=None)
+    LOG.info(f"VM Export finished for: {asset_id.ami_name} without any errors")
 
 
 def run_export_vm(aws_access: AwsAccess,
