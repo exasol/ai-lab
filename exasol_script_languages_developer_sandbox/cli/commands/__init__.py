@@ -11,3 +11,4 @@ from .setup_release_codebuild import setup_release_codebuild
 from .start_release_build import start_release_build
 from .start_test_release_build import start_test_release_build
 from .update_release import update_release
+from .make_ami_public import make_ami_public

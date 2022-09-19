@@ -65,7 +65,7 @@ def new_ec2_from_ami():
                        ami_prefix="ami")
     run_create_vm(aws_access, None, None,
                   AnsibleAccess(), default_password, tuple(), asset_id,
-                  default_config_object, user_name)
+                  default_config_object, user_name, make_ami_public=False)
 
     # Use the ami_name to find the AMI id (alternatively we could use the tag here)
     amis = aws_access.list_amis(filters=[{'Name': 'name', 'Values': [asset_id.ami_name]}])

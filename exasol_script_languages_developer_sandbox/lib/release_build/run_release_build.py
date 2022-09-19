@@ -39,7 +39,7 @@ def _parse_upload_url(upload_url: str) -> int:
 
 
 def _execute_release_build(aws_access: AwsAccess, branch: str, asset_id: str,
-                           release_id: int, gh_token: str) -> None:
+                           release_id: int, gh_token: str, make_ami_public: bool) -> None:
     """
     This function:
     1. Retrieve resources for the release codebuild stack for that given project
@@ -60,6 +60,10 @@ def _execute_release_build(aws_access: AwsAccess, branch: str, asset_id: str,
     env_variables = [("RELEASE_ID", f"{release_id}"),
                      ("ASSET_ID", f"{asset_id}"),
                      ("GITHUB_TOKEN", gh_token)]
+    if make_ami_public:
+        env_variables.append(("MAKE_AMI_PUBLIC_OPTION", "--make-ami-public"))
+    else:
+        env_variables.append(("MAKE_AMI_PUBLIC_OPTION", "--no-make-ami-public"))
     environment_variables_overrides = list(map(get_environment_variable_override, env_variables))
     _, waiter = aws_access.start_codebuild(matching_project.physical_id,
                                            environment_variables_overrides=environment_variables_overrides,
@@ -72,7 +76,8 @@ def run_start_release_build(aws_access: AwsAccess, config: ConfigObject,
     logging.info(f"run_start_release_build for aws profile {aws_access.aws_profile_for_logging} "
                  f"with upload url: {upload_url}")
     _execute_release_build(aws_access, branch, asset_id=config.slc_version,
-                           release_id=_parse_upload_url(upload_url=upload_url), gh_token=gh_token)
+                           release_id=_parse_upload_url(upload_url=upload_url), gh_token=gh_token,
+                           make_ami_public=True)
 
 
 def run_start_test_release_build(aws_access: AwsAccess, gh_access: GithubReleaseAccess,
@@ -80,4 +85,5 @@ def run_start_test_release_build(aws_access: AwsAccess, gh_access: GithubRelease
     logging.info(f"run_start_test_release_build for aws profile {aws_access.aws_profile_for_logging} "
                  f"for branch: {branch} with title: {release_title}")
     release_id = gh_access.create_release(branch, release_title)
-    _execute_release_build(aws_access, branch, asset_id=release_title, release_id=release_id, gh_token=gh_token)
+    _execute_release_build(aws_access, branch, asset_id=release_title, release_id=release_id,
+                           gh_token=gh_token, make_ami_public=False)

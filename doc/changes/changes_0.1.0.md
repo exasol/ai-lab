@@ -19,6 +19,7 @@ t.b.d.
  - #24: Move CI test to AWS Codebuild
  - #25: Implemented motd message about Jupyter password change
  - #8: Implemented a release workflow
+ - #36: Added make-ami-public option
 
 ## Documentation
 

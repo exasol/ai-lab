@@ -49,7 +49,8 @@ def test_release_build(test_config):
     expected_env_variable_overrides = [
         {"name": "RELEASE_ID", "value": "123", "type": "PLAINTEXT"},
         {"name": "ASSET_ID", "value": test_config.slc_version, "type": "PLAINTEXT"},
-        {"name": "GITHUB_TOKEN", "value": GITHUB_TOKEN, "type": "PLAINTEXT"}
+        {"name": "GITHUB_TOKEN", "value": GITHUB_TOKEN, "type": "PLAINTEXT"},
+        {"name": "MAKE_AMI_PUBLIC_OPTION", "value": "--make-ami-public", "type": "PLAINTEXT"}
     ]
 
     mock_cast(aws_access_mock.start_codebuild).\
@@ -73,7 +74,8 @@ def test_test_release_build(test_config):
     expected_env_variable_overrides = [
         {"name": "RELEASE_ID", "value": str(release_id), "type": "PLAINTEXT"},
         {"name": "ASSET_ID", "value": release_title, "type": "PLAINTEXT"},
-        {"name": "GITHUB_TOKEN", "value": GITHUB_TOKEN, "type": "PLAINTEXT"}
+        {"name": "GITHUB_TOKEN", "value": GITHUB_TOKEN, "type": "PLAINTEXT"},
+        {"name": "MAKE_AMI_PUBLIC_OPTION", "value": "--no-make-ami-public", "type": "PLAINTEXT"}
     ]
 
     mock_cast(gh_release_access_mock.create_release).assert_called_once_with(BRANCH, release_title)

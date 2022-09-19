@@ -357,6 +357,18 @@ class AwsAccess(object):
         LOG.debug(f"Codebuild for project {project} with branch {branch} triggered. Id is {build_id}.")
         return build_id, CodeBuildWaiter(codebuild_client, build_id)
 
+    @_log_function_start
+    def modify_image_launch_permission(self, ami_id: str, launch_permissions: Dict[str, Any]):
+        """
+        This functions uses Boto3 to modify the launch_permissions of an AMI.
+        See https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.modify_image_attribute
+        for details.
+        :param ami_id: The AMI id for which the launch permission should be changed.
+        :param launch_permissions: Dict of launch permissions
+        """
+        cloud_client = self._get_aws_client("ec2")
+        cloud_client.modify_image_attribute(ImageId=ami_id, LaunchPermission=launch_permissions)
+
     def _get_aws_client(self, service_name: str) -> Any:
         if self._aws_profile is None:
             return boto3.client(service_name)

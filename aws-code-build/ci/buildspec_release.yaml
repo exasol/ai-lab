@@ -6,6 +6,7 @@ env:
     DEFAULT_PASSWORD: "scriptlanguages"
     ASSET_ID: ""
     AWS_USER_NAME: "release_user"
+    MAKE_AMI_PUBLIC_OPTION: "--no-make-ami-public"
 phases:
 
   install:
@@ -23,7 +24,8 @@ phases:
         - echo ASSET_ID is "$ASSET_ID"
         - echo DEFAULT_PASSWORD is "$DEFAULT_PASSWORD"
         - echo RELEASE_ID is "$RELEASE_ID"
+        - echo MAKE_AMI_PUBLIC_OPTION is "$MAKE_AMI_PUBLIC_OPTION"
   build:
       commands:
-        - poetry run python3 -m exasol_script_languages_developer_sandbox.main create-vm --default-password "$DEFAULT_PASSWORD" --asset-id "$ASSET_ID"
+        - poetry run python3 -m exasol_script_languages_developer_sandbox.main create-vm --default-password "$DEFAULT_PASSWORD" --asset-id "$ASSET_ID" $MAKE_AMI_PUBLIC_OPTION
         - poetry run python3 -m exasol_script_languages_developer_sandbox.main update-release --release-id "$RELEASE_ID" --asset-id "$ASSET_ID"

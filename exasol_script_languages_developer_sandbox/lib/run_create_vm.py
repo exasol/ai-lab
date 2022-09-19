@@ -1,5 +1,5 @@
 import time
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional
 
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol_script_languages_developer_sandbox.lib.ansible.ansible_repository import AnsibleRepository, \
@@ -9,6 +9,7 @@ from exasol_script_languages_developer_sandbox.lib.ansible.ansible_run_context i
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
+from exasol_script_languages_developer_sandbox.lib.export_vm.run_make_ami_public import run_make_ami_public
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.host_info import HostInfo
@@ -29,10 +30,10 @@ def run_create_vm(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
                   asset_id: AssetId,
                   configuration: ConfigObject,
                   user_name: Optional[str],
+                  make_ami_public: bool,
                   ansible_run_context=default_ansible_run_context,
                   ansible_reset_password_context=reset_password_ansible_run_context,
-                  ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) \
-        -> Optional[Tuple[str, List[str]]]:
+                  ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) -> None:
     """
     Runs setup of an EC2 instance and then installs all dependencies via Ansible,
     and finally exports the VM to the S3 Bucket (which must be already created by the stack ("VM-SLC-Bucket").
@@ -60,4 +61,7 @@ def run_create_vm(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
         run_reset_password(ansible_access, default_password,
                            (HostInfo(host_name, key_file_location),), ansible_reset_password_context,
                            ansible_repositories)
-        return export_vm(aws_access, ec2_instance_description.id, vm_image_formats, asset_id, configuration)
+        export_vm(aws_access, ec2_instance_description.id, vm_image_formats, asset_id, configuration)
+
+    if make_ami_public:
+        run_make_ami_public(aws_access, asset_id)
