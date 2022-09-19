@@ -23,7 +23,7 @@ t.b.d.
 
 ## Documentation
 
-n/a
+ - #19: Added user guide and developer guide
 
 ## Refactoring
 
