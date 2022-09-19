@@ -2,7 +2,7 @@ from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import 
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 
-STACK_NAME = "VM-SLC-Bucket"
+STACK_NAME = "DEVELOPER-SANDBOX-VM-SLC-Bucket"
 BUCKET_NAME = "VMSLCBucket"
 ROLE_NAME = "VMImportRole"
 

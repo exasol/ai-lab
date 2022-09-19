@@ -30,3 +30,4 @@ n/a
  - #26: Implemented search for latest AMI
  - #12: Updated the script-languages-release tag with the correct version
  - #21: Minor refactoring tasks
+ - #41: Renamed cloudformation stack
