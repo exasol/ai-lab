@@ -1,4 +1,6 @@
 import datetime
+from typing import List
+
 from dateutil.tz import tzutc
 
 from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
@@ -13,9 +15,9 @@ from test.conftest import DEFAULT_ASSET_ID
 
 TEST_ROLE_ID = 'VM-SLC-Bucket-VMImportRole-TEST'
 TEST_BUCKET_ID = 'vm-slc-bucket-vmslcbucket-TEST'
-
 TEST_AMI_ID = "AMI-IMAGE-12345"
-
+TEST_CLOUDFRONT_ID = "test-cloudfrontet-TEST"
+TEST_CLOUDFRONT_DOMAIN_NAME = "test-s3.cloudfront.net"
 INSTANCE_ID = "test-instance"
 
 
@@ -33,7 +35,8 @@ def get_vm_bucket_cloudformation_mock_data():
                            'ResourceType': 'AWS::S3::Bucket',
                            'LastUpdatedTimestamp': datetime.datetime(2022, 8, 11, 17, 14, 55, 63000, tzinfo=tzutc()),
                            'ResourceStatus': 'CREATE_COMPLETE',
-                           'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}})]
+                           'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}})
+            ]
 
 
 def get_only_vm_stack_side_effect(stack_name: str):
@@ -163,3 +166,28 @@ def get_ec2_key_pair_mock_data():
         'CreateTime': datetime.datetime(2022, 8, 16, 15, 30, 41,
                                         tzinfo=tzutc())
     })
+
+
+def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
+    return [CloudformationStack({
+        'StackId': 'test-s3-stack-id',
+        'StackName': "DEVELOPER-SANDBOX-VM-SLC-Bucket",
+        'ChangeSetId': 'test-stack-changeset-id-2',
+        'CreationTime': datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc()),
+        'LastUpdatedTime': datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc()),
+        'RollbackConfiguration': {},
+        'StackStatus': 'CREATE_COMPLETE',
+        'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': ['CAPABILITY_IAM'],
+        'Tags': [{'Key': 'exa_slc_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+        'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'},
+        'Outputs': [{'OutputKey': 'VMBucketId',
+                     'OutputValue': TEST_BUCKET_ID, 'Description': ''},
+                    {'OutputKey': 'VMExportRoleId',
+                     'OutputValue': TEST_ROLE_ID, 'Description': ''},
+                    {'OutputKey': 'CfDistributionId',
+                     'OutputValue': TEST_CLOUDFRONT_ID, 'Description': ''},
+                    {'OutputKey': 'CfDistributionDomainName',
+                     'OutputValue': TEST_CLOUDFRONT_DOMAIN_NAME, 'Description': ''}
+                    ]
+        })
+    ]

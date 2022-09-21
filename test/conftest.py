@@ -9,9 +9,9 @@ from exasol_script_languages_developer_sandbox.lib.render_template import render
 from importlib.metadata import version
 
 from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import BUCKET_NAME, ROLE_NAME
 
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
+from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import create_vm_bucket_cf_template
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 
@@ -33,7 +33,7 @@ def ec2_cloudformation_yml():
 
 @pytest.fixture
 def vm_bucket_cloudformation_yml():
-    return render_template("vm_bucket_cloudformation.jinja.yaml", bucket_name=BUCKET_NAME, role_name=ROLE_NAME)
+    return create_vm_bucket_cf_template()
 
 
 @pytest.fixture(scope="session")

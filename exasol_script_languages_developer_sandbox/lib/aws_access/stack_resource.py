@@ -8,7 +8,7 @@ class StackResource:
         self._aws_object = aws_object
 
     @property
-    def logica_id(self) -> str:
+    def logical_id(self) -> str:
         return self._aws_object["LogicalResourceId"]
 
     @property
@@ -45,6 +45,4 @@ class StackResource:
 
     @property
     def is_complete(self) -> bool:
-        return self.status == "CREATE_COMPLETE"
-
-
+        return self.status in ("CREATE_COMPLETE", "UPDATE_COMPLETE")

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Dict, Optional
 
@@ -9,6 +10,12 @@ class CloudformationStack:
     Simplifies access to objects returned from:
     https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudformation.html#CloudFormation.Client.describe_stacks
     """
+
+    @dataclass
+    class Output:
+        output_key: str
+        output_value: str
+        description: str
 
     def __init__(self, aws_object):
         self._aws_object = aws_object
@@ -42,3 +49,7 @@ class CloudformationStack:
         if "Tags" in self._aws_object:
             return self._aws_object["Tags"]
 
+    @property
+    def outputs(self) -> List[Output]:
+        return [self.Output(output_key=o["OutputKey"], output_value=o["OutputValue"], description=o["Description"])
+                for o in self._aws_object["Outputs"]]

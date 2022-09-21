@@ -14,7 +14,7 @@ from enum import Enum
 
 from exasol_script_languages_developer_sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
 from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket
+from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket, find_url_for_bucket
 
 
 class AssetTypes(Enum):
@@ -128,6 +128,7 @@ def print_export_image_tasks(aws_access: AwsAccess, filter_value: str, printing_
 
 def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printing_factory: PrintingFactory):
     vm_bucket = find_vm_bucket(aws_access)
+    url_for_bucket = find_url_for_bucket(aws_access)
 
     if asset_id is not None:
         prefix = asset_id.bucket_prefix
@@ -159,10 +160,8 @@ def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printin
         if prefix[-1] != "*":
             prefix = f"{prefix}*"
         s3_objects = [s3_object for s3_object in s3_objects if fnmatch.fnmatch(s3_object.key, prefix)]
-    s3_bucket_location = aws_access.get_s3_bucket_location(bucket=vm_bucket)
     s3_bucket_uri = "s3://{bucket}/{{object}}".format(bucket=vm_bucket)
-    https_bucket_url = "https://{bucket}.s3.{region}.amazonaws.com/{{object}}"\
-        .format(bucket=vm_bucket, region=s3_bucket_location)
+    https_bucket_url = "https://{url_for_bucket}/{{object}}".format(url_for_bucket=url_for_bucket)
 
     if s3_objects is not None:
         for s3_object in s3_objects:

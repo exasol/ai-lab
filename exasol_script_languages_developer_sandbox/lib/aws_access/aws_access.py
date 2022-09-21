@@ -298,18 +298,6 @@ class AwsAccess(object):
             return [S3Object(s3object) for s3object in response["Contents"]]
 
     @_log_function_start
-    def get_s3_bucket_location(self, bucket: str) -> Optional[str]:
-        """
-        Get location (region) of s3 bucket
-        Wraps: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_bucket_location
-        """
-        cloud_client = self._get_aws_client("s3")
-
-        response = cloud_client.get_bucket_location(Bucket=bucket)
-        if "LocationConstraint" in response:
-            return response["LocationConstraint"]
-
-    @_log_function_start
     def deregister_ami(self, ami_d: str) -> None:
         """
         De-registers an AMI

@@ -63,7 +63,6 @@ Resources:
                 Resource: !Sub  "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:key-pair/ec2-key-*"
                 Effect: Allow
               - Action:
-                - s3:GetBucketLocation
                 - s3:ListBucket
                 Resource: arn:aws:s3:::{{vm_bucket}}
                 Effect: Allow
