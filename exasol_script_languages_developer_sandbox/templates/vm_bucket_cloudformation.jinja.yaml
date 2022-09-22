@@ -90,6 +90,7 @@ Resources:
         Enabled: true
         HttpVersion: 'http1.1'
         IPV6Enabled: true
+        WebACLId: {{acl_arn}}
         Origins:
           - DomainName: !GetAtt VMBucket.DomainName
             Id: !Sub 's3-origin-${ VMBucket }'

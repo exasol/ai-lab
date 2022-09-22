@@ -1,12 +1,14 @@
-from unittest.mock import MagicMock, call
+from unittest.mock import call, create_autospec
 
 import pytest
 
 from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
+from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.export_vm.run_export_vm import export_vm
 from exasol_script_languages_developer_sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 from test.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, TEST_ROLE_ID, TEST_BUCKET_ID, INSTANCE_ID, \
-    get_only_vm_stack_side_effect, get_export_image_task_mock_data, get_s3_cloudformation_mock_data
+    get_export_image_task_mock_data, get_s3_cloudformation_mock_data, get_waf_cloudformation_mock_data
+from test.mock_cast import mock_cast
 
 
 def call_counter(func):
@@ -14,6 +16,7 @@ def call_counter(func):
     Decorator which passes automatically a counter to the decorated function.
     :param func: The decorated function
     """
+
     def helper(*args, **kwargs):
         helper.calls += 1
         return func(helper.calls, *args, **kwargs)
@@ -49,12 +52,12 @@ def aws_vm_export_mock():
              3. Returns the mocked ExportImageTask object when calling get_export_image_task()
              4. Returns the mocked Ami object when calling get_ami() (see method get_ami_side_effect() for details
     """
-    aws_access_mock = MagicMock()
-    aws_access_mock.get_all_stack_resources.side_effect = get_only_vm_stack_side_effect
-    aws_access_mock.describe_stacks.side_effect = get_s3_cloudformation_mock_data
-    aws_access_mock.create_image_from_ec2_instance.return_value = TEST_AMI_ID
-    aws_access_mock.get_export_image_task.return_value = get_export_image_task_mock_data(False)
-    aws_access_mock.get_ami.side_effect = get_ami_side_effect
+    aws_access_mock:Union[AwsAccess,MagicMock] = create_autospec(AwsAccess, spec_set=True)
+    mock_cast(aws_access_mock.describe_stacks).return_value = get_s3_cloudformation_mock_data() + \
+                                                              get_waf_cloudformation_mock_data()
+    mock_cast(aws_access_mock.create_image_from_ec2_instance).return_value = TEST_AMI_ID
+    mock_cast(aws_access_mock.get_export_image_task).return_value = get_export_image_task_mock_data(False)
+    mock_cast(aws_access_mock.get_ami).side_effect = get_ami_side_effect
     return aws_access_mock
 
 
@@ -77,10 +80,11 @@ def test_export_vm(aws_vm_export_mock, default_asset_id, vm_formats_to_test, tes
               vm_image_formats=tuple(vm_image_format.value for vm_image_format in vm_formats_to_test),
               asset_id=default_asset_id, configuration=test_config)
 
-    aws_vm_export_mock.create_image_from_ec2_instance.assert_called_once_with(INSTANCE_ID,
-                                                                              name=default_asset_id.ami_name,
-                                                                              tag_value=default_asset_id.tag_value,
-                                                                              description="Image Description")
+    mock_cast(aws_vm_export_mock.create_image_from_ec2_instance). \
+        assert_called_once_with(INSTANCE_ID,
+                                name=default_asset_id.ami_name,
+                                tag_value=default_asset_id.tag_value,
+                                description="Image Description")
 
     expected_calls = [
         call(image_id=TEST_AMI_ID,
@@ -91,4 +95,4 @@ def test_export_vm(aws_vm_export_mock, default_asset_id, vm_formats_to_test, tes
              s3_bucket=TEST_BUCKET_ID,
              s3_prefix=f"{default_asset_id.bucket_prefix}/")
         for disk_format in vm_formats_to_test]
-    assert aws_vm_export_mock.export_ami_image_to_vm.call_args_list == expected_calls
+    assert mock_cast(aws_vm_export_mock.export_ami_image_to_vm).call_args_list == expected_calls

@@ -62,6 +62,7 @@ All other commands provide a subset of the features of the release commands, and
 - `setup-ec2-and-install-dependencies` - starts a new EC2 instance and install dependencies via Ansible
 - `show-aws-assets` - shows AWS entities associated with a specific keyword (called __asset-id__)
 - `start-test-release` - starts a Test Release flow
+- `make-ami-public` - Changes permissions of an existing AMI such that it becomes public 
 
 ### Deployment commands
 
@@ -69,6 +70,7 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 - `setup-ci-codebuild` - deploys the AWS Codebuild cloudformation stack which will run the ci-test
 - `setup-vm-bucket` - deploys the AWS Bucket cloudformation stack which will be used to deploy the VM images
 - `setup-release-codebuild` - deploys the AWS Codebuild cloudformation stack which will be used for the release-build
+- `setup-vm-bucket-waf` - deploys the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket 
 
 ## Flow
 
@@ -100,6 +102,16 @@ The export creates an AMI based on the running EC2 instance and exports the AMI 
 
 The release is executed in a AWS Codebuild job, the following diagram shows the flow.
 ![image info](./img/create-vm-release.drawio.png)
+
+## AWS S3 Bucket
+
+The bucket has private access. In order to control access, the Bucket cloudformation stack also contains a Cloudfront distribution. Public Https access is only possibly through Cloudfront. Another stack contains a Web application firewall (WAF), which will be used by the Cloudfront distribution. Due to restrictions in AWS, the WAF stack needs to be deployed in region "us-east-1". The WAF stack provides two rules which aim to minimize a possible bot attack:
+
+| Name                 | Explanation                                                                             | Priority | 
+|----------------------|-----------------------------------------------------------------------------------------|----------|
+| VMBucketRateLimit    | Declares the minimum possible rate limit for access: 100 requests in a 5 min interval.  | 0        | 
+| CAPTCHA              | Forces a captcha action for any IP which does not matcha predefined set of IP-addresses | 1        | 
+
 
 
 ## Involved Cloudformation stacks

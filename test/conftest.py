@@ -1,17 +1,17 @@
 import os
 import shlex
 import subprocess
+from copy import copy
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.config import ConfigObject, default_config_object
+from exasol_script_languages_developer_sandbox.lib.config import default_config_object, default_config, ConfigObject
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from importlib.metadata import version
 
 from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY
 
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import create_vm_bucket_cf_template
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 
@@ -29,11 +29,6 @@ def ec2_cloudformation_yml():
     return render_template("ec2_cloudformation.jinja.yaml", key_name="test_key", user_name="test_user",
                            trace_tag=DEFAULT_TAG_KEY, trace_tag_value=DEFAULT_ASSET_ID.tag_value,
                            ami_id=TEST_DUMMY_AMI_ID)
-
-
-@pytest.fixture
-def vm_bucket_cloudformation_yml():
-    return create_vm_bucket_cf_template()
 
 
 @pytest.fixture(scope="session")
@@ -63,11 +58,8 @@ def local_stack():
 
 @pytest.fixture(scope="session")
 def test_config():
-    test_config = {
-        "time_to_wait_for_polling": 0.01,
-        "source_ami_filters": default_config_object.source_ami_filters,
-        "slc_version": default_config_object.slc_version
-    }
+    test_config = copy(default_config)
+    test_config['time_to_wait_for_polling'] = 0.1
     return ConfigObject(**test_config)
 
 

@@ -3,7 +3,6 @@ import time
 
 from datetime import datetime
 
-import botocore
 import paramiko
 import pytest
 

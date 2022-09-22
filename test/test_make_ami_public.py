@@ -13,7 +13,7 @@ from test.mock_cast import mock_cast
 
 
 def test_make_ami_public(default_asset_id):
-    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess)
+    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
 
     mock_ami = get_ami_image_mock_data("AVAILABLE")
 
@@ -32,7 +32,7 @@ def test_make_ami_public(default_asset_id):
 
 
 def test_make_ami_public_not_changing_public_ami(default_asset_id):
-    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess)
+    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
 
     mock_ami = get_ami_image_mock_data("AVAILABLE")
     mock_ami._aws_object["Public"] = True
@@ -43,7 +43,7 @@ def test_make_ami_public_not_changing_public_ami(default_asset_id):
 
 
 def test_make_ami_public_not_changed_raises_exception(default_asset_id):
-    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess)
+    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
 
     mock_ami = get_ami_image_mock_data("AVAILABLE")
     mock_cast(aws_access_mock.list_amis).return_value = [mock_ami]

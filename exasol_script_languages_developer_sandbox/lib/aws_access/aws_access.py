@@ -37,8 +37,9 @@ def _log_function_start(func):
 
 
 class AwsAccess(object):
-    def __init__(self, aws_profile: Optional[str]):
+    def __init__(self, aws_profile: Optional[str], region: Optional[str] = None):
         self._aws_profile = aws_profile
+        self._region = region
         LOG.info("Instantiated AwsAccess with {aws_profile}".format(aws_profile=aws_profile))
 
     @property
@@ -360,5 +361,12 @@ class AwsAccess(object):
     def _get_aws_client(self, service_name: str) -> Any:
         if self._aws_profile is None:
             return boto3.client(service_name)
-        aws_session = boto3.session.Session(profile_name=self._aws_profile)
+        aws_session = boto3.session.Session(profile_name=self._aws_profile, region_name=self._region)
         return aws_session.client(service_name)
+
+    def instantiate_for_region(self, region: str) -> "AwsAccess":
+        """
+        Creates a new instance, based on self, but for region indicated by parameter "region"
+        :param region: The AWS region on which the new AwsAccess instance will operate.
+        """
+        return self.__class__(aws_profile=self._aws_profile, region=region)

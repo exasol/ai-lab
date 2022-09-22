@@ -11,7 +11,8 @@ default_config = {
         "architecture": "x86_64",
         "state": "available"
     },
-    "slc_version": SLC_VERSION
+    "slc_version": SLC_VERSION,
+    "waf_region": "us-east-1"
 }
 
 

@@ -1,0 +1,53 @@
+Resources:
+  VMDownloadACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: VMDownloadLimitationWebACL
+      Scope: CLOUDFRONT
+      Description: This Web ACL contains rule to control access to the VM Bucket cloudfront distribution.
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: MetricForVMDownloads
+      Rules:
+        - Name: Captcha
+          Priority: 1
+          Action:
+            Captcha: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: CaptchaMetricForVMDownloads
+          Statement:
+            NotStatement:
+              Statement:
+                IPSetReferenceStatement:
+                  Arn: !GetAtt AllowedIpSet.Arn
+        - Name: VMBucketRateLimit
+          Priority: 0
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitMetricForVMDownloads
+          Statement:
+            RateBasedStatement:
+              AggregateKeyType: IP
+              Limit: 100
+  AllowedIpSet:
+    Type: 'AWS::WAFv2::IPSet'
+    Properties:
+      Description: AllowedIp
+      Name: AllowedIp
+      Scope: CLOUDFRONT
+      IPAddressVersion: IPV4
+      Addresses:
+        - {{allowed_ip}}/32
+
+Outputs:
+  {{VMDownloadACLArn}}:
+    Value: !GetAtt VMDownloadACL.Arn
+    Description: "Arn of the VM Download ACL"

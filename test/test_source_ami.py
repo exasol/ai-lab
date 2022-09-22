@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-from exasol_script_languages_developer_sandbox.lib import config
 from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.source_ami import find_source_ami
 

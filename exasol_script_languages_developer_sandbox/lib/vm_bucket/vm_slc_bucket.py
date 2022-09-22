@@ -1,7 +1,10 @@
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from enum import Enum
+
+from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket_waf import find_acl_arn
 
 STACK_NAME = "DEVELOPER-SANDBOX-VM-SLC-Bucket"
 
@@ -16,12 +19,12 @@ class OutputKey(Enum):
 LOG = get_status_logger(LogType.VM_BUCKET)
 
 
-def create_vm_bucket_cf_template() -> str:
+def create_vm_bucket_cf_template(waf_webacl_arn: str) -> str:
     # All output keys (class OutputKey) are parameters in the vm_bucket_cloudformation.jinja.yaml
     # Simply map the output key enums values to them self and pass them to jinja.
     # Thus, we ensure that the output keys in the cloudformation match with the values in class OutputKey
     output_keys_dict = {output_key.value: output_key.value for output_key in OutputKey}
-    return render_template("vm_bucket_cloudformation.jinja.yaml", **output_keys_dict)
+    return render_template("vm_bucket_cloudformation.jinja.yaml", acl_arn=waf_webacl_arn, **output_keys_dict)
 
 
 def _find_vm_bucket_stack_output(aws_access: AwsAccess, output_key: OutputKey):
@@ -34,8 +37,9 @@ def _find_vm_bucket_stack_output(aws_access: AwsAccess, output_key: OutputKey):
     return output[0].output_value
 
 
-def run_setup_vm_bucket(aws_access: AwsAccess) -> None:
-    yml = create_vm_bucket_cf_template()
+def run_setup_vm_bucket(aws_access: AwsAccess, config: ConfigObject) -> None:
+    acl_arn = find_acl_arn(aws_access, config)
+    yml = create_vm_bucket_cf_template(acl_arn)
     aws_access.upload_cloudformation_stack(yml, STACK_NAME)
     LOG.info(f"Deployed cloudformation stack {STACK_NAME}")
 

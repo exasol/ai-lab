@@ -10,7 +10,8 @@ from exasol_script_languages_developer_sandbox.lib.aws_access.key_pair import Ke
 from exasol_script_languages_developer_sandbox.lib.aws_access.s3_object import S3Object
 from exasol_script_languages_developer_sandbox.lib.aws_access.snapshot import Snapshot
 from exasol_script_languages_developer_sandbox.lib.aws_access.stack_resource import StackResource
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import STACK_NAME
+from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import STACK_NAME as VM_STACK_NAME
+from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket_waf import STACK_NAME as WAF_STACK_NAME
 from test.conftest import DEFAULT_ASSET_ID
 
 TEST_ROLE_ID = 'VM-SLC-Bucket-VMImportRole-TEST'
@@ -18,32 +19,8 @@ TEST_BUCKET_ID = 'vm-slc-bucket-vmslcbucket-TEST'
 TEST_AMI_ID = "AMI-IMAGE-12345"
 TEST_CLOUDFRONT_ID = "test-cloudfrontet-TEST"
 TEST_CLOUDFRONT_DOMAIN_NAME = "test-s3.cloudfront.net"
+TEST_ACL_ARN = "TEST-DOWNLOAD-ACL"
 INSTANCE_ID = "test-instance"
-
-
-def get_vm_bucket_cloudformation_mock_data():
-    # The following is a snapshot from calling AwsAccess(a).get_all_stack_resources("VM-SLC-Bucket") on a running
-    # cloudformation stack
-    return [StackResource({'LogicalResourceId': 'VMImportRole',
-                           'PhysicalResourceId': TEST_ROLE_ID,
-                           'ResourceType': 'AWS::IAM::Role',
-                           'LastUpdatedTimestamp': datetime.datetime(2022, 8, 11, 17, 15, 20, 380000, tzinfo=tzutc()),
-                           'ResourceStatus': 'CREATE_COMPLETE',
-                           'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}}),
-            StackResource({'LogicalResourceId': 'VMSLCBucket',
-                           'PhysicalResourceId': TEST_BUCKET_ID,
-                           'ResourceType': 'AWS::S3::Bucket',
-                           'LastUpdatedTimestamp': datetime.datetime(2022, 8, 11, 17, 14, 55, 63000, tzinfo=tzutc()),
-                           'ResourceStatus': 'CREATE_COMPLETE',
-                           'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}})
-            ]
-
-
-def get_only_vm_stack_side_effect(stack_name: str):
-    if stack_name == STACK_NAME:
-        return get_vm_bucket_cloudformation_mock_data()
-    else:
-        raise ValueError(f"Unexpected parameter:{stack_name}")
 
 
 def get_ami_image_mock_data(state: str) -> Ami:
@@ -188,6 +165,25 @@ def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
                      'OutputValue': TEST_CLOUDFRONT_ID, 'Description': ''},
                     {'OutputKey': 'CfDistributionDomainName',
                      'OutputValue': TEST_CLOUDFRONT_DOMAIN_NAME, 'Description': ''}
+                    ]
+        })
+    ]
+
+
+def get_waf_cloudformation_mock_data() -> List[CloudformationStack]:
+    return [CloudformationStack({
+        'StackId': 'test-waf-stack-id',
+        'StackName': "DEVELOPER-SANDBOX-VM-SLC-Bucket-WAF",
+        'ChangeSetId': 'test-stack-changeset-id-3',
+        'CreationTime': datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc()),
+        'LastUpdatedTime': datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc()),
+        'RollbackConfiguration': {},
+        'StackStatus': 'CREATE_COMPLETE',
+        'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': [],
+        'Tags': [{'Key': 'exa_slc_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+        'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'},
+        'Outputs': [{'OutputKey': 'VMDownloadACLArn',
+                     'OutputValue': TEST_ACL_ARN, 'Description': ''}
                     ]
         })
     ]

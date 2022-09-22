@@ -42,7 +42,7 @@ def test_release_build(test_config):
     """
     Test that serialization and deserialization of KeyFileManager work!
     """
-    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess)
+    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
     mock_cast(aws_access_mock.get_all_stack_resources).return_value = DUMMY_RESOURCES
     mock_cast(aws_access_mock.start_codebuild).return_value = (123, create_autospec(CodeBuildWaiter))
     run_start_release_build(aws_access_mock, test_config, UPLOAD_URL, BRANCH, GITHUB_TOKEN)
