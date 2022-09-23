@@ -9,6 +9,7 @@ t.b.d.
 ## Bug Fixes
  
  - #18: Fixed network connection 
+ - #51: Fixed network connection
 
 ## Features / Enhancements
 

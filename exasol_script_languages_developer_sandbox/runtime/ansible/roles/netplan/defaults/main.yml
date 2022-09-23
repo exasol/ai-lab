@@ -1,0 +1,4 @@
+---
+
+apt_dependencies:
+  - network-manager=1.22.10-1ubuntu2.3

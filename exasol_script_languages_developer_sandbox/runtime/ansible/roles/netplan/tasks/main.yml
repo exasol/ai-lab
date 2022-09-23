@@ -1,11 +1,18 @@
-- name: Copy netplan file
+- name: Install required system packages
+  apt:
+    name: "{{apt_dependencies}}"
+    state: latest
+    update_cache: true
+  become: "{{need_sudo}}"
+
+- name: Copy 01-network-manager.cfg file
   ansible.builtin.copy:
     src: "{{item}}"
     dest: "/{{item}}"
     mode: 0644
   become: "{{need_sudo}}"
   with_items:
-    - 'etc/netplan'
+    - 'etc/netplan/01-network-manager.cfg'
 
 - name:  Run netplan generate
   shell: "netplan generate"
