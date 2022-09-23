@@ -10,8 +10,6 @@ from exasol_script_languages_developer_sandbox.lib.aws_access.key_pair import Ke
 from exasol_script_languages_developer_sandbox.lib.aws_access.s3_object import S3Object
 from exasol_script_languages_developer_sandbox.lib.aws_access.snapshot import Snapshot
 from exasol_script_languages_developer_sandbox.lib.aws_access.stack_resource import StackResource
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import STACK_NAME as VM_STACK_NAME
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket_waf import STACK_NAME as WAF_STACK_NAME
 from test.conftest import DEFAULT_ASSET_ID
 
 TEST_ROLE_ID = 'VM-SLC-Bucket-VMImportRole-TEST'
@@ -67,7 +65,7 @@ def get_export_image_task_mock_data(in_progress: bool):
             'ExportImageTaskId': 'export-ami-123',
             'S3ExportLocation':
                 {
-                    'S3Bucket': '123/some_dummy_location',
+                    'S3Bucket': TEST_BUCKET_ID,
                     'S3Prefix': DEFAULT_ASSET_ID.bucket_prefix
                 },
             'Progress': "50%",
@@ -81,7 +79,7 @@ def get_export_image_task_mock_data(in_progress: bool):
             'ExportImageTaskId': 'export-ami-123',
             'S3ExportLocation':
                 {
-                    'S3Bucket': '123/some_dummy_location',
+                    'S3Bucket': TEST_BUCKET_ID,
                     'S3Prefix': DEFAULT_ASSET_ID.bucket_prefix
                 },
             'Status': 'completed',

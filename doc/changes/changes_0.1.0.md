@@ -22,6 +22,7 @@ t.b.d.
  - #36: Added make-ami-public option
  - #43: Added CDN to the S3 VM Bucket
  - #45: Protected cloudfront access
+ - #47: Renamed virtual images 
 
 ## Documentation
 

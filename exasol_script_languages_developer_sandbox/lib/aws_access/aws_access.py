@@ -358,6 +358,32 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
         cloud_client.modify_image_attribute(ImageId=ami_id, LaunchPermission=launch_permissions)
 
+    @_log_function_start
+    def copy_s3_object(self, bucket: str, source: str, dest: str):
+        """
+        This functions uses Boto3 to copy a s3 object within a bucket.
+        See https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.copy_object
+        for details.
+        :param bucket: The bucket name where source is located and destination will be located.
+        :param source: The source object, including the prefix (e.g. 'path1/path2/src_object')
+        :param dest: The destination object, including the prefix (e.g. 'path1/path2/dest_object')
+        """
+        cloud_client = self._get_aws_client("s3")
+        copy_source = {'Bucket': bucket, 'Key': source}
+        cloud_client.copy_object(Bucket=bucket, CopySource=copy_source, Key=dest)
+
+    @_log_function_start
+    def delete_s3_object(self, bucket: str, source: str):
+        """
+        This functions uses Boto3 to delete a s3 object within a bucket.
+        See https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.delete_object
+        for details.
+        :param bucket: The bucket name where source is located and destination will be located.
+        :param source: The object which will be deleted, including the prefix (e.g. 'path1/path2/src_object')
+        """
+        cloud_client = self._get_aws_client("s3")
+        cloud_client.delete_object(Bucket=bucket, Key=source)
+
     def _get_aws_client(self, service_name: str) -> Any:
         if self._aws_profile is None:
             return boto3.client(service_name)

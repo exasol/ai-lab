@@ -5,6 +5,7 @@ from typing import Tuple
 from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol_script_languages_developer_sandbox.lib.aws_access.export_image_task import ExportImageTask
+from exasol_script_languages_developer_sandbox.lib.export_vm.rename_s3_objects import rename_image_in_s3
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
 from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import find_ec2_instance_in_cf_stack
@@ -33,7 +34,6 @@ def poll_export_image_task(aws_access: AwsAccess, export_image_task: ExportImage
                            configuration: ConfigObject) -> ExportImageTask:
     """
     Checks a started exported-image-task in a loop until it completes or fails.
-
     :param aws_access: Aws Access proxy
     :param export_image_task:  the newly started export image task object.
     :param configuration: The global configuration object.
@@ -46,14 +46,14 @@ def poll_export_image_task(aws_access: AwsAccess, export_image_task: ExportImage
         progress = ExportImageTaskProgress.from_export_image_task(export_image_task)
         if last_progress != progress:
             LOG.info(f"still running export of vm image to "
-                                                   f"{export_image_task.s3_bucket}/{export_image_task.s3_prefix}: "
-                                                   f"{progress} ")
+                     f"{export_image_task.s3_bucket}/{export_image_task.s3_prefix}: "
+                     f"{progress} ")
             last_progress = progress
     return export_image_task
 
 
 def export_vm_image(aws_access: AwsAccess, vm_image_format: VmDiskImageFormat, tag_value: str,
-                    ami_id: str, vmimport_role: str, vm_bucket: str, bucket_prefix: str,
+                    ami_id: str, vmimport_role: str, vm_bucket: str, asset_id: AssetId,
                     configuration: ConfigObject):
     """
     Exports an AMI (parameter ami_id) to a VM image in the given S3-Bucket (parameter vm_bucket)
@@ -66,25 +66,26 @@ def export_vm_image(aws_access: AwsAccess, vm_image_format: VmDiskImageFormat, t
         aws_access.export_ami_image_to_vm(image_id=ami_id, tag_value=tag_value,
                                           description="VM Description", role_name=vmimport_role,
                                           disk_format=vm_image_format,
-                                          s3_bucket=vm_bucket, s3_prefix=bucket_prefix)
+                                          s3_bucket=vm_bucket, s3_prefix=f"{asset_id.bucket_prefix}/")
 
     export_image_task = aws_access.get_export_image_task(export_image_task_id)
-    LOG.info(f"Started export of vm image to {vm_bucket}/{bucket_prefix}. "
+    LOG.info(f"Started export of vm image to {vm_bucket}/{asset_id.bucket_prefix}. "
              f"Status message is {export_image_task.status_message}.")
     export_image_task = poll_export_image_task(aws_access, export_image_task, configuration)
     if not export_image_task.is_completed:
         raise RuntimeError(f"Export of VM failed: status message was {export_image_task.status_message}")
+    rename_image_in_s3(aws_access, export_image_task, vm_image_format, asset_id=asset_id)
 
 
 def export_vm_images(aws_access: AwsAccess, vm_image_formats: Tuple[str, ...], tag_value: str,
                      ami_id: str, vmimport_role: str, vm_bucket: str,
-                     bucket_prefix: str, configuration: ConfigObject):
+                     asset_id: AssetId, configuration: ConfigObject):
     for vm_image_format in vm_image_formats:
         try:
             export_vm_image(aws_access, VmDiskImageFormat[vm_image_format], tag_value,
-                            ami_id, vmimport_role, vm_bucket, bucket_prefix, configuration)
+                            ami_id, vmimport_role, vm_bucket, asset_id, configuration)
         except Exception as e:
-            raise RuntimeError(f"Failed to export VM to bucket {vm_bucket} at {bucket_prefix}\n") from e
+            raise RuntimeError(f"Failed to export VM to bucket {vm_bucket} at {asset_id.bucket_prefix}\n") from e
 
 
 def create_ami(aws_access: AwsAccess, ami_name: str, tag_value: str,
@@ -117,11 +118,10 @@ def export_vm(aws_access: AwsAccess,
     vm_bucket = find_vm_bucket(aws_access)
     vmimport_role = find_vm_import_role(aws_access)
     tag_value = asset_id.tag_value
-    bucket_prefix = f"{asset_id.bucket_prefix}/"
     try:
         ami_id = create_ami(aws_access, asset_id.ami_name, tag_value, instance_id, configuration)
         export_vm_images(aws_access, vm_image_formats, tag_value, ami_id, vmimport_role, vm_bucket,
-                         bucket_prefix, configuration)
+                         asset_id, configuration)
     except Exception as e:
         print_assets(aws_access=aws_access, asset_id=asset_id, outfile=None)
         LOG.warning(f"VM Export finished for: {asset_id.ami_name}. There were errors. "

@@ -1,9 +1,13 @@
-from unittest.mock import call, create_autospec
+from __future__ import annotations
+
+from unittest.mock import call, create_autospec, MagicMock
 
 import pytest
 
 from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
 from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol_script_languages_developer_sandbox.lib.export_vm.rename_s3_objects import build_image_source, \
+    build_image_destination
 from exasol_script_languages_developer_sandbox.lib.export_vm.run_export_vm import export_vm
 from exasol_script_languages_developer_sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 from test.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, TEST_ROLE_ID, TEST_BUCKET_ID, INSTANCE_ID, \
@@ -52,7 +56,7 @@ def aws_vm_export_mock():
              3. Returns the mocked ExportImageTask object when calling get_export_image_task()
              4. Returns the mocked Ami object when calling get_ami() (see method get_ami_side_effect() for details
     """
-    aws_access_mock:Union[AwsAccess,MagicMock] = create_autospec(AwsAccess, spec_set=True)
+    aws_access_mock: AwsAccess | MagicMock = create_autospec(AwsAccess, spec_set=True)
     mock_cast(aws_access_mock.describe_stacks).return_value = get_s3_cloudformation_mock_data() + \
                                                               get_waf_cloudformation_mock_data()
     mock_cast(aws_access_mock.create_image_from_ec2_instance).return_value = TEST_AMI_ID
@@ -96,3 +100,17 @@ def test_export_vm(aws_vm_export_mock, default_asset_id, vm_formats_to_test, tes
              s3_prefix=f"{default_asset_id.bucket_prefix}/")
         for disk_format in vm_formats_to_test]
     assert mock_cast(aws_vm_export_mock.export_ami_image_to_vm).call_args_list == expected_calls
+
+    expected_calls_copy = list()
+    expected_calls_delete = list()
+    for disk_format in vm_formats_to_test:
+        source = build_image_source(prefix=default_asset_id.bucket_prefix,
+                                    export_image_task_id="export-ami-123",
+                                    vm_image_format=disk_format)
+        dest = build_image_destination(prefix=default_asset_id.bucket_prefix, asset_id=default_asset_id,
+                                       vm_image_format=disk_format)
+        expected_calls_copy.append(call(bucket=TEST_BUCKET_ID, source=source, dest=dest))
+        expected_calls_delete.append(call(bucket=TEST_BUCKET_ID, source=source))
+
+    assert mock_cast(aws_vm_export_mock.copy_s3_object).call_args_list == expected_calls_copy
+    assert mock_cast(aws_vm_export_mock.delete_s3_object).call_args_list == expected_calls_delete

@@ -71,7 +71,7 @@ def test_print_export_image_tasks(default_asset_id, printing_mocks, progress, st
     assert table_printer_mock.add_column.call_count == 8
 
     table_printer_mock.add_row.assert_called_once_with('export-ami-123', 'VM Description',
-                                                       progress,  '123/some_dummy_location',
+                                                       progress,  TEST_BUCKET_ID,
                                                        default_asset_id.bucket_prefix,
                                                        status, status_message, default_asset_id.tag_value)
     table_printer_mock.finish.assert_called_once()
