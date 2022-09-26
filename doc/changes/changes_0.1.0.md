@@ -28,6 +28,7 @@ t.b.d.
 ## Documentation
 
  - #19: Added user guide and developer guide
+ - #49: Added tutorial about how to start the VM/AMI
 
 ## Refactoring
 
