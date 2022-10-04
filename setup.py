@@ -18,7 +18,8 @@ packages = \
  'exasol_script_languages_developer_sandbox.lib.setup_release_codebuild',
  'exasol_script_languages_developer_sandbox.lib.update_release',
  'exasol_script_languages_developer_sandbox.lib.vm_bucket',
- 'exasol_script_languages_developer_sandbox.runtime']
+ 'exasol_script_languages_developer_sandbox.runtime',
+ 'exasol_script_languages_developer_sandbox.runtime.ansible.roles.jupyter.files.notebook']
 
 package_data = \
 {'': ['*'],

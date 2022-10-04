@@ -27,5 +27,9 @@
     - name: Setup Systemd service
       ansible.builtin.import_tasks: systemd.yml
 
+    - name: Copy tutorial notebook
+      ansible.builtin.import_tasks: tutorial.yml
+
     - name: Setup motd
       ansible.builtin.import_tasks: motd.yml
+

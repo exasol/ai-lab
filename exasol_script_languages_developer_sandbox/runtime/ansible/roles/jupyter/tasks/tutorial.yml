@@ -1,0 +1,6 @@
+---
+- name: Copy notebook content
+  ansible.builtin.copy:
+    src: "notebook/"
+    dest: "{{jupyterlab.notebook_folder}}"
+    mode: 0644

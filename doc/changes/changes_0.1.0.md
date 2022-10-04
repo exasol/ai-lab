@@ -24,6 +24,7 @@ t.b.d.
  - #43: Added CDN to the S3 VM Bucket
  - #45: Protected cloudfront access
  - #47: Renamed virtual images 
+ - #38: Included tutorial Jupyterlab notebook
 
 ## Documentation
 
