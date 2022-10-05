@@ -10,6 +10,7 @@ t.b.d.
  
  - #18: Fixed network connection 
  - #51: Fixed network connection
+ - #57: Fixed release build
 
 ## Features / Enhancements
 

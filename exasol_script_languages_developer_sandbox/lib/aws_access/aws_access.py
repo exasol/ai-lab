@@ -57,6 +57,7 @@ class AwsAccess(object):
     def create_new_ec2_key_pair(self, key_name: str, tag_value: str) -> str:
         """
         Create an EC-2 Key-Pair, identified by parameter 'key_name'
+        :required actions: ec2:CreateKeyPair
         """
         cloud_client = self._get_aws_client("ec2")
         tags = [{"ResourceType": "key-pair", "Tags": create_default_asset_tag(tag_value)}]
@@ -67,6 +68,7 @@ class AwsAccess(object):
     def delete_ec2_key_pair(self, key_name: str) -> None:
         """
         Delete the EC-2 Key-Pair, given by parameter 'key_name'
+        :required actions: ec2:DeleteKeyPair
         """
         cloud_client = self._get_aws_client("ec2")
         cloud_client.delete_key_pair(KeyName=key_name)
@@ -75,6 +77,10 @@ class AwsAccess(object):
     def upload_cloudformation_stack(self, yml: str, stack_name: str, tags=tuple()) -> None:
         """
         Deploy the cloudformation stack.
+        :required actions: cloudformation:CreateChangeSet, cloudformation:DescribeChangeSet,
+                           cloudformation:ExecuteChangeSet,
+                           and all actions required for creating elements of the specific stack
+                           (e.g. ec2:CreateSecurityGroup, ec2:RunInstances,...)
         """
         cloud_client = self._get_aws_client("cloudformation")
         try:
@@ -101,6 +107,7 @@ class AwsAccess(object):
         (see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-validate-template.html)
         Pitfall: Boto3 expects the YAML string as parameter, whereas the AWS CLI expects the file URL as parameter.
         It requires to have the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables set correctly.
+        :required actions: cloudformation:ValidateTemplate
         """
         cloud_client = self._get_aws_client("cloudformation")
         cloud_client.validate_template(TemplateBody=cloudformation_yml)
@@ -122,6 +129,7 @@ class AwsAccess(object):
         identified by parameter `stack_name`.
         The AWS API truncates at a size of 1MB, and in order to get all chunks the method must be called
         passing the previous retrieved token until no token is returned.
+        :required actions: cloudformation:ListStackResources
         """
         return self._get_stack_resources(stack_name=stack_name)
 
@@ -129,6 +137,7 @@ class AwsAccess(object):
     def stack_exists(self, stack_name: str) -> bool:
         """
         This functions uses Boto3 to check if stack with name `stack_name` exists.
+        :required actions: cloudformation:ListStackResources
         """
         try:
             result = self._get_stack_resources(stack_name=stack_name)
@@ -140,6 +149,9 @@ class AwsAccess(object):
     def delete_stack(self, stack_name: str) -> None:
         """
         This functions uses Boto3 to delete a stack identified by parameter "stack_name".
+        :required actions: cloudformation:DeleteStack,
+                           and all actions required to stop/delete elements of the stack
+                           (e.g. ec2:DeleteSecurityGroup, ec2:TerminateInstances,...)
         """
         cf_client = self._get_aws_client('cloudformation')
         cf_client.delete_stack(StackName=stack_name)
@@ -148,6 +160,7 @@ class AwsAccess(object):
     def describe_stacks(self) -> List[CloudformationStack]:
         """
         This functions uses Boto3 to describe all cloudformation stacks.
+        :required actions: cloudformation:DescribeStacks
         """
         cf_client = self._get_aws_client('cloudformation')
         current_result = cf_client.describe_stacks()
@@ -162,6 +175,7 @@ class AwsAccess(object):
     def describe_instance(self, instance_id: str) -> EC2Instance:
         """
         Describes an AWS instance identified by parameter instance_id
+        :required actions: ec2:DescribeInstances
         """
         cloud_client = self._get_aws_client("ec2")
         instances_result = cloud_client.describe_instances(InstanceIds=[instance_id])
@@ -178,6 +192,7 @@ class AwsAccess(object):
         """
         Creates an AMI image from an EC-2 instance.
         Returns the image-id of the new AMI.
+        :required actions: ec2:CreateImage, ec2:CreateTags
         """
         cloud_client = self._get_aws_client("ec2")
         tags = [{"ResourceType": "image", "Tags": create_default_asset_tag(tag_value)},
@@ -194,6 +209,7 @@ class AwsAccess(object):
         """
         Creates an AMI image from an EC-2 instance.
         Returns the export_image_task_id.
+        :required actions: ec2:ExportImage, ec2:CreateTags
         """
         cloud_client = self._get_aws_client("ec2")
         tags = [{"ResourceType": "export-image-task", "Tags": create_default_asset_tag(tag_value)}]
@@ -208,6 +224,7 @@ class AwsAccess(object):
     def get_export_image_task(self, export_image_task_id: str) -> ExportImageTask:
         """
         Get Export-Image-Task for given export_image_task_id.
+        :required actions: ec2:DescribeExportImageTasks
         """
         cloud_client = self._get_aws_client("ec2")
         result = cloud_client.describe_export_image_tasks(ExportImageTaskIds=[export_image_task_id])
@@ -222,6 +239,7 @@ class AwsAccess(object):
     def get_ami(self, image_id: str) -> Ami:
         """
         Get AMI image for given image_id
+        :required actions: ec2:DescribeImages
         """
         cloud_client = self._get_aws_client("ec2")
 
@@ -235,6 +253,7 @@ class AwsAccess(object):
     def get_instance_status(self, instance_id: str) -> EC2InstanceStatus:
         """
         Get EC-2 instance status for given instance_id
+        :required actions: ec2:DescribeInstanceStatus
         """
         cloud_client = self._get_aws_client("ec2")
 
@@ -249,6 +268,7 @@ class AwsAccess(object):
     def list_amis(self, filters: list) -> List[Ami]:
         """
         List AMI images with given tag filter
+        :required actions: ec2:DescribeImages
         """
         cloud_client = self._get_aws_client("ec2")
         response = cloud_client.describe_images(Filters=filters)
@@ -258,6 +278,7 @@ class AwsAccess(object):
     def list_snapshots(self, filters: list) -> List[Snapshot]:
         """
         List EC2 volume snapthos with given tag filter
+        :required actions: ec2:DescribeSnapshots
         """
         cloud_client = self._get_aws_client("ec2")
 
@@ -269,6 +290,7 @@ class AwsAccess(object):
     def list_export_image_tasks(self, filters: list) -> List[ExportImageTask]:
         """
         List export image tasks with given tag filter
+        :required actions: ec2:DescribeExportImageTasks
         """
         cloud_client = self._get_aws_client("ec2")
 
@@ -280,6 +302,7 @@ class AwsAccess(object):
     def list_ec2_key_pairs(self, filters: list) -> List[KeyPair]:
         """
         List ec-2 key-pairs with given tag filter
+        :required actions: ec2:DescribeKeyPairs
         """
         cloud_client = self._get_aws_client("ec2")
 
@@ -291,6 +314,7 @@ class AwsAccess(object):
     def list_s3_objects(self, bucket: str, prefix: str) -> Optional[List[S3Object]]:
         """
         List s3 objects images with given tag filter
+        :required actions: s3:ListBucket
         """
         cloud_client = self._get_aws_client("s3")
 
@@ -302,6 +326,7 @@ class AwsAccess(object):
     def deregister_ami(self, ami_d: str) -> None:
         """
         De-registers an AMI
+        :required actions: ec2:DeregisterImage
         """
         cloud_client = self._get_aws_client("ec2")
         cloud_client.deregister_image(ImageId=ami_d)
@@ -310,6 +335,7 @@ class AwsAccess(object):
     def remove_snapshot(self, snapshot_id: str) -> None:
         """
         Removes a snapshot
+        :required actions: ec2:DeleteSnapshot
         """
         cloud_client = self._get_aws_client("ec2")
         cloud_client.delete_snapshot(SnapshotId=snapshot_id)
@@ -318,6 +344,7 @@ class AwsAccess(object):
     def get_user(self) -> str:
         """
         Return the current IAM user name.
+        :required actions: iam:GetUser
         """
         iam_client = self._get_aws_client("iam")
         cu = iam_client.get_user()
@@ -334,8 +361,8 @@ class AwsAccess(object):
         :param project: Codebuild project name to start
         :param environment_variables_overrides: List of environment variables which will be overwritten in build
         :param branch: Branch on which the build will run
-        :raises
-            `RuntimeError` if build fails or AWS Batch build returns unknown status
+        :raises `RuntimeError`: if build fails or AWS Batch build returns unknown status
+        :required actions: codebuild:StartBuild
         """
         codebuild_client = self._get_aws_client("codebuild")
         ret_val = codebuild_client.start_build(projectName=project,
@@ -354,6 +381,7 @@ class AwsAccess(object):
         for details.
         :param ami_id: The AMI id for which the launch permission should be changed.
         :param launch_permissions: Dict of launch permissions
+        :required actions: ec2:ModifyImageAttribute
         """
         cloud_client = self._get_aws_client("ec2")
         cloud_client.modify_image_attribute(ImageId=ami_id, LaunchPermission=launch_permissions)
@@ -367,6 +395,7 @@ class AwsAccess(object):
         :param bucket: The bucket name where source is located and destination will be located.
         :param source: The source object, including the prefix (e.g. 'path1/path2/src_object')
         :param dest: The destination object, including the prefix (e.g. 'path1/path2/dest_object')
+        :required actions: s3:GetObject, s3:PutObject
         """
         cloud_client = self._get_aws_client("s3")
         copy_source = {'Bucket': bucket, 'Key': source}
@@ -380,6 +409,7 @@ class AwsAccess(object):
         for details.
         :param bucket: The bucket name where source is located and destination will be located.
         :param source: The object which will be deleted, including the prefix (e.g. 'path1/path2/src_object')
+        :required actions: s3:DeleteObject
         """
         cloud_client = self._get_aws_client("s3")
         cloud_client.delete_object(Bucket=bucket, Key=source)

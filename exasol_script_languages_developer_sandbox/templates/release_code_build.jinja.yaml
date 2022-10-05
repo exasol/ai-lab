@@ -52,9 +52,8 @@ Resources:
                 - ec2:DescribeKeyPairs
                 - ec2:DescribeInstanceStatus
                 - ec2:CreateImage
-                - ec2:DeregisterImage
-                - ec2:DeleteSnapshot
                 - ec2:ExportImage
+                - ec2:ModifyImageAttribute
                 Resource: "*"
                 Effect: Allow
               - Action:
@@ -68,6 +67,8 @@ Resources:
                 Effect: Allow
               - Action:
                 - s3:PutObject
+                - s3:GetObject
+                - s3:DeleteObject
                 Resource: arn:aws:s3:::{{vm_bucket}}/slc_developer_sandbox/*
                 Effect: Allow
   DeveloperSandboxReleaseCodeBuild:
