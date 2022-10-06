@@ -5,7 +5,7 @@ from copy import copy
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.config import default_config_object, default_config, ConfigObject
+from exasol_script_languages_developer_sandbox.lib.config import default_config_object, ConfigObject
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from importlib.metadata import version
 
@@ -58,9 +58,9 @@ def local_stack():
 
 @pytest.fixture(scope="session")
 def test_config():
-    test_config = copy(default_config)
-    test_config['time_to_wait_for_polling'] = 0.1
-    return ConfigObject(**test_config)
+    test_config = copy(default_config_object)
+    test_config.time_to_wait_for_polling = 0.1
+    return test_config
 
 
 @pytest.fixture()

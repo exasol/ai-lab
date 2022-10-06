@@ -2,7 +2,7 @@ from importlib_metadata import version
 
 SLC_VERSION = version("exasol_script_languages_release")
 
-default_config = {
+_default_config = {
     "time_to_wait_for_polling": 10.0,
     # Source AMI is set to Ubuntu 20.04. Owner id '099720109477' == 'Canonical'
     "source_ami_filters": {
@@ -21,4 +21,4 @@ class ConfigObject:
         self.__dict__.update(kwargs)
 
 
-default_config_object = ConfigObject(**default_config)
+default_config_object = ConfigObject(**_default_config)
