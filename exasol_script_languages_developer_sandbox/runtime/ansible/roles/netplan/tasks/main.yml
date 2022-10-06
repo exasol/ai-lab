@@ -5,14 +5,14 @@
     update_cache: true
   become: "{{need_sudo}}"
 
-- name: Copy 01-network-manager.cfg file
+- name: Copy 01-network-manager.yaml file
   ansible.builtin.copy:
     src: "{{item}}"
     dest: "/{{item}}"
     mode: 0644
   become: "{{need_sudo}}"
   with_items:
-    - 'etc/netplan/01-network-manager.cfg'
+    - 'etc/netplan/01-network-manager.yaml'
 
 - name:  Run netplan generate
   shell: "netplan generate"

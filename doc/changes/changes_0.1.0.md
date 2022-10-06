@@ -16,6 +16,7 @@ Version: 5.0.0
  - #51: Fixed network connection
  - #57: Fixed release build
  - #60: Fixed release build command
+ - #64: Fixed Netplan file name 
 
 ## Features / Enhancements
 
