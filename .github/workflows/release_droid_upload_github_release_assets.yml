@@ -27,7 +27,7 @@ jobs:
 
   upload:
     needs: check-release
-    environment: AWS
+    environment: AWS_RELEASE
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
