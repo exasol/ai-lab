@@ -24,6 +24,7 @@ Resources:
                 Effect: Allow
               - Action:
                 - cloudformation:DescribeStacks
+                - cloudformation:ListStacks
                 - cloudformation:ListStackResources
                 Resource: "*"
                 Effect: Allow
