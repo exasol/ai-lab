@@ -14,14 +14,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Setup Python 3.8 for integration-test-docker-environment
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: 1.2.0
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/prepare_poetry_env
       - name: Build Release
         run: ./scripts/build/check_release.sh "python3.8"
 
@@ -32,16 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install Poetry
-        uses: abatilo/actions-poetry@v2
-        with:
-          poetry-version: 1.2.0
-      - name: Setup poetry env
-        run: bash scripts/build/setup_poetry_env.sh "python3.8"
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/prepare_poetry_env
       - name: Build Release
         run: poetry run python3 -m exasol_script_languages_developer_sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
         env: # Set the secret as an env variable

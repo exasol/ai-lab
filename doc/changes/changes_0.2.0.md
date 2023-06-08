@@ -24,8 +24,9 @@ n/a
 
 ## Refactoring
 
-n/a
+ - #73: Removed setup.py
 
 ## Security
 
  - #77: Update Ubuntu packages and added `cloudformation:ListStacks` to the roles for the CI runs
+
