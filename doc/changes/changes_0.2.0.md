@@ -12,7 +12,7 @@ Version: 5.0.0
 
 ## Bug Fixes
  
-n/a
+ - #78: Fix test_install_dependencies docker cleanup, fix pytest github action
 
 ## Features / Enhancements
 

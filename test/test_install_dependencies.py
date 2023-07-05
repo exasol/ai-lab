@@ -37,17 +37,19 @@ def docker_test_container(test_config):
             AnsibleRunContext(playbook="slc_setup_test.yml",
                               extra_vars={"test_docker_container": test_container.name,
                                           "slc_dest_folder": f"{tmp_dir}/script-languages-release"})
-        run_install_dependencies(AnsibleAccess(), configuration=test_config,
-                                 host_infos=tuple(), ansible_run_context=ansible_run_context,
-                                 ansible_repositories=repos)
-        yield test_container, tmp_dir
-        # Note: script-languages-release will be cloned by ansible within the docker container.
-        #       Because the docker container runs as root, the repository will be owned by root.
-        #       For simplicity, we delete the folder from within the Docker container (as root).
-        #       Otherwise, we get a permission problem when tmp_dir tries to clean-up itself.
-        test_container.exec_run(f"rm -rf {tmp_dir}/script-languages-release")
-        test_container.stop()
-        test_container.remove()
+        try:
+            run_install_dependencies(AnsibleAccess(), configuration=test_config,
+                                     host_infos=tuple(), ansible_run_context=ansible_run_context,
+                                     ansible_repositories=repos)
+            yield test_container, tmp_dir
+            # Note: script-languages-release will be cloned by ansible within the docker container.
+            #       Because the docker container runs as root, the repository will be owned by root.
+            #       For simplicity, we delete the folder from within the Docker container (as root).
+            #       Otherwise, we get a permission problem when tmp_dir tries to clean-up itself.
+        finally:
+            test_container.exec_run(f"rm -rf {tmp_dir}/script-languages-release")
+            test_container.stop()
+            test_container.remove()
 
 
 def test_install_dependencies_jupyterlab(docker_test_container):

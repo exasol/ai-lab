@@ -7,5 +7,4 @@ REPO_DIR=$(git rev-parse --show-toplevel)
 GITHOOKS_PATH="$REPO_DIR/githooks"
 pushd "$REPO_DIR"
 bash "$GITHOOKS_PATH/prohibit_commit_to_main.sh"
-bash "$GITHOOKS_PATH/update_packaging.sh"
 popd
