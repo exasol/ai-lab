@@ -6,7 +6,7 @@ from typing import Optional, Union
 
 
 _logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="%(message)s")
+# logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
 @dataclass(frozen=True)
@@ -16,7 +16,7 @@ class Table:
 
 
 CONFIG_ITEMS_TABLE = Table("config_items", ["item"])
-SECRECTS_TABLE = Table("secrects", ["user", "password"])
+SECRETS_TABLE = Table("secrets", ["user", "password"])
 
 
 @dataclass(frozen=True)
@@ -77,7 +77,7 @@ class Secrets:
         self.connection().commit()
 
     def create_tables(self) -> None:
-        for table in (SECRECTS_TABLE, CONFIG_ITEMS_TABLE):
+        for table in (SECRETS_TABLE, CONFIG_ITEMS_TABLE):
             self.create_table(table)
 
     def _save_data(self, table: Table, key: str, data: list[str]) -> None:
@@ -99,14 +99,14 @@ class Secrets:
     #     self._save_data(CONFIG_ITEMS_TABLE, key, [item])
     #
     # def save_credentials(self, key: str, user: str, password: str) -> None:
-    #     self._save_data(SECRECTS_TABLE, key, [user, password])
+    #     self._save_data(SECRETS_TABLE, key, [user, password])
 
     def save(self, key: str, data: Union[str, Credentials]) -> None:
         if isinstance(data, str):
             self._save_data(CONFIG_ITEMS_TABLE, key, [data])
             return
         if isinstance(data, Credentials):
-            self._save_data(SECRECTS_TABLE, key, [data.user, data.password])
+            self._save_data(SECRETS_TABLE, key, [data.user, data.password])
             return
         raise Exception("Unsupported type of data: " + type(data).__name__)
 
@@ -118,7 +118,7 @@ class Secrets:
         return res.fetchone() if res else None
 
     def get_credentials(self, key: str) -> Optional[Credentials]:
-        row = self._get_data(SECRECTS_TABLE, key)
+        row = self._get_data(SECRETS_TABLE, key)
         return Credentials(row[0], row[1]) if row else None
 
     def get_config_item(self, key: str) -> Optional[str]:
@@ -126,21 +126,21 @@ class Secrets:
         return row[0] if row else None
 
 
-def sample_usage():
-    secrets = Secrets("mydb.db", master_password="my secret master password")
-
-    c = secrets.get_credentials("aws")
-    print(f'old value of aws credentials {c}')
-    secrets.save("aws", Credentials("user-a", "pwd-aaa"))
-    c = secrets.get_credentials("aws")
-    print(f'aws credentials: {c}')
-
-    c = secrets.get_config_item("url")
-    print(f'old value of config item "url" {c}')
-    secrets.save("url", "http://def")
-    c = secrets.get_config_item("url")
-    print(f'config item url: {c}')
-
-
-if __name__ == "__main__":
-    sample_usage()
+# def sample_usage():
+#     secrets = Secrets("mydb.db", master_password="my secret master password")
+# 
+#     c = secrets.get_credentials("aws")
+#     print(f'old value of aws credentials {c}')
+#     secrets.save("aws", Credentials("user-a", "pwd-aaa"))
+#     c = secrets.get_credentials("aws")
+#     print(f'aws credentials: {c}')
+# 
+#     c = secrets.get_config_item("url")
+#     print(f'old value of config item "url" {c}')
+#     secrets.save("url", "http://def")
+#     c = secrets.get_config_item("url")
+#     print(f'config item url: {c}')
+# 
+# 
+# if __name__ == "__main__":
+#     sample_usage()
