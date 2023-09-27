@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from sqlcipher3 import dbapi2 as sqlcipher3
+from sqlcipher3 import dbapi2 as sqlcipher
 import logging
 import os
 from typing import Optional, Union
@@ -32,14 +32,13 @@ class Secrets:
         self._con = None
         self._cur = None
 
-    def _use_master_password(self) -> None:
-        """
-        If database is unencrypted then this method encrypts it.
-        If database is already encrypted then this method enables to access the data.
-        """
-        if self.master_password is not None:
-            sanitized = self.master_password.replace("'", "\\'")
-            self.cursor().execute(f"PRAGMA key = '{sanitized}'")
+    def close(self) -> None:
+        if self._cur is not None:
+            self._cur.close()
+            self._cur = None
+        if self._con is not None:
+            self._con.close()
+            self._con = None
 
     def connection(self) -> sqlcipher.Connection:
         if self._con is None:
@@ -49,6 +48,15 @@ class Secrets:
             self._use_master_password()
             self.create_tables()
         return self._con
+
+    def _use_master_password(self) -> None:
+        """
+        If database is unencrypted then this method encrypts it.
+        If database is already encrypted then this method enables to access the data.
+        """
+        if self.master_password is not None:
+            sanitized = self.master_password.replace("'", "\\'")
+            self.cursor().execute(f"PRAGMA key = '{sanitized}'")
 
     def cursor(self) -> sqlcipher.Cursor:
         if self._cur is None:
