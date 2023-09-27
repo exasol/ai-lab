@@ -15,8 +15,8 @@ class Table:
     columns: list[str]
 
 
-CONFIG_ITEMS_TABLE = Table("config_items", ["item"])
 SECRETS_TABLE = Table("secrets", ["user", "password"])
+CONFIG_ITEMS_TABLE = Table("config_items", ["item"])
 
 
 @dataclass(frozen=True)
@@ -80,7 +80,7 @@ class Secrets:
         for table in (SECRETS_TABLE, CONFIG_ITEMS_TABLE):
             self.create_table(table)
 
-    def _save_data(self, table: Table, key: str, data: list[str]) -> None:
+    def _save_data(self, table: Table, key: str, data: list[str]) -> "Secrets":
         cur = self.cursor()
         res = cur.execute(f"SELECT * FROM {table.name} WHERE key=?", [key])
         if res and res.fetchone():
@@ -94,6 +94,7 @@ class Secrets:
                 f"INSERT INTO {table.name} VALUES (?, {columns})",
                 [key] + data)
         self.connection().commit()
+        return self
 
     # def save_config_item(self, key: str, item: str) -> None:
     #     self._save_data(CONFIG_ITEMS_TABLE, key, [item])
@@ -101,13 +102,11 @@ class Secrets:
     # def save_credentials(self, key: str, user: str, password: str) -> None:
     #     self._save_data(SECRETS_TABLE, key, [user, password])
 
-    def save(self, key: str, data: Union[str, Credentials]) -> None:
+    def save(self, key: str, data: Union[str, Credentials]) -> "Secrets":
         if isinstance(data, str):
-            self._save_data(CONFIG_ITEMS_TABLE, key, [data])
-            return
+            return self._save_data(CONFIG_ITEMS_TABLE, key, [data])
         if isinstance(data, Credentials):
-            self._save_data(SECRETS_TABLE, key, [data.user, data.password])
-            return
+            return self._save_data(SECRETS_TABLE, key, [data.user, data.password])
         raise Exception("Unsupported type of data: " + type(data).__name__)
 
     def _get_data(self, table: Table, key: str) -> Optional[list[str]]:
@@ -128,19 +127,19 @@ class Secrets:
 
 # def sample_usage():
 #     secrets = Secrets("mydb.db", master_password="my secret master password")
-# 
+#
 #     c = secrets.get_credentials("aws")
 #     print(f'old value of aws credentials {c}')
 #     secrets.save("aws", Credentials("user-a", "pwd-aaa"))
 #     c = secrets.get_credentials("aws")
 #     print(f'aws credentials: {c}')
-# 
+#
 #     c = secrets.get_config_item("url")
 #     print(f'old value of config item "url" {c}')
 #     secrets.save("url", "http://def")
 #     c = secrets.get_config_item("url")
 #     print(f'config item url: {c}')
-# 
-# 
+#
+#
 # if __name__ == "__main__":
 #     sample_usage()
