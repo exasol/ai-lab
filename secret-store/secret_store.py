@@ -123,23 +123,3 @@ class Secrets:
     def get_config_item(self, key: str) -> Optional[str]:
         row = self._get_data(CONFIG_ITEMS_TABLE, key)
         return row[0] if row else None
-
-
-# def sample_usage():
-#     secrets = Secrets("mydb.db", master_password="my secret master password")
-#
-#     c = secrets.get_credentials("aws")
-#     print(f'old value of aws credentials {c}')
-#     secrets.save("aws", Credentials("user-a", "pwd-aaa"))
-#     c = secrets.get_credentials("aws")
-#     print(f'aws credentials: {c}')
-#
-#     c = secrets.get_config_item("url")
-#     print(f'old value of config item "url" {c}')
-#     secrets.save("url", "http://def")
-#     c = secrets.get_config_item("url")
-#     print(f'config item url: {c}')
-#
-#
-# if __name__ == "__main__":
-#     sample_usage()
