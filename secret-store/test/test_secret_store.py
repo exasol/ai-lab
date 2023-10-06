@@ -1,7 +1,7 @@
 import os
 import pytest
 from pathlib import Path
-from secret_store import Credentials, PotentiallyIncorrectMasterPassword, Secrets
+from secret_store import Credentials, InvalidPassword, Secrets
 from sqlcipher3 import dbapi2 as sqlcipher
 
 
@@ -62,6 +62,6 @@ def test_wrong_password(sample_file):
     secrets = Secrets(sample_file, "correct password")
     secrets.save("key", Credentials("usr", "pass")).close()
     invalid = Secrets(sample_file, "wrong password")
-    with pytest.raises(PotentiallyIncorrectMasterPassword) as ex:
+    with pytest.raises(InvalidPassword) as ex:
         invalid.credentials("key")
     assert "master password is incorrect" in str(ex.value)
