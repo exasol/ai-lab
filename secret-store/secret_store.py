@@ -58,7 +58,7 @@ class Secrets:
             sanitized = self.master_password.replace("'", "\\'")
             self.cursor().execute(f"PRAGMA key = '{sanitized}'")
 
-    def cursor(self) -> sqlcipher.Cursor:
+    def _cursor(self) -> sqlcipher.Cursor:
         if self._cur is None:
             self._cur = self.connection().cursor()
         return self._cur
@@ -109,7 +109,7 @@ class Secrets:
             return self._save_data(SECRETS_TABLE, key, [data.user, data.password])
         raise Exception("Unsupported type of data: " + type(data).__name__)
 
-    def _get_data(self, table: Table, key: str) -> Optional[list[str]]:
+    def _data(self, table: Table, key: str) -> Optional[list[str]]:
         columns = ", ".join(table.columns)
         res = self.cursor().execute(
             f"SELECT {columns} FROM {table.name} WHERE key=?",
@@ -124,22 +124,3 @@ class Secrets:
         row = self._get_data(CONFIG_ITEMS_TABLE, key)
         return row[0] if row else None
 
-
-# def sample_usage():
-#     secrets = Secrets("mydb.db", master_password="my secret master password")
-#
-#     c = secrets.get_credentials("aws")
-#     print(f'old value of aws credentials {c}')
-#     secrets.save("aws", Credentials("user-a", "pwd-aaa"))
-#     c = secrets.get_credentials("aws")
-#     print(f'aws credentials: {c}')
-#
-#     c = secrets.get_config_item("url")
-#     print(f'old value of config item "url" {c}')
-#     secrets.save("url", "http://def")
-#     c = secrets.get_config_item("url")
-#     print(f'config item url: {c}')
-#
-#
-# if __name__ == "__main__":
-#     sample_usage()
