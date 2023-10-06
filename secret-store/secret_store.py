@@ -58,7 +58,7 @@ class Secrets:
             sanitized = self.master_password.replace("'", "\\'")
             self.cursor().execute(f"PRAGMA key = '{sanitized}'")
 
-    def cursor(self) -> sqlcipher.Cursor:
+    def _cursor(self) -> sqlcipher.Cursor:
         if self._cur is None:
             self._cur = self.connection().cursor()
         return self._cur
@@ -109,7 +109,7 @@ class Secrets:
             return self._save_data(SECRETS_TABLE, key, [data.user, data.password])
         raise Exception("Unsupported type of data: " + type(data).__name__)
 
-    def _get_data(self, table: Table, key: str) -> Optional[list[str]]:
+    def _data(self, table: Table, key: str) -> Optional[list[str]]:
         columns = ", ".join(table.columns)
         res = self.cursor().execute(
             f"SELECT {columns} FROM {table.name} WHERE key=?",

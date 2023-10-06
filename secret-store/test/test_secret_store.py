@@ -6,7 +6,7 @@ from sqlcipher3 import dbapi2 as sqlcipher
 
 
 @pytest.fixture
-def sample_file(tmp_path) -> Path:
+def sample_file(tmp_path: Path) -> Path:
     return tmp_path / "sample_database.db"
 
 
