@@ -52,15 +52,16 @@ class Secrets:
         return self._con
 
     def _initialize(self, db_file_found: bool) -> None:
+        if db_file_found:
+            self._verify_access()
+            return
+
         def create_table(table: Table) -> None:
             _logger.info(f'Creating table "{table.name}".')
             columns = " ,".join(table.columns)
             with self._cursor() as cur:
                 cur.execute(f"CREATE TABLE {table.name} (key, {columns})")
 
-        if db_file_found:
-            self._verify_access()
-            return
         for table in (SECRETS_TABLE, CONFIG_ITEMS_TABLE):
             create_table(table)
 
@@ -97,8 +98,11 @@ class Secrets:
         cur = self.connection().cursor()
         try:
             yield cur
-        finally:
             self.connection().commit()
+        except:
+            self.connection().rollback()
+            raise
+        finally:
             cur.close()
 
     def _save_data(self, table: Table, key: str, data: list[str]) -> "Secrets":
