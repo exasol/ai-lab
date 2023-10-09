@@ -1,18 +1,7 @@
 import os
 import pytest
-from pathlib import Path
 from secret_store import Credentials, InvalidPassword, Secrets
 from sqlcipher3 import dbapi2 as sqlcipher
-
-
-@pytest.fixture
-def sample_file(tmp_path: Path) -> Path:
-    return tmp_path / "sample_database.db"
-
-
-@pytest.fixture
-def secrets(sample_file) -> Path:
-    return Secrets(sample_file, master_password="abc")
 
 
 def test_no_database_file(secrets):

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "credential-store"
+name = "secret-store"
 version = "0.1.0"
 description = "Stores credentials in an encrypted file."
 
