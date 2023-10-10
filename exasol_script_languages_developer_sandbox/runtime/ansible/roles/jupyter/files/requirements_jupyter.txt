@@ -1,7 +1,7 @@
 jupyterlab==4.0.6
 # enable interactive Javascript widgets in the notebooks
-jupyter_contrib_nbextensions==0.7.0
-widgetsnbextension==4.0.9
+# jupyter_contrib_nbextensions==0.7.0
+# widgetsnbextension==4.0.9
 ipywidgets==8.1.1
 pexpect==4.8.0
 pyexasol==0.16.1
