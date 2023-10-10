@@ -10,7 +10,7 @@ on:
 jobs:
 
   build_and_upload:
-    environment: AWS
+    environment: AWS_CI_TESTS
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
