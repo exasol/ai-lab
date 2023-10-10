@@ -3,4 +3,4 @@
 apt_dependencies:
   - apt-transport-https=2.0.9
   - ca-certificates=20230311ubuntu0.20.04.1
-  - software-properties-common=0.98.9.2
+  - software-properties-common=0.99.9.12
