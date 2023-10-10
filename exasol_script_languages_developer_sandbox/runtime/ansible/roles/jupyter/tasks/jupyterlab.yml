@@ -1,13 +1,5 @@
 ---
 
-# - name: Install contrib nbextension
-#   ansible.builtin.command: >
-#     "{{jupyterlab.virtualenv}}/bin/jupyter" contrib nbextension install --user
-# 
-# - name: Enable the ipywidgets extension
-#   ansible.builtin.command: >
-#     "{{jupyterlab.virtualenv}}/bin/jupyter" nbextension enable --py widgetsnbextension --sys-prefix
-
 # because the generate-config command below never overwrites an existing file
 - name: Delete existing JupyterLab config file
   ansible.builtin.file:
