@@ -1,14 +1,10 @@
 ---
 
-- name: Enable the ipywidgets extension
-  ansible.builtin.command: >
-    "{{jupyterlab.virtualenv}}/bin/jupyter" nbextension enable --py --sys-prefix widgetsnbextension
-
 # because the generate-config command below never overwrites an existing file
 - name: Delete existing JupyterLab config file
   ansible.builtin.file:
     path: "{{ jupyterlab.config }}"
-    state: absent 
+    state: absent
 
 # this generates /root/.jupyter/jupyter_lab_config.py (it has all rows commented out)
 # this config file is very large (>30K)
