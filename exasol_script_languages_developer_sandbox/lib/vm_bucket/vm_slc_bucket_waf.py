@@ -3,7 +3,7 @@ from exasol_script_languages_developer_sandbox.lib.config import ConfigObject
 from exasol_script_languages_developer_sandbox.lib.logging import get_status_logger, LogType
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 
-STACK_NAME = "DEVELOPER-SANDBOX-VM-SLC-Bucket-WAF"
+STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-SLC-Bucket-WAF"
 
 LOG = get_status_logger(LogType.VM_BUCKET)
 

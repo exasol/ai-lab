@@ -99,8 +99,8 @@ def new_ec2_from_ami():
         aws_access.remove_snapshot(snapshots[0].id)
 
 
-@pytest.mark.skipif(os.environ.get('RUN_DEVELOPER_SANDBOX_CI_TEST') != 'true',
-                    reason="CI test need to be activated by env variable RUN_DEVELOPER_SANDBOX_CI_TEST")
+@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
+                    reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_exaslct_with_ec2_based_on_new_ami(new_ec2_from_ami):
     """
     This test validates that exaslct is correctly working on the EC-2 instance, which was launched from the
@@ -116,8 +116,8 @@ def test_exaslct_with_ec2_based_on_new_ami(new_ec2_from_ami):
             assert result.return_code == 0
 
 
-@pytest.mark.skipif(os.environ.get('RUN_DEVELOPER_SANDBOX_CI_TEST') != 'true',
-                    reason="CI test need to be activated by env variable RUN_DEVELOPER_SANDBOX_CI_TEST")
+@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
+                    reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_jupyter_with_ec2_based_on_new_ami(new_ec2_from_ami):
     """
     This test validates that Jupyterlab is correctly working on the EC-2 instance, which was launched from the
@@ -128,8 +128,8 @@ def test_jupyter_with_ec2_based_on_new_ami(new_ec2_from_ami):
     assert http_conn.status_code == 200
 
 
-@pytest.mark.skipif(os.environ.get('RUN_DEVELOPER_SANDBOX_CI_TEST') != 'true',
-                    reason="CI test need to be activated by env variable RUN_DEVELOPER_SANDBOX_CI_TEST")
+@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
+                    reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_password_changed_on_new_ami(new_ec2_from_ami):
     """
     This test validates that the password has been changed by trying to login via ssh using the old password
@@ -146,8 +146,8 @@ def test_password_changed_on_new_ami(new_ec2_from_ami):
         con.run("uname")
 
 
-@pytest.mark.skipif(os.environ.get('RUN_DEVELOPER_SANDBOX_CI_TEST') != 'true',
-                    reason="CI test need to be activated by env variable RUN_DEVELOPER_SANDBOX_CI_TEST")
+@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
+                    reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_jupyter_password_message_shown(new_ec2_from_ami):
     """
     This test validates that the motd password message for Jupyterlab is working as expected.

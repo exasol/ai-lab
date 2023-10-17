@@ -6,7 +6,7 @@ from enum import Enum
 
 from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket_waf import find_acl_arn
 
-STACK_NAME = "DEVELOPER-SANDBOX-VM-SLC-Bucket"
+STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-SLC-Bucket"
 
 
 class OutputKey(Enum):

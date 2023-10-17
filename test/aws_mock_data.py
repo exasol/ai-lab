@@ -146,7 +146,7 @@ def get_ec2_key_pair_mock_data():
 def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
     return [CloudformationStack({
         'StackId': 'test-s3-stack-id',
-        'StackName': "DEVELOPER-SANDBOX-VM-SLC-Bucket",
+        'StackName': "DATA-SCIENCE-SANDBOX-VM-SLC-Bucket",
         'ChangeSetId': 'test-stack-changeset-id-2',
         'CreationTime': datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc()),
         'LastUpdatedTime': datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc()),
@@ -171,7 +171,7 @@ def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
 def get_waf_cloudformation_mock_data() -> List[CloudformationStack]:
     return [CloudformationStack({
         'StackId': 'test-waf-stack-id',
-        'StackName': "DEVELOPER-SANDBOX-VM-SLC-Bucket-WAF",
+        'StackName': "DATA-SCIENCE-SANDBOX-VM-SLC-Bucket-WAF",
         'ChangeSetId': 'test-stack-changeset-id-3',
         'CreationTime': datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc()),
         'LastUpdatedTime': datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc()),

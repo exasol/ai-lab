@@ -16,7 +16,7 @@ from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_install_depende
 import test.ansible
 
 TEST_CONTAINER_NAME = "ansible-test"
-TEST_CONTAINER_IMAGE_TAG = "script_languages_developer_sandbox_test_container:latest"
+TEST_CONTAINER_IMAGE_TAG = "data_science_sandbox_test_container:latest"
 
 
 @pytest.fixture(scope="session")

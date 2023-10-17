@@ -12,7 +12,7 @@ from exasol_script_languages_developer_sandbox.lib.release_build.run_release_bui
     run_start_test_release_build
 from test.mock_cast import mock_cast
 
-UPLOAD_URL = "https://uploads.github.com/repos/exasol/script-languages-developer-sandbox/releases/123/assets{?name,label}"
+UPLOAD_URL = "https://uploads.github.com/repos/exasol/data-science-sandbox/releases/123/assets{?name,label}"
 BRANCH = "main"
 GITHUB_TOKEN = "gh_secret"
 
@@ -29,7 +29,7 @@ DUMMY_RESOURCES = [
      'LastUpdatedTimestamp': datetime.datetime(2022, 5, 4, 18, 39, 1, 806000, tzinfo=tzutc()),
      'ResourceStatus': 'CREATE_COMPLETE', 'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}
      }),
-    StackResource({'LogicalResourceId': 'developerSandboxReleaseCodeBuild',
+    StackResource({'LogicalResourceId': 'dataScienceSandboxReleaseCodeBuild',
      'PhysicalResourceId': 'codebuild-id-123',
      'ResourceType': 'AWS::CodeBuild::Project',
      'LastUpdatedTimestamp': datetime.datetime(2022, 5, 4, 18, 39, 7, 850000, tzinfo=tzutc()),

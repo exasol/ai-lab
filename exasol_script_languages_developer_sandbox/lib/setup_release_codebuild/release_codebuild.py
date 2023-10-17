@@ -3,7 +3,7 @@ from exasol_script_languages_developer_sandbox.lib.logging import get_status_log
 from exasol_script_languages_developer_sandbox.lib.render_template import render_template
 from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket
 
-RELEASE_CODE_BUILD_STACK_NAME = "DEVELOPER-SANDBOX-RELEASE-CODEBUILD"
+RELEASE_CODE_BUILD_STACK_NAME = "DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD"
 
 LOG = get_status_logger(LogType.SETUP_RELEASE_BUILD)
 
