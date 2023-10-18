@@ -1,14 +1,30 @@
 [tool.poetry]
 name = "exasol-data-science-sandbox"
 version = "0.1.0"
-description = "Manages virtual machines for data science sandbox."
-
+description = "Manages virtual machines for the data science sandbox."
+packages = [ {include = "exasol"}, ]
 license = "MIT"
 authors = [
     "Torsten Kilias <torsten.kilias@exasol.com>",
     "Mikhail Beck <mikhail.beck@exasol.com>",
     "Christoph Kuhnke <christoph.kuhnke@exasol.com>"
 ]
+classifiers = [
+   "Programming Language :: Python :: 3",
+   "Development Status :: 3 - Alpha",
+   "Framework :: Jupyter :: JupyterLab :: 3",
+   "License :: OSI Approved :: MIT License",
+]
+readme = "README.md"
+license = "MIT"
+
+
+[tool.poetry.urls]
+"Homepage" = "https://github.com/exasol/data-science-sandbox"
+"Documentation" = "https://github.io/exasol/data-science-sandbox"
+"Source" = "https://github.io/exasol/data-science-sandbox"
+"Issues" = "https://github.io/exasol/data-science-sandbox/issues"
+
 
 [tool.poetry.dependencies]
 python = ">=3.8.0,<4.0"
