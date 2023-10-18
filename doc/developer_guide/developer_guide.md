@@ -1,4 +1,4 @@
-# Script-Languages-Developer-Sandbox Developer Guide
+# Data Science Sandbox Developer Guide
 
 ## Overview
 
@@ -25,7 +25,7 @@ bash install.sh
 
 ## Design Goals
 
-script-languages-developer-sandbox uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
+The Data Science Sandbox (DSS) uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
 
 This project uses 
 - `boto3` to interact with AWS
@@ -119,7 +119,7 @@ The bucket has private access. In order to control access, the Bucket cloudforma
 The following diagram shows the involved cloudformation stacks:
 ![image info](./img/cloudformation-stacks.drawio.png)
 
-"DEVELOPER-SANDBOX-VM-SLC-BUCKET", "DEVELOPER-SANDBOX-CI-TEST-CODEBUILD" & "DEVELOPER-SANDBOX-RELEASE-CODEBUILD" are permanent and need to be deployed using the "deploy" commands (see [commands](#deployment-commands)).
+"DATA-SCIENCE-SANDBOX-VM-SLC-Bucket", "DATA-SCIENCE-SANDBOX-CI-TEST-CODEBUILD" & "DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD" are permanent and need to be deployed using the "deploy" commands (see [commands](#deployment-commands)).
 The EC2-stack lives only during the creation of a new developer sandbox image.
 
 ## Tagging

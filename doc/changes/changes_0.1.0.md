@@ -1,4 +1,4 @@
-# script-languages-developer-sandbox 0.1.0, released t.b.d.
+# data-science-sandbox 0.1.0, released t.b.d.
 
 Code name: Initial release
 

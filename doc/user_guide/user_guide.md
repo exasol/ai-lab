@@ -1,4 +1,4 @@
-# Script-Languages-Developer-Sandbox User Guide
+# Data Science Sandbox User Guide
 
 ## Overview
 
@@ -18,8 +18,8 @@ The disk of the VM is per default large enough to build and test script-language
 
 ### AMI
 
-The AMI id is linked in the [release notes](https://github.com/exasol/script-languages-developer-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
-Following name format is used for the AMI: "_Exasol-SLC-Developer-Sandbox-**version**_", e.g. "_Exasol-SLC-Developer-Sandbox-5.0.0_"
+The AMI id is linked in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
+Following name format is used for the AMI: "_Exasol-Data-Science-Sandbox-**version**_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
 
 ### VM image
 
@@ -30,7 +30,7 @@ Currently two VM formats are supported:
 | VMDK        | VMware Virtual Machine Disk       |
 | VHD         | Virtual Hard Disk by Microsoft    |
 
-The links to the images are stored in the release notes.  
+The links to the images are stored in the release notes.
 
 ## Usage
 
@@ -61,15 +61,15 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
     - Click button "Create Security Group"
     - Choose name and VPC
     - For outbound rules keep the default
-    - Create  inbound rules: 
+    - Create  inbound rules:
       - One of type `ssh`
-      - If you plan to connect to the Jupyter lab, add another rule of type "Custom TCP" with port 8888. 
+      - If you plan to connect to the Jupyter lab, add another rule of type "Custom TCP" with port 8888.
         - **Important**: With this rule you expose the Jupyter lab to the internet; anybody who has access to the password will be able to execute commands. For a minimum of security you should change the default Jupyter password. Details about how to do that will be shown in the login screen. However, you should consider to use only `ssh` with port forwarding.
  4. Go back to the EC2 console
  5. Launch the EC2 instance:
      - In the navigation bar on the left select "Instances"
      - Click button "Launch instances"
-     - At field "Application and OS Images" select the AMI id of the developer sandbox (found in the [release notes](https://github.com/exasol/script-languages-developer-sandbox/releases/latest))
+     - At field "Application and OS Images" select the AMI id of the developer sandbox (found in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest))
      - Select an appropriate instance type (at least "t2.small" or similar)
      - Choose your key pair
      - Choose the security group which your created in step 3.
@@ -90,7 +90,7 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
 
 ##### Step-by-step
 
-1. Download the `VMDK` file from the [release notes](https://github.com/exasol/script-languages-developer-sandbox/releases/latest).
+1. Download the `VMDK` file from the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest).
 2. Open Boxes
 3. Create a new VM: Click the + Button
 4. Choose: "Create virtual machine from file"
@@ -106,13 +106,13 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
 10. If you want to connect to the Jupyterlab, you need to find out the IP address of the VM:
 - Click the 3 dots in Boxes, then preferences![image info](./img/tutorial-screenshot-open-preferences.png)
 - Then the IP address will be shown: ![image info](./img/tutorial-screenshot-show-ip.png)
-- Use _IP-Address_:8888 to connect to the [Jupterlab](#Jupyter) 
+- Use _IP-Address_:8888 to connect to the [Jupterlab](#Jupyter)
 
 ### Login
 
 Username: **ubuntu**
 
-At the first login to the sandbox (image or AMI) you will be prompted to change your password.  
+At the first login to the sandbox (image or AMI) you will be prompted to change your password.
 The default password is: **scriptlanguages**
 
 However, we suggest to use ssh-keys for the connection. When you use the AWS AMI, this will work automatically. When you use the VM images, you need to deploy your ssh-keys. After you enabled ssh-keys, we recommend to disable ssh password authentication:
@@ -127,10 +127,10 @@ Also, we strongly recommend to change the Jupyter password as soon as possible. 
 
 ### script-languages-release
 
-**Location**: `/home/ubuntu/script-languages-release`  
-**Source**: [Github repo](https://github.com/exasol/script-languages-release)  
-The images are tightly coupled to the releases of script-languages-release; for each release of the script-languages-release there will be a release of the developer sandbox.  
-By default, the images contain a cloned repository of script-languages-container, including all dependencies to run it (Python, Poetry, Docker, etc.). The checked out version will be the tag of the respective release, e.g. a Developer Sandbox image for release 5.0.0 will have the tag 5.0.0 checked out for script-languages-release.  
+**Location**: `/home/ubuntu/script-languages-release`
+**Source**: [Github repo](https://github.com/exasol/script-languages-release)
+The images are tightly coupled to the releases of script-languages-release; for each release of the script-languages-release there will be a release of the data-science sandbox.
+By default, the images contain a cloned repository of script-languages-container, including all dependencies to run it (Python, Poetry, Docker, etc.). The checked out version will be the tag of the respective release, e.g. a Sandbox image for release 5.0.0 will have the tag 5.0.0 checked out for script-languages-release.
 If you aim to customize existing containers, this should be fine. However, if you want to rebuild a container, you might encounter problems as dependant packages might have changed. In that case, we suggest to check out the master branch
 ```shell
 git checkout --recurse-submodules master
@@ -142,10 +142,10 @@ For information about how to build script-languages-container please check:
 
 ### Jupyter
 
-**Location virtual environment**: `/home/ubuntu/jupyterenv`  
-**Location notebooks**: `/home/ubuntu/notebooks`  
-**Password**: `script-languages`  
-**Http Port**: 8888  
+**Location virtual environment**: `/home/ubuntu/jupyterenv`
+**Location notebooks**: `/home/ubuntu/notebooks`
+**Password**: `script-languages`
+**Http Port**: 8888
 
 There is a pre-loaded tutorial notebook available which guides you through the usage of `exaslct`:  __script-languages.ipynb__.
 
