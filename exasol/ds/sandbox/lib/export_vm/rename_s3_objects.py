@@ -14,7 +14,7 @@ def build_image_source(prefix: str, export_image_task_id: str, vm_image_format: 
 
 def build_image_destination(prefix: str, asset_id: AssetId, vm_image_format: VmDiskImageFormat) -> str:
     img_format = vm_image_format.value.lower()
-    return "{bucket_prefix}exasol-data-science-developer-sandbox-{asset_id}.{img_format}".format(
+    return "{bucket_prefix}exasol-data-science-sandbox-{asset_id}.{img_format}".format(
         bucket_prefix=prefix,
         asset_id=str(asset_id),
         img_format=img_format)

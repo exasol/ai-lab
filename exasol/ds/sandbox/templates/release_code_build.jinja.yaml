@@ -70,12 +70,12 @@ Resources:
                 - s3:PutObject
                 - s3:GetObject
                 - s3:DeleteObject
-                Resource: arn:aws:s3:::{{vm_bucket}}/slc_developer_sandbox/*
+                Resource: arn:aws:s3:::{{vm_bucket}}/data_science_sandbox/*
                 Effect: Allow
   DeveloperSandboxReleaseCodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:
-      Description: Release Build which creates a new AMI and VM iso images on script-languages-developer-sandbox
+      Description: Release Build which creates a new AMI and VM iso images on data-science-sandbox
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Artifacts:
         Type: NO_ARTIFACTS
@@ -85,7 +85,7 @@ Resources:
         Image: aws/codebuild/standard:5.0
       Source:
         Type: GITHUB
-        Location: "https://github.com/exasol/script-languages-developer-sandbox"
+        Location: "https://github.com/exasol/data-science-sandbox"
         BuildSpec: "aws-code-build/ci/buildspec_release.yaml"
       TimeoutInMinutes: 240
 

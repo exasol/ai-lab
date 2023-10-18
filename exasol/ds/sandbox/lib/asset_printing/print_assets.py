@@ -144,15 +144,15 @@ def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printin
 
     # How the filtering works:
     # 1. The VM are stored under following location in the S3 Bucket: $BUCKET_PREFIX/$AssetId/name.$VM_FORMAT
-    #    For example "slc_developer_sandbox/5.0.0/export-ami-01be860e6a6a98bf8.vhd"
+    #    For example "data_science_sandbox/5.0.0/export-ami-01be860e6a6a98bf8.vhd"
     # 2. Because S3 list_s3_object does not support wildcards,
     #    we need to implement our own wildcard implementation here.
-    #    We call list_s3_object with the standard prefix (e.g. "slc_developer_sandbox"),
+    #    We call list_s3_object with the standard prefix (e.g. "data_science_sandbox"),
     #    which returns ALL stored vm objects.
     # 3. If no filter is given (asset_id == None), "prefix" will be empty, and we return all s3 objects
     # 4. If the variable "prefix" is not empty, we need to ensure that it ends with a wildcard, so that the matching
     #    works correctly.
-    # => Assume that a filter is given  "5.0.0". Variable prefix would be "slc_developer_sandbox/5.0.0".
+    # => Assume that a filter is given  "5.0.0". Variable prefix would be "data_science_sandbox/5.0.0".
 
     s3_objects = aws_access.list_s3_objects(bucket=vm_bucket, prefix=AssetId.BUCKET_PREFIX)
 
