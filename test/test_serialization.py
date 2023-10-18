@@ -4,9 +4,9 @@ import pickle
 import traceback
 from pathlib import Path
 
-from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.key_file_manager import KeyFileManager
+from exasol.ds.sandbox.lib.asset_id import AssetId
+from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack
+from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager
 from test.aws_local_stack_access import AwsLocalStackAccess
 import multiprocessing as mp
 

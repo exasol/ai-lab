@@ -1,7 +1,7 @@
 import os
 from unittest.mock import MagicMock
 
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, KeyFileManagerContextManager
+from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, KeyFileManagerContextManager
 
 
 def test_external_keys(tmp_path, default_asset_id):

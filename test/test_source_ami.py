@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.source_ami import find_source_ami
+from exasol.ds.sandbox.lib.aws_access.ami import Ami
+from exasol.ds.sandbox.lib.setup_ec2.source_ami import find_source_ami
 
 # The following is just a dump of data returned from aws cli:
 # 'aws ec2 --profile exa_individual_mfa describe-images --filters Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-* --owners 099720109477'

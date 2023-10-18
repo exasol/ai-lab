@@ -1,12 +1,13 @@
 [tool.poetry]
-name = "exasol-script-languages-developer-sandbox"
+name = "exasol-data-science-sandbox"
 version = "0.1.0"
-description = "Manages script-languages developer virtual machines."
+description = "Manages virtual machines for data science sandbox."
 
 license = "MIT"
-
 authors = [
-    "Thomas Uebensee <ext.thomas.uebensee@exasol.com>"
+    "Torsten Kilias <torsten.kilias@exasol.com>",
+    "Mikhail Beck <mikhail.beck@exasol.com>",
+    "Christoph Kuhnke <christoph.kuhnke@exasol.com>"
 ]
 
 [tool.poetry.dependencies]

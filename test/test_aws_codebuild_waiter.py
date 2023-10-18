@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
+from exasol.ds.sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
 from test.mock_cast import mock_cast
 
 BUILD_ID = 123

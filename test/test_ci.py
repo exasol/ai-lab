@@ -11,18 +11,18 @@ import requests
 
 from invoke import Responder
 
-from exasol_script_languages_developer_sandbox.lib.ansible.ansible_access import AnsibleAccess
-from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
-from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.config import default_config_object, SLC_VERSION
-from exasol_script_languages_developer_sandbox.lib.run_create_vm import run_create_vm
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.asset_id import AssetId
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.config import default_config_object, SLC_VERSION
+from exasol.ds.sandbox.lib.run_create_vm import run_create_vm
+from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
 
 import string
 import random
 
-from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY
+from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
 
 
 def generate_random_password(length) -> str:

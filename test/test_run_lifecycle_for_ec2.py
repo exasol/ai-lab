@@ -2,9 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.ec2_instance import EC2Instance
-from exasol_script_languages_developer_sandbox.lib.aws_access.stack_resource import StackResource
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
+from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
+from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
+from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
 
 

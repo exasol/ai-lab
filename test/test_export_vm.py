@@ -4,12 +4,12 @@ from unittest.mock import call, create_autospec, MagicMock
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.ami import Ami
-from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.export_vm.rename_s3_objects import build_image_source, \
+from exasol.ds.sandbox.lib.aws_access.ami import Ami
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.export_vm.rename_s3_objects import build_image_source, \
     build_image_destination
-from exasol_script_languages_developer_sandbox.lib.export_vm.run_export_vm import export_vm
-from exasol_script_languages_developer_sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
+from exasol.ds.sandbox.lib.export_vm.run_export_vm import export_vm
+from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 from test.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, TEST_ROLE_ID, TEST_BUCKET_ID, INSTANCE_ID, \
     get_export_image_task_mock_data, get_s3_cloudformation_mock_data, get_waf_cloudformation_mock_data
 from test.mock_cast import mock_cast

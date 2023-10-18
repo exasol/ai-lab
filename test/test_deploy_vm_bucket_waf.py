@@ -3,8 +3,8 @@ from unittest.mock import Mock, create_autospec
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.vm_bucket.vm_slc_bucket_waf import run_setup_vm_bucket_waf, \
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.vm_bucket.vm_slc_bucket_waf import run_setup_vm_bucket_waf, \
     find_acl_arn, get_cloudformation_template
 from test.aws_mock_data import get_waf_cloudformation_mock_data, TEST_ACL_ARN
 from test.cloudformation_validation import validate_using_cfn_lint

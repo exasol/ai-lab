@@ -1,10 +1,10 @@
 import botocore
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
+from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
-from exasol_script_languages_developer_sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2
-from exasol_script_languages_developer_sandbox.lib.tags import create_default_asset_tag
+from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2
+from exasol.ds.sandbox.lib.tags import create_default_asset_tag
 from test.aws_local_stack_access import AwsLocalStackAccess
 
 

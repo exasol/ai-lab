@@ -4,11 +4,11 @@ from unittest.mock import create_autospec, Mock
 
 from dateutil.tz import tzutc
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol_script_languages_developer_sandbox.lib.aws_access.stack_resource import StackResource
-from exasol_script_languages_developer_sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
-from exasol_script_languages_developer_sandbox.lib.github_release_access import GithubReleaseAccess
-from exasol_script_languages_developer_sandbox.lib.release_build.run_release_build import run_start_release_build, \
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
+from exasol.ds.sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
+from exasol.ds.sandbox.lib.github_release_access import GithubReleaseAccess
+from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_release_build, \
     run_start_test_release_build
 from test.mock_cast import mock_cast
 

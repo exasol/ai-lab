@@ -2,9 +2,9 @@ import importlib
 from contextlib import redirect_stdout
 from io import StringIO
 
-import exasol_script_languages_developer_sandbox.lib.asset_printing.rich_console_printer
-from exasol_script_languages_developer_sandbox.lib.asset_printing.mark_down_printer import MarkdownPrintingFactory
-from exasol_script_languages_developer_sandbox.lib.asset_printing.printing_factory import TextObject
+import exasol.ds.sandbox.lib.asset_printing.rich_console_printer
+from exasol.ds.sandbox.lib.asset_printing.mark_down_printer import MarkdownPrintingFactory
+from exasol.ds.sandbox.lib.asset_printing.printing_factory import TextObject
 from inspect import cleandoc
 
 
@@ -35,7 +35,7 @@ def test_printing_rich():
     with StringIO() as buf, redirect_stdout(buf):
         # Need to reload the module here as it already might have been loaded by pytest for another test,
         # in which case sys.stdout was already loaded too
-        m = importlib.reload(exasol_script_languages_developer_sandbox.lib.asset_printing.rich_console_printer)
+        m = importlib.reload(exasol.ds.sandbox.lib.asset_printing.rich_console_printer)
 
         factory = m.RichConsolePrintingFactory()
         table_printer = factory.create_table_printer("test-table")
