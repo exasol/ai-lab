@@ -20,4 +20,4 @@ Version: 0.1.0
 
 ## Refactoring
 
- - #5: Renamed all occurrences of "script language developer" by "dat science"
+ - #5: Renamed all occurrences of "script language developer" by "data science"
