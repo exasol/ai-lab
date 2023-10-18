@@ -16,7 +16,6 @@ classifiers = [
    "License :: OSI Approved :: MIT License",
 ]
 readme = "README.md"
-license = "MIT"
 
 
 [tool.poetry.urls]
