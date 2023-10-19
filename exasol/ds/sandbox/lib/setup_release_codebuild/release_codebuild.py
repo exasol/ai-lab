@@ -1,7 +1,7 @@
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.render_template import render_template
-from exasol.ds.sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket
+from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket
 
 RELEASE_CODE_BUILD_STACK_NAME = "DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD"
 

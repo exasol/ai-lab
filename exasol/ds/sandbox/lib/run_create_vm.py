@@ -36,7 +36,8 @@ def run_create_vm(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_na
                   ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) -> None:
     """
     Runs setup of an EC2 instance and then installs all dependencies via Ansible,
-    and finally exports the VM to the S3 Bucket (which must be already created by the stack ("VM-SLC-Bucket").
+    and finally exports the VM to the S3 Bucket (which must be already created
+    by the stack "DATA-SCIENCE-SANDBOX-VM-Bucket").
     If anything goes wrong the cloudformation stack of the EC-2 instance will be removed.
     For debuging you can use the available debug commands.
     """

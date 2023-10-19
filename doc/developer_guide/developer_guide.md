@@ -119,7 +119,7 @@ The bucket has private access. In order to control access, the Bucket cloudforma
 The following diagram shows the involved cloudformation stacks:
 ![image info](./img/cloudformation-stacks.drawio.png)
 
-"DATA-SCIENCE-SANDBOX-VM-SLC-Bucket", "DATA-SCIENCE-SANDBOX-CI-TEST-CODEBUILD" & "DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD" are permanent and need to be deployed using the "deploy" commands (see [commands](#deployment-commands)).
+"DATA-SCIENCE-SANDBOX-VM-Bucket", "DATA-SCIENCE-SANDBOX-CI-TEST-CODEBUILD" & "DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD" are permanent and need to be deployed using the "deploy" commands (see [commands](#deployment-commands)).
 The EC2-stack lives only during the creation of a new sandbox image.
 
 ## Tagging

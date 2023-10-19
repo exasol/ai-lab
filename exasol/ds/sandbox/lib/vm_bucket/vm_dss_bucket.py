@@ -4,9 +4,9 @@ from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.render_template import render_template
 from enum import Enum
 
-from exasol.ds.sandbox.lib.vm_bucket.vm_slc_bucket_waf import find_acl_arn
+from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import find_acl_arn
 
-STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-SLC-Bucket"
+STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-Bucket"
 
 
 class OutputKey(Enum):

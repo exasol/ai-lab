@@ -5,7 +5,7 @@ from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.logging import set_log_level
-from exasol.ds.sandbox.lib.vm_bucket.vm_slc_bucket import run_setup_vm_bucket
+from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import run_setup_vm_bucket
 
 
 @cli.command()

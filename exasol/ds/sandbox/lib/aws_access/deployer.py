@@ -28,10 +28,12 @@ ChangeSetResult = collections.namedtuple(
     "ChangeSetResult", ["changeset_id", "changeset_type"])
 
 
+DEFAULT_CHANGE_SET_PREFIX="dss-ci-setup-deploy-"
+
+
 class Deployer(object):
 
-    def __init__(self, cloudformation_client,
-                 changeset_prefix="slc-ci-setup-deploy-"):
+    def __init__(self, cloudformation_client, changeset_prefix=DEFAULT_CHANGE_SET_PREFIX):
         self._client = cloudformation_client
         self.changeset_prefix = changeset_prefix
 

@@ -14,7 +14,7 @@ from enum import Enum
 
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol.ds.sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket, find_url_for_bucket
+from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket, find_url_for_bucket
 
 
 class AssetTypes(Enum):

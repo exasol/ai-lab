@@ -11,7 +11,7 @@ from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import find_ec2_instance_in_cf_stack
 from exasol.ds.sandbox.lib.asset_printing.print_assets import print_assets
 from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
-from exasol.ds.sandbox.lib.vm_bucket.vm_slc_bucket import find_vm_bucket, find_vm_import_role
+from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket, find_vm_import_role
 
 LOG = get_status_logger(LogType.EXPORT)
 
