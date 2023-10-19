@@ -72,7 +72,7 @@ Resources:
                 - s3:DeleteObject
                 Resource: arn:aws:s3:::{{vm_bucket}}/data_science_sandbox/*
                 Effect: Allow
-  DeveloperSandboxReleaseCodeBuild:
+  DataScienceSandboxReleaseCodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:
       Description: Release Build which creates a new AMI and VM iso images on data-science-sandbox
@@ -93,10 +93,10 @@ Resources:
   CodeBuildLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/codebuild/${ DeveloperSandboxReleaseCodeBuild }"
+      LogGroupName: !Sub "/aws/codebuild/${ DataScienceSandboxReleaseCodeBuild }"
       RetentionInDays: 14
 
 Outputs:
   ProjectName:
-    Value: !Ref DeveloperSandboxReleaseCodeBuild
+    Value: !Ref DataScienceSandboxReleaseCodeBuild
     Description: Developer Sandbox Release Build project name

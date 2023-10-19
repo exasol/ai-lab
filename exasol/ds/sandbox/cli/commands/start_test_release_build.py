@@ -27,7 +27,7 @@ def start_test_release_build(
         release_title: str
 ):
     """
-    This command  triggers the AWS release Codebuild to generate a new developer sandbox test version.
+    This command  triggers the AWS release Codebuild to generate a new sandbox test version.
     """
     set_log_level(log_level)
     gh_token = os.getenv("GITHUB_TOKEN")

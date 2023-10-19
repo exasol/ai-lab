@@ -69,7 +69,7 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
  5. Launch the EC2 instance:
      - In the navigation bar on the left select "Instances"
      - Click button "Launch instances"
-     - At field "Application and OS Images" select the AMI id of the developer sandbox (found in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest))
+     - At field "Application and OS Images" select the AMI id of the sandbox (found in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest))
      - Select an appropriate instance type (at least "t2.small" or similar)
      - Choose your key pair
      - Choose the security group which your created in step 3.

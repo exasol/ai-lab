@@ -3,7 +3,7 @@
 ## Overview
 
 This project provides an automated mechanism to build and export virtual machines images (AWS AMI, VMDK,...)
-enabling users to try out data science algorithms in Jupyter notebooks connected to the the Exasol database.
+enabling users to try out data science algorithms in Jupyter notebooks connected to the Exasol database.
 
 ## Where to find the VM images
 
