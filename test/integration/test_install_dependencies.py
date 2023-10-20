@@ -28,7 +28,7 @@ DOCKERFILE_CONTENT = cleandoc(
     """
 )
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def dockerfile(tmp_path):
     dockerfile = tmp_path / "test_container" / "Dockerfile"
     dockerfile.parent.mkdir()
