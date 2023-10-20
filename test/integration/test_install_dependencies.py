@@ -29,8 +29,8 @@ DOCKERFILE_CONTENT = cleandoc(
 )
 
 @pytest.fixture(scope="session")
-def dockerfile(tmpdir_factory):
-    dockerfile = tmpdir_factory.mktemp("test_container") / "Dockerfile"
+def dockerfile(tmp_path_factory):
+    dockerfile = tmp_path_factory.mktemp("test_container") / "Dockerfile"
     with dockerfile.open("w") as f:
         print(DOCKERFILE_CONTENT, file = f)
     yield dockerfile
