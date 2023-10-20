@@ -23,4 +23,4 @@ phases:
         - echo DSS_RUN_CI_TEST is "$DSS_RUN_CI_TEST" #supposed to be true
   build:
       commands:
-        - poetry run python3 -m pytest -s test/test_ci*.py
+        - poetry run python3 -m pytest -s test/ci/test_ci*.py

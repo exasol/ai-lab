@@ -10,7 +10,7 @@ from exasol.ds.sandbox.lib.export_vm.rename_s3_objects import build_image_source
     build_image_destination
 from exasol.ds.sandbox.lib.export_vm.run_export_vm import export_vm
 from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
-from test.aws.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, TEST_ROLE_ID, TEST_BUCKET_ID, INSTANCE_ID, \
+from test.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, TEST_ROLE_ID, TEST_BUCKET_ID, INSTANCE_ID, \
     get_export_image_task_mock_data, get_s3_cloudformation_mock_data, get_waf_cloudformation_mock_data
 from test.mock_cast import mock_cast
 
