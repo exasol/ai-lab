@@ -14,7 +14,7 @@ Resources:
           ToPort: 8888
       Tags:
         - Key: "exasol:project"
-          Value: "ScriptLanguages"
+          Value: "DataScienceSandbox"
         - Key: "exasol:owner"
           Value: {{user_name}}
         - Key: {{trace_tag}}
@@ -35,7 +35,7 @@ Resources:
               VolumeSize: 100
           Tags:
             - Key: "exasol:project"
-              Value: "ScriptLanguages"
+              Value: "DataScienceSandbox"
             - Key: "exasol:owner"
               Value: {{user_name}}
             - Key: {{trace_tag}}

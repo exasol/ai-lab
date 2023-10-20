@@ -12,7 +12,7 @@ from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
 import test.ansible
-import test.ansible_conflict
+import test.unit.ansible_conflict
 
 
 class AnsibleTestAccess:
@@ -129,7 +129,7 @@ def test_run_ansible_check_multiple_repositories_with_same_content_causes_except
     """
     Test that multiple repositories containing same files raises an runtime exception.
     """
-    test_repositories = default_repositories + (AnsibleResourceRepository(test.ansible_conflict),)
+    test_repositories = default_repositories + (AnsibleResourceRepository(test.unit.ansible_conflict),)
     with pytest.raises(RuntimeError):
         run_install_dependencies(AnsibleTestAccess(), test_config, host_infos=tuple(),
                                  ansible_run_context=default_ansible_run_context,

@@ -14,7 +14,7 @@ def motd_file(tmp_path):
     jupyter_server_config_file = tmp_path / "jupyter_server_config.json"
     python_file = tmp_path / "999_jupyter.py"
 
-    src_path = Path(__file__).parent.parent / "exasol.ds.sandbox" / "runtime" / \
+    src_path = Path(__file__).parent.parent / "exasol" / "ds" / "sandbox" / "runtime" / \
                "ansible" / "roles" / "jupyter" / "templates" / "etc" /"update-motd.d" / "999-jupyter"
     with open(src_path, "r") as f:
         python_code_template = f.read()
