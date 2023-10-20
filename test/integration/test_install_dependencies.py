@@ -1,6 +1,7 @@
 import tempfile
 
 import requests
+import shutil
 import time
 from pathlib import Path
 from inspect import cleandoc
@@ -19,11 +20,12 @@ import test.ansible
 TEST_CONTAINER_NAME = "ansible-test"
 TEST_CONTAINER_IMAGE_TAG = "data_science_sandbox_test_container:latest"
 
+# AWS AMI Image is based on Ubuntu20.04 server.
+# So we try to simulate same environment here.
 DOCKERFILE_CONTENT = cleandoc(
     """
     FROM ubuntu:20.04
     ENV DEBIAN_FRONTEND noninteractive
-    #AWS AMI Image is based on Ubuntu20.04 server. So we try to simulate same environment here
     RUN apt-get update && apt-get install -y ubuntu-server
     """
 )
@@ -34,13 +36,13 @@ def dockerfile(tmp_path_factory):
     with dockerfile.open("w") as f:
         print(DOCKERFILE_CONTENT, file = f)
     yield dockerfile
+    shutil.rmtree(str(dockerfile.parent))
 
 
 @pytest.fixture(scope="session")
 def docker_test_container(test_config, dockerfile):
     with tempfile.TemporaryDirectory() as tmp_path:
         docker_env = docker.from_env()
-        # p = Path(__file__).parent / "test_container"
         docker_env.images.build(
             path=str(dockerfile.parent),
             tag=TEST_CONTAINER_IMAGE_TAG
