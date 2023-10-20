@@ -29,7 +29,7 @@ DOCKERFILE_CONTENT = cleandoc(
 )
 
 @pytest.fixture
-def test_container(tmp_path):
+def dockerfile(tmp_path):
     dockerfile = tmp_path / "test_container" / "Dockerfile"
     dockerfile.parent.mkdir()
     with dockerfile.open("w") as f:
