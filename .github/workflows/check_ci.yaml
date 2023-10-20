@@ -6,7 +6,7 @@ on:
       - "main"
 
 jobs:
-  run_unit_tests:
+  run_ci_tests:
     environment: AWS_CI_TESTS
     runs-on: ubuntu-latest
 

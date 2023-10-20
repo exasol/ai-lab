@@ -3,6 +3,7 @@ import tempfile
 import requests
 import time
 from pathlib import Path
+from inspect import cleandoc
 
 import docker
 import pytest
@@ -18,38 +19,58 @@ import test.ansible
 TEST_CONTAINER_NAME = "ansible-test"
 TEST_CONTAINER_IMAGE_TAG = "data_science_sandbox_test_container:latest"
 
+DOCKERFILE_CONTENT = cleandoc(
+    """
+    FROM ubuntu:20.04
+    ENV DEBIAN_FRONTEND noninteractive
+    #AWS AMI Image is based on Ubuntu20.04 server. So we try to simulate same environment here
+    RUN apt-get update && apt-get install -y ubuntu-server
+    """
+)
+
+@pytest.fixture
+def test_container(tmp_path):
+    dockerfile = tmp_path / "test_container" / "Dockerfile"
+    dockerfile.parent.mkdir()
+    with dockerfile.open("w") as f:
+        print(DOCKERFILE_CONTENT, file = f)
+    yield dockerfile
+
 
 @pytest.fixture(scope="session")
-def docker_test_container(test_config):
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        docker_env = docker.from_env()
-        p = Path(__file__).parent / "test_container"
-        docker_env.images.build(path=str(p), tag=TEST_CONTAINER_IMAGE_TAG)
-        socket_mount = Mount("/var/run/docker.sock", "/var/run/docker.sock", type="bind")
-        tmp_mount = Mount(tmp_dir, tmp_dir, type="bind")
-        mapped_ports = {'8888/tcp': 8888}
-        test_container = docker_env.containers.create(image=TEST_CONTAINER_IMAGE_TAG,
-                                                      name=TEST_CONTAINER_NAME, mounts=[socket_mount, tmp_mount],
-                                                      command="sleep infinity", detach=True, ports=mapped_ports)
-        test_container.start()
-        repos = default_repositories + (AnsibleResourceRepository(test.ansible),)
-        ansible_run_context = \
-            AnsibleRunContext(playbook="slc_setup_test.yml",
-                              extra_vars={"test_docker_container": test_container.name,
-                                          "slc_dest_folder": f"{tmp_dir}/script-languages-release"})
-        try:
-            run_install_dependencies(AnsibleAccess(), configuration=test_config,
-                                     host_infos=tuple(), ansible_run_context=ansible_run_context,
-                                     ansible_repositories=repos)
-            yield test_container, tmp_dir
-            # Note: script-languages-release will be cloned by ansible within the docker container.
-            #       Because the docker container runs as root, the repository will be owned by root.
-            #       For simplicity, we delete the folder from within the Docker container (as root).
-            #       Otherwise, we get a permission problem when tmp_dir tries to clean-up itself.
-        finally:
-            test_container.exec_run(f"rm -rf {tmp_dir}/script-languages-release")
-            test_container.stop()
-            test_container.remove()
+def docker_test_container(test_config, dockerfile, tmp_path):
+    # with tempfile.TemporaryDirectory() as tmp_path:
+    docker_env = docker.from_env()
+    # p = Path(__file__).parent / "test_container"
+    docker_env.images.build(
+        path=str(dockerfile.parent),
+        tag=TEST_CONTAINER_IMAGE_TAG
+    )
+    socket_mount = Mount("/var/run/docker.sock", "/var/run/docker.sock", type="bind")
+    tmp_mount = Mount(tmp_path, tmp_path, type="bind")
+    mapped_ports = {'8888/tcp': 8888}
+    test_container = docker_env.containers.create(image=TEST_CONTAINER_IMAGE_TAG,
+                                                  name=TEST_CONTAINER_NAME, mounts=[socket_mount, tmp_mount],
+                                                  command="sleep infinity", detach=True, ports=mapped_ports)
+    test_container.start()
+    repos = default_repositories + (AnsibleResourceRepository(test.ansible),)
+    ansible_run_context = \
+        AnsibleRunContext(playbook="slc_setup_test.yml",
+                          extra_vars={"test_docker_container": test_container.name,
+                                      "slc_dest_folder": f"{tmp_path}/script-languages-release"})
+    try:
+        run_install_dependencies(AnsibleAccess(), configuration=test_config,
+                                 host_infos=tuple(), ansible_run_context=ansible_run_context,
+                                 ansible_repositories=repos)
+        yield test_container, tmp_path
+        # Note: script-languages-release will be cloned by ansible within the docker container.
+        #       Because the docker container runs as root, the repository will be owned by root.
+        #       For simplicity, we delete the folder from within the Docker container (as root).
+        #       Otherwise, we get a permission problem when tmp_path tries to clean-up itself.
+    finally:
+        test_container.exec_run(f"rm -rf {tmp_path}/script-languages-release")
+        test_container.stop()
+        test_container.remove()
 
 
 def test_install_dependencies_jupyterlab(docker_test_container):
