@@ -1,12 +1,13 @@
+# Exasol Data Science Sandbox
 
-# Overview
+## Overview
 
 This project provides an automated mechanism to build and export virtual machines images (AWS AMI, VMDK,...)
-which can be used to develop new script-languages container for the Exasol DB.
+enabling users to try out data science algorithms in Jupyter notebooks connected to the Exasol database.
 
 ## Where to find the VM images
 
-The release process will automatically store the links to the images in the [release notes](https://github.com/exasol/script-languages-developer-sandbox/releases/latest), as there will be a specific AMI per release.
+The release process will automatically store the links to the images in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest), as there will be a specific AMI per release.
 Please check the user guide about details of the image.
 
 ## Links
