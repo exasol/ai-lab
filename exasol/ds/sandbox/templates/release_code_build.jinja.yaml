@@ -33,7 +33,7 @@ Resources:
                 - cloudformation:DescribeChangeSet
                 - cloudformation:ExecuteChangeSet
                 - cloudformation:DeleteStack
-                Resource: !Sub  "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/EC2-SLC-DEV-SANDBOX-*"
+                Resource: !Sub  "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/EC2-DATA-SCIENCE-SANDBOX-*"
                 Effect: Allow
               - Action:
                 - ec2:CreateSecurityGroup

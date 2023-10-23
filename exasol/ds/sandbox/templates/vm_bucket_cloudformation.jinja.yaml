@@ -111,7 +111,7 @@ Resources:
     Properties:
       OriginAccessControlConfig:
           Description: Origin Access Control config for the VM S3 Bucket
-          Name: VM-Bucket-OAC
+          Name: DssVMBucketOAC
           OriginAccessControlOriginType: s3
           SigningBehavior: always
           SigningProtocol: sigv4

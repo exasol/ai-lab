@@ -128,20 +128,14 @@ aws_access_key_id=...
 aws_secret_access_key=...
 ```
 
-From [product-integration-tool-chest](https://github.com/exasol/product-integration-tool-chest) call
-```shell
-aws-store-session-token dss_aws_tests
-```
+In case your are using MFA authentication please allocate a temporary token.
 
-This will ask you for your MFA code and add or update profile `[dss_aws_tests_mfa]` in file `~/.aws/credentials`.
-
-Now you can set an environment variable and execute the tests involing AWS resources:
+After that you can set an environment variable and execute the tests involving AWS resources:
 
 ```shell
 export AWS_PROFILE=dss_aws_tests_mfa
 poetry run pytest test/test_deploy_codebuild.py
 ```
-
 
 ### Export
 

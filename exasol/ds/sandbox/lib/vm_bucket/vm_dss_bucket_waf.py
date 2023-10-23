@@ -18,7 +18,7 @@ def get_cloudformation_template(allowed_ip: str) -> str:
 def run_setup_vm_bucket_waf(aws_access: AwsAccess, allowed_ip: str, config: ConfigObject) -> None:
     """
     Deploys the WAF Cloudformation stack.
-    It automatically deploys to AWS region indicated by config paramaer "waf_region".
+    It automatically deploys to AWS region indicated by configuration parameter "waf_region".
     """
 
     yml = get_cloudformation_template(allowed_ip=allowed_ip)

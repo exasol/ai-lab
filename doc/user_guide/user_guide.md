@@ -144,7 +144,7 @@ For information about how to build script-languages-container please check:
 
 **Location virtual environment**: `/home/ubuntu/jupyterenv`
 **Location notebooks**: `/home/ubuntu/notebooks`
-**Password**: `script-languages`
+**Password**: `dss`
 **Http Port**: 8888
 
 There is a pre-loaded tutorial notebook available which guides you through the usage of `exaslct`:  __script-languages.ipynb__.
