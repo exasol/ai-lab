@@ -3,4 +3,3 @@ jupyterlab==4.0.6
 ipywidgets==8.1.1
 pexpect==4.8.0
 pyexasol==0.16.1
-exasol-bucketfs==0.8.0
