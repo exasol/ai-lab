@@ -9,6 +9,10 @@
         state: present
       become: "{{need_sudo}}"
 
+    - name: Update pip version
+      include_tasks:
+        file: update-pip.yml
+
     - name: Install JupyterLab and its dependencies
       include_tasks:
         file: install-pip-packages.yml

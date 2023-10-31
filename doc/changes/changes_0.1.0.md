@@ -1,4 +1,4 @@
-# data-science-sandbox 0.1.0, released t.b.d.
+# data-science-sandbox 0.1.0, released 2023-10-17
 
 Code name: Initial release
 
@@ -13,6 +13,7 @@ Version: 0.1.0
 ## Features
 
  - #11: Created a notebook to show training with scikit-learn in the notebook
+ - #15: Installed exasol-notebook-connector via ansible
 
 ## Bug Fixes
 

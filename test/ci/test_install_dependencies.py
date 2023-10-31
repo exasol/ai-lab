@@ -106,3 +106,11 @@ def test_install_dependencies_script_languages(docker_test_container):
 
     assert exit_code_build == 0
     assert exit_code_cleanup == 0
+
+
+def test_install_notebook_connector(docker_test_container):
+    container, _ = docker_test_container
+    command = f'/root/jupyterenv/bin/python -c "import exasol.secret_store"'
+    exit_code, output = container.exec_run(command)
+    output = output.decode('utf-8').strip()
+    assert exit_code == 0, f'Got output "{output}".'
