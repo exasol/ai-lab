@@ -29,7 +29,7 @@ jobs:
       - name: Setup Python & Poetry Environment
         uses: ./.github/actions/prepare_poetry_env
       - name: Build Release
-        run: poetry run python3 -m exasol_script_languages_developer_sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
+        run: poetry run python3 -m exasol.ds.sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
         env: # Set the secret as an env variable
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}

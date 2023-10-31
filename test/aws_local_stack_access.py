@@ -2,7 +2,7 @@ from typing import Any
 
 import boto3
 
-from exasol_script_languages_developer_sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 
 
 class AwsLocalStackAccess(AwsAccess):
