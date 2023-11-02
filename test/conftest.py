@@ -5,13 +5,13 @@ from copy import copy
 
 import pytest
 
-from exasol_script_languages_developer_sandbox.lib.config import default_config_object, ConfigObject
-from exasol_script_languages_developer_sandbox.lib.render_template import render_template
+from exasol.ds.sandbox.lib.config import default_config_object, ConfigObject
+from exasol.ds.sandbox.lib.render_template import render_template
 from importlib.metadata import version
 
-from exasol_script_languages_developer_sandbox.lib.tags import DEFAULT_TAG_KEY
+from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
 
-from exasol_script_languages_developer_sandbox.lib.asset_id import AssetId
+from exasol.ds.sandbox.lib.asset_id import AssetId
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 

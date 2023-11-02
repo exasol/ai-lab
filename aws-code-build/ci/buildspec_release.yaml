@@ -3,7 +3,7 @@ version: 0.2
 env:
   shell: bash
   variables:
-    DEFAULT_PASSWORD: "scriptlanguages"
+    DEFAULT_PASSWORD: "dss"
     ASSET_ID: ""
     AWS_USER_NAME: "release_user"
     MAKE_AMI_PUBLIC_OPTION: "--no-make-ami-public"
@@ -27,5 +27,5 @@ phases:
         - echo MAKE_AMI_PUBLIC_OPTION is "$MAKE_AMI_PUBLIC_OPTION"
   build:
       commands:
-        - poetry run python3 -m exasol_script_languages_developer_sandbox.main create-vm --default-password "$DEFAULT_PASSWORD" --asset-id "$ASSET_ID" $MAKE_AMI_PUBLIC_OPTION
-        - poetry run python3 -m exasol_script_languages_developer_sandbox.main update-release --release-id "$RELEASE_ID" --asset-id "$ASSET_ID"
+        - poetry run python3 -m exasol.ds.sandbox.main create-vm --default-password "$DEFAULT_PASSWORD" --asset-id "$ASSET_ID" $MAKE_AMI_PUBLIC_OPTION
+        - poetry run python3 -m exasol.ds.sandbox.main update-release --release-id "$RELEASE_ID" --asset-id "$ASSET_ID"
