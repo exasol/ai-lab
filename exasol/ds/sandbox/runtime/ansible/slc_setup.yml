@@ -8,3 +8,4 @@
   remote_user: ubuntu
   tasks:
   - import_tasks: slc_setup_tasks.yml
+  - import_tasks: ec2_setup_tasks.yml

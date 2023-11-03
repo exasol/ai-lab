@@ -15,7 +15,7 @@
 - name: Install Script_languages
   include_role:
       name: script_languages
-- name: Update netplan
-  include_role:
-      name: netplan
-
+- name: Clear pip cache
+  ansible.builtin.file:
+    path: /root/.cache/pip
+    state: absent

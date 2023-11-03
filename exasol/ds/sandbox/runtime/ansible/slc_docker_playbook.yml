@@ -4,14 +4,17 @@
   vars:
       ansible_python_interpreter: python3
   tasks:
-
     - name: add docker container to inventory
       add_host:
-        name: "{{test_docker_container}}"
+        name: "{{docker_container}}"
+        ansible_connection: docker
+    - name: add pexepect
+      add_host:
+        name: "{{docker_container}}"
         ansible_connection: docker
 
 - name: Setup Docker Container
-  hosts: ansible-test
+  hosts: ds-sandbox-docker # cannot use variable here
   gather_facts: false
   vars:
       ansible_python_interpreter: python3
@@ -20,10 +23,4 @@
       need_sudo: false
       docker_integration_test: true
   tasks:
-    - name: Install netplan.io
-      apt:
-        name: netplan.io
-        state: present
-        update_cache: yes
     - import_tasks: slc_setup_tasks.yml
-    - import_tasks: ec2_setup_tasks.yml
