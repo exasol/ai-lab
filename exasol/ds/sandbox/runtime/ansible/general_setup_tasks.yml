@@ -5,16 +5,10 @@
   become: "{{need_sudo}}"
 - name: Install Poetry
   include_role:
-      name: poetry
+    name: poetry
 - name: Install Jupyter
   include_role:
-        name: jupyter
-- name: Install Docker
-  include_role:
-        name: docker
-- name: Install Script_languages
-  include_role:
-      name: script_languages
+    name: jupyter
 - name: Clear pip cache
   ansible.builtin.file:
     path: /root/.cache/pip

@@ -4,16 +4,12 @@
   vars:
       ansible_python_interpreter: python3
   tasks:
-    - name: add docker container to inventory
-      add_host:
-        name: "{{docker_container}}"
-        ansible_connection: docker
-    - name: add pexepect
+    - name: Add docker container to inventory
       add_host:
         name: "{{docker_container}}"
         ansible_connection: docker
 
-- name: Setup Docker Container
+- name: Setup DSS Docker Container
   hosts: ds-sandbox-docker # cannot use variable here
   gather_facts: false
   vars:
@@ -23,4 +19,4 @@
       need_sudo: false
       docker_integration_test: true
   tasks:
-    - import_tasks: slc_setup_tasks.yml
+    - import_tasks: general_setup_tasks.yml

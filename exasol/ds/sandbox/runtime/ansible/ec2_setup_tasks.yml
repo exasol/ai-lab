@@ -1,3 +1,9 @@
+- name: Install Docker
+  include_role:
+    name: docker
+- name: Install Script_languages
+  include_role:
+    name: script_languages
 - name: Update netplan
   include_role:
-      name: netplan
+    name: netplan
