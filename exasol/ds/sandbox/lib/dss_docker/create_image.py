@@ -1,5 +1,6 @@
 import docker
 import logging
+from datetime import datetime, timedelta
 from importlib_metadata import version
 from pathlib import Path
 
@@ -15,12 +16,26 @@ from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install
 
 CONTAINER_NAME = "ds-sandbox-docker"
 DSS_VERSION = version("exasol-data-science-sandbox")
-CONTAINER_IMAGE_TAG = f"ds-sandbox:{DSS_VERSION}"
+DOCKER_IMAGE = f"exasol/ds-sandbox:{DSS_VERSION}"
 
 
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.INFO)
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s")
+
+
+def duration(start: datetime) -> str:
+    d = datetime.now() - start
+    d = d - timedelta(microseconds=d.microseconds)
+    return str(d)
+
+
+def pretty_size(num, suffix="B"):
+    for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
+        if abs(num) < 1024.0:
+            return f"{num:3.1f} {unit}{suffix}"
+        num /= 1024.0
+    return f"{num:.1f} Yi{suffix}"
 
 
 def create_image():
@@ -40,15 +55,16 @@ def create_image():
         )
 
     try:
+        start = datetime.now()
         docker_env = docker.from_env()
         path = Path(__file__).parent
         _logger.info(
-            f"Creating docker image {CONTAINER_IMAGE_TAG}"
+            f"Creating docker image {DOCKER_IMAGE}"
             f" from {path / 'Dockerfile'}"
         )
-        docker_env.images.build(path=str(path), tag=CONTAINER_IMAGE_TAG)
+        docker_env.images.build(path=str(path), tag=DOCKER_IMAGE)
         container = docker_env.containers.create(
-            image=CONTAINER_IMAGE_TAG,
+            image=DOCKER_IMAGE,
             name=CONTAINER_NAME,
             command="sleep infinity",
             detach=True,
@@ -64,9 +80,8 @@ def create_image():
             ansible_repositories=ansible_repository.default_repositories,
         )
         _logger.info("Committing changes to docker container")
-        container.commit(
-            repository=f"exasol/{CONTAINER_IMAGE_TAG}",
-            tag="latest",
+        image = container.commit(
+            repository=DOCKER_IMAGE,
         )
     except Exception as ex:
         raise ex
@@ -75,6 +90,9 @@ def create_image():
         container.stop()
         _logger.info("Removing container")
         container.remove()
+    size = pretty_size(image.attrs["Size"])
+    _logger.info(f"Built Docker image {DOCKER_IMAGE} size {size} in {duration(start)}.")
+    # TODO: Publish image to hub.docker.com
 
 
 if __name__ == "__main__":
