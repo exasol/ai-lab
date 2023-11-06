@@ -1,6 +1,7 @@
 import docker
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
+from exasol.ds.sandbox.lib import pretty_print
 from importlib_metadata import version
 from pathlib import Path
 
@@ -24,20 +25,6 @@ _logger.setLevel(logging.INFO)
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s")
 
 
-def duration(start: datetime) -> str:
-    d = datetime.now() - start
-    d = d - timedelta(microseconds=d.microseconds)
-    return str(d)
-
-
-def pretty_size(num, suffix="B"):
-    for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
-        if abs(num) < 1024.0:
-            return f"{num:3.1f} {unit}{suffix}"
-        num /= 1024.0
-    return f"{num:.1f} Yi{suffix}"
-
-
 def create_image():
     def _ansible_run_context() -> AnsibleRunContext:
         extra_vars = {
@@ -56,14 +43,14 @@ def create_image():
 
     try:
         start = datetime.now()
-        docker_env = docker.from_env()
+        docker_client = docker.from_env()
         path = Path(__file__).parent
         _logger.info(
             f"Creating docker image {DOCKER_IMAGE}"
             f" from {path / 'Dockerfile'}"
         )
-        docker_env.images.build(path=str(path), tag=DOCKER_IMAGE)
-        container = docker_env.containers.create(
+        docker_client.images.build(path=str(path), tag=DOCKER_IMAGE)
+        container = docker_client.containers.create(
             image=DOCKER_IMAGE,
             name=CONTAINER_NAME,
             command="sleep infinity",
@@ -90,8 +77,9 @@ def create_image():
         container.stop()
         _logger.info("Removing container")
         container.remove()
-    size = pretty_size(image.attrs["Size"])
-    _logger.info(f"Built Docker image {DOCKER_IMAGE} size {size} in {duration(start)}.")
+    size = pretty_print.size(image.attrs["Size"])
+    elapsed = pretty_print.elapsed(start)
+    _logger.info(f"Built Docker image {DOCKER_IMAGE} size {size} in {elapsed}.")
     # TODO: Publish image to hub.docker.com
 
 
