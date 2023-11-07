@@ -13,3 +13,4 @@ from .start_test_release_build import start_test_release_build
 from .update_release import update_release
 from .make_ami_public import make_ami_public
 from .setup_vm_bucket_waf import setup_vm_bucket_waf
+from .create_dss_docker_image import create_dss_docker_image

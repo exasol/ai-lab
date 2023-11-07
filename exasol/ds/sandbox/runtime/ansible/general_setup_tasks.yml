@@ -13,3 +13,6 @@
   ansible.builtin.file:
     path: /root/.cache/pip
     state: absent
+- name: Install Docker
+  include_role:
+    name: docker
