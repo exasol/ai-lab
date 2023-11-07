@@ -11,8 +11,12 @@ from datetime import datetime
 @pytest.fixture(scope="session")
 def dss_docker_container():
     timestamp = f'{datetime.now().timestamp():.0f}'
-    # testee = DssDockerImage(f"dss_container_{timestamp}", f"dss_image_{timestamp}", logging.INFO)
-    testee = DssDockerImage("ds-sandbox-docker", f"dss_image_{timestamp}", logging.INFO)
+    testee = DssDockerImage(
+        "my-repo/dss-test-image",
+        version=f"{timestamp}",
+        publish=False,
+        log_level=logging.INFO,
+    )
     print(
         "\n- Using"
         f' Docker container {testee.container_name}'

@@ -71,7 +71,7 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 - `setup-vm-bucket` - deploys the AWS Bucket cloudformation stack which will be used to deploy the VM images
 - `setup-release-codebuild` - deploys the AWS Codebuild cloudformation stack which will be used for the release-build
 - `setup-vm-bucket-waf` - deploys the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket
-- `create-dss-docker-image` - creates a Docker image for data-science-sandbox and deploys it to hub.docker.com/exasol/data-science-sandbox
+- `create-docker-image` - creates a Docker image for data-science-sandbox and deploys it to hub.docker.com/exasol/data-science-sandbox
 
 ## Flow
 

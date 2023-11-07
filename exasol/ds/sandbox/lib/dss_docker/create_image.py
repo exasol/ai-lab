@@ -18,23 +18,21 @@ from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install
 
 
 DSS_VERSION = version("exasol-data-science-sandbox")
+CONTAINER_NAME = "ds-sandbox-docker"
 
 
 class DssDockerImage:
-    DEFAULT_CONTAINER_NAME = "ds-sandbox-docker"
-    DEFAULT_IMAGE_NAME = f"exasol/data-science-sandbox:{DSS_VERSION}"
-
-    @classmethod
-    def for_production(cls) -> "DssDockerImage":
-        return DssDockerImage(
-            container_name=DssDockerImage.DEFAULT_CONTAINER_NAME,
-            image_name=DssDockerImage.DEFAULT_IMAGE_NAME,
-            log_level=logging.INFO,
-        )
-
-    def __init__(self, container_name: str, image_name: str, log_level: str):
-        self.container_name = container_name
-        self.image_name = image_name
+    def __init__(
+            self,
+            repository: str,
+            version: str = None,
+            publish: bool = False,
+            log_level: str = logging.INFO,
+    ):
+        version = version if version else DSS_VERSION
+        self.container_name = CONTAINER_NAME
+        self.image_name = f"{repository}:{version}"
+        self.publish = publish
         self.log_level = log_level
 
     def _ansible_run_context(self) -> AnsibleRunContext:
@@ -99,7 +97,3 @@ class DssDockerImage:
         size = pretty_print.size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(start)
         logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
-
-
-if __name__ == "__main__":
-    DssDockerImage.for_production().create()
