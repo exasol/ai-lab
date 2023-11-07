@@ -36,7 +36,6 @@ def dss_docker_container():
     try:
         yield container
     finally:
-        pass
         container.stop()
         container.remove()
         client.images.remove(testee.image_name)
