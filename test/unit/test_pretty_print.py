@@ -1,21 +1,25 @@
+import pytest
 import re
 import time
 from exasol.ds.sandbox.lib import pretty_print
 from datetime import datetime, timedelta
 
 
-def test_elapsed_rounded():
-    start = datetime.now()
-    time.sleep(1.2)
+@pytest.fixture
+def sample_duration():
+    return timedelta(hours=2, minutes=3, seconds=4.2)
+
+
+def test_elapsed_rounded(sample_duration):
+    start = datetime.now() - sample_duration
     e = pretty_print.elapsed(start)
-    assert e == "0:00:01"
+    assert e == "2:03:04"
 
 
-def test_elapsed_full():
-    start = datetime.now()
-    time.sleep(1.2)
+def test_elapsed_full(sample_duration):
+    start = datetime.now() - sample_duration
     e = pretty_print.elapsed(start, round_to_seconds=False)
-    assert re.match(r'0:00:01\.2.*', e)
+    assert re.match(r'2:03:04\.2.*', e)
 
 
 def test_size_1000():
