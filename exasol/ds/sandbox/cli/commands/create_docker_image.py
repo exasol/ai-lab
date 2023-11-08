@@ -21,7 +21,7 @@ _options = [
 def create_docker_image(repository: str, publish: bool):
     """
     Create a Docker image for data-science-sandbox and deploy
-    it to https://hub.docker.com/exasol/data-science-sandbox.
+    it to a Docker repository.
     """
     print("Hello this is create_docker_image, using")
     print(f'- publish: {publish}')
