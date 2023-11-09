@@ -29,7 +29,7 @@ def dss_docker_image():
         docker.from_env().images.remove(testee.image_name)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def dss_docker_container(dss_docker_image):
     client = docker.from_env()
     mapped_ports = {'8888/tcp': 8888}
