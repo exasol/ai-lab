@@ -1,8 +1,13 @@
 import docker
 import pytest
 import requests
+import tenacity
 import time
+import typing
 
+from tenacity.retry import retry_if_exception_type
+from tenacity.wait import wait_fixed
+from tenacity.stop import stop_after_delay
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -43,21 +48,12 @@ def dss_docker_container(dss_docker_image):
         container.remove()
 
 
-def request_with_retry(url: str, timeout: timedelta, verbose:bool = False) -> requests.Response:
-    start = datetime.now()
-    stop = start + timeout
-    interval = (timeout / 10).total_seconds()
-    while datetime.now() < stop:
-        try:
-            result = requests.get(url)
-            if verbose:
-                elapsed = pretty_print.elapsed(start)
-                print(f'{url} responded after {elapsed}.')
-            return result
-        except requests.exceptions.ConnectionError as ex:
-            err = ex
-            time.sleep(interval)
-    raise err
+def retry(exception: typing.Type[BaseException], timeout: timedelta):
+    return tenacity.retry(
+        retry=retry_if_exception_type(exception),
+        wait=wait_fixed(timeout/10),
+        stop=stop_after_delay(timeout),
+    )
 
 
 def test_jupyterlab(dss_docker_container):
@@ -74,11 +70,15 @@ def test_jupyterlab(dss_docker_container):
     container.exec_run(jupyter_command, detach=True)
     container.reload()
     ip_address = container.attrs['NetworkSettings']['IPAddress']
-    response = request_with_retry(
-        f"http://{ip_address}:8888/lab",
-        timeout=timedelta(seconds=5),
-        verbose=True,
-    )
+    url = f"http://{ip_address}:8888/lab"
+
+    @retry(requests.exceptions.ConnectionError, timedelta(seconds=5))
+    def request_with_retry(url: str) -> requests.Response:
+        return requests.get(url)
+
+    start = datetime.now()
+    response = request_with_retry(url)
+    print(f'{url} responded after {pretty_print.elapsed(start)}.')
     assert response.status_code == 200
 
 
@@ -88,3 +88,4 @@ def test_install_notebook_connector(dss_docker_container):
     exit_code, output = container.exec_run(command)
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
+

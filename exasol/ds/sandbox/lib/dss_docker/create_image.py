@@ -18,6 +18,7 @@ from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install
 
 DSS_VERSION = version("exasol-data-science-sandbox")
 
+_logger = get_status_logger(LogType.DOCKER_IMAGE)
 
 class DssDockerImage:
     @classmethod
@@ -60,12 +61,11 @@ class DssDockerImage:
         )
 
     def create(self):
-        logger = get_status_logger(LogType.DOCKER_IMAGE)
         docker_file = self._docker_file()
         try:
             start = datetime.now()
             docker_client = docker.from_env()
-            logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+            _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
             docker_client.images.build(path=str(docker_file.parent), tag=self.image_name)
             container = docker_client.containers.create(
                 image=self.image_name,
@@ -73,9 +73,9 @@ class DssDockerImage:
                 command="sleep infinity",
                 detach=True,
             )
-            logger.info("Starting container")
+            _logger.info("Starting container")
             container.start()
-            logger.info("Installing dependencies")
+            _logger.info("Installing dependencies")
             run_install_dependencies(
                 AnsibleAccess(),
                 configuration=self._ansible_config(),
@@ -83,7 +83,7 @@ class DssDockerImage:
                 ansible_run_context=self._ansible_run_context(),
                 ansible_repositories=ansible_repository.default_repositories,
             )
-            logger.info("Committing changes to docker container")
+            _logger.info("Committing changes to docker container")
             image = container.commit(
                 repository=self.image_name,
             )
@@ -91,12 +91,12 @@ class DssDockerImage:
             raise ex
         finally:
             if self.keep_container:
-                logger.info("Keeping container running")
+                _logger.info("Keeping container running")
             else:
-                logger.info("Stopping container")
+                _logger.info("Stopping container")
                 container.stop()
-                logger.info("Removing container")
+                _logger.info("Removing container")
                 container.remove()
         size = humanfriendly.format_size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(start)
-        logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
+        _logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
