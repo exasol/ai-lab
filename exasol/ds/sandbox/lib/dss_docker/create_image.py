@@ -17,8 +17,8 @@ from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install
 
 
 DSS_VERSION = version("exasol-data-science-sandbox")
-
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
+
 
 class DssDockerImage:
     @classmethod
@@ -53,7 +53,7 @@ class DssDockerImage:
             slc_version=SLC_VERSION,
         )
 
-    def _docker_file(self) -> Path:
+    def _docker_file(self) -> importlib_resources.abc.Traversable:
         return (
             importlib_resources
             .files("exasol.ds.sandbox.lib.dss_docker")
@@ -66,7 +66,8 @@ class DssDockerImage:
             start = datetime.now()
             docker_client = docker.from_env()
             _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
-            docker_client.images.build(path=str(docker_file.parent), tag=self.image_name)
+            with docker_file.open("rb") as fileobj:
+                docker_client.images.build(fileobj=fileobj, tag=self.image_name)
             container = docker_client.containers.create(
                 image=self.image_name,
                 name=self.container_name,
