@@ -11,18 +11,12 @@ from exasol.ds.sandbox.lib import pretty_print
 
 @pytest.fixture(scope="session")
 def dss_docker_image():
-    set_log_level("info")
     testee = DssDockerImage(
         "my-repo/dss-test-image",
         version=f"{DssDockerImage.timestamp()}",
         publish=False,
         keep_container=False,
     )
-    # print(
-    #     "\n- Using"
-    #     f' Docker container {testee.container_name}'
-    #     f' with image {testee.image_name}'
-    # )
     testee.create()
     try:
         yield testee
@@ -83,6 +77,7 @@ def test_jupyterlab(dss_docker_container):
     response = request_with_retry(
         f"http://{ip_address}:8888/lab",
         timeout=timedelta(seconds=5),
+        verbose=True,
     )
     assert response.status_code == 200
 

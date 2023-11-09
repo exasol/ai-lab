@@ -15,6 +15,7 @@ from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
+
 DSS_VERSION = version("exasol-data-science-sandbox")
 
 
@@ -99,8 +100,3 @@ class DssDockerImage:
         size = humanfriendly.format_size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(start)
         logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
-
-
-# if __name__ == "__main__":
-#     p = importlib.resources.files("exasol.ds.sandbox.lib.dss_docker").joinpath("Dockerfile").parent
-#     print(f'parent {p}')
