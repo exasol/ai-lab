@@ -1,33 +1,42 @@
 import docker
-import logging
 import pytest
 import requests
 import time
 
+from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
-from datetime import datetime
+from exasol.ds.sandbox.lib.logging import set_log_level
+from exasol.ds.sandbox.lib import pretty_print
 
 
 @pytest.fixture(scope="session")
-def dss_docker_container():
-    timestamp = f'{datetime.now().timestamp():.0f}'
+def dss_docker_image():
+    set_log_level("info")
     testee = DssDockerImage(
         "my-repo/dss-test-image",
-        version=f"{timestamp}",
+        version=f"{DssDockerImage.timestamp()}",
         publish=False,
-        log_level=logging.INFO,
+        keep_container=False,
     )
-    print(
-        "\n- Using"
-        f' Docker container {testee.container_name}'
-        f' with image {testee.image_name}'
-    )
+    # print(
+    #     "\n- Using"
+    #     f' Docker container {testee.container_name}'
+    #     f' with image {testee.image_name}'
+    # )
     testee.create()
+    try:
+        yield testee
+    finally:
+        docker.from_env().images.remove(testee.image_name)
+
+
+@pytest.fixture(scope="session")
+def dss_docker_container(dss_docker_image):
     client = docker.from_env()
     mapped_ports = {'8888/tcp': 8888}
     container = client.containers.create(
-        image=testee.image_name,
-        name=testee.container_name,
+        image=dss_docker_image.image_name,
+        name=dss_docker_image.container_name,
         command="sleep infinity",
         detach=True,
         ports=mapped_ports,
@@ -38,7 +47,23 @@ def dss_docker_container():
     finally:
         container.stop()
         container.remove()
-        client.images.remove(testee.image_name)
+
+
+def request_with_retry(url: str, timeout: timedelta, verbose:bool = False) -> requests.Response:
+    start = datetime.now()
+    stop = start + timeout
+    interval = (timeout / 10).total_seconds()
+    while datetime.now() < stop:
+        try:
+            result = requests.get(url)
+            if verbose:
+                elapsed = pretty_print.elapsed(start)
+                print(f'{url} responded after {elapsed}.')
+            return result
+        except requests.exceptions.ConnectionError as ex:
+            err = ex
+            time.sleep(interval)
+    raise err
 
 
 def test_jupyterlab(dss_docker_container):
@@ -53,11 +78,13 @@ def test_jupyterlab(dss_docker_container):
     )
     container = dss_docker_container
     container.exec_run(jupyter_command, detach=True)
-    time.sleep(5.0)
     container.reload()
     ip_address = container.attrs['NetworkSettings']['IPAddress']
-    http_conn = requests.get(f"http://{ip_address}:8888/lab")
-    assert http_conn.status_code == 200
+    response = request_with_retry(
+        f"http://{ip_address}:8888/lab",
+        timeout=timedelta(seconds=5),
+    )
+    assert response.status_code == 200
 
 
 def test_install_notebook_connector(dss_docker_container):

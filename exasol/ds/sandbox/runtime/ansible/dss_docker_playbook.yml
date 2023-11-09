@@ -7,10 +7,11 @@
     - name: Add docker container to inventory
       add_host:
         name: "{{docker_container}}"
+        groups: docker_container_group
         ansible_connection: docker
 
 - name: Setup DSS Docker Container
-  hosts: ds-sandbox-docker # cannot use variable here
+  hosts: docker_container_group
   gather_facts: false
   vars:
       ansible_python_interpreter: python3

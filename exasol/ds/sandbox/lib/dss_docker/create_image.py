@@ -1,5 +1,7 @@
 import docker
-import logging
+import humanfriendly
+import importlib_resources
+
 from datetime import datetime
 from docker.types import Mount
 from exasol.ds.sandbox.lib import pretty_print
@@ -7,33 +9,32 @@ from importlib_metadata import version
 from pathlib import Path
 
 from exasol.ds.sandbox.lib.config import ConfigObject, SLC_VERSION
-# renaming proposal:
-# import exasol.ds.sandbox.lib.ansible
-# file ansible.__init__.py with content "import ...ansible.repository"
-# enables usage: ansible.repository.default
+from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.ansible import ansible_repository
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
-
 DSS_VERSION = version("exasol-data-science-sandbox")
-CONTAINER_NAME = "ds-sandbox-docker"
 
 
 class DssDockerImage:
+    @classmethod
+    def timestamp(cls) -> str:
+        return f'{datetime.now().timestamp():.0f}'
+
     def __init__(
             self,
             repository: str,
             version: str = None,
             publish: bool = False,
-            log_level: str = logging.INFO,
+            keep_container: bool = False,
     ):
         version = version if version else DSS_VERSION
-        self.container_name = CONTAINER_NAME
+        self.container_name = f"ds-sandbox-{DssDockerImage.timestamp()}"
         self.image_name = f"{repository}:{version}"
         self.publish = publish
-        self.log_level = log_level
+        self.keep_container = keep_container
 
     def _ansible_run_context(self) -> AnsibleRunContext:
         extra_vars = {
@@ -50,28 +51,26 @@ class DssDockerImage:
             slc_version=SLC_VERSION,
         )
 
+    def _docker_file(self) -> Path:
+        return (
+            importlib_resources
+            .files("exasol.ds.sandbox.lib.dss_docker")
+            .joinpath("Dockerfile")
+        )
+
     def create(self):
-        logger = logging.getLogger(__name__)
-        logger.setLevel(self.log_level)
-        logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s")
+        logger = get_status_logger(LogType.DOCKER_IMAGE)
+        docker_file = self._docker_file()
         try:
             start = datetime.now()
             docker_client = docker.from_env()
-            path = Path(__file__).parent
-            logger.info(
-                f"Creating docker image {self.image_name}"
-                f" from {path / 'Dockerfile'}"
-            )
-            docker_client.images.build(path=str(path), tag=self.image_name)
-            socket_mount = Mount("/var/run/docker.sock", "/var/run/docker.sock", type="bind")
-            mapped_ports = {'8888/tcp': 8888}
+            logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+            docker_client.images.build(path=str(docker_file.parent), tag=self.image_name)
             container = docker_client.containers.create(
                 image=self.image_name,
                 name=self.container_name,
-                mounts=[socket_mount],
                 command="sleep infinity",
                 detach=True,
-                ports=mapped_ports,
             )
             logger.info("Starting container")
             container.start()
@@ -90,10 +89,18 @@ class DssDockerImage:
         except Exception as ex:
             raise ex
         finally:
-            logger.info("Stopping container")
-            container.stop()
-            logger.info("Removing container")
-            container.remove()
-        size = pretty_print.size(image.attrs["Size"])
+            if self.keep_container:
+                logger.info("Keeping container running")
+            else:
+                logger.info("Stopping container")
+                container.stop()
+                logger.info("Removing container")
+                container.remove()
+        size = humanfriendly.format_size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(start)
         logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
+
+
+# if __name__ == "__main__":
+#     p = importlib.resources.files("exasol.ds.sandbox.lib.dss_docker").joinpath("Dockerfile").parent
+#     print(f'parent {p}')
