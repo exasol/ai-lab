@@ -14,6 +14,7 @@ Version: 0.1.0
 
  - #11: Created a notebook to show training with scikit-learn in the notebook
  - #15: Installed exasol-notebook-connector via ansible
+ - #30: Added script to build the Data Science Sandbox as Docker Image
 
 ## Bug Fixes
 
