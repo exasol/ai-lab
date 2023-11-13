@@ -25,4 +25,5 @@
         name: netplan.io
         state: present
         update_cache: yes
-    - import_tasks: slc_setup_tasks.yml
+    - import_tasks: general_setup_tasks.yml
+    - import_tasks: ec2_setup_tasks.yml

@@ -13,6 +13,7 @@ class LogType(Enum):
     SETUP_CI_CODEBUILD = "setup_ci_codebuild"
     AWS_ACCESS = "aws_access"
     ANSIBLE = "ansible"
+    DOCKER_IMAGE = "docker_image"
     CREATE_VM = "create_vm"
     SETUP_RELEASE_BUILD = "setup_release_build"
     RELEASE_BUILD = "release_build"

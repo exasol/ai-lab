@@ -3,7 +3,7 @@
 
 - name: Setup Jupyter
   block:
-    - name: Install dependant apt packages
+    - name: Install dependent apt packages
       apt:
         name: "{{apt_dependencies}}"
         state: present
