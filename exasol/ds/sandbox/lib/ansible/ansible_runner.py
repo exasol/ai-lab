@@ -20,7 +20,7 @@ class AnsibleRunner:
 
     @staticmethod
     def printer(msg: str):
-        LOG.info(msg)
+        LOG.debug(msg)
 
     def run(self, ansible_run_context: AnsibleRunContext, host_infos: Tuple[HostInfo]):
         inventory_content = render_template("inventory.jinja", host_infos=host_infos)
