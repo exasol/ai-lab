@@ -73,6 +73,12 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 - `setup-vm-bucket-waf` - deploys the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket
 - `create-docker-image` - creates a Docker image for data-science-sandbox and deploys it to hub.docker.com/exasol/data-science-sandbox
 
+## Notebook Files
+
+DSS repository includes some Jupyter notebooks and scripts to add these notebooks to DSS images, e.g. AMI or Docker Images.
+
+Please add or update the notebook files in folder [exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook](../../exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook).
+
 ## Flow
 
 The following diagram shows the high-level steps to generate the images:
@@ -136,6 +142,27 @@ After that you can set an environment variable and execute the tests involving A
 ```shell
 export AWS_PROFILE=dss_aws_tests_mfa
 poetry run pytest test/test_deploy_codebuild.py
+```
+
+#### Executing tests involving Ansible
+
+For making pytest display Ansible log messages, please use
+
+```shell
+poetry run pytest -s -o log_cli=true -o log_cli_level=INFO
+```
+
+### Ansible packages
+
+The packages to be installed by Ansible are using pinned versions, e.g. for [poetry](../../exasol/ds/sandbox/runtime/ansible/roles/poetry/defaults/main.yml).
+
+In case ansible reports "no available installation candidate" for a specific version of a package, please search for newer versions of the package on https://packages.ubuntu.com/.
+
+If the update is very new and not yet displayed on packages.ubuntu.com you can use
+
+```shell
+apt-get update
+apt-search <package>
 ```
 
 ### Export

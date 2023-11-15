@@ -4,7 +4,7 @@ Code name: Initial release
 
 ## Summary
 
-Initial release of the data-science-sandbox. It provides the creation of an Amazon Machone Image (AMI) and virtual machine images for a specific version of the data-science-sanbox-release project.
+Initial release of the data-science-sandbox. It provides the creation of an Amazon Machine Image (AMI) and virtual machine images for a specific version of the data-science-sanbox-release project.
 
 ## Data-Science-Sandbox-Release
 
@@ -29,3 +29,7 @@ Version: 0.1.0
 
 * #5: Renamed all occurrences of "script language developer" by "data science"
 * #56: Moved jupyter notebook files again
+
+## Documentation
+
+* #58: Added location of Juypter notebooks to developer guide
