@@ -96,7 +96,9 @@ def test_install_notebooks(dss_docker_container):
     def filename_set(string: str) -> Set[str]:
         return set(re.split(r'\s+', string.strip()))
 
-    exit_code, output = dss_docker_container.exec_run("ls --indicator-style=slash /root/notebooks")
+    exit_code, output = dss_docker_container.exec_run(
+        "ls --indicator-style=slash /root/notebooks"
+    )
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
 
