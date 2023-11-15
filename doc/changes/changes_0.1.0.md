@@ -15,6 +15,10 @@ Version: 0.1.0
  - #11: Created a notebook to show training with scikit-learn in the notebook
  - #15: Installed exasol-notebook-connector via ansible
  - #30: Added script to build the Data Science Sandbox as Docker Image
+ - #33: Added a notebook to securely manage sandbox configuration
+ - #30: Used the Secret Store in the Learning-in-the-notebook tutorial
+ - #41: Refactored the Transformer Extension notebook - made it use the Secret Store
+ - #53: Moved Jupyter notebooks to folder visible to ansible
 
 ## Bug Fixes
 
@@ -23,3 +27,4 @@ Version: 0.1.0
 ## Refactoring
 
  - #5: Renamed all occurrences of "script language developer" by "data science"
+ - #56: Moved jupyter notebook files again
