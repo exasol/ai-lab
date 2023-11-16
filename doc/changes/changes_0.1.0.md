@@ -30,6 +30,7 @@ Version: 0.1.0
 
 * #5: Renamed all occurrences of "script language developer" by "data science"
 * #56: Moved jupyter notebook files again
+* #63: Improved logging of Ansible tasks
 
 ## Documentation
 
