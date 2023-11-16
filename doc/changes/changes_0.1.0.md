@@ -24,6 +24,7 @@ Version: 0.1.0
 ## Bug Fixes
 
 * #1: Fixed CI build
+* #61: Change initial password of Jupyter notebooks to "dss"
 
 ## Refactoring
 

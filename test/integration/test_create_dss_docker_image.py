@@ -1,7 +1,9 @@
 import docker
+import io
 import pytest
 import re
 import requests
+import sys
 import tenacity
 import time
 import typing
@@ -14,6 +16,22 @@ from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
+
+
+class StderrCapture:
+    def __init__(self):
+        self._stream = sys.stdout
+        self._buffer = io.StringIO("")
+        sys.stdout = self._buffer
+
+    def stop(self):
+        sys.stdout = self._stream
+
+    @property
+    def output(self) -> str:
+        """Return the captured output."""
+        self._buffer.seek(0)
+        return self._buffer.read().strip()
 
 
 @pytest.fixture(scope="session")

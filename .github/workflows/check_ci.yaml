@@ -19,8 +19,7 @@ jobs:
 
      - name: Run pytest
        run: >
-         poetry run pytest
-         -o log_cli=true
+         poetry run pytest -o log_cli=true -o log_cli_level=INFO
          test/unit
          test/integration/test_create_dss_docker_image.py
        env: # Set the secret as an env variable
