@@ -1,5 +1,6 @@
 import docker
 import pytest
+import re
 import requests
 import tenacity
 import time
@@ -8,6 +9,7 @@ import typing
 from tenacity.retry import retry_if_exception_type
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
+from typing import Set
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -89,3 +91,22 @@ def test_install_notebook_connector(dss_docker_container):
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
 
+
+def test_install_notebooks(dss_docker_container):
+    def filename_set(string: str) -> Set[str]:
+        return set(re.split(r'\s+', string.strip()))
+
+    exit_code, output = dss_docker_container.exec_run(
+        "ls --indicator-style=slash /root/notebooks"
+    )
+    output = output.decode('utf-8').strip()
+    assert exit_code == 0, f'Got output "{output}".'
+
+    actual = filename_set(output)
+    expected = filename_set("""
+        access_store_ui.ipynb
+        sklearn/
+        cloud/
+        sagemaker/
+    """)
+    assert actual.issuperset(expected)
