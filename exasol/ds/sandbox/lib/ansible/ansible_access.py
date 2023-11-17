@@ -1,4 +1,5 @@
 import ansible_runner
+import json
 import logging
 
 from dataclasses import dataclass
@@ -24,7 +25,7 @@ class AnsibleAccess:
     def run(
             private_data_dir: str,
             run_ctx: AnsibleRunContext,
-            event_logger: Callable[[AnsibleEvent], None],
+            event_logger: Callable[[str], None],
             event_handler: Callable[[AnsibleEvent], bool] = None,
     ):
         quiet = not get_status_logger(LogType.ANSIBLE).isEnabledFor(logging.INFO)
@@ -36,10 +37,6 @@ class AnsibleAccess:
             extravars=run_ctx.extra_vars,
         )
         for e in r.events:
-            event_logger(e)
+            event_logger(json.dumps(e, indent=2))
         if r.rc != 0:
             raise AnsibleException(r.rc)
-
-if __name__ == "__main__":
-    a = _event_handler({"event_data": { "duration": 1}})
-    print(f'a = "{a}"')

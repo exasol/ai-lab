@@ -1,4 +1,3 @@
-import json
 import logging
 
 from pathlib import Path
@@ -20,19 +19,26 @@ class AnsibleRunner:
     def __init__(self, ansible_access: AnsibleAccess, work_dir: Path):
         self._ansible_access = ansible_access
         self._work_dir = work_dir
+        self._duration_logger = AnsibleRunner.duration_logger()
 
-    @staticmethod
-    def event_logger(event: AnsibleEvent):
-        LOG.debug(json.dumps(event, indent=2))
+    @classmethod
+    def duration_logger(cls) -> logging.Logger:
+        def handler():
+            handler = logging.StreamHandler()
+            handler.setFormatter(logging.Formatter('%(message)s'))
+            return handler
+        logger = logging.getLogger(f"{__name__}:{cls.__name__}")
+        logger.setLevel(logging.DEBUG)
+        logger.propagate = False
+        logger.addHandler(handler())
+        return logger
 
-    @staticmethod
-    def event_handler(event: AnsibleEvent) -> bool:
-        try:
-            duration = event["event_data"]["duration"]
-            if duration is not None and duration > 0.5:
-                print(f"duration: {round(duration)} seconds")
-        except KeyError as ex:
-            pass
+    def event_handler(self, event: AnsibleEvent) -> bool:
+        if not "event_data" in event:
+            return True
+        duration = event["event_data"].get("duration", 0)
+        if duration > 0.5:
+            self._duration_logger.debug(f"duration: {round(duration)} seconds")
         return True
 
     def run(self, ansible_run_context: AnsibleRunContext, host_infos: Tuple[HostInfo]):
@@ -43,6 +49,6 @@ class AnsibleRunner:
         self._ansible_access.run(
             str(self._work_dir),
             ansible_run_context,
-            self.event_logger,
-            self.event_handler,
+            event_logger=LOG.debug,
+            event_handler=self.event_handler,
         )
