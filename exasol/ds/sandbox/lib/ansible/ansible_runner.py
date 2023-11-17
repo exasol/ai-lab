@@ -1,8 +1,10 @@
+import json
 import logging
-from pathlib import Path
-from typing import Dict, Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from pathlib import Path
+from typing import Tuple
+
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleEvent
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
@@ -20,11 +22,11 @@ class AnsibleRunner:
         self._work_dir = work_dir
 
     @staticmethod
-    def printer(msg: str):
-        LOG.debug(msg)
+    def event_logger(event: AnsibleEvent):
+        LOG.debug(json.dumps(event, indent=2))
 
     @staticmethod
-    def event_handler(event: Dict[str, any]) -> bool:
+    def event_handler(event: AnsibleEvent) -> bool:
         try:
             duration = event["event_data"]["duration"]
             if duration is not None and duration > 0.5:
@@ -41,6 +43,6 @@ class AnsibleRunner:
         self._ansible_access.run(
             str(self._work_dir),
             ansible_run_context,
-            self.printer,
-            event_handler,
+            self.event_logger,
+            self.event_handler,
         )

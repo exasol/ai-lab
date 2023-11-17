@@ -1,5 +1,4 @@
 import ansible_runner
-import json
 import logging
 
 from dataclasses import dataclass
@@ -13,6 +12,8 @@ class AnsibleException(RuntimeError):
     pass
 
 
+AnsibleEvent = Dict[str, any]
+
 
 class AnsibleAccess:
     """
@@ -23,8 +24,8 @@ class AnsibleAccess:
     def run(
             private_data_dir: str,
             run_ctx: AnsibleRunContext,
-            printer: Callable[[str], None],
-            event_handler: Callable[[Dict[str, any]], bool] = None,
+            event_logger: Callable[[AnsibleEvent], None],
+            event_handler: Callable[[AnsibleEvent], bool] = None,
     ):
         quiet = not get_status_logger(LogType.ANSIBLE).isEnabledFor(logging.INFO)
         r = ansible_runner.run(
@@ -35,7 +36,7 @@ class AnsibleAccess:
             extravars=run_ctx.extra_vars,
         )
         for e in r.events:
-            printer(json.dumps(e, indent=2))
+            event_logger(e)
         if r.rc != 0:
             raise AnsibleException(r.rc)
 
