@@ -18,7 +18,7 @@ from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
 
 
-class StderrCapture:
+class StdoutCapture:
     def __init__(self):
         self._stream = sys.stdout
         self._buffer = io.StringIO("")
