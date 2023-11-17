@@ -8,6 +8,7 @@ from exasol.ds.sandbox.lib.ansible.ansible_repository import default_repositorie
     AnsibleResourceRepository
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext, \
     default_ansible_run_context
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleEvent
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
@@ -22,8 +23,12 @@ class AnsibleTestAccess:
         self.arguments = namedtuple("Arguments", "private_data_dir run_ctx")
         self.delegate = delegate
 
-    def run(self, private_data_dir: str, run_ctx: AnsibleRunContext, printer: Callable[[str], None]):
-
+    def run(self,
+            private_data_dir: str,
+            run_ctx: AnsibleRunContext,
+            event_handler: Callable[[AnsibleEvent], bool],
+            event_logger: Callable[[str], None],
+            ):
         self.call_arguments = self.arguments(private_data_dir, run_ctx)
         if self.delegate is not None:
             self.delegate(private_data_dir, run_ctx)
