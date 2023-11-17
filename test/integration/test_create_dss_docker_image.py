@@ -18,22 +18,6 @@ from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
 
 
-class StdoutCapture:
-    def __init__(self):
-        self._stream = sys.stdout
-        self._buffer = io.StringIO("")
-        sys.stdout = self._buffer
-
-    def stop(self):
-        sys.stdout = self._stream
-
-    @property
-    def output(self) -> str:
-        """Return the captured output."""
-        self._buffer.seek(0)
-        return self._buffer.read().strip()
-
-
 @pytest.fixture(scope="session")
 def dss_docker_image():
     testee = DssDockerImage(
