@@ -20,6 +20,7 @@ Version: 0.1.0
 * #41: Refactored the Transformer Extension notebook - made it use the Secret Store
 * #53: Moved Jupyter notebooks to folder visible to ansible
 * #16: Installed Jupyter notebooks via ansible
+* #67: Removed apt cache to reduce image size
 
 ## Bug Fixes
 
