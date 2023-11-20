@@ -20,15 +20,18 @@ Version: 0.1.0
 * #41: Refactored the Transformer Extension notebook - made it use the Secret Store
 * #53: Moved Jupyter notebooks to folder visible to ansible
 * #16: Installed Jupyter notebooks via ansible
+* #67: Removed apt cache to reduce image size
 
 ## Bug Fixes
 
 * #1: Fixed CI build
+* #61: Change initial password of Jupyter notebooks to "dss"
 
 ## Refactoring
 
 * #5: Renamed all occurrences of "script language developer" by "data science"
 * #56: Moved jupyter notebook files again
+* #63: Improved logging of Ansible tasks
 
 ## Documentation
 

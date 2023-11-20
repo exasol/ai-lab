@@ -1,6 +1,7 @@
 ---
 - name: Copy notebook content
-  ansible.builtin.copy:
+  ansible.builtin.synchronize:
     src: "notebook/"
     dest: "{{jupyterlab.notebook_folder}}"
-    mode: 0644
+    rsync_opts:
+      - "--chmod=0644"

@@ -1,0 +1,7 @@
+- name: Ansible Clean
+  ansible.builtin.apt:
+    clean: yes
+- name: Remove files in /var/lib/apt/lists/
+  ansible.builtin.file:
+    path: /var/lib/apt/lists/
+    state: absent

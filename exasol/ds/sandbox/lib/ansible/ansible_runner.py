@@ -1,7 +1,9 @@
+import logging
+
 from pathlib import Path
 from typing import Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleEvent
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
@@ -17,13 +19,36 @@ class AnsibleRunner:
     def __init__(self, ansible_access: AnsibleAccess, work_dir: Path):
         self._ansible_access = ansible_access
         self._work_dir = work_dir
+        self._duration_logger = AnsibleRunner.duration_logger()
 
-    @staticmethod
-    def printer(msg: str):
-        LOG.debug(msg)
+    @classmethod
+    def duration_logger(cls) -> logging.Logger:
+        def handler():
+            handler = logging.StreamHandler()
+            handler.setFormatter(logging.Formatter('%(message)s'))
+            return handler
+        logger = logging.getLogger(f"{__name__}:{cls.__name__}")
+        logger.setLevel(logging.DEBUG)
+        logger.propagate = False
+        logger.addHandler(handler())
+        return logger
+
+    def event_handler(self, event: AnsibleEvent) -> bool:
+        if not "event_data" in event:
+            return True
+        duration = event["event_data"].get("duration", 0)
+        if duration > 0.5:
+            self._duration_logger.debug(f"duration: {round(duration)} seconds")
+        return True
 
     def run(self, ansible_run_context: AnsibleRunContext, host_infos: Tuple[HostInfo]):
         inventory_content = render_template("inventory.jinja", host_infos=host_infos)
         with open(self._work_dir / "inventory", "w") as f:
             f.write(inventory_content)
-        self._ansible_access.run(str(self._work_dir), ansible_run_context, self.printer)
+        event_handler = self.event_handler if LOG.isEnabledFor(logging.INFO) else None
+        self._ansible_access.run(
+            str(self._work_dir),
+            ansible_run_context,
+            event_logger=LOG.debug,
+            event_handler=self.event_handler,
+        )
