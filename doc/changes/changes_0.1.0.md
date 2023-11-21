@@ -21,6 +21,7 @@ Version: 0.1.0
 * #53: Moved Jupyter notebooks to folder visible to ansible
 * #16: Installed Jupyter notebooks via ansible
 * #67: Removed apt cache to reduce image size
+* #23: Fixed AWS Code build
 
 ## Bug Fixes
 
