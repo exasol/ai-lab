@@ -1,9 +1,9 @@
 - name: Ansible Clean
   ansible.builtin.apt:
     clean: yes
-  become: true
+  become: "{{need_sudo}}"
 - name: Remove files in /var/lib/apt/lists/
   ansible.builtin.file:
     path: /var/lib/apt/lists/
     state: absent
-  become: true
+  become: "{{need_sudo}}"
