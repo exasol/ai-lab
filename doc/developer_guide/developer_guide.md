@@ -52,6 +52,13 @@ The following commands are used during the release AWS Codebuild job:
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
 
+Script `start-test-release-build`:
+* Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
+* Requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
+* Requires to specify CLI option `--upload-url`.
+
+This operation usually takes around than 1:40 hours.
+
 ### Developer commands
 
 All other commands provide a subset of the features of the release commands, and can be used to identify problems or simulate the release:
@@ -63,8 +70,10 @@ All other commands provide a subset of the features of the release commands, and
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
 * `show-aws-assets`: Show AWS entities associated with a specific keyword (called __asset-id__).
-* `start-test-release`: Start a Test Release flow.
+* `start-test-release-build`: Start a Test Release flow.
 * `make-ami-public`: Change permissions of an existing AMI such that it becomes public.
+
+Script `start-test-release-build` requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
 
 ### Deployment commands
 
@@ -207,12 +216,10 @@ The release is executed in a AWS Codebuild job, the following diagram shows the 
 
 The bucket has private access. In order to control access, the Bucket cloudformation stack also contains a Cloudfront distribution. Public Https access is only possibly through Cloudfront. Another stack contains a Web application firewall (WAF), which will be used by the Cloudfront distribution. Due to restrictions in AWS, the WAF stack needs to be deployed in region "us-east-1". The WAF stack provides two rules which aim to minimize a possible bot attack:
 
-| Name                 | Explanation                                                                             | Priority |
-|----------------------|-----------------------------------------------------------------------------------------|----------|
-| VMBucketRateLimit    | Declares the minimum possible rate limit for access: 100 requests in a 5 min interval.  | 0        |
-| CAPTCHA              | Forces a captcha action for any IP which does not matcha predefined set of IP-addresses | 1        |
-
-
+| Name                 | Explanation                                                                               | Priority |
+|----------------------|-------------------------------------------------------------------------------------------|----------|
+| VMBucketRateLimit    | Declares the minimum possible rate limit for access: 100 requests in a 5 min interval.    | 0        |
+| CAPTCHA              | Forces a captcha action for any IP which does not match a predefined set of IP-addresses. | 1        |
 
 ## Involved Cloudformation stacks
 
