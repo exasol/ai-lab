@@ -1,0 +1,11 @@
+- name: Copy entry point script
+  ansible.builtin.copy:
+    src: "entrypoint.py"
+    dest: "/root/entrypoint.py"
+    mode: 0644
+# this task can be removed later
+- name: Set my fact for later discovery
+  ansible.builtin.set_fact:
+    dss_ansible_facts:
+      notebook_folder: "{{jupyterlab.notebook_folder}}"
+    cacheable: yes

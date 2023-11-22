@@ -1,0 +1,6 @@
+---
+
+# this file can be removed later
+
+jupyterlab:
+  notebook_folder: "{{user_home}}/notebooks"

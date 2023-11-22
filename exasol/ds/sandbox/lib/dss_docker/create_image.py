@@ -7,12 +7,13 @@ from docker.types import Mount
 from exasol.ds.sandbox.lib import pretty_print
 from importlib_metadata import version
 from pathlib import Path
+from typing import List
 
 from exasol.ds.sandbox.lib.config import ConfigObject, SLC_VERSION
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.ansible import ansible_repository
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
 
@@ -60,6 +61,15 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
+    def _copy_args(self, facts: AnsibleFacts) -> List[str]:
+        if not "dss_ansible_facts" in facts:
+            return []
+        folder = facts["dss_ansible_facts"].get("notebook_folder", None)
+        if not folder:
+            return []
+        return [ "--copy-from", "/root/notebooks",
+                 "--copy-to", "/root/new" ]
+
     def create(self):
         docker_file = self._docker_file()
         try:
@@ -77,16 +87,31 @@ class DssDockerImage:
             _logger.info("Starting container")
             container.start()
             _logger.info("Installing dependencies")
-            run_install_dependencies(
+            facts = run_install_dependencies(
                 AnsibleAccess(),
                 configuration=self._ansible_config(),
                 host_infos=tuple(),
                 ansible_run_context=self._ansible_run_context(),
                 ansible_repositories=ansible_repository.default_repositories,
             )
+
+            _logger.info(f"Ansible facts: {facts}")
             _logger.info("Committing changes to docker container")
+            entrypoint = [
+                # "sleep",
+                # "infinity",
+                "python3",
+                "/root/entrypoint.py",
+                # "--jupyter-server",
+                "--sleep",
+            ] + self._copy_args(facts)
+            conf = {
+                "Entrypoint": entrypoint,
+                "Cmd": [],
+            }
             image = container.commit(
                 repository=self.image_name,
+                conf=conf,
             )
         except Exception as ex:
             raise ex

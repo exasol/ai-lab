@@ -26,3 +26,6 @@
         src: "roles/jupyter/files/notebook/data/"
         dest: /root/notebooks
         mode: 0644
+    - name: Copy Entry Point Script
+      include_role:
+        name: entrypoint
