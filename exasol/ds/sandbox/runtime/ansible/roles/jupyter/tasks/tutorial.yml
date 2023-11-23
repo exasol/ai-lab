@@ -8,5 +8,3 @@
   ansible.builtin.synchronize:
     src: "notebook/"
     dest: "{{jupyterlab.notebook_folder}}"
-    rsync_opts:
-      - "--chmod=0644"
