@@ -52,7 +52,7 @@ The following commands are used during the release AWS Codebuild job:
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
 
-Script `start-test-release-build`:
+Script `start-release-build`:
 * Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
 * Requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
 * Requires to specify CLI option `--upload-url`.
