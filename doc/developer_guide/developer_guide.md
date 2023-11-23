@@ -71,7 +71,7 @@ All other commands provide a subset of the features of the release commands, and
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
 * `show-aws-assets`: Show AWS entities associated with a specific keyword (called __asset-id__).
-* `start-test-release-build`: Creates a release on Github and forwards it to the AWS Codebuild which creates VM images in various formats and attaches them to the Github release.
+* `start-test-release-build`: (For testing) Creates a release on Github and forwards it to the AWS Codebuild which creates VM images in various formats and attaches them to the Github release.
 * `make-ami-public`: Change permissions of an existing AMI such that it becomes public.
 
 Script `start-test-release-build` requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
