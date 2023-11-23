@@ -1,14 +1,12 @@
 import contextlib
-import pytest
-import subprocess
 
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 from pathlib import Path
 
 
+@contextlib.contextmanager
 def directory(dir: Path):
     dir.mkdir()
-@contextlib.contextmanager
     dir.chmod(0o700)
     yield dir
 

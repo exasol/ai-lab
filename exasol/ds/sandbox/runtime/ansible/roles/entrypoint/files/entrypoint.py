@@ -12,10 +12,6 @@ def arg_parser():
         description="entry point for docker container",
     )
     parser.add_argument(
-        "--jupyter-server", action="store_true",
-        help="start server for Jupyter notebooks",
-    )
-    parser.add_argument(
         "--copy-from", action="append", type=Path, metavar="<SRC>",
         help="""Copy files recursively with permissions.
         For each option --copy-from there must be corresponding option --copy-to.""",
@@ -23,6 +19,10 @@ def arg_parser():
     parser.add_argument(
         "--copy-to", action="append", type=Path, metavar="<DEST>",
         help="destination location for file to copy",
+    )
+    parser.add_argument(
+        "--jupyter-server", action="store_true",
+        help="start server for Jupyter notebooks",
     )
     parser.add_argument(
         "--sleep", action="store_true",
@@ -67,8 +67,6 @@ def copy_rec(src: Path, dst: Path):
 
 def main():
     args = arg_parser().parse_args()
-    if args.jupyter_server:
-        start_jupyter_server()
     if args.copy_from and args.copy_to:
         nfrom = len(args.copy_from)
         nto = len(args.copy_to)
@@ -81,6 +79,8 @@ def main():
             )
         for copy in zip(args.copy_from, args.copy_to):
             copy_rec(*copy)
+    if args.jupyter_server:
+        start_jupyter_server()
     if args.sleep:
         while True:
             time.sleep(0.2)
