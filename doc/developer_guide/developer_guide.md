@@ -51,6 +51,7 @@ The following commands are used during the release AWS Codebuild job:
 * `create-vm`: Create a new AMI and VM images.
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
+* `create-docker-image`: Create a Docker image for data-science-sandbox and deploy it to hub.docker.com/exasol/data-science-sandbox.
 
 Script `start-release-build`:
 * Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
@@ -70,7 +71,7 @@ All other commands provide a subset of the features of the release commands, and
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
 * `show-aws-assets`: Show AWS entities associated with a specific keyword (called __asset-id__).
-* `start-test-release-build`: Start a Test Release flow.
+* `start-test-release-build`: Creates a release on Github and forwards it to the AWS Codebuild which creates VM images in various formats and attaches them to the Github release.
 * `make-ami-public`: Change permissions of an existing AMI such that it becomes public.
 
 Script `start-test-release-build` requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
@@ -82,12 +83,12 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 * `setup-vm-bucket`: Deploy the AWS Bucket cloudformation stack which will be used to deploy the VM images.
 * `setup-release-codebuild`: Deploy the AWS Codebuild cloudformation stack which will be used for the release-build.
 * `setup-vm-bucket-waf`: Deploy the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket.
-* `create-docker-image`: Create a Docker image for data-science-sandbox and deploy it to hub.docker.com/exasol/data-science-sandbox.
+
+For all deployment commands:
+* Don't forget to specify CLI option `--aws-profile`.
+* Ensure the related AWS stack does not exist. If there was a rollback then please delete the stack manually, otherwise the script will fail.
 
 For command `setup-release-codebuild`:
-* Don't forget to specify CLI option `--aws-profile`.
-* Ensure AWS stack `DATA-SCIENCE-SANDBOX-CI-TEST-CODEBUILD` does not exist.
-  * If there was a rollback then please delete the stack manually, otherwise the script will fail.
 * If the script fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
   * Ensure to grant sufficient access permissions to the Github user used by the script.
   * You can use a Github "_Repository role_" for that.
