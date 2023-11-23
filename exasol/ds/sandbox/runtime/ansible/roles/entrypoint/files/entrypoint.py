@@ -51,19 +51,18 @@ def copy_rec(src: Path, dst: Path):
     permission 644 for files and 755 for directories.
     If directory src does not exit then do not copy anything.
     """
-    if not src.exists():
+    if not src.exists() or dst.exists():
         return
-    dst.mkdir(exist_ok=True)
+
+    if src.is_file():
+        shutil.copyfile(src, dst)
+        dst.chmod(0o644)
+        return
+
+    dst.mkdir()
+    dst.chmod(0o755)
     for sf in src.iterdir():
-        df = dst / sf.name
-        if not df.exists():
-            if sf.is_dir():
-                df.mkdir()
-                df.chmod(0o755)
-                copy_rec(sf, df)
-            else:
-                shutil.copyfile(sf, df)
-                df.chmod(0o644)
+        copy_rec(sf, dst / sf.name)
 
 
 def main():
