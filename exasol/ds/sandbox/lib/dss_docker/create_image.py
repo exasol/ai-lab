@@ -67,7 +67,7 @@ class DssDockerImage:
         folder = facts["dss_ansible_facts"].get("notebook_folder", None)
         if not folder:
             return []
-        return [ "--copy-from", "/root/notebooks",
+        return [ "--copy-from", folder,
                  "--copy-to", "/root/new" ]
 
     def create(self):
