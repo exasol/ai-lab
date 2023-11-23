@@ -21,6 +21,7 @@ Version: 0.1.0
 * #53: Moved Jupyter notebooks to folder visible to ansible
 * #16: Installed Jupyter notebooks via ansible
 * #67: Removed apt cache to reduce image size
+* #23: Fixed AWS Code build
 
 ## Bug Fixes
 
@@ -32,6 +33,7 @@ Version: 0.1.0
 * #5: Renamed all occurrences of "script language developer" by "data science"
 * #56: Moved jupyter notebook files again
 * #63: Improved logging of Ansible tasks
+* #46: Enabled to suppress ansible output
 
 ## Documentation
 

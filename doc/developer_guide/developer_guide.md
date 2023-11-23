@@ -28,50 +28,86 @@ bash install.sh
 The Data Science Sandbox (DSS) uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
 
 This project uses
-- `boto3` to interact with AWS
-- `pygithub` to interact with the Github releases
-- `ansible-runner` to interact with Ansible.
+* `boto3` to interact with AWS
+* `pygithub` to interact with the Github releases
+* `ansible-runner` to interact with Ansible.
 Proxy classes to those projects are injected at the CLI layer. This allows to inject mock classes in the unit tests.
 A CLI command has normally a respective function in the `lib` submodule. Hence, the CLI layer should not contain any logic, but invoke the respective library function only. Also, the proxy classes which abstract the dependant packages shall not contain too much logic. Ideally they should invoke only one function to the respective package.
 
 
 ## Commands
 
-There are generally three types of commands:
+The commands offered by the DSS CLI can be organized into three groups:
 
-| Type                 | Explanation                                  |
-|----------------------|----------------------------------------------|
-| Release Commands     | used during the release                      |
-| Deployment Commands  | used to deploy infrastructure onto AWS cloud |
-| Development Commands | used to identify problems or for testing     |
+| Group                | Usage                                   |
+|----------------------|-----------------------------------------|
+| Release Commands     | during the release                      |
+| Deployment Commands  | to deploy infrastructure onto AWS cloud |
+| Development Commands | to identify problems or for testing     |
 
 ### Release commands
 
 The following commands are used during the release AWS Codebuild job:
-- `create-vm` - creates a new AMI and VM images
-- `update-release` - updates release notes of an existing Github release
-- `start-release-build` - starts the release on AWS codebuild
+* `create-vm`: Create a new AMI and VM images.
+* `update-release`: Update release notes of an existing Github release.
+* `start-release-build`: Start the release on AWS codebuild.
+* `create-docker-image`: Create a Docker image for data-science-sandbox and deploy it to hub.docker.com/exasol/data-science-sandbox.
+
+Script `start-release-build`:
+* Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
+* Requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
+* Requires to specify CLI option `--upload-url`.
+
+This operation usually takes around than 1:40 hours.
 
 ### Developer commands
 
 All other commands provide a subset of the features of the release commands, and can be used to identify problems or simulate the release:
-- `export-vm` - creates a new VM image from a running EC2-Instance
-- `install-dependencies` - starts an ansible-installation onto an existing EC-2 instance
-- `reset-password` - resets password on a remote EC-2-instance via ansible
-- `setup-ec2` - starts a new EC2 instance (based on an Ubuntu AMI)
-- `setup-ec2-and-install-dependencies` - starts a new EC2 instance and install dependencies via Ansible
-- `show-aws-assets` - shows AWS entities associated with a specific keyword (called __asset-id__)
-- `start-test-release` - starts a Test Release flow
-- `make-ami-public` - Changes permissions of an existing AMI such that it becomes public
+* `export-vm`: Create a new VM image from a running EC2-Instance.
+* `install-dependencies`: Start an ansible-installation onto an existing EC-2 instance.
+* `reset-password`: Reset password on a remote EC-2-instance via ansible.
+* `setup-ec2`: Start a new EC2 instance (based on an Ubuntu AMI).
+* `setup-ec2-and-install-dependencies`: Start a new EC2 instance and install dependencies via Ansible.
+  * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
+  * The instance is kept running until the user presses Ctrl-C.
+* `show-aws-assets`: Show AWS entities associated with a specific keyword (called __asset-id__).
+* `start-test-release-build`: (For testing) Creates a release on Github and forwards it to the AWS Codebuild which creates VM images in various formats and attaches them to the Github release.
+* `make-ami-public`: Change permissions of an existing AMI such that it becomes public.
+
+Script `start-test-release-build` requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
 
 ### Deployment commands
 
 The following commands can be used to deploy the infrastructure onto a given AWS account:
-- `setup-ci-codebuild` - deploys the AWS Codebuild cloudformation stack which will run the ci-test
-- `setup-vm-bucket` - deploys the AWS Bucket cloudformation stack which will be used to deploy the VM images
-- `setup-release-codebuild` - deploys the AWS Codebuild cloudformation stack which will be used for the release-build
-- `setup-vm-bucket-waf` - deploys the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket
-- `create-docker-image` - creates a Docker image for data-science-sandbox and deploys it to hub.docker.com/exasol/data-science-sandbox
+* `setup-ci-codebuild`: Deploy the AWS Codebuild cloudformation stack which will run the ci-test.
+* `setup-vm-bucket`: Deploy the AWS Bucket cloudformation stack which will be used to deploy the VM images.
+* `setup-release-codebuild`: Deploy the AWS Codebuild cloudformation stack which will be used for the release-build.
+* `setup-vm-bucket-waf`: Deploy the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket.
+
+For all deployment commands:
+* Don't forget to specify CLI option `--aws-profile`.
+* Ensure the related AWS stack does not exist. If there was a rollback then please delete the stack manually, otherwise the script will fail.
+
+If `setup-release-codebuild` or `setup-ci-codebuild` fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
+* Ensure to grant sufficient access permissions to the Github user used by the script.
+* You can use a Github "_Repository role_" for that.
+* The repository role must include the following permissions
+  * Inherit the permissions from default role "Write"
+  * Additional repository permission "Manage webhooks"
+* In AWS you can configure the Github token by a resource with logical ID `CodeBuildCredentials`
+  * Please note: There must be only one stack containing such a resource.
+  * The definition of the AWS resource `CodeBuildCredentials` can use credentials from tha AWS secret manager.
+
+```yaml
+Resources:
+  CodeBuildCredentials:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      ServerType: GITHUB
+      AuthType: PERSONAL_ACCESS_TOKEN
+      Username: "{{resolve:secretsmanager:github_personal_token:SecretString:github_user_name}}"
+      Token: "{{resolve:secretsmanager:github_personal_token:SecretString:github_personal_token}}"
+```
 
 ## Notebook Files
 
@@ -82,6 +118,7 @@ Please add or update the notebook files in folder [exasol/ds/sandbox/runtime/ans
 ## Flow
 
 The following diagram shows the high-level steps to generate the images:
+
 ![image info](./img/create-vm-overview.drawio.png)
 
 ### Setup EC2
@@ -92,11 +129,11 @@ After the export has finished, the cloudformation stack and the keypair is remov
 ### Install
 
 Installs all dependencies via Ansible:
-- installs Poetry
-- installs and configures Jupyter
-- installs Docker and adds the user `ubuntu` to the docker group
-- clones the script-languages-release repository
-- changes the netplan configuration. This is necessary to have proper network configuration when running the VM image
+* installs Poetry
+* installs and configures Jupyter
+* installs Docker and adds the user `ubuntu` to the docker group
+* clones the script-languages-release repository
+* changes the netplan configuration. This is necessary to have proper network configuration when running the VM image
 
 Finally, the default password will be set, and also the password will be marked as expired, such that the user will be forced to enter a new password during initial login.
 Also, the ssh password authentication will be enabled, and for security reasons the folder "~/.ssh" will be removed.
@@ -172,18 +209,17 @@ The export creates an AMI based on the running EC2 instance and exports the AMI 
 ## Release
 
 The release is executed in a AWS Codebuild job, the following diagram shows the flow.
+
 ![image info](./img/create-vm-release.drawio.png)
 
 ## AWS S3 Bucket
 
 The bucket has private access. In order to control access, the Bucket cloudformation stack also contains a Cloudfront distribution. Public Https access is only possibly through Cloudfront. Another stack contains a Web application firewall (WAF), which will be used by the Cloudfront distribution. Due to restrictions in AWS, the WAF stack needs to be deployed in region "us-east-1". The WAF stack provides two rules which aim to minimize a possible bot attack:
 
-| Name                 | Explanation                                                                             | Priority |
-|----------------------|-----------------------------------------------------------------------------------------|----------|
-| VMBucketRateLimit    | Declares the minimum possible rate limit for access: 100 requests in a 5 min interval.  | 0        |
-| CAPTCHA              | Forces a captcha action for any IP which does not matcha predefined set of IP-addresses | 1        |
-
-
+| Name                 | Explanation                                                                               | Priority |
+|----------------------|-------------------------------------------------------------------------------------------|----------|
+| VMBucketRateLimit    | Declares the minimum possible rate limit for access: 100 requests in a 5 min interval.    | 0        |
+| CAPTCHA              | Forces a captcha action for any IP which does not match a predefined set of IP-addresses. | 1        |
 
 ## Involved Cloudformation stacks
 
@@ -214,8 +250,8 @@ The command `show-aws-assets` lists all assets which were created during the exe
 ## How to contribute
 
 The project has two types of CI tests:
-- unit tests and integration tests which run in a Github workflow
-- A system test which runs on a AWS Codebuild
+* unit tests and integration tests which run in a Github workflow
+* A system test which runs on a AWS Codebuild
 
 Both ci tests need to pass before the approval of a Github PR.
 The Github workflow will run on each push to a branch in the Github repository. However, the AWS Codebuild will only run after you push a commit containing the string "[CodeBuild]" in the commit message.
