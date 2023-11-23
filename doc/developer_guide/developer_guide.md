@@ -88,16 +88,15 @@ For all deployment commands:
 * Don't forget to specify CLI option `--aws-profile`.
 * Ensure the related AWS stack does not exist. If there was a rollback then please delete the stack manually, otherwise the script will fail.
 
-For command `setup-release-codebuild`:
-* If the script fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
-  * Ensure to grant sufficient access permissions to the Github user used by the script.
-  * You can use a Github "_Repository role_" for that.
-  * The repository role must include the following permissions
-    * Inherit the permissions from default role "Write"
-    * Additional repository permission "Manage webhooks"
-  * In AWS you can configure the Github token by a resource with logical ID `CodeBuildCredentials`
-    * Please note: There must be only one stack containing such a resource.
-    * The definition of the AWS resource `CodeBuildCredentials` can use credentials from tha AWS secret manager.
+If `setup-release-codebuild` or `setup-ci-codebuild` fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
+* Ensure to grant sufficient access permissions to the Github user used by the script.
+* You can use a Github "_Repository role_" for that.
+* The repository role must include the following permissions
+  * Inherit the permissions from default role "Write"
+  * Additional repository permission "Manage webhooks"
+* In AWS you can configure the Github token by a resource with logical ID `CodeBuildCredentials`
+  * Please note: There must be only one stack containing such a resource.
+  * The definition of the AWS resource `CodeBuildCredentials` can use credentials from tha AWS secret manager.
 
 ```yaml
 Resources:
