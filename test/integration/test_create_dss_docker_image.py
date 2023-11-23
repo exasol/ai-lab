@@ -19,16 +19,18 @@ from exasol.ds.sandbox.lib import pretty_print
 
 
 @pytest.fixture(scope="session")
-def dss_docker_image(dss_docker_image_name):
+def dss_docker_image(request):
     """
     If dss_docker_image_name is provided then don't create an image but
     reuse the existing image as specified by cli option
     --ds-docker-image-name, see file conftest.py.
     """
-    if dss_docker_image_name and ":" in dss_docker_image_name:
-        name, version = dss_docker_image_name.split(":")
+    existing = request.config.getoption("--dss-docker-image")
+    if existing and ":" in existing:
+        name, version = existing.split(":")
         yield DssDockerImage(name, version)
         return
+
     testee = DssDockerImage(
         "my-repo/dss-test-image",
         version=f"{DssDockerImage.timestamp()}",
@@ -43,17 +45,7 @@ def dss_docker_image(dss_docker_image_name):
 
 
 @pytest.fixture
-def dss_docker_image_existing():
-    yield DssDockerImage(
-        "exasol/data-science-sandbox",
-        version="0.1.0",
-    )
-
-
-@pytest.fixture
-def dss_docker_container(dss_docker_image_existing):
-    dss_docker_image = dss_docker_image_existing
-    print(f'{dss_docker_image}')
+def dss_docker_container(dss_docker_image):
     client = docker.from_env()
     mapped_ports = {'8888/tcp': 8888}
     container = client.containers.create(
