@@ -22,6 +22,7 @@ Version: 0.1.0
 * #16: Installed Jupyter notebooks via ansible
 * #67: Removed apt cache to reduce image size
 * #23: Fixed AWS Code build
+* #69: Added entry point to start Jupyter server
 
 ## Bug Fixes
 
