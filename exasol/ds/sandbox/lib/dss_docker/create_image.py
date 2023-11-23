@@ -102,8 +102,8 @@ class DssDockerImage:
                 # "infinity",
                 "python3",
                 "/root/entrypoint.py",
-                # "--jupyter-server",
-                "--sleep",
+                "--jupyter-server",
+                # "--sleep",
             ] + self._copy_args(facts)
             conf = {
                 "Entrypoint": entrypoint,

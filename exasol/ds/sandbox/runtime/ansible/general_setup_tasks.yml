@@ -9,6 +9,9 @@
 - name: Install Poetry
   include_role:
     name: poetry
+- name: Copy Entry Point Script
+  include_role:
+    name: entrypoint
 - name: Install Jupyter
   include_role:
     name: jupyter
