@@ -68,7 +68,7 @@ class DssDockerImage:
         if not folder:
             return []
         return [ "--copy-from", folder,
-                 "--copy-to", "/root/new" ]
+                 "--copy-to", "/root/notebooks" ]
 
     def create(self):
         docker_file = self._docker_file()
