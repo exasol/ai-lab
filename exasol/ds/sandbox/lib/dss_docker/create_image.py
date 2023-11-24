@@ -15,6 +15,7 @@ from exasol.ds.sandbox.lib.ansible import ansible_repository
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
+from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 
 
 DSS_VERSION = version("exasol-data-science-sandbox")
@@ -87,23 +88,21 @@ class DssDockerImage:
             _logger.info("Starting container")
             container.start()
             _logger.info("Installing dependencies")
+            host_infos = (HostInfo(self.container_name, None),)
             facts = run_install_dependencies(
                 AnsibleAccess(),
                 configuration=self._ansible_config(),
-                host_infos=tuple(),
+                host_infos=host_infos,
                 ansible_run_context=self._ansible_run_context(),
                 ansible_repositories=ansible_repository.default_repositories,
             )
 
-            _logger.info(f"Ansible facts: {facts}")
+            _logger.debug(f"Ansible facts: {facts}")
             _logger.info("Committing changes to docker container")
             entrypoint = [
-                # "sleep",
-                # "infinity",
                 "python3",
                 "/root/entrypoint.py",
                 "--jupyter-server",
-                # "--sleep",
             ] + self._copy_args(facts)
             conf = {
                 "Entrypoint": entrypoint,

@@ -21,12 +21,4 @@
       docker_integration_test: true
   tasks:
     - import_tasks: general_setup_tasks.yml
-#     - name: Copy notebook content
-#       ansible.builtin.copy:
-#         src: "roles/jupyter/files/notebook/data/"
-#         dest: /root/notebooks
-#         mode: 0644
-#     - name: Copy Entry Point Script
-#       include_role:
-#         name: entrypoint
     - import_tasks: cleanup_tasks.yml

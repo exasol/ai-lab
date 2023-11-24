@@ -24,10 +24,6 @@ def arg_parser():
         "--jupyter-server", action="store_true",
         help="start server for Jupyter notebooks",
     )
-    parser.add_argument(
-        "--sleep", action="store_true",
-        help="keep script running infinitly",
-    )
     return parser
 
 
@@ -65,6 +61,11 @@ def copy_rec(src: Path, dst: Path):
         copy_rec(sf, dst / sf.name)
 
 
+def sleep_inifinity():
+    while True:
+        time.sleep(1)
+
+
 def main():
     args = arg_parser().parse_args()
     if args.copy_from and args.copy_to:
@@ -81,9 +82,8 @@ def main():
             copy_rec(*copy)
     if args.jupyter_server:
         start_jupyter_server()
-    if args.sleep:
-        while True:
-            time.sleep(0.2)
+    else:
+        sleep_inifinity()
 
 
 if __name__ == "__main__":

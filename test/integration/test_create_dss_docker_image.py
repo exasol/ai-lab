@@ -51,7 +51,6 @@ def dss_docker_container(dss_docker_image):
     container = client.containers.create(
         image=dss_docker_image.image_name,
         name=dss_docker_image.container_name,
-        # command="sleep infinity",
         detach=True,
         ports=mapped_ports,
     )
@@ -75,15 +74,7 @@ def test_jupyterlab(dss_docker_container):
     """"
     Test that jupyterlab is configured properly
     """
-    # jupyter_command = (
-    #     "/root/jupyterenv/bin/jupyter-lab"
-    #     " --notebook-dir=/root/notebooks"
-    #     " --no-browser"
-    #     " --allow-root"
-    # )
     container = dss_docker_container
-    # container.exec_run(jupyter_command, detach=True)
-    # container.reload()
     ip_address = container.attrs['NetworkSettings']['IPAddress']
     if ip_address == "":
         ip_address = "localhost"
