@@ -84,7 +84,7 @@ class DssDockerImage:
             return entrypoint_script + jupyter
         return entrypoint_script + [
            "--copy-from", folder["defaults"],
-           "--copy-to", folder["final"] # "/root/notebooks" ]
+           "--copy-to", folder["final"]
         ] + jupyter
 
     def create(self):
@@ -113,7 +113,7 @@ class DssDockerImage:
                 ansible_repositories=ansible_repository.default_repositories,
             )
 
-            _logger.info(f"Ansible facts: {facts}") # debug
+            _logger.debug(f"Ansible facts: {facts}")
             _logger.info("Committing changes to docker container")
             conf = {
                 "Entrypoint": self._entrypoint(facts),
