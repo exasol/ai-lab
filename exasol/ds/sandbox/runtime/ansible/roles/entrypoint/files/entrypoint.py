@@ -1,4 +1,6 @@
 import argparse
+import os
+import re
 import shutil
 import subprocess
 import time
@@ -47,18 +49,26 @@ def copy_rec(src: Path, dst: Path):
     permission 644 for files and 755 for directories.
     If directory src does not exit then do not copy anything.
     """
-    if not src.exists() or dst.exists():
-        return
+    def ensure_dir(dir: Path):
+        if not dir.exists():
+            dir.mkdir()
+            dir.chmod(0o755)
 
-    if src.is_file():
-        shutil.copyfile(src, dst)
-        dst.chmod(0o644)
-        return
+    def ensure_file(src: Path, dst: Path):
+        if not dst.exists():
+            shutil.copyfile(src, dst)
+            dst.chmod(0o644)
 
-    dst.mkdir()
-    dst.chmod(0o755)
-    for sf in src.iterdir():
-        copy_rec(sf, dst / sf.name)
+    if not src.exists():
+        return
+    ensure_dir(dst)
+    for orig, dirs, files in os.walk(src):
+        orig = Path(orig)
+        copy = Path(re.sub(fr'^{src}', f"{dst}", f"{orig}"))
+        for name in files:
+            ensure_file(orig / name, copy / name)
+        for name in dirs:
+            ensure_dir(copy / name)
 
 
 def sleep_inifinity():
