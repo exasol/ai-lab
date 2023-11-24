@@ -56,9 +56,8 @@ def test_fact_found():
         {"dss_ansible_facts": {}},
         {"dss_ansible_facts": {"key": "value"}},
      ])
-def test_entrypoint_default(sample_repo, facts):
-    testee = DssDockerImage(sample_repo)
-    assert testee._entrypoint(facts) == ["sleep", "infinity"]
+def test_entrypoint_default(facts):
+    assert DssDockerImage._entrypoint(facts) == ["sleep", "infinity"]
 
 
 def test_entrypoint_with_copy_args():
@@ -67,7 +66,7 @@ def test_entrypoint_with_copy_args():
     final = "/path/to/final"
     facts = {
         "dss_ansible_facts": {
-            "entrypoint_script": entrypoint,
+            "entrypoint": entrypoint,
             "notebook_folder": {
                 "defaults": defaults,
                 "final": final,
