@@ -62,14 +62,30 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
-    def _copy_args(self, facts: AnsibleFacts) -> List[str]:
-        if not "dss_ansible_facts" in facts:
-            return []
-        folder = facts["dss_ansible_facts"].get("notebook_folder", None)
+    @classmethod
+    def _get_fact(cls, facts: AnsibleFacts, *keys: str) -> str:
+        keys = list(keys)
+        keys.insert(0, "dss_ansible_facts")
+        for key in keys:
+            if not key in facts:
+                return None
+            facts = facts[key]
+        return facts
+
+    @classmethod
+    def _entrypoint(cls, facts: AnsibleFacts) -> List[str]:
+        entrypoint = cls._get_fact(facts, "entrypoint")
+        if entrypoint is None:
+            return ["sleep", "infinity" ]
+        entrypoint_script = ["python3", entrypoint]
+        jupyter = ["--jupyter-server"]
+        folder = cls._get_fact(facts, "notebook_folder")
         if not folder:
-            return []
-        return [ "--copy-from", folder,
-                 "--copy-to", "/root/notebooks" ]
+            return entrypoint_script + jupyter
+        return entrypoint_script + [
+           "--copy-from", folder["defaults"],
+           "--copy-to", folder["final"] # "/root/notebooks" ]
+        ] + jupyter
 
     def create(self):
         docker_file = self._docker_file()
@@ -97,15 +113,10 @@ class DssDockerImage:
                 ansible_repositories=ansible_repository.default_repositories,
             )
 
-            _logger.debug(f"Ansible facts: {facts}")
+            _logger.info(f"Ansible facts: {facts}") # debug
             _logger.info("Committing changes to docker container")
-            entrypoint = [
-                "python3",
-                "/root/entrypoint.py",
-                "--jupyter-server",
-            ] + self._copy_args(facts)
             conf = {
-                "Entrypoint": entrypoint,
+                "Entrypoint": self._entrypoint(facts),
                 "Cmd": [],
             }
             image = container.commit(

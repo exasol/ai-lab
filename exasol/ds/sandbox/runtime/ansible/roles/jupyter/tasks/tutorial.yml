@@ -2,7 +2,9 @@
 - name: Set facts for later discovery
   ansible.builtin.set_fact:
     dss_ansible_facts:
-      notebook_folder: "{{jupyterlab.notebook_folder}}"
+      notebook_folder:
+        defaults: "{{jupyterlab.notebook_folder}}"
+        final: "{{jupyterlab.notebook_folder_final}}"
     cacheable: yes
 - name: Copy notebook content
   ansible.builtin.synchronize:

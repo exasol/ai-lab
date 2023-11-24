@@ -1,5 +1,10 @@
-- name: Copy entry point script
+- name: Set facts for later discovery
+  ansible.builtin.set_fact:
+    dss_ansible_facts:
+      entrypoint: "{{entrypoint_script}}"
+    cacheable: yes
+- name: Copy entrypoint script
   ansible.builtin.copy:
     src: "entrypoint.py"
-    dest: "/root/entrypoint.py"
+    dest: "{{entrypoint_script}}"
     mode: 0644
