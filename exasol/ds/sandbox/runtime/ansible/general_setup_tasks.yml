@@ -22,3 +22,11 @@
 - name: Install Docker
   include_role:
     name: docker
+- name: Set facts for entry point
+  ansible.builtin.set_fact:
+    dss_ansible_facts:
+      entrypoint: "{{entrypoint_script}}"
+      notebook_folder:
+        defaults: "{{notebook_folder}}"
+        final: "{{notebook_folder_final}}"
+    cacheable: yes

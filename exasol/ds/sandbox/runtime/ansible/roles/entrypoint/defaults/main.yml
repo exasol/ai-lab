@@ -1,3 +1,0 @@
----
-
-entrypoint_script: "{{user_home}}/entrypoint.py"
