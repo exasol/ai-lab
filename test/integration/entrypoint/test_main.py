@@ -18,28 +18,11 @@ def test_no_args(mocker):
     assert entrypoint.sleep_inifinity.called
 
 
-def test_copy_args_unbalanced(mocker):
-    mocker.patch("sys.argv", [
-        "app",
-        "--copy-from", "a",
-        "--copy-from", "b",
-        "--copy-to", "dst",
-    ])
-    expected = (
-        "Found CLI option"
-        " --copy-from 2 times and"
-        " --copy-to 1 times,"
-        " but number must be identical."
-    )
-    with pytest.raises(RuntimeError, match=expected):
-        entrypoint.main()
-
-
 def test_copy_args_valid(mocker):
     mocker.patch("sys.argv", [
         "app",
-        "--copy-from", "source",
-        "--copy-to", "destination",
+        "--notebook-defaults", "source",
+        "--notebooks", "destination",
     ])
     mocker.patch(entrypoint_method("copy_rec"))
     mocker.patch(entrypoint_method("sleep_inifinity"))
@@ -50,9 +33,17 @@ def test_copy_args_valid(mocker):
 
 
 def test_jupyter(mocker):
-    mocker.patch("sys.argv", [ "app", "--jupyter-server" ])
+    jupyter = "/root/jupyterenv/bin/jupyter-lab"
+    notebook_folder = Path("/root/notebooks")
+    mocker.patch("sys.argv", [
+        "app",
+        "--notebooks", str(notebook_folder),
+        "--jupyter-server", jupyter,
+    ])
     mocker.patch(entrypoint_method("start_jupyter_server"))
     mocker.patch(entrypoint_method("sleep_inifinity"))
     entrypoint.main()
     assert entrypoint.start_jupyter_server.called
+    expected = mocker.call(jupyter, notebook_folder)
+    assert entrypoint.start_jupyter_server.call_args == expected
     assert not entrypoint.sleep_inifinity.called

@@ -1,3 +1,16 @@
+- name: Set facts for entry point
+  vars:
+    jupyter_virtualenv: "{{user_home}}/jupyterenv"
+  ansible.builtin.set_fact:
+    dss_facts:
+      entrypoint: "{{user_home}}/entrypoint.py"
+      jupyter:
+        virtualenv: "{{ jupyter_virtualenv }}"
+        command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+      notebook_folder:
+        defaults: "{{user_home}}/notebook-defaults"
+        final: "{{user_home}}/notebooks"
+    cacheable: yes
 - name: Update and upgrade apt packages
   apt:
     upgrade: yes
@@ -22,11 +35,3 @@
 - name: Install Docker
   include_role:
     name: docker
-- name: Set facts for entry point
-  ansible.builtin.set_fact:
-    dss_ansible_facts:
-      entrypoint: "{{entrypoint_script}}"
-      notebook_folder:
-        defaults: "{{notebook_folder}}"
-        final: "{{notebook_folder_final}}"
-    cacheable: yes

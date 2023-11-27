@@ -12,14 +12,11 @@
 
 - name: Setup DSS Docker Container
   hosts: docker_container_group
-  gather_facts: false
+  gather_facts: true
   vars:
       ansible_python_interpreter: python3
-      user_name: root
-      user_home: /root
-      entrypoint_script: "{{user_home}}/entrypoint.py"
-      notebook_folder: "{{user_home}}/notebook-defaults"
-      notebook_folder_final: "{{user_home}}/notebooks"
+      user_name: "{{ ansible_user_id }}"
+      user_home: "{{ ansible_env.HOME }}"
       need_sudo: false
       docker_integration_test: true
   tasks:

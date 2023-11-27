@@ -1,5 +1,6 @@
 import pytest
 
+from exasol.ds.sandbox.lib.dss_docker import create_image
 from exasol.ds.sandbox.lib.dss_docker.create_image import (
     DssDockerImage,
     DSS_VERSION,
@@ -36,16 +37,16 @@ def test_constructor(sample_repo):
     [
         {},
         {"other": "other value"},
-        {"dss_ansible_facts": {}},
-        {"dss_ansible_facts": {"b": {}}},
+        {"dss_facts": {}},
+        {"dss_facts": {"b": {}}},
      ])
 def test_fact_empty(facts):
-    assert DssDockerImage._get_fact(facts, "a", "b", "c") is None
+    assert create_image.get_fact(facts, "a", "b", "c") is None
 
 
 def test_fact_found():
-    facts = {"dss_ansible_facts": {"b": {"c": "expected"}}}
-    assert DssDockerImage._get_fact(facts, "b", "c") == "expected"
+    facts = {"dss_facts": {"b": {"c": "expected"}}}
+    assert create_image.get_fact(facts, "b", "c") == "expected"
 
 
 @pytest.mark.parametrize(
@@ -53,28 +54,32 @@ def test_fact_found():
     [
         {},
         {"key": "value"},
-        {"dss_ansible_facts": {}},
-        {"dss_ansible_facts": {"key": "value"}},
+        {"dss_facts": {}},
+        {"dss_facts": {"key": "value"}},
      ])
 def test_entrypoint_default(facts):
-    assert DssDockerImage._entrypoint(facts) == ["sleep", "infinity"]
+    assert create_image.entrypoint(facts) == ["sleep", "infinity"]
 
 
 def test_entrypoint_with_copy_args():
+    jupyter = "/root/jupyterenv/bin/jupyter-lab"
     entrypoint = "/path/to/entrypoint.py"
     defaults = "/path/to/defaults"
     final = "/path/to/final"
     facts = {
-        "dss_ansible_facts": {
+        "dss_facts": {
+            "jupyter": {
+                "command": jupyter,
+            },
             "entrypoint": entrypoint,
             "notebook_folder": {
                 "defaults": defaults,
                 "final": final,
             }}}
-    assert DssDockerImage._entrypoint(facts) == [
+    assert create_image.entrypoint(facts) == [
         "python3",
         entrypoint,
-        "--copy-from", defaults,
-        "--copy-to", final,
-        "--jupyter-server",
+        "--notebook-defaults", defaults,
+        "--notebooks", final,
+        "--jupyter-server", jupyter,
     ]

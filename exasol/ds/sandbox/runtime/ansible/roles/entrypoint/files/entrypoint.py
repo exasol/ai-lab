@@ -1,6 +1,5 @@
 import argparse
 import os
-import re
 import shutil
 import subprocess
 import time
@@ -14,25 +13,26 @@ def arg_parser():
         description="entry point for docker container",
     )
     parser.add_argument(
-        "--copy-from", action="append", type=Path, metavar="<SRC>",
-        help="""Copy files recursively with permissions.
-        For each option --copy-from there must be corresponding option --copy-to.""",
+        "--notebook-defaults", type=Path,
+        help="copy notebook files from this directory",
     )
     parser.add_argument(
-        "--copy-to", action="append", type=Path, metavar="<DEST>",
-        help="destination location for file to copy",
+        "--notebooks", type=Path,
+        help="destination location for notebook files to copy",
     )
     parser.add_argument(
-        "--jupyter-server", action="store_true",
+        "--jupyter-server", metavar="<PATH-TO-JUPYTER-BINARY>",
         help="start server for Jupyter notebooks",
     )
     return parser
 
 
-def start_jupyter_server():
+def start_jupyter_server(binary_path: str, notebook_dir: str):
     subprocess.run([
-        "/root/jupyterenv/bin/jupyter-lab",
-        "--notebook-dir=/root/notebooks",
+        # "/root/jupyterenv/bin/jupyter-lab",
+        binary_path,
+        f"--notebook-dir={notebook_dir}",
+        # "--notebook-dir=/root/notebooks",
         "--no-browser",
         "--allow-root",
     ])
@@ -62,11 +62,11 @@ def copy_rec(src: Path, dst: Path):
     if not src.exists():
         return
     ensure_dir(dst)
-    for orig, dirs, files in os.walk(src):
-        orig = Path(orig)
-        copy = dst / orign.relative_to(src)
+    for root, dirs, files in os.walk(src):
+        root = Path(root)
+        copy = dst / root.relative_to(src)
         for name in files:
-            ensure_file(orig / name, copy / name)
+            ensure_file(root / name, copy / name)
         for name in dirs:
             ensure_dir(copy / name)
 
@@ -78,20 +78,10 @@ def sleep_inifinity():
 
 def main():
     args = arg_parser().parse_args()
-    if args.copy_from and args.copy_to:
-        nfrom = len(args.copy_from)
-        nto = len(args.copy_to)
-        if nfrom != nto:
-            raise RuntimeError(
-                "Found CLI option"
-                f" --copy-from {nfrom} times and"
-                f" --copy-to {nto} times, but"
-                " number must be identical."
-            )
-        for copy in zip(args.copy_from, args.copy_to):
-            copy_rec(*copy)
-    if args.jupyter_server:
-        start_jupyter_server()
+    if args.notebook_defaults and args.notebooks:
+        copy_rec(args.notebook_defaults, args.notebooks)
+    if args.jupyter_server and args.notebooks:
+        start_jupyter_server(args.jupyter_server, args.notebooks)
     else:
         sleep_inifinity()
 

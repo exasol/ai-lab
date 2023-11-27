@@ -3,4 +3,4 @@
 - name: Copy notebook content
   ansible.builtin.synchronize:
     src: "notebook/"
-    dest: "{{notebook_folder}}"
+    dest: "{{ dss_facts.notebook_folder.defaults }}"
