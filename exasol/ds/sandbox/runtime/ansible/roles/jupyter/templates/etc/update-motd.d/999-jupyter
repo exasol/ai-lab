@@ -6,8 +6,8 @@ import json
 motd_message = """{{heading_jupyter_update_password}}
 
 Run as user {{user_name}}:
-"{{jupyterlab.virtualenv}}/bin/jupyter server password"
-to update the password. (The default password is "{{jupyterlab.password}}")
+"{{jupyterlab_virtualenv}}/bin/jupyter server password"
+to update the password. (The default password is "{{jupyterlab_password}}")
 """
 
 server_config_file = pathlib.Path("{{jupyter_server_config_file}}")
