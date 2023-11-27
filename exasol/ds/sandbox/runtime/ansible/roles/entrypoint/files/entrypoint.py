@@ -64,7 +64,7 @@ def copy_rec(src: Path, dst: Path):
     ensure_dir(dst)
     for orig, dirs, files in os.walk(src):
         orig = Path(orig)
-        copy = Path(re.sub(fr'^{src}', f"{dst}", f"{orig}"))
+        copy = dst / orign.relative_to(src)
         for name in files:
             ensure_file(orig / name, copy / name)
         for name in dirs:
