@@ -29,10 +29,8 @@ def arg_parser():
 
 def start_jupyter_server(binary_path: str, notebook_dir: str):
     subprocess.run([
-        # "/root/jupyterenv/bin/jupyter-lab",
         binary_path,
         f"--notebook-dir={notebook_dir}",
-        # "--notebook-dir=/root/notebooks",
         "--no-browser",
         "--allow-root",
     ])
