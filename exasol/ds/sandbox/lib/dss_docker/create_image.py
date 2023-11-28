@@ -48,7 +48,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
     if not folder:
         return entrypoint_script + jupyter()
     return entrypoint_script + [
-       "--notebook-defaults", folder["defaults"],
+       "--notebook-defaults", folder["initial"],
        "--notebooks", folder["final"]
     ] + jupyter()
 
@@ -131,9 +131,11 @@ class DssDockerImage:
         _logger.debug(f"Ansible facts: {facts}")
         _logger.info(f'Ansible facts: {facts["dss_facts"]}')
         _logger.info("Committing changes to docker container")
+        virtualenv = get_fact(facts, "jupyter", "virtualenv")
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
+            "Env": [ f"VIRTUAL_ENV={virtualenv}" ],
         }
         return container.commit(
             repository=self.image_name,

@@ -64,7 +64,7 @@ def test_entrypoint_default(facts):
 def test_entrypoint_with_copy_args():
     jupyter = "/root/jupyterenv/bin/jupyter-lab"
     entrypoint = "/path/to/entrypoint.py"
-    defaults = "/path/to/defaults"
+    initial = "/path/to/initial"
     final = "/path/to/final"
     facts = {
         "dss_facts": {
@@ -73,13 +73,13 @@ def test_entrypoint_with_copy_args():
             },
             "entrypoint": entrypoint,
             "notebook_folder": {
-                "defaults": defaults,
+                "initial": initial,
                 "final": final,
             }}}
     assert create_image.entrypoint(facts) == [
         "python3",
         entrypoint,
-        "--notebook-defaults", defaults,
+        "--notebook-defaults", initial,
         "--notebooks", final,
         "--jupyter-server", jupyter,
     ]

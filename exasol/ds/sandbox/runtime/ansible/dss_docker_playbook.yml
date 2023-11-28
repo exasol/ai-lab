@@ -17,6 +17,7 @@
       ansible_python_interpreter: python3
       user_name: "{{ ansible_user_id }}"
       user_home: "{{ ansible_env.HOME }}"
+      initial_notebook_folder: "{{ user_home }}/notebook-defaults"
       need_sudo: false
       docker_integration_test: true
   tasks:

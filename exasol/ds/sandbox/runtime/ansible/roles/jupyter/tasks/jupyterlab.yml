@@ -32,6 +32,6 @@
 
 - name: Create the notebook directory
   ansible.builtin.file:
-    path: "{{ dss_facts.notebook_folder.defaults }}"
+    path: "{{ dss_facts.notebook_folder.initial }}"
     state: directory
     mode: '0755'

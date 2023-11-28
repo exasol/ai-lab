@@ -8,7 +8,7 @@
         virtualenv: "{{ jupyter_virtualenv }}"
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
       notebook_folder:
-        defaults: "{{user_home}}/notebook-defaults"
+        initial: "{{ initial_notebook_folder }}"
         final: "{{user_home}}/notebooks"
     cacheable: yes
 - name: Update and upgrade apt packages
