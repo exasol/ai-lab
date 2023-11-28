@@ -129,7 +129,6 @@ class DssDockerImage:
             facts: AnsibleFacts,
     ) -> DockerImage:
         _logger.debug(f"Ansible facts: {facts}")
-        _logger.info(f'Ansible facts: {facts["dss_facts"]}')
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
         conf = {
