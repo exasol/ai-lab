@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import shutil
 import subprocess
@@ -6,6 +7,9 @@ import time
 
 from inspect import cleandoc
 from pathlib import Path
+
+
+_logger = logging.getLogger(__name__)
 
 
 def arg_parser():
@@ -24,6 +28,10 @@ def arg_parser():
         "--jupyter-server", metavar="<PATH-TO-JUPYTER-BINARY>",
         help="start server for Jupyter notebooks",
     )
+    parser.add_argument(
+        "--warning-as-error", action="store_true",
+        help="treat warning as error",
+    )
     return parser
 
 
@@ -41,7 +49,7 @@ def start_jupyter_server(binary_path: str, notebook_dir: str):
         """))
 
 
-def copy_rec(src: Path, dst: Path):
+def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
     """
     Copy files and directories missing in dst from src and set
     permission 666 for files and 777 for directories.
@@ -58,6 +66,12 @@ def copy_rec(src: Path, dst: Path):
             dst.chmod(0o666)
 
     if not src.exists():
+        msg = f"Source directory not found: {src}"
+        if warning_as_error:
+            raise RuntimeError(msg)
+            pass
+        else:
+            _logger.warning(msg)
         return
     ensure_dir(dst)
     for root, dirs, files in os.walk(src):
@@ -77,7 +91,11 @@ def sleep_inifinity():
 def main():
     args = arg_parser().parse_args()
     if args.notebook_defaults and args.notebooks:
-        copy_rec(args.notebook_defaults, args.notebooks)
+        copy_rec(
+            args.notebook_defaults,
+            args.notebooks,
+            args.warning_as_error,
+        )
     if args.jupyter_server and args.notebooks:
         start_jupyter_server(args.jupyter_server, args.notebooks)
     else:

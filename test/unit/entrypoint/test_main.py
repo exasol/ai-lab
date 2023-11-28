@@ -18,17 +18,19 @@ def test_no_args(mocker):
     assert entrypoint.sleep_inifinity.called
 
 
-def test_copy_args_valid(mocker):
+@pytest.mark.parametrize("warning_as_error", [True, False])
+def test_copy_args_valid(mocker, warning_as_error ):
+    extra_args = ["--warning-as-error"] if warning_as_error else []
     mocker.patch("sys.argv", [
         "app",
         "--notebook-defaults", "source",
         "--notebooks", "destination",
-    ])
+    ] + extra_args)
     mocker.patch(entrypoint_method("copy_rec"))
     mocker.patch(entrypoint_method("sleep_inifinity"))
     entrypoint.main()
     assert entrypoint.copy_rec.called
-    expected = mocker.call(Path("source"), Path("destination"))
+    expected = mocker.call(Path("source"), Path("destination"), warning_as_error)
     assert entrypoint.copy_rec.call_args == expected
 
 

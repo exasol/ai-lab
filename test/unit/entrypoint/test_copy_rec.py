@@ -1,4 +1,5 @@
 import contextlib
+import pytest
 
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 from pathlib import Path
@@ -17,11 +18,19 @@ def create_file(file: Path):
     return file
 
 
-def test_missing_src(tmp_path):
+def test_missing_src(caplog, tmp_path):
     root = tmp_path
     dst = root / "dst"
     entrypoint.copy_rec(root / "src", dst)
     assert not dst.exists()
+    assert "Source directory not found" in caplog.text
+
+
+def test_warning_as_error(tmp_path):
+    root = tmp_path
+    dst = root / "dst"
+    with pytest.raises(RuntimeError, match='Source directory not found: .*'):
+        entrypoint.copy_rec(root / "src", dst, warning_as_error=True)
 
 
 def test_empty_src(tmp_path):
