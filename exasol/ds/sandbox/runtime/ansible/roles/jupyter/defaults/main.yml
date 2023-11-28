@@ -7,6 +7,7 @@ jupyterlab_config: "{{user_home}}/.jupyter/jupyter_lab_config.py"
 jupyterlab_virtualenv: "{{user_home}}/jupyterenv"
 jupyterlab_command: "{{ jupyterlab_virtualenv }}/bin/jupyter-lab"
 jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
+jupyterlab_notebook_folder_initial: "/root/notebooks"
 jupyterlab_notebook_folder: "/root/notebooks"
 
 apt_dependencies:

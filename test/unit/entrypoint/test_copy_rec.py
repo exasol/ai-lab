@@ -30,7 +30,7 @@ def test_empty_src(tmp_path):
         dst = root / "dst"
         entrypoint.copy_rec(src, dst)
     assert dst.exists()
-    assert oct(dst.stat().st_mode).endswith("755")
+    assert oct(dst.stat().st_mode).endswith("777")
 
 
 def test_file(tmp_path):
@@ -42,7 +42,7 @@ def test_file(tmp_path):
     copy = dst / testee.name
     assert copy.exists()
     assert copy.read_text() == testee.read_text()
-    assert oct(copy.stat().st_mode).endswith("644")
+    assert oct(copy.stat().st_mode).endswith("666")
 
 
 def test_dir(tmp_path):
@@ -55,4 +55,4 @@ def test_dir(tmp_path):
     copy = dst / "sub" / testee.name
     assert copy.exists()
     assert copy.read_text() == testee.read_text()
-    assert oct(copy.stat().st_mode).endswith("644")
+    assert oct(copy.stat().st_mode).endswith("666")

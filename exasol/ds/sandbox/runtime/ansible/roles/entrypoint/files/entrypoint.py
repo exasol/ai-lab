@@ -46,18 +46,18 @@ def start_jupyter_server(binary_path: str, notebook_dir: str):
 def copy_rec(src: Path, dst: Path):
     """
     Copy files and directories missing in dst from src and set
-    permission 644 for files and 755 for directories.
+    permission 666 for files and 777 for directories.
     If directory src does not exit then do not copy anything.
     """
     def ensure_dir(dir: Path):
         if not dir.exists():
             dir.mkdir()
-            dir.chmod(0o755)
+            dir.chmod(0o777)
 
     def ensure_file(src: Path, dst: Path):
         if not dst.exists():
             shutil.copyfile(src, dst)
-            dst.chmod(0o644)
+            dst.chmod(0o666)
 
     if not src.exists():
         return

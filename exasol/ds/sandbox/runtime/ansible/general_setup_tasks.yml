@@ -32,6 +32,7 @@
     jupyterlab_virtualenv: "{{ dss_facts.jupyter.virtualenv }}"
     jupyterlab_command: "{{ dss_facts.jupyter.command }}"
     jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
+    jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
     jupyterlab_notebook_folder: "{{ dss_facts.notebook_folder.final }}"
 - name: Clear pip cache
   ansible.builtin.file:
