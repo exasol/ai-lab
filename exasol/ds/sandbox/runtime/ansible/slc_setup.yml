@@ -4,6 +4,7 @@
       ansible_python_interpreter: /usr/bin/python3
       user_name: ubuntu
       user_home: /home/ubuntu
+      initial_notebook_folder: "{{ user_home }}/notebooks"
       need_sudo: yes
   remote_user: ubuntu
   tasks:

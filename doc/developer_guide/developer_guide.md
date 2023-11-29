@@ -155,6 +155,12 @@ export DSS_RUN_CI_TEST=true
 poetry run test/integration/test_ci.py
 ```
 
+Creating a docker image is quite time-consuming, currently around 7 minutes. In order to use an existing docker image in the tests in `integration/test_create_dss_docker_image.py` simply add CLI option `--dss-docker-image` when calling `pytest`:
+
+```shell
+poetry run pytest --dss-docker-image exasol/data-science-sandbox:0.1.0
+```
+
 #### Executing tests involving AWS resources
 
 In AWS web interface, IAM create an access key for CLI usage and save or download the *access key id* and the *secret access key*.

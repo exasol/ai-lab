@@ -3,7 +3,11 @@ import logging
 from pathlib import Path
 from typing import Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleEvent
+from exasol.ds.sandbox.lib.ansible.ansible_access import (
+    AnsibleAccess,
+    AnsibleEvent,
+    AnsibleFacts,
+)
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
@@ -41,12 +45,16 @@ class AnsibleRunner:
             self._duration_logger.debug(f"duration: {round(duration)} seconds")
         return True
 
-    def run(self, ansible_run_context: AnsibleRunContext, host_infos: Tuple[HostInfo]):
+    def run(
+            self,
+            ansible_run_context: AnsibleRunContext,
+            host_infos: Tuple[HostInfo],
+    ) -> AnsibleFacts:
         inventory_content = render_template("inventory.jinja", host_infos=host_infos)
         with open(self._work_dir / "inventory", "w") as f:
             f.write(inventory_content)
         event_handler = self.event_handler if LOG.isEnabledFor(logging.INFO) else None
-        self._ansible_access.run(
+        return self._ansible_access.run(
             str(self._work_dir),
             ansible_run_context,
             event_logger=LOG.debug,

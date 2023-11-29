@@ -1,5 +1,6 @@
 ---
+
 - name: Copy notebook content
   ansible.builtin.synchronize:
     src: "notebook/"
-    dest: "{{jupyterlab.notebook_folder}}"
+    dest: "{{ jupyterlab_notebook_folder_initial }}"

@@ -3,17 +3,18 @@ import json
 import logging
 
 from dataclasses import dataclass
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, NewType, Optional
 
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 
 
+AnsibleEvent = NewType('AnsibleEvent', Dict[str, any])
+AnsibleFacts = NewType('AnsibleFacts', Dict[str, any])
+
+
 class AnsibleException(RuntimeError):
     pass
-
-
-AnsibleEvent = Dict[str, any]
 
 
 class AnsibleAccess:
@@ -27,7 +28,7 @@ class AnsibleAccess:
             run_ctx: AnsibleRunContext,
             event_logger: Callable[[str], None],
             event_handler: Callable[[AnsibleEvent], bool] = None,
-    ):
+    ) -> AnsibleFacts:
         quiet = not get_status_logger(LogType.ANSIBLE).isEnabledFor(logging.INFO)
         r = ansible_runner.run(
             private_data_dir=private_data_dir,
@@ -38,5 +39,13 @@ class AnsibleAccess:
         )
         for e in r.events:
             event_logger(json.dumps(e, indent=2))
+
         if r.rc != 0:
             raise AnsibleException(r.rc)
+
+        if not "docker_container" in run_ctx.extra_vars:
+            return {}
+
+        host = run_ctx.extra_vars["docker_container"]
+        fact_cache = r.get_fact_cache(host)
+        return fact_cache
