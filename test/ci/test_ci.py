@@ -146,7 +146,6 @@ def test_password_changed_on_new_ami(new_ec2_from_ami):
         con.run("uname")
 
 
-@pytest.mark.skipif(True, reason="fix planned in ticket #84")
 @pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
                     reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_jupyter_password_message_shown(new_ec2_from_ami):

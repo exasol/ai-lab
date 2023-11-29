@@ -14,7 +14,7 @@ server_config_file = pathlib.Path("{{jupyter_server_config_file}}")
 
 if server_config_file.exists():
     with open(server_config_file) as f:
-        hashed_server_password = json.load(f)["ServerApp"]["password"]
+        hashed_server_password = json.load(f)["IdentityProvider"]["hashed_password"]
     # server_hashed_password was set by ansible (see motd.yml)
     if hashed_server_password == "{{jupyter_server_hashed_password}}":
         print(motd_message)
