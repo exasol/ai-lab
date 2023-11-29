@@ -69,7 +69,6 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
         msg = f"Source directory not found: {src}"
         if warning_as_error:
             raise RuntimeError(msg)
-            pass
         else:
             _logger.warning(msg)
         return
