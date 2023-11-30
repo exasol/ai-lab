@@ -1,7 +1,7 @@
 from importlib.metadata import version
 from typing import Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.ansible.ansible_context_manager import AnsibleContextManager
 from exasol.ds.sandbox.lib.ansible.ansible_repository import AnsibleRepository, \
     default_repositories
@@ -16,7 +16,7 @@ def run_install_dependencies(ansible_access: AnsibleAccess,
                              configuration: ConfigObject,
                              host_infos: Tuple[HostInfo, ...] = tuple(),
                              ansible_run_context: AnsibleRunContext = default_ansible_run_context,
-                             ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) -> None:
+                             ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) -> AnsibleFacts:
     """
     Runs ansible installation. The ansible working dir is created dynamically and removed afterwards.
     Any hosts, given by variable host_infos, are added to the ansible inventory in the dynamic working directory.
@@ -29,4 +29,5 @@ def run_install_dependencies(ansible_access: AnsibleAccess,
         new_extra_vars.update(ansible_run_context.extra_vars)
     new_ansible_run_context = AnsibleRunContext(ansible_run_context.playbook, new_extra_vars)
     with AnsibleContextManager(ansible_access, ansible_repositories) as ansible_runner:
-        ansible_runner.run(new_ansible_run_context, host_infos=host_infos)
+        facts = ansible_runner.run(new_ansible_run_context, host_infos=host_infos)
+    return facts

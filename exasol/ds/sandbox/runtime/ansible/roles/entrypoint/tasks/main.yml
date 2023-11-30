@@ -1,0 +1,5 @@
+- name: Copy entrypoint script
+  ansible.builtin.copy:
+    src: "entrypoint.py"
+    dest: "{{ dss_facts.entrypoint }}"
+    mode: 0644

@@ -3,35 +3,35 @@
 # because the generate-config command below never overwrites an existing file
 - name: Delete existing JupyterLab config file
   ansible.builtin.file:
-    path: "{{ jupyterlab.config }}"
+    path: "{{ jupyterlab_config }}"
     state: absent
 
 # this generates /root/.jupyter/jupyter_lab_config.py (it has all rows commented out)
 # this config file is very large (>30K)
 - name: Generate JupyterLab config
-  ansible.builtin.command: "{{jupyterlab.virtualenv}}/bin/jupyter lab --generate-config"
+  ansible.builtin.command: "{{jupyterlab_virtualenv}}/bin/jupyter lab --generate-config"
   # this command automatically outputs to ~/.jupyter/
 
 - name: Edit JupyterLab config with our settings
   ansible.builtin.lineinfile:
-    path: "{{ jupyterlab.config }}"
+    path: "{{ jupyterlab_config }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
     - regexp: "c.NotebookApp.ip"
-      line: "c.NotebookApp.ip = '{{ jupyterlab.ip }}'"
+      line: "c.NotebookApp.ip = '{{ jupyterlab_ip }}'"
     - regexp: "c.NotebookApp.open_browser"
       line: "c.NotebookApp.open_browser = False"
 
 - name: Generate a new password
   expect:
-    command: "{{jupyterlab.virtualenv}}/bin/jupyter server password"
+    command: "{{jupyterlab_virtualenv}}/bin/jupyter server password"
     responses:
-      Enter password: "{{jupyterlab.password}}"
-      Verify password: "{{jupyterlab.password}}"
+      Enter password: "{{jupyterlab_password}}"
+      Verify password: "{{jupyterlab_password}}"
 
 - name: Create the notebook directory
   ansible.builtin.file:
-    path: "{{jupyterlab.notebook_folder}}"
+    path: "{{ dss_facts.notebook_folder.initial }}"
     state: directory
     mode: '0755'

@@ -7,17 +7,51 @@ from docker.types import Mount
 from exasol.ds.sandbox.lib import pretty_print
 from importlib_metadata import version
 from pathlib import Path
+from typing import List
+
+from docker.models.containers import Container as DockerContainer
+from docker.models.images import Image as DockerImage
 
 from exasol.ds.sandbox.lib.config import ConfigObject, SLC_VERSION
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.ansible import ansible_repository
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
+from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 
 
 DSS_VERSION = version("exasol-data-science-sandbox")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
+
+
+def get_fact(facts: AnsibleFacts, *keys: str) -> str:
+    keys = list(keys)
+    keys.insert(0, "dss_facts")
+    for key in keys:
+        if not key in facts:
+            return None
+        facts = facts[key]
+    return facts
+
+
+def entrypoint(facts: AnsibleFacts) -> List[str]:
+    def jupyter():
+        cmd = get_fact(facts, "jupyter", "command")
+        return [] if cmd is None else ["--jupyter-server", cmd ]
+
+    entrypoint = get_fact(facts, "entrypoint")
+    if entrypoint is None:
+        return ["sleep", "infinity" ]
+    entrypoint_script = ["python3", entrypoint]
+    folder = get_fact(facts, "notebook_folder")
+    if not folder:
+        return entrypoint_script + jupyter()
+    return entrypoint_script + [
+       "--notebook-defaults", folder["initial"],
+       "--notebooks", folder["final"]
+    ] + jupyter()
+
 
 
 class DssDockerImage:
@@ -37,6 +71,7 @@ class DssDockerImage:
         self.image_name = f"{repository}:{version}"
         self.publish = publish
         self.keep_container = keep_container
+        self._start = None
 
     def _ansible_run_context(self) -> AnsibleRunContext:
         extra_vars = {
@@ -60,44 +95,70 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
-    def create(self):
+    def _start_container(self) -> DockerContainer:
+        self._start = datetime.now()
+        docker_client = docker.from_env()
         docker_file = self._docker_file()
+        _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+        with docker_file.open("rb") as fileobj:
+            docker_client.images.build(fileobj=fileobj, tag=self.image_name)
+        container = docker_client.containers.create(
+            image=self.image_name,
+            name=self.container_name,
+            command="sleep infinity",
+            detach=True,
+        )
+        _logger.info("Starting container")
+        container.start()
+        return container
+
+    def _install_dependencies(self) -> AnsibleFacts:
+        _logger.info("Installing dependencies")
+        host_infos = (HostInfo(self.container_name, None),)
+        return run_install_dependencies(
+            AnsibleAccess(),
+            configuration=self._ansible_config(),
+            host_infos=host_infos,
+            ansible_run_context=self._ansible_run_context(),
+            ansible_repositories=ansible_repository.default_repositories,
+        )
+
+    def _commit_container(
+            self,
+            container: DockerContainer,
+            facts: AnsibleFacts,
+    ) -> DockerImage:
+        _logger.debug(f"Ansible facts: {facts}")
+        _logger.info("Committing changes to docker container")
+        virtualenv = get_fact(facts, "jupyter", "virtualenv")
+        conf = {
+            "Entrypoint": entrypoint(facts),
+            "Cmd": [],
+            "Env": [ f"VIRTUAL_ENV={virtualenv}" ],
+        }
+        return container.commit(
+            repository=self.image_name,
+            conf=conf,
+        )
+
+    def _cleanup(self, container: DockerContainer):
+        if self.keep_container:
+            _logger.info("Keeping container running")
+            return
+        _logger.info("Stopping container")
+        container.stop()
+        _logger.info("Removing container")
+        container.remove()
+
+    def create(self):
         try:
-            start = datetime.now()
-            docker_client = docker.from_env()
-            _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
-            with docker_file.open("rb") as fileobj:
-                docker_client.images.build(fileobj=fileobj, tag=self.image_name)
-            container = docker_client.containers.create(
-                image=self.image_name,
-                name=self.container_name,
-                command="sleep infinity",
-                detach=True,
-            )
-            _logger.info("Starting container")
-            container.start()
-            _logger.info("Installing dependencies")
-            run_install_dependencies(
-                AnsibleAccess(),
-                configuration=self._ansible_config(),
-                host_infos=tuple(),
-                ansible_run_context=self._ansible_run_context(),
-                ansible_repositories=ansible_repository.default_repositories,
-            )
-            _logger.info("Committing changes to docker container")
-            image = container.commit(
-                repository=self.image_name,
-            )
+            container = self._start_container()
+            facts = self._install_dependencies()
+            image = self._commit_container(container, facts)
         except Exception as ex:
             raise ex
         finally:
-            if self.keep_container:
-                _logger.info("Keeping container running")
-            else:
-                _logger.info("Stopping container")
-                container.stop()
-                _logger.info("Removing container")
-                container.remove()
+            self._cleanup(container)
         size = humanfriendly.format_size(image.attrs["Size"])
-        elapsed = pretty_print.elapsed(start)
+        elapsed = pretty_print.elapsed(self._start)
         _logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")

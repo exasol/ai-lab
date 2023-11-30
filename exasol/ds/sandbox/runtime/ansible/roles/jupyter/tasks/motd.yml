@@ -12,7 +12,7 @@
   set_fact:
     jupyter_server_hashed_password: "{{ jupyter_server_config_jsondata | json_query(password_query) }}"
   vars:
-    password_query: 'ServerApp.password'
+    password_query: 'IdentityProvider.hashed_password'
 
 - name: Put motd python script in place
   ansible.builtin.template:

@@ -59,8 +59,8 @@ def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
             LOG.exception("Install dependencies failed.")
 
         LOG.info("-----------------------------------------------------")
-        LOG.info(f"You can now login to the ec2 machine with "
-                 f"'ssh -i {key_file_location}  ubuntu@{host_name}'")
+        LOG.info("You can now login to the ec2 machine with\n"
+                 f"'ssh -i {key_file_location} ubuntu@{host_name}'")
         LOG.info(f"Also you can access Jupyterlab via http://{host_name}:8888/lab")
         LOG.info('Press Ctrl+C to stop and cleanup.')
 

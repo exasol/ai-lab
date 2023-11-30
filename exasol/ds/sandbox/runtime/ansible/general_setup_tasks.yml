@@ -1,3 +1,16 @@
+- name: Set facts for entry point
+  vars:
+    jupyter_virtualenv: "{{user_home}}/jupyterenv"
+  ansible.builtin.set_fact:
+    dss_facts:
+      entrypoint: "{{user_home}}/entrypoint.py"
+      jupyter:
+        virtualenv: "{{ jupyter_virtualenv }}"
+        command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+      notebook_folder:
+        initial: "{{ initial_notebook_folder }}"
+        final: "{{user_home}}/notebooks"
+    cacheable: yes
 - name: Update and upgrade apt packages
   apt:
     upgrade: yes
@@ -9,9 +22,18 @@
 - name: Install Poetry
   include_role:
     name: poetry
+- name: Copy Entry Point Script
+  include_role:
+    name: entrypoint
 - name: Install Jupyter
   include_role:
     name: jupyter
+  vars:
+    jupyterlab_virtualenv: "{{ dss_facts.jupyter.virtualenv }}"
+    jupyterlab_command: "{{ dss_facts.jupyter.command }}"
+    jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
+    jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
+    jupyterlab_notebook_folder: "{{ dss_facts.notebook_folder.final }}"
 - name: Clear pip cache
   ansible.builtin.file:
     path: /root/.cache/pip

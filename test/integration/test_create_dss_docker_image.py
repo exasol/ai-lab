@@ -19,7 +19,18 @@ from exasol.ds.sandbox.lib import pretty_print
 
 
 @pytest.fixture(scope="session")
-def dss_docker_image():
+def dss_docker_image(request):
+    """
+    If dss_docker_image_name is provided then don't create an image but
+    reuse the existing image as specified by cli option
+    --ds-docker-image-name, see file conftest.py.
+    """
+    existing = request.config.getoption("--dss-docker-image")
+    if existing and ":" in existing:
+        name, version = existing.split(":")
+        yield DssDockerImage(name, version)
+        return
+
     testee = DssDockerImage(
         "my-repo/dss-test-image",
         version=f"{DssDockerImage.timestamp()}",
@@ -40,7 +51,6 @@ def dss_docker_container(dss_docker_image):
     container = client.containers.create(
         image=dss_docker_image.image_name,
         name=dss_docker_image.container_name,
-        command="sleep infinity",
         detach=True,
         ports=mapped_ports,
     )
@@ -64,16 +74,10 @@ def test_jupyterlab(dss_docker_container):
     """"
     Test that jupyterlab is configured properly
     """
-    jupyter_command = (
-        "/root/jupyterenv/bin/jupyter-lab"
-        " --notebook-dir=/root/notebooks"
-        " --no-browser"
-        " --allow-root"
-    )
     container = dss_docker_container
-    container.exec_run(jupyter_command, detach=True)
-    container.reload()
     ip_address = container.attrs['NetworkSettings']['IPAddress']
+    if ip_address == "":
+        ip_address = "localhost"
     url = f"http://{ip_address}:8888/lab"
 
     @retry(requests.exceptions.ConnectionError, timedelta(seconds=5))
