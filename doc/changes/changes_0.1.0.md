@@ -1,4 +1,4 @@
-# data-science-sandbox 0.1.0, released t.b.d.
+# data-science-sandbox 0.1.0, released 2023-11-30
 
 Code name: Initial release
 
