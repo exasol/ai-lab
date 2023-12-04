@@ -1,1 +1,1 @@
-from .create_image import DssDockerImage
+from .create_image import DssDockerImage, DockerRegistry

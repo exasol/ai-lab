@@ -19,7 +19,7 @@ from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
-
+from exasol.ds.sandbox.lib.dss_docker.push_image import DockerRegistry
 
 DSS_VERSION = version("exasol-data-science-sandbox")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
@@ -63,15 +63,19 @@ class DssDockerImage:
             self,
             repository: str,
             version: str = None,
-            publish: bool = False,
             keep_container: bool = False,
     ):
         version = version if version else DSS_VERSION
         self.container_name = f"ds-sandbox-{DssDockerImage.timestamp()}"
-        self.image_name = f"{repository}:{version}"
-        self.publish = publish
+        self.repository = repository
+        self.version = version
         self.keep_container = keep_container
         self._start = None
+        self.registry = None
+
+    @property
+    def image_name(self):
+        return f"{self.repository}:{self.version}"
 
     def _ansible_run_context(self) -> AnsibleRunContext:
         extra_vars = {
@@ -150,11 +154,16 @@ class DssDockerImage:
         _logger.info("Removing container")
         container.remove()
 
+    def _push(self):
+        if self.registry is not None:
+            self.registry.push(self.version)
+
     def create(self):
         try:
             container = self._start_container()
             facts = self._install_dependencies()
             image = self._commit_container(container, facts)
+            self._push()
         except Exception as ex:
             raise ex
         finally:

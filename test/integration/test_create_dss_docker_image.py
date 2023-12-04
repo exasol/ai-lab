@@ -18,32 +18,6 @@ from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
 
 
-@pytest.fixture(scope="session")
-def dss_docker_image(request):
-    """
-    If dss_docker_image_name is provided then don't create an image but
-    reuse the existing image as specified by cli option
-    --ds-docker-image-name, see file conftest.py.
-    """
-    existing = request.config.getoption("--dss-docker-image")
-    if existing and ":" in existing:
-        name, version = existing.split(":")
-        yield DssDockerImage(name, version)
-        return
-
-    testee = DssDockerImage(
-        "my-repo/dss-test-image",
-        version=f"{DssDockerImage.timestamp()}",
-        publish=False,
-        keep_container=False,
-    )
-    testee.create()
-    try:
-        yield testee
-    finally:
-        docker.from_env().images.remove(testee.image_name)
-
-
 @pytest.fixture
 def dss_docker_container(dss_docker_image):
     client = docker.from_env()
