@@ -21,7 +21,8 @@ PASSWORD_ENV = "DOCKER_REGISTRY_PASSWORD"
         default="exasol/data-science-sandbox",
         help="""
         Organization and repository on hub.docker.com to publish the
-        docker image to see https://docs.docker.com/engine/reference/commandline/tag.
+        docker image to. Optionally prefixed by a host and a port,
+        see https://docs.docker.com/engine/reference/commandline/tag.
         """),
     click.option(
         "--version", type=str,  metavar="VERSION",
@@ -34,7 +35,7 @@ PASSWORD_ENV = "DOCKER_REGISTRY_PASSWORD"
         default=lambda: os.environ.get(USER_ENV, None),
         help=f"""
         Username for Docker registry [defaults to environment
-        variable {USER_ENV}]. Password is always read
+        variable {USER_ENV}]. If specified then password is read
         from environment variable {PASSWORD_ENV}.
         """
         ),
@@ -53,8 +54,10 @@ def create_docker_image(
         log_level: str,
 ):
     """
-    Create a Docker image for data-science-sandbox.  If username and password
-    for the Docker registry are specified then deploy the image to the registry.
+    Create a Docker image for data-science-sandbox.  If option
+    ``--publish`` is specified then deploy the image to the Docker registry
+    using the specified user name and reading the password from environment
+    variable ``PASSWORD_ENV``.
     """
     def registry_password():
         if registry_user is None:
