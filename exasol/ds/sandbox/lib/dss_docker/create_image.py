@@ -20,7 +20,6 @@ from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
-from exasol.ds.sandbox.lib.dss_docker.push_image import DockerRegistry
 
 DSS_VERSION = version("exasol-data-science-sandbox")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
