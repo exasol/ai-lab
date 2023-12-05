@@ -31,7 +31,6 @@ def dss_docker_image(request):
     testee = DssDockerImage(
         "my-repo/dss-test-image",
         version=f"{DssDockerImage.timestamp()}",
-        publish=False,
         keep_container=False,
     )
     testee.create()
