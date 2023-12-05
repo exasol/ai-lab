@@ -5,19 +5,11 @@ import requests
 
 from docker.client import DockerClient
 
-from typing import Callable, Dict, Optional
+from typing import Callable, Optional
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 
 
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
-
-
-def get_from_dict(d: Dict[str, any], *keys: str) -> str:
-    for key in keys:
-        if not key in d:
-            return None
-        d = d[key]
-    return d
 
 
 class ProgressReporter:
@@ -48,24 +40,18 @@ class ProgressReporter:
 
 
 class DockerRegistry:
-    def __init__(self, repository: str, username: str, password: str):
-        self.repository = repository
+    def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
-        self._client = None
 
-    def client(self):
-        if self._client is None:
-            self._client = docker.from_env()
-        return self._client
-
-    def push(self, tag: str):
+    def push(self, repository: str, tag: str):
         auth_config = {
             "username": self.username,
             "password": self.password,
         }
-        resp = self.client().images.push(
-            repository=self.repository,
+        client = docker.from_env()
+        resp = client.images.push(
+            repository=repository,
             tag=tag,
             auth_config=auth_config,
             stream=True,

@@ -2,12 +2,13 @@ import docker
 import humanfriendly
 import importlib_resources
 
+from functools import reduce
 from datetime import datetime
 from docker.types import Mount
 from exasol.ds.sandbox.lib import pretty_print
 from importlib_metadata import version
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Optional
 
 from docker.models.containers import Container as DockerContainer
 from docker.models.images import Image as DockerImage
@@ -25,14 +26,16 @@ DSS_VERSION = version("exasol-data-science-sandbox")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
 
-def get_fact(facts: AnsibleFacts, *keys: str) -> str:
-    keys = list(keys)
-    keys.insert(0, "dss_facts")
-    for key in keys:
-        if not key in facts:
-            return None
-        facts = facts[key]
-    return facts
+def get_fact(facts: AnsibleFacts, *keys: str) -> Optional[str]:
+    return get_nested_value(facts, "dss_facts", *keys)
+
+
+def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
+    def nested_item(current, key):
+        valid = current is not None and key in current
+        return current[key] if valid else None
+
+    return reduce(nested_item, keys, mapping)
 
 
 def entrypoint(facts: AnsibleFacts) -> List[str]:
@@ -156,7 +159,7 @@ class DssDockerImage:
 
     def _push(self):
         if self.registry is not None:
-            self.registry.push(self.version)
+            self.registry.push(self.repository, self.version)
 
     def create(self):
         try:

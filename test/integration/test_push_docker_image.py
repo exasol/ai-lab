@@ -7,12 +7,13 @@ import re
 import requests
 import time
 
-from docker.client import DockerClient
-from typing import Callable, Optional
-
-from test.ports import find_free_port
-from exasol.ds.sandbox.lib.dss_docker.push_image import DockerRegistry
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
+
+from test.integration.local_docker_registry import (
+    custom_docker_registry_context,
+    LocalDockerRegistry,
+    local_docker_registry_context,
+)
 
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.DEBUG)
@@ -23,48 +24,28 @@ def normalize_request_name(name: str):
     return re.sub(r"^_+|_+$", "", name)
 
 
-class LocalDockerRegistry(DockerRegistry):
+@contextlib.contextmanager
+def tagged_image(
+        dss_docker_image: DssDockerImage,
+        registry: LocalDockerRegistry,
+        tag: str = None,
+):
     """
-    Simulate Docker registry by running a local Docker container and using
-    the registry inside.
-
-    Please note for pushing images to a Docker registry with host or port
-    differing from the official address requires to tag images in advance.
-
-    So host and port must be prepended to property ``repository`` of the
-    image.
+    Prepend host and port of LocalDockerRegistry to the repository name of the
+    DssDockerImage to enable pushing the image to the local registry.
     """
-    def __init__(self, host_and_port: str, repo_name: str):
-        super().__init__(
-            f'{host_and_port}/{repo_name}',
-            username=None,
-            password=None,
-        )
-        self.host_and_port = host_and_port
-        self.repo_name = repo_name
-
-    @property
-    def url(self):
-        return f'http://{self.host_and_port}'
-
-    @property
-    def images(self):
-        url = f"{self.url}/v2/{self.repo_name}/tags/list"
-        result = requests.request("GET", url)
-        images = json.loads(result.content.decode("UTF-8"))
-        return images
-
-    @property
-    def repositories(self):
-        url = f"{self.url}/v2/_catalog/"
-        result = requests.request("GET", url)
-        repos = json.loads(result.content.decode("UTF-8"))["repositories"]
-        return repos
-
-    def tag_image(self, image_name: str, tag: str):
-        image = self.client().images.get(image_name)
-        _logger.info(f'tagging image to {self.repository}:{tag}')
-        image.tag(self.repository, tag)
+    new_repo = f"{registry.host_and_port}/{dss_docker_image.repository}"
+    client = docker.from_env()
+    tag = tag or dss_docker_image.version
+    _logger.info(f'tagging image to {new_repo}:{tag}')
+    image = client.images.get(dss_docker_image.image_name)
+    image.tag(new_repo, tag)
+    tagged = DssDockerImage(new_repo, tag)
+    tagged.registry = registry
+    try:
+        yield tagged
+    finally:
+        docker.from_env().images.remove(tagged.image_name)
 
 
 @pytest.fixture(scope="session")
@@ -76,25 +57,19 @@ def docker_registry(request):
     You can provide cli option ``--docker-registry HOST:PORT`` to pytest in
     order reuse an already running Docker container as registry.
     """
-    def make_context(host_and_port: str) -> Callable[[str], LocalDockerRegistry]:
-        @contextlib.contextmanager
-        def context(repository: str) -> DockerRegistry:
-            yield LocalDockerRegistry(host_and_port, repository)
-        return context
-
     existing = request.config.getoption("--docker-registry")
     if existing is not None:
-        yield make_context(existing)
+        yield LocalDockerRegistry(existing)
         return
 
     test_name = normalize_request_name(request.node.name)
     container_name = f"{test_name}_registry"
-    port = find_free_port()
 
-    _logger.debug("Pulling Docker image with Docker registry")
+    port = find_free_port()
     client = docker.from_env()
+    _logger.debug("Pulling Docker image with Docker registry")
     client.images.pull(repository="registry", tag="2")
-    _logger.debug(f"Start container of {container_name}")
+    _logger.debug(f"Starting container {container_name}")
     try:
         client.containers.get(container_name).remove(force=True)
     except:
@@ -103,12 +78,12 @@ def docker_registry(request):
         image="registry:2",
         name=container_name,
         ports={5000: port},
-        detach=True
+        detach=True,
     )
     time.sleep(10)
-    _logger.debug(f"Finished start container of {container_name}")
+    _logger.debug(f"Finished starting container {container_name}")
     try:
-        yield make_context(f"localhost:{port}")
+        yield LocalDockerRegistry(f"localhost:{port}")
     finally:
         _logger.debug("Stopping container")
         container.stop()
@@ -116,21 +91,19 @@ def docker_registry(request):
         container.remove()
 
 
-def test_push(dss_docker_image, docker_registry):
+def test_push_tag(dss_docker_image, docker_registry):
+    repo = dss_docker_image.repository
     tag = "999.9.9"
-    with docker_registry(dss_docker_image.repository) as registry:
-        registry.tag_image(dss_docker_image.image_name, tag)
-        registry.push(tag)
-        assert dss_docker_image.repository in registry.repositories
-        assert tag in registry.images["tags"]
+    with tagged_image(dss_docker_image, docker_registry, tag) as tagged:
+        docker_registry.push(tagged.repository, tag)
+    assert repo in docker_registry.repositories
+    assert tag in docker_registry.images(repo)["tags"]
 
 
 def test_push_via_image(dss_docker_image, docker_registry):
     repo = dss_docker_image.repository
     tag = dss_docker_image.version
-    with docker_registry(repo) as registry:
-        dss_docker_image.registry = registry
-        registry.tag_image(dss_docker_image.image_name, tag)
-        dss_docker_image._push()
-        assert repo in registry.repositories
-        assert tag in registry.images["tags"]
+    with tagged_image(dss_docker_image, docker_registry) as tagged:
+        tagged._push()
+    assert repo in docker_registry.repositories
+    assert tag in docker_registry.images(repo)["tags"]

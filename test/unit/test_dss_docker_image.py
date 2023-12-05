@@ -15,7 +15,6 @@ def sample_repo():
 def test_constructor_defaults(sample_repo):
     testee = DssDockerImage(sample_repo)
     assert testee.image_name == f"{sample_repo}:{DSS_VERSION}"
-    assert testee.publish == False
     assert testee.keep_container == False
 
 
@@ -24,12 +23,26 @@ def test_constructor(sample_repo):
     testee = DssDockerImage(
         repository=sample_repo,
         version=version,
-        publish=True,
         keep_container=True,
     )
     assert testee.image_name == f"{sample_repo}:{version}"
-    assert testee.publish == True
     assert testee.keep_container == True
+
+
+@pytest.mark.parametrize(
+    "testee",
+    [
+        {},
+        {"key": "sample value"},
+     ])
+def test_nested_value_missing_entry(testee):
+    assert create_image.get_nested_value(testee, "missing_entry") == None
+    assert create_image.get_nested_value(testee, "key", "key-2") == None
+
+
+def test_nested_value_level_2():
+    testee = {"key": {"key-2": "value"}}
+    assert create_image.get_nested_value(testee, "key", "key-2") == "value"
 
 
 @pytest.mark.parametrize(
