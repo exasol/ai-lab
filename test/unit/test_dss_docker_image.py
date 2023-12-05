@@ -1,6 +1,8 @@
 import pytest
 
-from exasol.ds.sandbox.lib.dss_docker import create_image
+from unittest.mock import MagicMock, Mock
+from datetime import datetime
+from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
 from exasol.ds.sandbox.lib.dss_docker.create_image import (
     DssDockerImage,
     DSS_VERSION,
@@ -96,3 +98,27 @@ def test_entrypoint_with_copy_args():
         "--notebooks", final,
         "--jupyter-server", jupyter,
     ]
+
+@pytest.fixture
+def mocked_docker_image():
+    testee = DssDockerImage("org/sample_repo", "version")
+    testee._start = datetime.now()
+    testee._start_container = MagicMock()
+    testee._install_dependencies = MagicMock()
+    testee._cleanup = MagicMock()
+    image = Mock(attrs={"Size": 1025})
+    testee._commit_container = MagicMock(return_value=image)
+    return testee
+
+
+def test_push_called(mocker, mocked_docker_image):
+    testee = mocked_docker_image
+
+    registry = DockerRegistry("user", "password")
+    registry.push = MagicMock()
+    testee.registry = registry
+
+    testee.create()
+    assert registry.push.called
+    expected = mocker.call(testee.repository, testee.version)
+    assert registry.push.call_args == expected
