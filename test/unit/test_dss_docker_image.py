@@ -1,6 +1,6 @@
 import pytest
 
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, create_autospec
 from datetime import datetime
 from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
 from exasol.ds.sandbox.lib.dss_docker.create_image import (
@@ -113,12 +113,8 @@ def mocked_docker_image():
 
 def test_push_called(mocker, mocked_docker_image):
     testee = mocked_docker_image
-
-    registry = DockerRegistry("user", "password")
-    registry.push = MagicMock()
-    testee.registry = registry
-
+    testee.registry = create_autospec(DockerRegistry)
     testee.create()
-    assert registry.push.called
+    assert testee.registry.push.called
     expected = mocker.call(testee.repository, testee.version)
-    assert registry.push.call_args == expected
+    assert testee.registry.push.call_args == expected

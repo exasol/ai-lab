@@ -52,8 +52,8 @@ def sample_docker_image(registry_image):
 @contextlib.contextmanager
 def tagged_image(old: DockerImageSpec, new: DockerImageSpec):
     """
-    Prepend host and port of LocalDockerRegistry to the repository name of the
-    DssDockerImage to enable pushing the image to the local registry.
+    Tag the Docker image with spec ``old`` to ``new`` to enable pushing
+    the image to a local registry.
     """
     client = docker.from_env()
     _logger.debug(f'tagging image from {old.name} to {new.name}')
@@ -69,11 +69,10 @@ def tagged_image(old: DockerImageSpec, new: DockerImageSpec):
 @pytest.fixture(scope="session")
 def docker_registry(request, registry_image):
     """
-    Provide a context for creating a LocalDockerRegistry accepting
-    parameter ``repository``.
-
-    You can provide cli option ``--docker-registry HOST:PORT`` to pytest in
-    order reuse an already running Docker container as registry.
+    Create a LocalDockerRegistry for executing integration tests.  You can
+    provide cli option ``--docker-registry HOST:PORT`` to pytest in order
+    reuse an already running Docker container as registry, see file
+    ``conftest.py``.
     """
     existing = request.config.getoption("--docker-registry")
     if existing is not None:
@@ -108,13 +107,12 @@ def docker_registry(request, registry_image):
 
 
 def test_push_tag(sample_docker_image, docker_registry):
-    old = DockerImageSpec("registry", "2")
     repo = "org/sample_repo"
-    new = DockerImageSpec(
+    spec = DockerImageSpec(
         docker_registry.host_and_port + "/" + repo,
         "999.9.9",
     )
-    with tagged_image(old, new) as tagged:
-        docker_registry.push(tagged.repository, new.tag)
+    with tagged_image(sample_docker_image, spec) as tagged:
+        docker_registry.push(tagged.repository, spec.tag)
     assert repo in docker_registry.repositories
-    assert new.tag in docker_registry.images(repo)["tags"]
+    assert spec.tag in docker_registry.images(repo)["tags"]
