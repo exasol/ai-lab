@@ -24,6 +24,7 @@ Version: 0.1.0
 * #23: Fixed AWS Code build
 * #69: Added entry point to start Jupyter server
 * #84: Fixed retrieval and display of jupyter password
+* #36: Supported pushing Docker image to a Docker registry
 
 ## Bug Fixes
 
