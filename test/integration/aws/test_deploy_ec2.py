@@ -4,7 +4,7 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
-from test.aws.cloudformation_validation import validate_using_cfn_lint
+from test.integration.aws.cloudformation_validation import validate_using_cfn_lint
 
 
 def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id, test_dummy_ami_id):

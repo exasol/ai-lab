@@ -2,7 +2,7 @@ import pytest
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.render_template import render_template
-from test.aws.cloudformation_validation import validate_using_cfn_lint
+from test.integration.aws.cloudformation_validation import validate_using_cfn_lint
 
 
 codebuild_cloudformation_templates = [
