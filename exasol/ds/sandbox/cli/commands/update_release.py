@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 import click
@@ -11,7 +10,10 @@ from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.logging import set_log_level
-from exasol.ds.sandbox.lib.github_release_access import GithubReleaseAccess
+from exasol.ds.sandbox.lib.github_release_access import (
+    github_token_or_exit,
+    GithubReleaseAccess,
+)
 from exasol.ds.sandbox.lib.update_release.run_update_release import run_update_release
 
 
@@ -27,9 +29,15 @@ def update_release(
         asset_id: str,
         log_level: str):
     """
-    This command attaches the links of the release assets (AMI, VM images) to the Github release,
-    indicated by parameter 'release-id'.
+    This command attaches the links of the release assets (AMI, VM images)
+    to the Github release, indicated by parameter 'release-id'.  GitHub token
+    is expected to be found in environment variable GITHUB_TOKEN.
     """
     set_log_level(log_level)
-    run_update_release(AwsAccess(aws_profile), GithubReleaseAccess(os.getenv("GITHUB_TOKEN")),
-                       release_id, AssetId(asset_id))
+    gh_token = github_token_or_exit()
+    run_update_release(
+        AwsAccess(aws_profile),
+        GithubReleaseAccess(gh_token),
+        release_id,
+        AssetId(asset_id),
+    )
