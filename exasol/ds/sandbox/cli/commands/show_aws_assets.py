@@ -53,6 +53,6 @@ def show_aws_assets(
         print_assets(
             AwsAccess(aws_profile=aws_profile),
             asset_id=_asset_id,
-            outfile=handle,
+            out_file_obj=handle,
             asset_types=asset_types,
         )

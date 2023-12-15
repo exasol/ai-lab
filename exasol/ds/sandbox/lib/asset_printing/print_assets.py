@@ -315,7 +315,7 @@ def printing_factory(outfile):
 def print_assets(
         aws_access: AwsAccess,
         asset_id: Optional[AssetId],
-        outfile: Optional[TextIO],
+        out_file_obj: Optional[TextIO],
         asset_types: Tuple[AssetTypes] = AssetTypes,
 ):
     filter_value = "*" if asset_id is None else asset_id.tag_value
