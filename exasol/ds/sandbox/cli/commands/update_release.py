@@ -30,8 +30,8 @@ def update_release(
         log_level: str):
     """
     This command attaches the links of the release assets (AMI, VM images)
-    to the Github release, indicated by parameter 'release-id'.  GitHub token
-    is expected to be found in environment variable GITHUB_TOKEN.
+    to the Github release, indicated by command line option '--release-id'.
+    GitHub token is expected to be found in environment variable GITHUB_TOKEN.
     """
     set_log_level(log_level)
     gh_token = github_token_or_exit()

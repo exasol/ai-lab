@@ -33,7 +33,7 @@ class RichConsoleTablePrinter(TablePrinter, ABC):
 
 class RichConsoleTextPrinter(TextPrinter, ABC):
 
-    def _style(self, obj: TextObject) -> Optional[str]:
+    def _style(self, obj: TextObject) -> Tuple[Optional[str]]:
         if isinstance(obj, TitleTextObject):
             return "italic", "\n\n"
         if isinstance(obj, HighlightedTextObject):

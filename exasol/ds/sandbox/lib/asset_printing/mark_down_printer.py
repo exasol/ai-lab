@@ -39,7 +39,7 @@ class MarkdownTextPrinter(TextPrinter, ABC):
     def __init__(self, target: io.TextIOBase):
         self.target = target
 
-    def _format(self, obj: TextObject) -> Optional[str]:
+    def _format(self, obj: TextObject) -> str:
         if isinstance(obj, TitleTextObject):
             return f'#### {obj.text}\n'
         if isinstance(obj, CodeBlockTextObject):
