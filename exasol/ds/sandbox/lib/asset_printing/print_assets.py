@@ -26,6 +26,10 @@ from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket, find_u
 from exasol.ds.sandbox.lib.dss_docker import DEFAULT_ORG_AND_REPOSITORY
 
 
+class AssetTypeNotFound(RuntimeError):
+    pass
+
+
 class AssetTypes(Enum):
     DOCKER = "docker"
     AMI = "ami"
@@ -37,7 +41,10 @@ class AssetTypes(Enum):
 
     @staticmethod
     def from_name(name: str):
-        return next(a for a in AssetTypes if a.value == name)
+        try:
+            return next(a for a in AssetTypes if a.value == name)
+        except StopIteration:
+            raise AssetTypeNotFound(f'No asset type with name "{name}"')
 
 
 def aws_asset_type_names() -> Tuple[str, ...]:

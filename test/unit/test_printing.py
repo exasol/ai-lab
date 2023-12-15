@@ -5,7 +5,12 @@ from typing import Union
 from unittest.mock import MagicMock, call, create_autospec, Mock
 
 from exasol.ds.sandbox.lib.asset_id import AssetId
-from exasol.ds.sandbox.lib.asset_printing.print_assets import print_with_printer, AssetTypes, print_assets
+from exasol.ds.sandbox.lib.asset_printing.print_assets import (
+    print_with_printer,
+    AssetTypes,
+    AssetTypeNotFound,
+    print_assets,
+)
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from test.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, get_snapshot_mock_data, \
     get_export_image_task_mock_data, get_s3_object_mock_data, TEST_BUCKET_ID, \
@@ -188,3 +193,12 @@ def test_print_docker(default_asset_id):
         actual = buf.getvalue()
     assert "#### Docker Images" in actual
     assert "docker pull exasol/data-science-sandbox:test" in actual
+
+
+def test_asset_type_from_name():
+    assert AssetTypes.from_name("docker") == AssetTypes.DOCKER
+
+
+def test_asset_type_from_unknown():
+    with pytest.raises(AssetTypeNotFound, match='No asset type with name "unknown"'):
+        assert AssetTypes.from_name("unknown")
