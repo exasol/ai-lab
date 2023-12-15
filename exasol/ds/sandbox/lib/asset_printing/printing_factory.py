@@ -1,5 +1,6 @@
 import abc
-from typing import Tuple
+from typing import Optional, Tuple
+from enum import Enum
 
 
 class TablePrinter(abc.ABC):
@@ -17,14 +18,20 @@ class TablePrinter(abc.ABC):
 
 
 class TextObject(abc.ABC):
-    def __init__(self, text: str, highlight_key: bool = False):
+    def __init__(self, text: str):
         self.text = text
-        self.highlight_key = highlight_key
 
 
 class HighlightedTextObject(TextObject):
-    def __init__(self, text: str):
-        super().__init__(text, True)
+    pass
+
+
+class TitleTextObject(TextObject):
+    pass
+
+
+class CodeBlockTextObject(TextObject):
+    pass
 
 
 class TextPrinter(abc.ABC):
@@ -40,6 +47,5 @@ class PrintingFactory(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def create_text_printer(self) -> TextPrinter:
+    def create_text_printer(self, console_only: bool = False) -> TextPrinter:
         pass
-

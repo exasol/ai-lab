@@ -1,13 +1,21 @@
 import fnmatch
-import urllib.parse
-from typing import Tuple, Optional, List, Dict
-
 import humanfriendly
+import urllib.parse
+
+from datetime import datetime
+from dataclasses import dataclass
+from inspect import cleandoc
+from typing import Dict, List, Optional, TextIO, Tuple
 
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.asset_printing.mark_down_printer import MarkdownPrintingFactory
-from exasol.ds.sandbox.lib.asset_printing.printing_factory import PrintingFactory, TextObject, \
-    HighlightedTextObject
+from exasol.ds.sandbox.lib.asset_printing.printing_factory import (
+    PrintingFactory,
+    CodeBlockTextObject,
+    HighlightedTextObject,
+    TextObject,
+    TitleTextObject,
+)
 from exasol.ds.sandbox.lib.asset_printing.rich_console_printer import RichConsolePrintingFactory
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from enum import Enum
@@ -15,19 +23,25 @@ from enum import Enum
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket, find_url_for_bucket
+from exasol.ds.sandbox.lib.dss_docker import DEFAULT_ORG_AND_REPOSITORY
 
 
 class AssetTypes(Enum):
+    DOCKER = "docker"
     AMI = "ami"
-    VM_S3 = "s3-object"
     SNAPSHOT = "snapshot"
     EXPORT_IMAGE_TASK = "export-image-task"
+    VM_S3 = "s3-object"
     CLOUDFORMATION = "cloudformation"
     EC2_KEY_PAIR = "ec2-key-pair"
 
+    @staticmethod
+    def from_name(name: str):
+        return next(a for a in AssetTypes if a.value == name)
 
-def all_asset_types() -> Tuple[str, ...]:
-    return tuple(asset_type.value for asset_type in AssetTypes)
+
+def aws_asset_type_names() -> Tuple[str, ...]:
+    return tuple(a.value for a in AssetTypes if a != AssetTypes.DOCKER)
 
 
 def find_default_tag_value_in_tags(tags: Optional[List[Dict[str,str]]]):
@@ -42,12 +56,12 @@ def find_default_tag_value_in_tags(tags: Optional[List[Dict[str,str]]]):
 def print_amis(aws_access: AwsAccess, filter_value: str, printing_factory: PrintingFactory):
     table_printer = printing_factory.create_table_printer(title=f"AMI Images (Filter={filter_value})")
 
-    table_printer.add_column("Image-Id", style="blue", no_wrap=True)
+    table_printer.add_column("Image ID", style="blue", no_wrap=True)
     table_printer.add_column("Name", no_wrap=True)
     table_printer.add_column("Description", no_wrap=False)
     table_printer.add_column("Public", no_wrap=True)
-    table_printer.add_column("ImageLocation", no_wrap=True)
-    table_printer.add_column("CreationDate", style="magenta", no_wrap=True)
+    table_printer.add_column("Image Location", no_wrap=True)
+    table_printer.add_column("Creation Date", style="magenta", no_wrap=True)
     table_printer.add_column("State", no_wrap=True)
     table_printer.add_column("Asset-Tag-Value", no_wrap=True)
 
@@ -59,11 +73,11 @@ def print_amis(aws_access: AwsAccess, filter_value: str, printing_factory: Print
                               find_default_tag_value_in_tags(ami.tags))
 
     table_printer.finish()
-    text_print = printing_factory.create_text_printer()
-
+    text_print = printing_factory.create_text_printer(console_only=True)
     text_print.print((TextObject("You can de-register AMI images using AWS CLI:\n"),
-                     TextObject("'aws ec2 deregister-image --image-id "),
-                     HighlightedTextObject("Image-Id"), TextObject("'")))
+                      TextObject("'aws ec2 deregister-image --image-id "),
+                      HighlightedTextObject("Image-Id"),
+                      TextObject("'")))
     text_print.print(tuple())
 
 
@@ -86,11 +100,11 @@ def print_snapshots(aws_access: AwsAccess, filter_value: str, printing_factory: 
 
     table_printer.finish()
 
-    text_print = printing_factory.create_text_printer()
-
+    text_print = printing_factory.create_text_printer(console_only=True)
     text_print.print((TextObject("You can remove snapshots using AWS CLI:\n"),
-                     TextObject("'aws ec2 delete-snapshot --snapshot-id "),
-                     HighlightedTextObject("SnapshotId"), TextObject("'")))
+                      TextObject("'aws ec2 delete-snapshot --snapshot-id "),
+                      HighlightedTextObject("SnapshotId"),
+                      TextObject("'")))
     text_print.print(tuple())
 
 
@@ -118,11 +132,11 @@ def print_export_image_tasks(aws_access: AwsAccess, filter_value: str, printing_
                               find_default_tag_value_in_tags(export_image_task.tags))
 
     table_printer.finish()
-    text_print = printing_factory.create_text_printer()
-
+    text_print = printing_factory.create_text_printer(console_only=True)
     text_print.print((TextObject("You can cancel active tasks using AWS CLI:\n"),
-                     TextObject("'aws ec2 cancel-export-task --export-task-id "),
-                     HighlightedTextObject("ExportImageTaskId"), TextObject("'")))
+                      TextObject("'aws ec2 cancel-export-task --export-task-id "),
+                      HighlightedTextObject("ExportImageTaskId"),
+                      TextObject("'")))
     text_print.print(tuple())
 
 
@@ -213,11 +227,11 @@ def print_cloudformation_stacks(aws_access: AwsAccess, filter_value: str, printi
                                   stack_resource.resource_type, "n/a")
 
     table_printer.finish()
-    text_print = printing_factory.create_text_printer()
-
+    text_print = printing_factory.create_text_printer(console_only=True)
     text_print.print((TextObject("You can remove a cf stack using AWS CLI:\n"),
                       TextObject("'aws cloudformation delete-stack --stack-name "),
-                      HighlightedTextObject("Stack-Name/Stack-Id"), TextObject("'")))
+                      HighlightedTextObject("Stack-Name/Stack-Id"),
+                      TextObject("'")))
     text_print.print(tuple())
 
 
@@ -237,41 +251,71 @@ def print_ec2_keys(aws_access: AwsAccess, filter_value: str, printing_factory: P
 
     table_printer.finish()
 
-    text_print = printing_factory.create_text_printer()
-
+    text_print = printing_factory.create_text_printer(console_only=True)
     text_print.print((TextObject("You can remove key-pairs using AWS CLI:\n"),
-                     TextObject("'aws ec2 delete-key-pair --key-pair-id "),
-                     HighlightedTextObject("KeyPairId"), TextObject("'")))
+                      TextObject("'aws ec2 delete-key-pair --key-pair-id "),
+                      HighlightedTextObject("KeyPairId"),
+                      TextObject("'")))
     text_print.print(tuple())
 
 
-def print_with_printer(aws_access: AwsAccess, asset_id: Optional[AssetId],
-                       asset_types: Tuple[str], filter_value: str, printing_factory: PrintingFactory):
-    if AssetTypes.AMI.value in asset_types:
-        print_amis(aws_access, filter_value, printing_factory)
-    if AssetTypes.SNAPSHOT.value in asset_types:
-        print_snapshots(aws_access, filter_value, printing_factory)
-    if AssetTypes.EXPORT_IMAGE_TASK.value in asset_types:
-        print_export_image_tasks(aws_access, filter_value, printing_factory)
-    if AssetTypes.VM_S3.value in asset_types:
-        print_s3_objects(aws_access, asset_id, printing_factory)
-    if AssetTypes.CLOUDFORMATION.value in asset_types:
-        print_cloudformation_stacks(aws_access, filter_value, printing_factory)
-    if AssetTypes.EC2_KEY_PAIR.value in asset_types:
-        print_ec2_keys(aws_access, filter_value, printing_factory)
+def print_with_printer(
+        aws_access: AwsAccess,
+        asset_id: Optional[AssetId],
+        asset_types: Tuple[AssetTypes],
+        filter_value: str,
+        printing_factory: PrintingFactory,
+):
+    print_function = {
+        AssetTypes.DOCKER: print_docker_images,
+        AssetTypes.AMI: print_amis,
+        AssetTypes.SNAPSHOT: print_snapshots,
+        AssetTypes.EXPORT_IMAGE_TASK: print_export_image_tasks,
+        AssetTypes.VM_S3: print_s3_objects,
+        AssetTypes.CLOUDFORMATION: print_cloudformation_stacks,
+        AssetTypes.EC2_KEY_PAIR: print_ec2_keys,
+    }
+
+    def second_arg(asset_type: AssetTypes):
+        if asset_type in (AssetTypes.DOCKER, AssetTypes.VM_S3):
+            return asset_id
+        return filter_value
+
+    selected = (a for a in AssetTypes if a in asset_types)
+    for asset_type in selected:
+        print_function[asset_type](
+            aws_access,
+            second_arg(asset_type),
+            printing_factory,
+        )
 
 
-def print_assets(aws_access: AwsAccess, asset_id: Optional[AssetId], outfile: Optional[str],
-                 asset_types: Tuple[str] = all_asset_types()):
-    if asset_id is None:
-        filter_value = "*"
-    else:
-        filter_value = asset_id.tag_value
+def print_docker_images(aws_access: AwsAccess, asset_id: str, printing_factory: PrintingFactory):
+    printer = printing_factory.create_text_printer()
+    printer.print((
+        TitleTextObject("Docker Images"),
+        CodeBlockTextObject(f"docker pull {DEFAULT_ORG_AND_REPOSITORY}:{asset_id}"),
+    ))
+    printer.print(tuple())
 
-    if outfile is not None:
-        with open(outfile, "w") as f:
-            printing_factory = MarkdownPrintingFactory(f)
-            print_with_printer(aws_access, asset_id, asset_types, filter_value, printing_factory)
-    else:
-        printing_factory = RichConsolePrintingFactory()
-        print_with_printer(aws_access, asset_id, asset_types, filter_value, printing_factory)
+
+def printing_factory(outfile):
+    if outfile is None:
+        return RichConsolePrintingFactory()
+    return MarkdownPrintingFactory(outfile)
+
+
+def print_assets(
+        aws_access: AwsAccess,
+        asset_id: Optional[AssetId],
+        outfile: Optional[TextIO],
+        asset_types: Tuple[AssetTypes] = AssetTypes,
+):
+    filter_value = "*" if asset_id is None else asset_id.tag_value
+    print_with_printer(
+        aws_access,
+        asset_id,
+        asset_types,
+        filter_value,
+        printing_factory(outfile),
+    )
