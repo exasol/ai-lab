@@ -15,7 +15,6 @@ from exasol.ds.sandbox.lib.github_release_access import (
 from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_test_release_build
 
 
-GITHUB_TOKEN_ENV = "GITHUB_TOKEN"
 
 
 @cli.command()
