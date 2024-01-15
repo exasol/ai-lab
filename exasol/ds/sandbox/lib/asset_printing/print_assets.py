@@ -324,5 +324,5 @@ def print_assets(
         asset_id,
         asset_types,
         filter_value,
-        printing_factory(outfile),
+        printing_factory(out_file_obj),
     )
