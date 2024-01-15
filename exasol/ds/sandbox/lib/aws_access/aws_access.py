@@ -102,7 +102,7 @@ class AwsAccess(object):
 
     def read_secret_arn(self, physical_resource_id: str):
         """"
-        Uses Boto3 to retrieve the ARN of a secret.
+        Uses Boto3 to retrieve the ARN of a secret from secrets manager.
         """
         LOG.debug("Reading secret for getting ARN,"
                  f" physical resource ID = {physical_resource_id},"
