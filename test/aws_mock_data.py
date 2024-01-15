@@ -87,9 +87,9 @@ def get_export_image_task_mock_data(in_progress: bool):
         })
 
 
-def get_s3_object_mock_data():
+def get_s3_object_mock_data(suffix: str = "vmdk"):
     return S3Object({
-        'Key': f'{DEFAULT_ASSET_ID.bucket_prefix}/export-ami-123.vmdk',
+        'Key': f'{DEFAULT_ASSET_ID.bucket_prefix}/export-ami-123.{suffix}',
         'LastModified': datetime.datetime(2022, 8, 15, 11, 14, 4, tzinfo=tzutc()),
         'ETag': '"32555a13671cd66c04959366c579b09b-209"',
         'Size': 2185813504,

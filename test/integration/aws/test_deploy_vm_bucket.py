@@ -8,7 +8,7 @@ from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import run_setup_vm_bucket, f
     create_vm_bucket_cf_template
 from test.aws_mock_data import TEST_BUCKET_ID, get_waf_cloudformation_mock_data, TEST_ACL_ARN, \
     get_s3_cloudformation_mock_data
-from test.aws.cloudformation_validation import validate_using_cfn_lint
+from test.integration.aws.cloudformation_validation import validate_using_cfn_lint
 from test.mock_cast import mock_cast
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import STACK_NAME as VM_STACK_NAME
 
