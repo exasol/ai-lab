@@ -2,26 +2,31 @@
 
 ## Overview
 
-This project aims to create a virtual machine image, in different formats, which can be used to easily build Exasol's script-languages-container, which are the runtime container for UDF's.
-
-The virtual machine image provides:
-* The script-languages-release repositories
-* All necessary dependencies to execute _exaslct_ in script-languages-release (This includes a correctly configured docker runtime)
-* A running Jupyterlab instance which is automatically started during boot of the vm
-
-## Objective
-
-The objective is to have a complete VM ready, including all dependencies, which can be used as base to customize the existing template script-languages-container (e.g. python-3.x-minimal templates, the r-minimal templates); or, if needed, to create new script-languages-container from scratch.
-The disk of the VM is per default large enough to build and test script-languages-container.
+This project enables to create images, in different formats,
+which can be used to explore AI applications on top of Exasol database.
 
 ## Provided media
+
+The supported formats include
+
+| Format      | Description                       |
+| ----------- | --------------------------------- |
+| VMDK        | VMware Virtual Machine Disk       |
+| VHD         | Virtual Hard Disk by Microsoft    |
+| AMI         | Amazon Machine Image              |
+| Docker      | Image for Docker containers       |
+
+The virtual machine image provides:
+* All necessary dependencies
+* A running Jupyterlab instance which is automatically started during boot of the VM
 
 ### AMI
 
 The AMI id is linked in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
-Following name format is used for the AMI: "_Exasol-Data-Science-Sandbox-**version**_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
 
-### VM image
+The naming schema is: "_Exasol-Data-Science-Sandbox-**version**_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
+
+### VM Image Formats
 
 Currently two VM formats are supported:
 
@@ -32,9 +37,13 @@ Currently two VM formats are supported:
 
 The links to the images are stored in the release notes.
 
+### Image for Docker Containers
+
+The Docker image is published to dockerhub at https://hub.docker.com/r/exasol/data-science-sandbox.
+
 ## Usage
 
-### HW requirements
+### Hardware requirements
 
 We recommend the following requirements for the VM instance:
 
@@ -43,7 +52,7 @@ We recommend the following requirements for the VM instance:
 | RAM  | 2GB     | 8GB         |
 | CPU  | 1 Core  | 2 Cores     |
 
-### Use the AMI
+### Using the Amazon Machine Image (AMI)
 
 __Important__: The AMI is currently only available in the AWS region `eu-central-1`. If you want to use the image in another region, you need to copy it before. Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html) for details about how to copy the image.
 
@@ -77,7 +86,7 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
      - Click button "Launch instance"
 6. As soon as the machine becomes available you can connect per ssh with user `ubuntu`: `ssh -i your_key.pem ubuntu@the_new_ec_instance`
 
-### Use the virtual machine image
+### Using a virtual machine image (VMDK or VHD)
 
 #### Boxes (QEMU) under Linux
 
@@ -93,7 +102,7 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
 1. Download the `VMDK` file from the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest).
 2. Open Boxes
 3. Create a new VM: Click the + Button
-4. Choose: "Create virtual machine from file"
+4. Choose: "Create virtual machine from file"<br />
 ![image info](./img/tutorial-screenshot-create-img.png)
 5. Select the downloaded "VMDK" file from step 1
 6. Select "Ubuntu 20.04 LTS" as Template, and click "Next"
@@ -104,9 +113,15 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
 ![image info](./img/tutorial-screenshot-importing.png)
 9. See section [Login](#Login) about how to login
 10. If you want to connect to the Jupyterlab, you need to find out the IP address of the VM:
-- Click the 3 dots in Boxes, then preferences![image info](./img/tutorial-screenshot-open-preferences.png)
-- Then the IP address will be shown: ![image info](./img/tutorial-screenshot-show-ip.png)
+- Click the 3 dots in Boxes, then preferences<br />
+![image info](./img/tutorial-screenshot-open-preferences.png)
+- Then the IP address will be shown:<br />
+![image info](./img/tutorial-screenshot-show-ip.png)
 - Use _IP-Address_:8888 to connect to the [Jupterlab](#Jupyter)
+
+### Using the Image for Docker Containers
+
+Please see the dedicated User Guide for the [Docker Edition](docker/ai_lab_docker_edition.md) of Exasol AI-Lab.
 
 ### Login
 
