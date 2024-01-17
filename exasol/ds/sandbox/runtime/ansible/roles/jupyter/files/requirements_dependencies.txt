@@ -1,4 +1,4 @@
 uncertainties==3.1.7
 numpy==1.23.1
 pandas==1.4.3
-exasol-notebook-connector==0.2.0
+exasol-notebook-connector==0.2.4

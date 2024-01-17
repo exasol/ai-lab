@@ -7,6 +7,7 @@ from docker.client import DockerClient
 
 from typing import Callable, Optional
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
+from exasol.ds.sandbox.lib.dss_docker.create_image import get_nested_value
 
 
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
@@ -59,6 +60,12 @@ class DockerRegistry:
         )
         reporter = ProgressReporter(_logger.isEnabledFor(logging.INFO))
         for el in resp:
+            error = el.get("error", None)
+            if error is not None:
+                _logger.error(error)
+                details = get_nested_value(el, "errorDetail", "message")
+                if details is not None and details != error:
+                    _logger.error(f"Details: {details}")
             reporter.report(
                 el.get("status", None),
                 el.get("progress", None),
