@@ -4,7 +4,11 @@ import os
 from exasol.ds.sandbox.cli.cli import cli, option_with_env_default
 from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.cli.common import add_options
-from exasol.ds.sandbox.lib.dss_docker import DssDockerImage, DockerRegistry
+from exasol.ds.sandbox.lib.dss_docker import (
+    DEFAULT_ORG_AND_REPOSITORY,
+    DssDockerImage,
+    DockerRegistry,
+)
 from exasol.ds.sandbox.lib.logging import SUPPORTED_LOG_LEVELS
 from exasol.ds.sandbox.lib.logging import set_log_level
 
@@ -18,7 +22,7 @@ PASSWORD_ENV = "DOCKER_REGISTRY_PASSWORD"
     click.option(
         "--repository", type=str, metavar="[HOST[:PORT]/]ORG/REPO",
         show_default=True,
-        default="exasol/data-science-sandbox",
+        default=DEFAULT_ORG_AND_REPOSITORY,
         help="""
         Organization and repository on hub.docker.com to publish the
         docker image to. Optionally prefixed by a host and a port,

@@ -21,6 +21,7 @@ from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleF
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 
+DEFAULT_ORG_AND_REPOSITORY = "exasol/data-science-sandbox"
 DSS_VERSION = version("exasol-data-science-sandbox")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 

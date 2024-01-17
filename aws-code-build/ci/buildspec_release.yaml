@@ -7,6 +7,10 @@ env:
     ASSET_ID: ""
     AWS_USER_NAME: "release_user"
     MAKE_AMI_PUBLIC_OPTION: "--no-make-ami-public"
+  secrets-manager:
+    DOCKER_REGISTRY_USER: "Dockerhub:User"
+    DOCKER_REGISTRY_PASSWORD: "Dockerhub:AccessToken"
+
 phases:
 
   install:
@@ -28,4 +32,5 @@ phases:
   build:
       commands:
         - poetry run python3 -m exasol.ds.sandbox.main create-vm --default-password "$DEFAULT_PASSWORD" --asset-id "$ASSET_ID" $MAKE_AMI_PUBLIC_OPTION
+        - poetry run python3 -m exasol.ds.sandbox.main create-docker-image --version "$ASSET_ID" --publish --log-level info
         - poetry run python3 -m exasol.ds.sandbox.main update-release --release-id "$RELEASE_ID" --asset-id "$ASSET_ID"

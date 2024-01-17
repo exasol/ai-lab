@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 import click
@@ -9,7 +8,10 @@ from exasol.ds.sandbox.cli.options.aws_options import aws_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.logging import set_log_level
-from exasol.ds.sandbox.lib.github_release_access import GithubReleaseAccess
+from exasol.ds.sandbox.lib.github_release_access import (
+    github_token_or_exit,
+    GithubReleaseAccess,
+)
 from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_test_release_build
 
 
@@ -27,9 +29,17 @@ def start_test_release_build(
         release_title: str
 ):
     """
-    This command  triggers the AWS release Codebuild to generate a new sandbox test version.
+    This command triggers the AWS release Codebuild to generate a new
+    sandbox test version. GitHub token is expected to be found in environment
+    variable GITHUB_TOKEN.
     """
     set_log_level(log_level)
-    gh_token = os.getenv("GITHUB_TOKEN")
-    run_start_test_release_build(AwsAccess(aws_profile), GithubReleaseAccess(gh_token),
-                                 branch, release_title, gh_token)
+    gh_token = github_token_or_exit()
+    run_start_test_release_build(
+        AwsAccess(aws_profile),
+        GithubReleaseAccess(gh_token),
+        branch,
+        release_title,
+        gh_token,
+    )
+

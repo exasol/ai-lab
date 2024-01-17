@@ -37,6 +37,7 @@ Version: 0.1.0
 * #56: Moved jupyter notebook files again
 * #63: Improved logging of Ansible tasks
 * #46: Enabled to suppress ansible output
+* #52: Created CI build workflow to build and push Docker Image
 
 ## Documentation
 
