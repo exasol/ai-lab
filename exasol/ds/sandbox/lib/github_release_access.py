@@ -1,3 +1,6 @@
+import os
+import sys
+
 from pathlib import Path
 
 from github import Github, GithubException
@@ -5,7 +8,18 @@ from github.Repository import Repository
 
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 
+
 LOG = get_status_logger(LogType.RELEASE_ACCESS)
+GITHUB_TOKEN_ENV = "GITHUB_TOKEN"
+
+
+def github_token_or_exit() -> str:
+    variable = GITHUB_TOKEN_ENV
+    value = os.getenv(variable)
+    if value is not None:
+        return value
+    LOG.error(f"Environment variable {variable} is not set")
+    sys.exit(1)
 
 
 class GithubReleaseAccess:

@@ -123,11 +123,11 @@ def export_vm(aws_access: AwsAccess,
         export_vm_images(aws_access, vm_image_formats, tag_value, ami_id, vmimport_role, vm_bucket,
                          asset_id, configuration)
     except Exception as e:
-        print_assets(aws_access=aws_access, asset_id=asset_id, outfile=None)
+        print_assets(aws_access=aws_access, asset_id=asset_id, out_file_obj=None)
         LOG.warning(f"VM Export finished for: {asset_id.ami_name}. There were errors. "
                     f"You might want to delete some of the assets created.")
         raise RuntimeError("Export failed") from e
-    print_assets(aws_access=aws_access, asset_id=asset_id, outfile=None)
+    print_assets(aws_access=aws_access, asset_id=asset_id, out_file_obj=None)
     LOG.info(f"VM Export finished for: {asset_id.ami_name} without any errors")
 
 
