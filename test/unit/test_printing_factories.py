@@ -8,6 +8,15 @@ from exasol.ds.sandbox.lib.asset_printing.printing_factory import TextObject
 from inspect import cleandoc
 
 
+def test_markdown_text():
+    with StringIO() as buf:
+        factory = MarkdownPrintingFactory(buf)
+        printer = factory.create_text_printer(console_only=False)
+        printer.print((TextObject("Hello"),))
+        actual = buf.getvalue()
+    assert actual == "Hello\n\n"
+
+
 def test_printing_markdown(tmp_path):
     test_file = tmp_path / "test.md"
     with open(test_file, "w") as f:
@@ -18,7 +27,7 @@ def test_printing_markdown(tmp_path):
         table_printer.add_row("a", "b")
         table_printer.add_row("c", "d")
         table_printer.finish()
-        text_printer = factory.create_text_printer()
+        text_printer = factory.create_text_printer(console_only=True)
         text_printer.print((TextObject("this text won't be printed"),))
     with open(test_file, "r") as f:
         text = cleandoc(f.read())
@@ -44,11 +53,13 @@ def test_printing_rich():
         table_printer.add_row("a", "b")
         table_printer.add_row("c", "d")
         table_printer.finish()
-        text_printer = factory.create_text_printer()
+        text_printer = factory.create_text_printer(console_only=True)
         text_printer.print((TextObject("this text will be printed"),))
         output = cleandoc(buf.getvalue())
-    expected_output = cleandoc("""
-test-table    
+        expected_output = cleandoc(
+            # this line is expected to end with 4 space characters
+            "test-table    "
+            """
 ┏━━━━━━━┳━━━━━━━┓
 ┃ col-1 ┃ col-2 ┃
 ┡━━━━━━━╇━━━━━━━┩

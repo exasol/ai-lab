@@ -15,8 +15,13 @@ def run_update_release(aws_access: AwsAccess, gh_access: GithubReleaseAccess,
     additional_release_notes = render_template("additional_release_notes.jinja")
     with tempfile.TemporaryDirectory() as temp_dir:
         artifacts_file = f"{temp_dir}/artifacts.md"
-        print_assets(aws_access, asset_id, artifacts_file,
-                     (AssetTypes.AMI.value, AssetTypes.VM_S3.value))
+        asset_types = tuple(
+            AssetTypes.DOCKER,
+            AssetTypes.AMI,
+            AssetTypes.VM_S3,
+        )
+        with open(artifacts_file, "w") as file:
+            print_assets(aws_access, asset_id, file, asset_types)
         content = additional_release_notes + open(artifacts_file, "r").read()
         gh_access.update_release_message(release_id, content)
         gh_access.upload(archive_path=artifacts_file, label="artifacts.md",

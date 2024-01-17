@@ -100,6 +100,24 @@ class AwsAccess(object):
             LOG.error(f"Run 'aws cloudformation describe-stack-events --stack-name {stack_name}' to get details.")
             raise e
 
+    def read_secret_arn(self, physical_resource_id: str):
+        """"
+        Uses Boto3 to retrieve the ARN of a secret from secrets manager.
+        """
+        LOG.debug("Reading secret for getting ARN,"
+                 f" physical resource ID = {physical_resource_id},"
+                 f" for aws profile {self.aws_profile_for_logging}")
+        client = self._get_aws_client("secretsmanager")
+        try:
+            secret = client.get_secret_value(SecretId=physical_resource_id)
+            return secret["ARN"]
+        except botocore.exceptions.ClientError as e:
+            LOG.error("Unable to read secret")
+            raise e
+
+    def read_dockerhub_secret_arn(self):
+        return self.read_secret_arn("Dockerhub")
+
     @_log_function_start
     def validate_cloudformation_template(self, cloudformation_yml) -> None:
         """

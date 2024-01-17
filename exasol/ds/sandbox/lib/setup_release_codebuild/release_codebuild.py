@@ -9,7 +9,12 @@ LOG = get_status_logger(LogType.SETUP_RELEASE_BUILD)
 
 
 def run_setup_release_codebuild(aws_access: AwsAccess) -> None:
-    yml = render_template("release_code_build.jinja.yaml", vm_bucket=find_vm_bucket(aws_access))
+    secret_arn = aws_access.read_dockerhub_secret_arn()
+    yml = render_template(
+        "release_code_build.jinja.yaml",
+        vm_bucket=find_vm_bucket(aws_access),
+        dockerhub_secret_arn=secret_arn,
+    )
     aws_access.upload_cloudformation_stack(yml, RELEASE_CODE_BUILD_STACK_NAME)
     LOG.info(f"Deployed cloudformation stack {RELEASE_CODE_BUILD_STACK_NAME}")
 
