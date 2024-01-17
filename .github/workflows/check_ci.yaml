@@ -24,7 +24,7 @@ jobs:
          --override-ini=log_cli=true
          --override-ini=log_cli_level=INFO
          test/unit
-         test/integration/test_create_dss_docker_image.py
+         test/integration
        env: # Set the secret as an env variable
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
