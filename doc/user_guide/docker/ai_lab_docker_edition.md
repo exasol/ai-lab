@@ -24,7 +24,7 @@ Please see [Managing User Data](user_data.md) for preserving changes in the Jupy
 
 Before using Exasol AI-Lab Docker Edition you need to meet the following prerequisites:
 * On the machine you want to interact with (e.g. localhost)
-  * A Docker daemon or Docker client installed on your machine
+  * A Docker client installed
   * A free IP port to enable accessing the Jupyter server inside the Docker container
 * On the same or a different machine
   * A Docker daemon or Docker service accessible from the Docker client
@@ -49,9 +49,9 @@ PORT=8888
 ## Starting a Docker Container from the Docker Image
 
 The following command will
-* Download the Docker image for version 0.1.0 of the AI-Lab if not yet available in your Docker service
+* Download the Docker image for the specified version `$VERSION` of the AI-Lab if not yet available in your Docker service
 * Run a Docker container using this image
-* Forward port `8888` to the machine running the Docker service, e.g. your local host
+* Forward port `8888` to the specified `$PORT` on the machine running the Docker service, e.g. your local host
 
 
 ```shell
