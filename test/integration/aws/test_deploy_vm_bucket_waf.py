@@ -7,7 +7,7 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import run_setup_vm_bucket_waf, \
     find_acl_arn, get_cloudformation_template
 from test.aws_mock_data import get_waf_cloudformation_mock_data, TEST_ACL_ARN
-from test.aws.cloudformation_validation import validate_using_cfn_lint
+from test.integration.aws.cloudformation_validation import validate_using_cfn_lint
 from test.mock_cast import mock_cast
 
 TEST_IP = "1.1.1.1"

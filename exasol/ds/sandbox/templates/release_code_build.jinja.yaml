@@ -72,6 +72,10 @@ Resources:
                 - s3:DeleteObject
                 Resource: arn:aws:s3:::{{vm_bucket}}/data_science_sandbox/*
                 Effect: Allow
+              - Action:
+                - secretsmanager:GetSecretValue
+                Resource: {{dockerhub_secret_arn}}
+                Effect: Allow
   DataScienceSandboxReleaseCodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:

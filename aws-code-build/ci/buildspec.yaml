@@ -25,4 +25,4 @@ phases:
       commands: >
         poetry run python3 -m pytest
         -s -o log_cli=true -o log_cli_level=INFO
-        test/ci/test_ci*.py
+        test/codebuild/test_ci*.py
