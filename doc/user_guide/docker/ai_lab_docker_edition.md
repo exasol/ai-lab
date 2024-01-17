@@ -18,7 +18,7 @@ While running you can
 When removing the container, all processes are stopped and all changes to the file system are discarded.
 When you start a new container using the same image then the contents of its file system will be identical as defined by the image and all changes will be lost.
 
-Please see [Managing Your Notebook Files](notebook_management.md) for preserving changes in the Jupyter notebook files, though.
+Please see [Managing User Data](user_data.md) for preserving changes in the Jupyter notebook files and the [Secure Configuration Storage](secure_configuration_storage.md), though.
 
 ## Prerequisites
 
@@ -51,7 +51,7 @@ PORT=8888
 The following command will
 * Download the Docker image for version 0.1.0 of the AI-Lab if not yet available in your Docker service
 * Run a Docker container using this image
-* Forward port `8888` to the machine running Docker, e.g. your local host
+* Forward port `8888` to the machine running the Docker service, e.g. your local host
 
 
 ```shell
@@ -63,4 +63,4 @@ docker run \
 
 ## Managing Jupyter Notebook Files
 
-Exasol AI-Lab Docker Edition gives you additional options to manage these notebook files, see [Managing Your Notebook Files](notebook_management.md).
+Exasol AI-Lab Docker Edition gives you additional options to manage these notebook files, see [Managing User Data](user_data.md).
