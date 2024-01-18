@@ -2,7 +2,7 @@
 
 Most of the examples in the Exasol AI-Lab (XAI) require a connection to an Exasol database. Additionally some show cases will interact with cloud services which require additional configuration items, URL endpoints, credentials, etc.
 
-To keep all these configuration options accross multiple sessions, XAI offers a _Secure Configuration Storage_ (SCS).
+To keep all these configuration options accross multiple sessions and secure, the Exasol AI-Lab offers a _Secure Configuration Storage_ (SCS).
 
 The Secure Configuration Storage is based on [coleifer/sqlcipher3](https://github.com/coleifer/sqlcipher3) which uses an encrypted version of an SQLite database. The database is stored in an ordinary, yet encrypted, file and allows to store credentials and other configuration strings in a simple key-value style.
 

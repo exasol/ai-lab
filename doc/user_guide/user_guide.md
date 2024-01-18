@@ -23,7 +23,7 @@ However, all editions of XAI require a minimum hardware to be available on your 
 * CPU cores: minimum 1, recommended 2 Cores
 * Main memory (RAM): minimum 2 GiB, recommended 8 GiB
 * Network access
-* Access to a running instance of Exasol database
+* Recommend access to a running instance of Exasol database, otherwise you can start a small Exasol Docker DB
 
 As the XAI is meant to explore AI applications on top of Exasol database, you, of course, need an instance of Exasol database running and be able to connect to it.
 

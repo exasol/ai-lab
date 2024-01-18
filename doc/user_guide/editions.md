@@ -25,10 +25,10 @@ Recommendations
 
 | Hypervisor      | VMDK | VHD |
 |-----------------|------|-----|
-| VM work station | yes  | ?   |
+| VMWare work station | yes  | ?   |
 | Virtual box     | yes  | yes |
 | Boxes (QEmu)    | yes  | ?   |
-| KVM Lib Virt    | ?    | ?   |
+| KVM LibVirt    | ?    | ?   |
 | Hyper-V         | ?    | yes |
 | WSL             | ?    | ?   |
 
@@ -53,6 +53,6 @@ See also [User Guide for XAI VM Edition](vm_usage.md).
 
 ## Image for Docker Containers
 
-The Docker image is published to dockerhub at https://hub.docker.com/r/exasol/data-science-sandbox.
+The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/data-science-sandbox.
 
 See also [User Guide for XAI Docker Edition](docker/docker_usage.md).

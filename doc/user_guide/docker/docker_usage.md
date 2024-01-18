@@ -6,16 +6,16 @@ Using Exasol AI-Lab Docker Edition requires some specific prerequisites but also
 
 Exasol AI-Lab Docker Edition is published as a so-called _Docker Image_ on [Docker Hub](https://hub.docker.com/r/exasol/data-science-sandbox).
 
-In order to use such an image you need to components
+In order to use such an image you need two components
 * Docker client
 * Docker service, aka. _Docker daemon_
 
-The client must run on your local machine, then daemon can be on the same machine, a remote machine, or inside a virtual machine.
+The client must run on your local machine, the daemon can be on the same machine, a remote machine, or inside a virtual machine.
 
 The Docker client provides commands to download and manage such Docker Images.
-When running a Docker Image results in a so-called _Docker Container_.
-A Docker Container will maintain a _state_ including file system contents and running processes.
-The client can used to start, stopp, and remove Docker Containers.
+Running a Docker Image results in a so-called _Docker Container_.
+A Docker Container will maintain a _state_, including file system contents and running processes.
+The client can be used to start, stopp, and remove Docker Containers.
 
 While a container is running you can
 * Connect to IP ports exposed by the container
@@ -32,7 +32,7 @@ Before using Exasol AI-Lab Docker Edition you need to meet the following prerequ
   * A Docker client installed
   * A free IP port to enable accessing the Jupyter server inside the Docker container
 * The daemon machine must
-  * Run on Linux operating system
+  * Run a Linux operating system
   * Run a Docker daemon accessible from the Docker client
   * Have sufficient disk space to host the Docker image (size 1-2 GB) and run the Docker container
 
@@ -52,7 +52,7 @@ When your client is running on Windows or MacOSX then at least the daemon machin
 <!-- for what does a user need these features? -->
 <!-- How about the privileged mode required for Exasol Docker DB? -->
 
-Exasol AI-Lab can use Docker features itself to provide additional convenience and features, such as starting an Exasol database on demand.
+Exasol AI-Lab can use Docker features itself to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
 
 <!-- How does the DinD relate to Linux operating system? -->
 
@@ -70,13 +70,13 @@ Exasol AI-Lab can use Docker features itself to provide additional convenience a
 * (1) Requires a remote Docker daemon
 * (2) Requires a remote Docker daemon or to mount `/var/run/docker.sock` into XAI’s Docker container.
 
-Please note that mounting the socket of a docker daemon running on your client machine into XAI's Docker container creates security risks. In particular code running inside the AI-Lab could mount the filesystem of your client machine and gain root access to it.
+Please note that mounting the socket of a docker daemon running on your client machine into XAI's Docker container creates security risks. In particular code running inside the AI-Lab could create privileged container and mount the filesystem of your host machine and gain root access to it.
 
 So please check if this usage scenario is accepted by your organization. If not then either use a remote Docker daemon or do not enable XAI to access the Docker daemon on your client machine.
 
 ### Recommendations and remote vs. local Docker daemon
 
-* Exasol in general recommends to use Docker Desktop setup which implicitly uses a remote daemon in a managed machine.
+* Exasol in general recommends to use Docker Desktop setup for Windows and MacOSX which implicitly uses a remote daemon in a managed machine.
 * However, a daemon on remote machines or virtual machines can be used by all Docker clients.
 * Docker volumes and port forwarding apply only for the remote system and you need to access the ports via the IP of the remote system.
 
