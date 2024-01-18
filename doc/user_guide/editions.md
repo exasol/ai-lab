@@ -30,7 +30,7 @@ Recommendations
 | Boxes (QEmu)        | yes  | ?   |
 | KVM LibVirt         | ?    | ?   |
 | Hyper-V             | ?    | yes |
-| WSL                 | ?    | ?   |
+| WSL 2               | ?    | ?   |
 
 ## AMI
 

@@ -52,7 +52,7 @@ When your client is running on Windows or MacOSX then at least the daemon machin
 <!-- for what does a user need these features? -->
 <!-- How about the privileged mode required for Exasol Docker DB? -->
 
-Exasol AI-Lab can use Docker features itself to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
+Exasol AI-Lab can use Docker features (DF) itself to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
 
 <!-- How does the DinD relate to Linux operating system? -->
 
@@ -79,6 +79,7 @@ So please check if this usage scenario is accepted by your organization. If not 
 * Exasol in general recommends to use Docker Desktop setup for Windows and MacOSX which implicitly uses a remote daemon in a managed machine.
 * However, a daemon on remote machines or virtual machines can be used by all Docker clients.
 * Docker volumes and port forwarding apply only for the remote system and you need to access the ports via the IP of the remote system.
+  * An exception is https://docs.docker.com/desktop/networking/
 
 ## Defining Environment Variables
 
@@ -89,6 +90,7 @@ The Unix shell commands in the following sections will use some environment vari
 * Variable `VOLUME` is expected to contain the name of your Docker volume.
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
   * `0.0.0.0` means all IP-addresses are allowed.
+  * For local setups, we recommend `127.0.0.1`.
   * Please contact your IT department if there are security restrictions.
 
 Here are some sample values &mdash; please change to your needs:
