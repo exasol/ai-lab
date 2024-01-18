@@ -36,20 +36,18 @@ Recommendations
 
 The AMI ID is mentioned in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
 
-The naming schema is: "_Exasol-Data-Science-Sandbox-**version**_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
+The naming scheme is: "_Exasol-Data-Science-Sandbox-${VERSION}_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
 
 See also [User Guide for XAI AMI Edition](ami_usage.md).
 
 ## VM Image Formats
 
-Currently two VM formats are supported:
+Each release of XAI currently provides two VM formats:
 
 | Format     | Description                    |
 | -----------|--------------------------------|
 | VMDK       | VMware Virtual Machine Disk    |
 | VHD        | Virtual Hard Disk by Microsoft |
-
-The links to the images are stored in the release notes.
 
 See also [User Guide for XAI VM Edition](vm_usage.md).
 
