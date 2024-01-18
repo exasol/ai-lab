@@ -25,7 +25,8 @@ Version: 0.1.0
 * #69: Added entry point to start Jupyter server
 * #84: Fixed retrieval and display of jupyter password
 * #36: Supported pushing Docker image to a Docker registry
-* #115 Added VOLUME entry to Docker Image
+* #115: Added VOLUME entry to Docker Image
+* #78: Described persistent storage of notebook files and credential store
 
 ## Bug Fixes
 
