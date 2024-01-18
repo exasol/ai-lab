@@ -15,7 +15,7 @@ The client must run on your local machine, the daemon can be on the same machine
 The Docker client provides commands to download and manage such Docker Images.
 Running a Docker Image results in a so-called _Docker Container_.
 A Docker Container will maintain a _state_, including file system contents and running processes.
-The client can be used to start, stopp, and remove Docker Containers.
+The client can be used to start, stop, and remove Docker Containers.
 
 While a container is running you can
 * Connect to IP ports exposed by the container
@@ -46,7 +46,7 @@ When your local machine runs on Linux operating system then there are no specifi
 
 When your client is running on Windows or MacOSX then at least the daemon machine must run on Linux and some additional constraints and prerequisites need to be considered.
 
-### Enabling XAI to Use Docker Features
+### Enabling Exasol AI-Lab to Use Docker Features
 
 <!-- does this apply only to the docker edition? -->
 <!-- for what does a user need these features? -->
@@ -68,11 +68,11 @@ Exasol AI-Lab can use Docker features itself to provide additional convenience a
 |                  | Client Binaries | (1)          | (1)    |
 
 * (1) Requires a remote Docker daemon
-* (2) Requires a remote Docker daemon or to mount `/var/run/docker.sock` into XAI’s Docker container.
+* (2) Requires a remote Docker daemon or to mount `/var/run/docker.sock` into AI-Lab’s Docker container.
 
-Please note that mounting the socket of a docker daemon running on your client machine into XAI's Docker container creates security risks. In particular code running inside the AI-Lab could create privileged container and mount the filesystem of your host machine and gain root access to it.
+Please note that mounting the socket of a docker daemon running on your client machine into AI-Lab's Docker container creates security risks. In particular code running inside the AI-Lab could create privileged container and mount the filesystem of your host machine and gain root access to it.
 
-So please check if this usage scenario is accepted by your organization. If not then either use a remote Docker daemon or do not enable XAI to access the Docker daemon on your client machine.
+So please check if this usage scenario is accepted by your organization. If not then either use a remote Docker daemon or do not enable AI-Lab to access the Docker daemon on your client machine.
 
 ### Recommendations and remote vs. local Docker daemon
 
@@ -116,9 +116,9 @@ docker run \
   exasol/data-science-sandbox:${VERSION}
 ```
 
-### Enable XAI to Access the Docker Daemon on the Client Machine
+### Enable AI-Lab to Access the Docker Daemon on the Client Machine
 
-The following command assumes the Docker daemon to run on your client machine and mounts the daemon's socket into the XAI Docker container.
+The following command assumes the Docker daemon to run on your client machine and mounts the daemon's socket into the AI-Lab Docker container.
 
 ```shell
 docker run \

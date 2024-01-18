@@ -4,7 +4,7 @@
 
 This project enables to create images, in different formats, which can be used to explore AI applications on top of Exasol database.
 
-Exasol AI-Lab (XAI) is available in multiple editions involving different technology stacks.  Depending on your operating system, infrastructure, administrative permissions, and technical skills, you might have specific constraints and preferences.
+Exasol AI-Lab is available in multiple editions involving different technology stacks.  Depending on your operating system, infrastructure, administrative permissions, and technical skills, you might have specific constraints and preferences.
 
 See [AI-Lab Editions](editions.md) to select your favorite edition.
 
@@ -18,16 +18,16 @@ See [AI-Lab Editions](editions.md) to select your favorite edition.
 
 ## System Requirements
 
-However, all editions of XAI require a minimum hardware to be available on your system regarding
+However, all editions of Exasol AI-Lab require a minimum hardware to be available on your system regarding
 * CPU Architecture: x86
 * CPU cores: minimum 1, recommended 2 Cores
 * Main memory (RAM): minimum 2 GiB, recommended 8 GiB
 * Network access
 * Recommend access to a running instance of Exasol database, otherwise you can start a small Exasol Docker DB
 
-As the XAI is meant to explore AI applications on top of Exasol database, you, of course, need an instance of Exasol database running and be able to connect to it.
+As the Exasol AI-Lab is meant to explore AI applications on top of Exasol database, you, of course, need an instance of Exasol database running and be able to connect to it.
 
-However, when using the AI-Lab Docker edition then XAI in particular scenarios can automatically launch such an instance on demand, see [Enabling XAI to use Docker features](docker/docker_usage.md#enabling-xai-to-user-docker-features) for details.
+However, when using the AI-Lab Docker edition then Exasol AI-Lab in particular scenarios can automatically launch such an instance on demand, see [Enabling AI-Lab to use Docker features](docker/docker_usage.md#enabling-xai-to-user-docker-features) for details.
 
 ## Login to AMI and VM Editions
 

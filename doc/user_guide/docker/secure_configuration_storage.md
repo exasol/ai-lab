@@ -1,6 +1,6 @@
 # Secure Configuration Storage
 
-Most of the examples in the Exasol AI-Lab (XAI) require a connection to an Exasol database. Additionally some show cases will interact with cloud services which require additional configuration items, URL endpoints, credentials, etc.
+Most of the examples in the Exasol AI-Lab require a connection to an Exasol database. Additionally some show cases will interact with cloud services which require additional configuration items, URL endpoints, credentials, etc.
 
 To keep all these configuration options accross multiple sessions and secure, the Exasol AI-Lab offers a _Secure Configuration Storage_ (SCS).
 
@@ -8,14 +8,14 @@ The Secure Configuration Storage is based on [coleifer/sqlcipher3](https://githu
 
 Access to the SCS is encapsulated by a Python library to simplify usage as much as possible.
 
-When using the same file then you can reuse all your configurations and credentials in each session with XAI while still staying secure as the file is encrypted with a master password that is only known to you.
+When using the same file then you can reuse all your configurations and credentials in each AI-Lab session while still staying secure as the file is encrypted with a master password that is only known to you.
 
-When the file initially does not exist then XAI will
+When the file initially does not exist then AI-Lab will
 * Ask you for this master password
 * Create the file
 * Encrypt the file with the master password
 
-In each future session XAI will
+In each future session AI-Lab will
 * Ask you again for the master password
 * Use it to unlock and access the access the configuration strings stored in previous sessions.
 

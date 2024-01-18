@@ -23,14 +23,14 @@ Recommendations
 * In case a docker client is available on your system then probably die Docker Edition is the best choice.
 * When you want to use one of the VM images then select an appropriate format depending on the Hypervisor software available on your system:
 
-| Hypervisor      | VMDK | VHD |
-|-----------------|------|-----|
+| Hypervisor          | VMDK | VHD |
+|---------------------|------|-----|
 | VMWare work station | yes  | ?   |
-| Virtual box     | yes  | yes |
-| Boxes (QEmu)    | yes  | ?   |
-| KVM LibVirt    | ?    | ?   |
-| Hyper-V         | ?    | yes |
-| WSL             | ?    | ?   |
+| Virtual box         | yes  | yes |
+| Boxes (QEmu)        | yes  | ?   |
+| KVM LibVirt         | ?    | ?   |
+| Hyper-V             | ?    | yes |
+| WSL                 | ?    | ?   |
 
 ## AMI
 
@@ -38,21 +38,21 @@ The AMI ID is mentioned in the [release notes](https://github.com/exasol/data-sc
 
 The naming scheme is: "_Exasol-Data-Science-Sandbox-${VERSION}_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
 
-See also [User Guide for XAI AMI Edition](ami_usage.md).
+See also [User Guide for AI-Lab AMI Edition](ami_usage.md).
 
 ## VM Image Formats
 
-Each release of XAI currently provides two VM formats:
+Each release of Exasol AI-Lab currently provides two VM formats:
 
 | Format     | Description                    |
 | -----------|--------------------------------|
 | VMDK       | VMware Virtual Machine Disk    |
 | VHD        | Virtual Hard Disk by Microsoft |
 
-See also [User Guide for XAI VM Edition](vm_usage.md).
+See also [User Guide for AI-Lab VM Edition](vm_usage.md).
 
 ## Image for Docker Containers
 
 The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/data-science-sandbox.
 
-See also [User Guide for XAI Docker Edition](docker/docker_usage.md).
+See also [User Guide for AI-Lab Docker Edition](docker/docker_usage.md).
