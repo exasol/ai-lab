@@ -14,7 +14,7 @@ When using the same file then you can reuse all your configurations and credenti
 
 When file initially does not exist then Exasol AI-Lab will ask you for this master password. In each future session you only need to type in this master password again in order to access the configuration strings stored in previous sessions.
 
-See [Managing User Data](user_data.md) for instructions about how to
+See [Managing User Data](managing_user_data.md) for instructions about how to
 * Save the SCS peristently
 * Reuse the SCS in future sessions
 * Create a backup of the SCS

@@ -30,7 +30,7 @@ When running the AI-Lab in a Docker container then AI-Lab keeps the notebook fil
 
 ## Additional Environment Variables
 
-Following the general [User Guide for the Exasol AI-Lab Docker Edition](ai_lab_docker_edition.md#defining-environment-variables) this document uses some additional environment variables:
+Following the general [User Guide for the Exasol AI-Lab Docker Edition](docker_usage.md#defining-environment-variables) this document uses some additional environment variables:
 * Variable `VOLUME` is expected to contain the name of your Docker volume.
 * Variable `DIR` is expected to point to a directory to contain your backup.
 
