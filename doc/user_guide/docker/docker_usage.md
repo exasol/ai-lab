@@ -29,57 +29,67 @@ Please see [Managing User Data](managing_user_data.md) for preserving changes in
 
 Before using Exasol AI-Lab Docker Edition you need to meet the following prerequisites:
 * On the machine you want to interact with (e.g. localhost)
-  * A Docker client installed
-  * A free IP port to enable accessing the Jupyter server inside the Docker container
+  * A Docker client must be installed
 * The daemon machine must
   * Run a Linux operating system
   * Run a Docker daemon accessible from the Docker client
   * Have sufficient disk space to host the Docker image (size 1-2 GB) and run the Docker container
+  * Have a free IP port to enable accessing the Jupyter server inside the Docker container
+    * When using Docker Desktop then docker will forward the port to its internal VM _and_ to your client machine as well. In this case the IP port must be free on both systems, see also https://docs.docker.com/desktop/networking/.
+
+![Image](docker.png)
 
 Please refer to the [Official Docker documentation](https://docs.docker.com) for installation and configuration.
+
+Docker volumes and port forwarding apply only for the daemon machine and you need to access the ports via the IP of the daemon machine. An exception is described in https://docs.docker.com/desktop/networking/.
 
 ## Operating Systems and Setups
 
 Docker technology is available for a variety of operating systems and in multiple editions itself.
 
-When your local machine runs on Linux operating system then there are no specific restrictions besides the general [hardware requirements](user_guide.md#hardware-requirements). In this case Exasol recommends to run the Docker daemon on the same machine to simplify the usage.
+When your local machine runs on Linux operating system then there are no specific restrictions besides the general [system requirements](../user_guide.md#system-requirements). In this case Exasol recommends to run the Docker daemon on the same machine to simplify the usage.
 
-When your client is running on Windows or MacOSX then at least the daemon machine must run on Linux and some additional constraints and prerequisites need to be considered.
+When your client is running on Windows or MacOSX then at least the daemon machine must run on Linux.
+
+See the next section for a list of verified setups.
+
+<!--
+Exasol recommends
+* On Windows to use either
+  * Docker Desktop with WSL 2
+  * Docker Desktop or
+* On MacOSX to use either
+  * Docker Desktop or
+  * Any other remote daemon
+-->
 
 ### Enabling Exasol AI-Lab to Use Docker Features
 
-<!-- does this apply only to the docker edition? -->
-<!-- for what does a user need these features? -->
-<!-- How about the privileged mode required for Exasol Docker DB? -->
+<!-- later on AI-Lab will be enhanced to create SLCs, as well. -->
+Exasol AI-Lab can use Docker features itself to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
 
-Exasol AI-Lab can use Docker features (DF) itself to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
+<!-- Client Binaries are omitted on purpose, possible on Linux -->
+This is only possible when using
+* Linux
+* Windows Docker Desktop with WSL 2
+* Windows Docker Desktop with a remote Docker daemon
+* MacOSX Docker Desktop
+* MacOSX Docker Desktop with a remote Docker daemon
 
-<!-- How does the DinD relate to Linux operating system? -->
+See [Docker FAQ](https://docs.docker.com/desktop/faqs/general/#how-do-i-connect-to-the-remote-docker-engine-api) for details.
 
-* If the Docker daemon runs on a virtual or remote machine different from your client machine then (HOW TO DO SO?).
-* If your client machine is running on Windows or MacOSX then the following table lists additional constraints.
+Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular code running inside the AI-Lab could create privileged containers, mount the filesystem of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
 
-| Operating system | Setup           | Don't use DF | use DF |
-|------------------|-----------------|--------------|--------|
-| Windows          | Docker Desktop  | supported    | (1)    |
-|                  | WSL 2           | supported    | (2)    |
-|                  | Client Binaries | (1)          | (1)    |
-| MacOSX           | Docker Desktop  | supported    | (2)    |
-|                  | Client Binaries | (1)          | (1)    |
-
+<!--
 * (1) Requires a remote Docker daemon
 * (2) Requires a remote Docker daemon or to mount `/var/run/docker.sock` into AI-Lab’s Docker container.
-
-Please note that mounting the socket of a docker daemon running on your client machine into AI-Lab's Docker container creates security risks. In particular code running inside the AI-Lab could create privileged container and mount the filesystem of your host machine and gain root access to it.
-
-So please check if this usage scenario is accepted by your organization. If not then either use a remote Docker daemon or do not enable AI-Lab to access the Docker daemon on your client machine.
 
 ### Recommendations and remote vs. local Docker daemon
 
 * Exasol in general recommends to use Docker Desktop setup for Windows and MacOSX which implicitly uses a remote daemon in a managed machine.
 * However, a daemon on remote machines or virtual machines can be used by all Docker clients.
-* Docker volumes and port forwarding apply only for the remote system and you need to access the ports via the IP of the remote system.
-  * An exception is https://docs.docker.com/desktop/networking/
+-->
+
 
 ## Defining Environment Variables
 
@@ -107,6 +117,8 @@ VOLUME=my-vol
 The following command will
 * Download the Docker image for the specified version `$VERSION` of the AI-Lab if not yet available in your Docker service
 * Run a Docker container using this image
+* Mount volume `$VOLUME` to directory `/root/notebooks` inside the container
+  * If the volume does not exist yet, then it will be created automatically.
 * Forward port `8888` to the specified `$PORT` on the daemon machine
   * allowing to connections from the IP-addresses listed in `$LISTEN_IP`
 
@@ -119,6 +131,13 @@ docker run \
 ```
 
 ### Enable AI-Lab to Access the Docker Daemon on the Client Machine
+
+<!-- Alternative phrasings
+* the command needs to be issued on the daemon machine
+* /var/run/docker.sock must be available on the machine the command is issued on
+* publish different examples for all scenarios described above
+* Don't describe the details but refer to Docker FAQ and Internet Forums
+-->
 
 The following command assumes the Docker daemon to run on your client machine and mounts the daemon's socket into the AI-Lab Docker container.
 
