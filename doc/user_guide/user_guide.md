@@ -29,7 +29,7 @@ The editions of the AI-Lab have common requirements to be available on your syst
 
 As the AI-Lab is meant to explore AI applications on top of Exasol database, you, of course, need an instance of Exasol database running and be able to connect to it.
 
-However, when using the AI-Lab Docker edition then in particular scenarios the AI-Lab can automatically launch such an instance on demand, see [Enabling AI-Lab to use Docker features](docker/docker_usage.md#enabling-xai-to-user-docker-features) for details.
+AI-Lab can automatically launch such an instance on demand. However when using AI-Lab's Docker Edition there are [additional constraints](docker/docker_usage.md#enabling-exasol-ai-lab-to-use-docker-features).
 
 ## Login to AMI and VM Editions
 

@@ -80,17 +80,6 @@ See [Docker FAQ](https://docs.docker.com/desktop/faqs/general/#how-do-i-connect-
 
 Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular code running inside the AI-Lab could create privileged containers, mount the filesystem of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
 
-<!--
-* (1) Requires a remote Docker daemon
-* (2) Requires a remote Docker daemon or to mount `/var/run/docker.sock` into AI-Lab’s Docker container.
-
-### Recommendations and remote vs. local Docker daemon
-
-* Exasol in general recommends to use Docker Desktop setup for Windows and MacOSX which implicitly uses a remote daemon in a managed machine.
-* However, a daemon on remote machines or virtual machines can be used by all Docker clients.
--->
-
-
 ## Defining Environment Variables
 
 The Unix shell commands in the following sections will use some environment variables to make the commands portable and enable to adapt to your specific preferences while at the same time maintaining the ability to execute the commands verbatim without any change:
