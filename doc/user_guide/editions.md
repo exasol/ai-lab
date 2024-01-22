@@ -23,14 +23,15 @@ Recommendations
 * In case a docker client is available on your system then probably die Docker Edition is the best choice.
 * When you want to use one of the VM images then select an appropriate format depending on the Hypervisor software available on your system:
 
-| Hypervisor          | VMDK | VHD |
-|---------------------|------|-----|
-| VMWare work station | yes  | ?   |
-| Virtual box         | yes  | yes |
-| Boxes (QEmu)        | yes  | ?   |
-| KVM LibVirt         | ?    | ?   |
-| Hyper-V             | ?    | yes |
-| WSL 2               | ?    | ?   |
+| Hypervisor                                                                                      | VMDK | VHD |
+|-------------------------------------------------------------------------------------------------|------|-----|
+| VMWare work station                                                                             | yes  | ?   |
+| Virtual box                                                                                     | yes  | yes |
+| KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU)/[Libvirt](https://en.wikipedia.org/wiki/Libvirt) | yes  | ?   |
+| Hyper-V                                                                                         | ?    | yes |
+| WSL 2                                                                                           | ?    | ?   |
+
+For KVM/QEMU/libvirt there multiple alternative UIs, see https://en.wikipedia.org/wiki/Libvirt#User_Interfaces.
 
 ## AMI
 

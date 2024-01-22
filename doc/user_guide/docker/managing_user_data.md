@@ -42,6 +42,8 @@ The following shell commands will
 * Copy the contents of your volume to directory `$DIR`
 * Remove the container
 
+To ensure a consistent backup we recommend to stop the AI-Lab Docker container before creating a backup.
+
 ```shell
 C=$(docker run --detach -v ${VOLUME}:/notebooks ubuntu sleep infinity)
 docker cp ${C}:/notebooks ${DIR}

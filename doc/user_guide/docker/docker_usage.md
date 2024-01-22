@@ -49,7 +49,7 @@ Docker technology is available for a variety of operating systems and in multipl
 
 When your local machine runs on Linux operating system then there are no specific restrictions besides the general [system requirements](../user_guide.md#system-requirements). In this case Exasol recommends to run the Docker daemon on the same machine to simplify the usage.
 
-When your client is running on Windows or MacOSX then at least the daemon machine must run on Linux.
+When your client is running on Windows or MacOSX then at least the daemon machine must run on Linux. Docker Desktop usually includes a Linux VM with the Docker daemon.
 
 See the next section for a list of verified setups.
 
@@ -128,7 +128,9 @@ docker run \
 * Don't describe the details but refer to Docker FAQ and Internet Forums
 -->
 
-The following command assumes the Docker daemon to run on your client machine and mounts the daemon's socket into the AI-Lab Docker container.
+Please note that
+* Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as `docker.sock`
+* Mounting `docker.sock` does not work on Windows.
 
 ```shell
 docker run \
