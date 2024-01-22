@@ -53,16 +53,6 @@ When your client is running on Windows or MacOSX then at least the daemon machin
 
 See the next section for a list of verified setups.
 
-<!--
-Exasol recommends
-* On Windows to use either
-  * Docker Desktop with WSL 2
-  * Docker Desktop or
-* On MacOSX to use either
-  * Docker Desktop or
-  * Any other remote daemon
--->
-
 ### Enabling Exasol AI-Lab to Use Docker Features
 
 <!-- later on AI-Lab will be enhanced to create SLCs, as well. -->
@@ -132,7 +122,7 @@ Please see the limitations and security risks in section [Enabling Exasol AI-Lab
 
 Please note that
 * Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as `docker.sock`.
-* Mounting `docker.sock` does not work on Windows.
+* On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
 
 ```shell
 docker run \

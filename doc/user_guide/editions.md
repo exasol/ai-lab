@@ -2,12 +2,16 @@
 
 Exasol AI-Lab is available in the following editions:
 
-| Format | Description                    |
-|--------|--------------------------------|
+<!--
 | VMDK   | VMware Virtual Machine Disk    |
 | VHD    | Virtual Hard Disk by Microsoft |
-| AMI    | Amazon Machine Image           |
-| Docker | Image for Docker containers    |
+-->
+
+| Description             | Format(s)                   |
+|-------------------------|-----------------------------|
+| Amazon Machine Image    | AMI                         |
+| Virtual Machine Edition | VMDK, VHD                   |
+| Docker Edition          | Image for Docker containers |
 
 Each of the editions is associated with an _image_ in a specific format which
 * Is linked in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) for download
@@ -23,25 +27,15 @@ Recommendations
 * In case a docker client is available on your system then probably die Docker Edition is the best choice.
 * When you want to use one of the VM images then select an appropriate format depending on the Hypervisor software available on your system:
 
-| Hypervisor                                                                                      | VMDK | VHD |
-|-------------------------------------------------------------------------------------------------|------|-----|
-| VMWare work station                                                                             | yes  | ?   |
-| Virtual box                                                                                     | yes  | yes |
-| KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU)/[Libvirt](https://en.wikipedia.org/wiki/Libvirt) | yes  | ?   |
-| Hyper-V                                                                                         | ?    | yes |
-| WSL 2                                                                                           | ?    | ?   |
+### AMI Edition
 
-For KVM/QEMU/libvirt there multiple alternative UIs, see https://en.wikipedia.org/wiki/Libvirt#User_Interfaces.
-
-## AMI
-
-The AMI ID is mentioned in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
+The ID of the AMI (Amazon Machine Image) is mentioned in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
 
 The naming scheme is: "_Exasol-Data-Science-Sandbox-${VERSION}_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
 
 See also [User Guide for AI-Lab AMI Edition](ami_usage.md).
 
-## VM Image Formats
+### Virtual Machine Edition
 
 Each release of Exasol AI-Lab currently provides two VM formats:
 
@@ -50,9 +44,24 @@ Each release of Exasol AI-Lab currently provides two VM formats:
 | VMDK       | VMware Virtual Machine Disk    |
 | VHD        | Virtual Hard Disk by Microsoft |
 
+The following table shows which Hypervisor supports which image formats:
+
+| Hypervisor          | VMDK | VHD |
+|---------------------|------|-----|
+| VMWare work station | yes  | ?   |
+| Virtual box         | yes  | yes |
+| Hyper-V             | ?    | yes |
+| WSL 2               | ?    | ?   |
+
+Notes for Hypervisors based on [Libvirt](https://en.wikipedia.org/wiki/Libvirt) (e.g. KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU)):
+* There multiple alternative UIs, see https://en.wikipedia.org/wiki/Libvirt#User_Interfaces.
+* File in format VHD or VMDK needs to be converted first, see
+  * https://docs.openstack.org/image-guide/convert-images.html
+   * https://linux.die.net/man/1/qemu-img
+
 See also [User Guide for AI-Lab VM Edition](vm_usage.md).
 
-## Image for Docker Containers
+### Docker Edition
 
 The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/data-science-sandbox.
 
