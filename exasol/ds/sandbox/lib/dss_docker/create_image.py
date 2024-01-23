@@ -43,9 +43,10 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         jcommand = get_fact(facts, "jupyter", "command")
         if jcommand is None:
             return []
-        user_name = get_fact(facts, "user_name")
-        user_home = get_fact(facts, "user_home")
-        jlogfile = f"{user_home}/jupyter-server.log"
+        user_name = get_fact(facts, "jupyter", "user")
+        jlogfile = get_fact(facts, "jupyter", "logfile")
+        # user_home = get_fact(facts, "user_home")
+        # jlogfile = f"{user_home}/jupyter-server.log"
         return [
             "--jupyter-server", jcommand,
              "--user", user_name,
@@ -56,7 +57,6 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
     if entrypoint is None:
         return ["sleep", "infinity"]
     user = get_fact(facts, "user_name")
-    user_home = get_fact(facts, "user_home")
     entry_cmd = ["python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
     if not folder:
@@ -149,6 +149,7 @@ class DssDockerImage:
         _logger.debug(f"Ansible facts: {facts}")
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
+        _logger.info(f"entry command: {entrypoint(facts)}")
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
