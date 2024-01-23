@@ -89,7 +89,6 @@ def start_jupyter_server(
             if re.match(regexp, line):
                 print(success_message, flush=True)
                 break
-            time.sleep(1)
             exit_on_error(p.poll())
         exit_on_error(p.wait())
 
@@ -140,7 +139,7 @@ def main():
             args.notebooks,
             args.warning_as_error,
         )
-    if args.jupyter_server and args.notebooks:
+    if args.jupyter_server and args.notebooks and args.jupyter_logfile and args.user:
         start_jupyter_server(
             args.jupyter_server,
             args.notebooks,

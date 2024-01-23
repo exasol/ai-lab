@@ -7,6 +7,8 @@
       jupyter:
         virtualenv: "{{ jupyter_virtualenv }}"
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+        user: "{{ user_home }}"
+        logile: "{{ user_home }}/jupyter-server.log"
       notebook_folder:
         initial: "{{ initial_notebook_folder }}"
         final: "{{user_home}}/notebooks"
