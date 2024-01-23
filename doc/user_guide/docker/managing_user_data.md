@@ -54,6 +54,8 @@ unset C
 
 See also [Restore volume from a backup](https://docs.docker.com/storage/volumes/#restore-volume-from-a-backup) in official Docker documentation.
 
+To ensure consistent results we recommend to stop the AI-Lab Docker container before restoring the volume contents.
+
 The following Unix shell commands will
 * Run a Docker container
 * Mount your volume
