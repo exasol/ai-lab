@@ -11,7 +11,7 @@ Exasol AI-Lab is available in the following editions:
 |-------------------------|-----------------------------|
 | Amazon Machine Image    | AMI                         |
 | Virtual Machine Edition | VMDK, VHD                   |
-| Docker Edition          | Image for Docker containers |
+| Docker Edition          | Docker Image |
 
 Each of the editions is associated with an _image_ in a specific format which
 * Is linked in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) for download
@@ -24,7 +24,7 @@ Please see common [system requirements](user_guide.md#system-requirements) for a
 
 Recommendations
 * If you have an AWS account then Exasol recommends to use the AMI image in an AWS EC2 instance.
-* In case a docker client is available on your system then probably die Docker Edition is the best choice.
+* In case a Docker client is available on your system then probably the Docker Edition is the best choice.
 * When you want to use one of the VM images then select an appropriate format depending on the Hypervisor software available on your system:
 
 ### AMI Edition
@@ -37,7 +37,7 @@ See also [User Guide for AI-Lab AMI Edition](ami_usage.md).
 
 ### Virtual Machine Edition
 
-Each release of Exasol AI-Lab currently provides two VM formats:
+Each release of Exasol AI-Lab provides two VM formats:
 
 | Format     | Description                    |
 | -----------|--------------------------------|
@@ -53,7 +53,7 @@ The following table shows which Hypervisor supports which image formats:
 | Hyper-V             | ?    | yes |
 | WSL 2               | ?    | ?   |
 
-Notes for Hypervisors based on [Libvirt](https://en.wikipedia.org/wiki/Libvirt) (e.g. KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU)):
+Notes for Hypervisors based on KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU):
 * There multiple alternative UIs, see https://en.wikipedia.org/wiki/Libvirt#User_Interfaces.
 * File in format VHD or VMDK needs to be converted first, see
   * https://docs.openstack.org/image-guide/convert-images.html

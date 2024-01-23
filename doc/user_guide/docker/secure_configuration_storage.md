@@ -8,16 +8,16 @@ The Secure Configuration Storage is based on [coleifer/sqlcipher3](https://githu
 
 Access to the SCS is encapsulated by a Python library to simplify usage as much as possible.
 
-When using the same file then you can reuse all your configurations and credentials in each AI-Lab session while still staying secure as the file is encrypted with a master password that is only known to you.
+When using the same file, you can reuse all your configurations and credentials in each AI-Lab session while still staying secure as the file is encrypted with a master password that is only known to you.
 
-When the file initially does not exist then AI-Lab will
-* Ask you for this master password
+When the file initially does not exist then the AI-Lab will
+* Ask you for a new master password
 * Create the file
 * Encrypt the file with the master password
 
 In each future session AI-Lab will
 * Ask you again for the master password
-* Use it to unlock and access the access the configuration strings stored in previous sessions.
+* Use it to unlock and access the configuration strings stored in previous sessions.
 
 See [Managing User Data](managing_user_data.md) for instructions about how to
 * Save the SCS peristently
