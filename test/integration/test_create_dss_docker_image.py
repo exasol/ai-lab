@@ -84,7 +84,7 @@ def test_install_notebooks(dss_docker_container):
 
     actual = filename_set(output)
     expected = filename_set("""
-        access_store_ui.ipynb
+        transformers/
         sklearn/
         cloud/
         sagemaker/
