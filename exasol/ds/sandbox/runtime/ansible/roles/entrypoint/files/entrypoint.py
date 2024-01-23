@@ -1,8 +1,10 @@
 import argparse
 import logging
 import os
+import re
 import shutil
 import subprocess
+import sys
 import time
 
 from inspect import cleandoc
@@ -29,24 +31,67 @@ def arg_parser():
         help="start server for Jupyter notebooks",
     )
     parser.add_argument(
+        "--user", type=str,
+        help="user name for running jupyter server",
+    )
+    parser.add_argument(
+        "--jupyter-logfile", type=Path,
+        help="path to write Jupyter server log messages to",
+    )
+    parser.add_argument(
         "--warning-as-error", action="store_true",
         help="treat warning as error",
     )
     return parser
 
 
-def start_jupyter_server(binary_path: str, notebook_dir: str):
-    subprocess.run([
+def start_jupyter_server(
+        binary_path: str,
+        notebook_dir: str,
+        logfile: Path,
+        user: str,
+):
+    def exit_on_error(rc):
+        if rc is not None and rc != 0:
+            log_messages = logfile.read_text()
+            print(
+                f"Jupyter Server terminated with error code {rc},"
+                f" Logfile {logfile} contains:\n{log_messages}",
+                flush=True,
+            )
+            sys.exit(rc)
+
+    command_line = [
         binary_path,
         f"--notebook-dir={notebook_dir}",
         "--no-browser",
         "--allow-root",
-    ])
-    print(cleandoc(
-        """
-        Server for Jupyter has been started.
-        You can connect with https://localhost:8888
-        """))
+    ]
+    with open(logfile, "w") as f:
+        p = subprocess.Popen(command_line, stdout=f, stderr=f)
+
+    success_message = cleandoc(f"""
+        Server for Jupyter has been started successfully.
+        You can connect with https://<ip address>:8888.
+        If using a docker daemon on your local machine then ip address is localhost.
+
+        ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
+        │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
+        └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
+
+        To update the password as user {user} run
+            {binary_path} server <new password>
+    """)
+    with open(logfile, "r") as f:
+        regexp = re.compile("Jupyter Server .* is running at:")
+        while True:
+            line = f.readline()
+            if re.match(regexp, line):
+                print(success_message, flush=True)
+                break
+            time.sleep(1)
+            exit_on_error(p.poll())
+        exit_on_error(p.wait())
 
 
 def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
@@ -96,7 +141,11 @@ def main():
             args.warning_as_error,
         )
     if args.jupyter_server and args.notebooks:
-        start_jupyter_server(args.jupyter_server, args.notebooks)
+        start_jupyter_server(
+            args.jupyter_server,
+            args.notebooks,
+            args.jupyter_logfile,
+            args.user)
     else:
         sleep_inifinity()
 

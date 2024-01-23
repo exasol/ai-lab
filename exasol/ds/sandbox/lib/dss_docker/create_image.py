@@ -40,17 +40,28 @@ def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
 
 def entrypoint(facts: AnsibleFacts) -> List[str]:
     def jupyter():
-        cmd = get_fact(facts, "jupyter", "command")
-        return [] if cmd is None else ["--jupyter-server", cmd ]
+        jcommand = get_fact(facts, "jupyter", "command")
+        if jcommand is None:
+            return []
+        user_name = get_fact(facts, "user_name")
+        user_home = get_fact(facts, "user_home")
+        jlogfile = f"{user_home}/jupyter-server.log"
+        return [
+            "--jupyter-server", jcommand,
+             "--user", user_name,
+             "--jupyter-logfile", jlogfile,
+        ]
 
     entrypoint = get_fact(facts, "entrypoint")
     if entrypoint is None:
-        return ["sleep", "infinity" ]
-    entrypoint_script = ["python3", entrypoint]
+        return ["sleep", "infinity"]
+    user = get_fact(facts, "user_name")
+    user_home = get_fact(facts, "user_home")
+    entry_cmd = ["python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
     if not folder:
-        return entrypoint_script + jupyter()
-    return entrypoint_script + [
+        return entry_cmd + jupyter()
+    return entry_cmd + [
        "--notebook-defaults", folder["initial"],
        "--notebooks", folder["final"]
     ] + jupyter()
