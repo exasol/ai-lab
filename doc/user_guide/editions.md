@@ -2,16 +2,11 @@
 
 Exasol AI-Lab is available in the following editions:
 
-<!--
-| VMDK   | VMware Virtual Machine Disk    |
-| VHD    | Virtual Hard Disk by Microsoft |
--->
-
-| Description             | Format(s)                   |
-|-------------------------|-----------------------------|
-| Amazon Machine Image    | AMI                         |
-| Virtual Machine Edition | VMDK, VHD                   |
-| Docker Edition          | Docker Image |
+| Description             | Format(s)                                                                |
+|-------------------------|--------------------------------------------------------------------------|
+| Amazon Machine Image    | AMI                                                                      |
+| Virtual Machine Edition | VMware Virtual Machine Disk (VMDK), Virtual Hard Disk by Microsoft (VHD) |
+| Docker Edition          | Docker Image                                                             |
 
 Each of the editions is associated with an _image_ in a specific format which
 * Is linked in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) for download
@@ -36,13 +31,6 @@ The naming scheme is: "_Exasol-Data-Science-Sandbox-${VERSION}_", e.g. "_Exasol-
 See also [User Guide for AI-Lab AMI Edition](ami_usage.md).
 
 ### Virtual Machine Edition
-
-Each release of Exasol AI-Lab provides two VM formats:
-
-| Format     | Description                    |
-| -----------|--------------------------------|
-| VMDK       | VMware Virtual Machine Disk    |
-| VHD        | Virtual Hard Disk by Microsoft |
 
 The following table shows which Hypervisor supports which image formats:
 

@@ -76,7 +76,7 @@ The Unix shell commands in the following sections will use some environment vari
 * Variable `VERSION` refers to the version of Exasol AI-Lab Docker Edition you want to use, alternativly you can use `latest`.
 * Variable `PORT` refers to a free IP port on the machine running the Docker daemon
   * When running the Docker Container you must forward the port of the Jupyter service to this port in order to connect to it
-* Variable `VOLUME` is expected to contain the name of your Docker volume, [Managing User Data](managing_user_data.md).
+* Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing_user_data.md).
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
   * `0.0.0.0` means all IP-addresses are allowed.
   * For local setups, we recommend `127.0.0.1`.
@@ -112,13 +112,6 @@ docker run \
 ### Enable AI-Lab to Access the Docker Daemon
 
 Please see the limitations and security risks in section [Enabling Exasol AI-Lab to Use Docker Features](#enabling-exasol-ai-lab-to-use-docker-features).
-
-<!-- Alternative phrasings
-* the command needs to be issued on the daemon machine
-* /var/run/docker.sock must be available on the machine the command is issued on
-* publish different examples for all scenarios described above
-* Don't describe the details but refer to Docker FAQ and Internet Forums
--->
 
 Please note that
 * Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as `docker.sock`.

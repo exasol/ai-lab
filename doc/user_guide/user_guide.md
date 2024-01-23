@@ -10,14 +10,6 @@ Depending on your operating system, infrastructure, administrative permissions, 
 
 See [AI-Lab Editions](editions.md) to select your favorite edition.
 
-<!--
-### Usage
-
-* [AMI Edition](ami_usage.md)
-* [VM Edition](vm_usage.md)
-* [Docker Edition](docker/docker_usage.md)
--->
-
 ## System Requirements
 
 The editions of the AI-Lab have common requirements to be available on your system:
