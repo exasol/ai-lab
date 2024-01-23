@@ -138,9 +138,11 @@ class DssDockerImage:
         _logger.debug(f"Ansible facts: {facts}")
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
+        notebook_folder = get_fact(facts, "notebook_folder", "final")
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
+            "Volumes": { notebook_folder: {}, },
             "Env": [ f"VIRTUAL_ENV={virtualenv}" ],
         }
         return container.commit(
