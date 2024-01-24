@@ -37,15 +37,18 @@ def test_copy_args_valid(mocker, warning_as_error ):
 def test_jupyter(mocker):
     jupyter = "/root/jupyterenv/bin/jupyter-lab"
     notebook_folder = Path("/root/notebooks")
+    logfile = Path("/root/jupyter-server.log")
     mocker.patch("sys.argv", [
         "app",
         "--notebooks", str(notebook_folder),
         "--jupyter-server", jupyter,
+        "--user", "root",
+        "--jupyter-logfile", str(logfile),
     ])
     mocker.patch(entrypoint_method("start_jupyter_server"))
     mocker.patch(entrypoint_method("sleep_inifinity"))
     entrypoint.main()
     assert entrypoint.start_jupyter_server.called
-    expected = mocker.call(jupyter, notebook_folder)
+    expected = mocker.call(jupyter, notebook_folder, logfile, "root")
     assert entrypoint.start_jupyter_server.call_args == expected
     assert not entrypoint.sleep_inifinity.called
