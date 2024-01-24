@@ -149,7 +149,6 @@ class DssDockerImage:
         _logger.debug(f"Ansible facts: {facts}")
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
-        _logger.info(f"entry command: {entrypoint(facts)}")
         notebook_folder = get_fact(facts, "notebook_folder", "final")
         conf = {
             "Entrypoint": entrypoint(facts),

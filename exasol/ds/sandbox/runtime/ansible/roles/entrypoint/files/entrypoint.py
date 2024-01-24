@@ -73,7 +73,7 @@ def start_jupyter_server(
     success_message = cleandoc(f"""
         Server for Jupyter has been started successfully.
         You can connect with https://<ip address>:8888.
-        If using a docker daemon on your local machine then ip address is localhost.
+        If using a Docker daemon on your local machine then ip address is localhost.
 
         ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
         │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
@@ -85,8 +85,9 @@ def start_jupyter_server(
     with open(logfile, "r") as f:
         regexp = re.compile("Jupyter Server .* is running at:")
         while True:
+            time.sleep(1)
             line = f.readline()
-            if re.match(regexp, line):
+            if re.search(regexp, line):
                 print(success_message, flush=True)
                 break
             exit_on_error(p.poll())
