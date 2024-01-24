@@ -50,7 +50,12 @@ def start_jupyter_server(
         notebook_dir: str,
         logfile: Path,
         user: str,
+        poll_sleep: float = 1,
 ):
+    """
+    :param poll_sleep: specifies the waiting time in seconds before reading
+    the a line from the logfile.
+    """
     def exit_on_error(rc):
         if rc is not None and rc != 0:
             log_messages = logfile.read_text()
@@ -85,7 +90,7 @@ def start_jupyter_server(
     with open(logfile, "r") as f:
         regexp = re.compile("Jupyter Server .* is running at:")
         while True:
-            time.sleep(1)
+            time.sleep(poll_sleep)
             line = f.readline()
             if re.search(regexp, line):
                 print(success_message, flush=True)
