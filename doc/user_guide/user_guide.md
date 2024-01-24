@@ -18,6 +18,7 @@ The editions of the AI-Lab have common requirements to be available on your syst
 * Main memory (RAM): minimum 2 GiB, recommended 8 GiB
 * Network access
 * Recommend access to a running instance of Exasol database, otherwise you can start a small Exasol Docker DB
+  * Please note: AI-Lab currently does not support Exasol SaaS.
 
 As the AI-Lab is meant to explore AI applications on top of Exasol database, you, of course, need an instance of Exasol database running and be able to connect to it.
 
