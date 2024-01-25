@@ -45,11 +45,13 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
             return []
         user_name = get_fact(facts, "jupyter", "user")
         password = get_fact(facts, "jupyter", "password")
+        url = get_fact(facts, "jupyter", "url")
         logfile = get_fact(facts, "jupyter", "logfile")
         return [
             "--jupyter-server", command,
              "--user", user_name,
              "--password", password,
+            "--url", url,
              "--jupyter-logfile", logfile,
         ]
 

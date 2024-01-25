@@ -38,6 +38,7 @@ class Testee:
             self.logfile,
             "user",
             "password",
+            "url",
             poll_sleep = 0.1,
         )
         return self

@@ -39,6 +39,10 @@ def arg_parser():
         help="initial default password for Jupyter server",
     )
     parser.add_argument(
+        "--url", type=str,
+        help="URL for connecting to the Juypter server",
+    )
+    parser.add_argument(
         "--jupyter-logfile", type=Path,
         help="path to write Jupyter server log messages to",
     )
@@ -55,6 +59,7 @@ def start_jupyter_server(
         logfile: Path,
         user: str,
         password: str,
+        url: str,
         poll_sleep: float = 1,
 ):
     """
@@ -80,12 +85,15 @@ def start_jupyter_server(
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f)
 
-    # TODO: display default password
+    localhost_url = url.replace("<host>", "localhost").replace("<port>", "8888")
     success_message = cleandoc(f"""
         Server for Jupyter has been started successfully.
-        You can connect with https://<ip address>:<port>.
+
+        You can connect with {url}.
+
         If using a Docker daemon on your local machine and did forward the
-        port to the same port then you can connect with https://localhost:8888.
+        port to the same port then you can connect with
+        {localhost_url}.
 
         ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
         │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
@@ -158,6 +166,7 @@ def main():
         and args.jupyter_logfile
         and args.user
         and args.password
+        and args.url
         ):
         start_jupyter_server(
             args.jupyter_server,
@@ -165,6 +174,7 @@ def main():
             args.jupyter_logfile,
             args.user,
             args.password,
+            args.url,
         )
     else:
         sleep_inifinity()
