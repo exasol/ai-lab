@@ -37,7 +37,7 @@ sudo sed -i "s/PasswordAuthentication yes/PasswordAuthentication no/g" /etc/ssh/
 sudo systemctl restart ssh.service
 ```
 
-## Connecting to Jupyter service
+## Connecting to Jupyter Service
 
 Root location
 * For Exasol AI-Lab's VM and AMI editions the root location is `$ROOT=/home/ubuntu`.
@@ -53,3 +53,7 @@ Root location
 Exasol strongly recommends to change the Jupyter password as soon as possible. Details about how to do that will be shown in the login screen.
 
 Check [Jupyter Home](https://jupyter.org/) for more information.
+
+You can open the starting page with `https://<host>:<port>/lab/tree/start.ipynb`
+
+Please note specific instructions for [AI-Lab Docker Edition](docker/docker_usage.md).
