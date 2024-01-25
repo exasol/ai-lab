@@ -35,6 +35,10 @@ def arg_parser():
         help="user name for running jupyter server",
     )
     parser.add_argument(
+        "--password", type=str,
+        help="initial default password for Jupyter server",
+    )
+    parser.add_argument(
         "--jupyter-logfile", type=Path,
         help="path to write Jupyter server log messages to",
     )
@@ -50,6 +54,7 @@ def start_jupyter_server(
         notebook_dir: str,
         logfile: Path,
         user: str,
+        password: str,
         poll_sleep: float = 1,
 ):
     """
@@ -75,15 +80,18 @@ def start_jupyter_server(
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f)
 
+    # TODO: display default password
     success_message = cleandoc(f"""
         Server for Jupyter has been started successfully.
-        You can connect with https://<ip address>:8888.
-        If using a Docker daemon on your local machine then ip address is localhost.
+        You can connect with https://<ip address>:<port>.
+        If using a Docker daemon on your local machine and did forward the
+        port to the same port then you can connect with https://localhost:8888.
 
         ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
         │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
         └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
+        The default password is "{password}".
         To update the password as user {user} run
             {binary_path} server password
     """)
@@ -95,7 +103,7 @@ def start_jupyter_server(
             if re.search(regexp, line):
                 print(success_message, flush=True)
                 break
-            exit_on_error(p.wait(poll_sleep))
+            exit_on_error(p.poll())
         exit_on_error(p.wait())
 
 
@@ -145,12 +153,19 @@ def main():
             args.notebooks,
             args.warning_as_error,
         )
-    if args.jupyter_server and args.notebooks and args.jupyter_logfile and args.user:
+    if (args.jupyter_server
+        and args.notebooks
+        and args.jupyter_logfile
+        and args.user
+        and args.password
+        ):
         start_jupyter_server(
             args.jupyter_server,
             args.notebooks,
             args.jupyter_logfile,
-            args.user)
+            args.user,
+            args.password,
+        )
     else:
         sleep_inifinity()
 

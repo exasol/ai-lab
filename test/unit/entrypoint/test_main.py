@@ -42,13 +42,14 @@ def test_jupyter(mocker):
         "app",
         "--notebooks", str(notebook_folder),
         "--jupyter-server", jupyter,
-        "--user", "root",
+        "--user", "usr",
+        "--password", "pwd",
         "--jupyter-logfile", str(logfile),
     ])
     mocker.patch(entrypoint_method("start_jupyter_server"))
     mocker.patch(entrypoint_method("sleep_inifinity"))
     entrypoint.main()
     assert entrypoint.start_jupyter_server.called
-    expected = mocker.call(jupyter, notebook_folder, logfile, "root")
+    expected = mocker.call(jupyter, notebook_folder, logfile, "usr", "pwd")
     assert entrypoint.start_jupyter_server.call_args == expected
     assert not entrypoint.sleep_inifinity.called

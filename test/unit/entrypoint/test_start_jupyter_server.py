@@ -37,6 +37,7 @@ class Testee:
             "notebooks",
             self.logfile,
             "user",
+            "password",
             poll_sleep = 0.1,
         )
         return self

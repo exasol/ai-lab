@@ -81,14 +81,16 @@ def test_entrypoint_with_copy_args():
     entrypoint = "/path/to/entrypoint.py"
     initial = "/path/to/initial"
     final = "/path/to/final"
-    juser = "jupyter-user-name"
-    jlogfile = "/path/to/jupyter-server.log"
+    user = "jupyter-user-name"
+    password = "jupyter-default-password"
+    logfile = "/path/to/jupyter-server.log"
     facts = {
         "dss_facts": {
             "jupyter": {
                 "command": jupyter,
-                "user": juser,
-                "logfile": jlogfile,
+                "user": user,
+                "password": password,
+                "logfile": logfile,
             },
             "entrypoint": entrypoint,
             "notebook_folder": {
@@ -101,8 +103,9 @@ def test_entrypoint_with_copy_args():
         "--notebook-defaults", initial,
         "--notebooks", final,
         "--jupyter-server", jupyter,
-        "--user", juser,
-        "--jupyter-logfile", jlogfile,
+        "--user", user,
+        "--password", password,
+        "--jupyter-logfile", logfile,
     ]
 
 @pytest.fixture

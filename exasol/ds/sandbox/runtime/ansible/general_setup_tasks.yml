@@ -8,6 +8,7 @@
         virtualenv: "{{ jupyter_virtualenv }}"
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
         user: "{{ user_name }}"
+        password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
         logfile: "{{ user_home }}/jupyter-server.log"
       notebook_folder:
         initial: "{{ initial_notebook_folder }}"
@@ -33,7 +34,8 @@
   vars:
     jupyterlab_virtualenv: "{{ dss_facts.jupyter.virtualenv }}"
     jupyterlab_command: "{{ dss_facts.jupyter.command }}"
-    jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
+    # jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
+    jupyterlab_password: "{{ dss_facts.jupyter.password }}"
     jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
     jupyterlab_notebook_folder: "{{ dss_facts.notebook_folder.final }}"
 - name: Clear pip cache

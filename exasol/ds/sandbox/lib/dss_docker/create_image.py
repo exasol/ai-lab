@@ -40,23 +40,22 @@ def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
 
 def entrypoint(facts: AnsibleFacts) -> List[str]:
     def jupyter():
-        jcommand = get_fact(facts, "jupyter", "command")
-        if jcommand is None:
+        command = get_fact(facts, "jupyter", "command")
+        if command is None:
             return []
         user_name = get_fact(facts, "jupyter", "user")
-        jlogfile = get_fact(facts, "jupyter", "logfile")
-        # user_home = get_fact(facts, "user_home")
-        # jlogfile = f"{user_home}/jupyter-server.log"
+        password = get_fact(facts, "jupyter", "password")
+        logfile = get_fact(facts, "jupyter", "logfile")
         return [
-            "--jupyter-server", jcommand,
+            "--jupyter-server", command,
              "--user", user_name,
-             "--jupyter-logfile", jlogfile,
+             "--password", password,
+             "--jupyter-logfile", logfile,
         ]
 
     entrypoint = get_fact(facts, "entrypoint")
     if entrypoint is None:
         return ["sleep", "infinity"]
-    user = get_fact(facts, "user_name")
     entry_cmd = ["python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
     if not folder:
@@ -146,7 +145,7 @@ class DssDockerImage:
             container: DockerContainer,
             facts: AnsibleFacts,
     ) -> DockerImage:
-        _logger.debug(f"Ansible facts: {facts}")
+        _logger.debug(f'DSS facts: {get_fact(facts)}')
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
         notebook_folder = get_fact(facts, "notebook_folder", "final")
