@@ -134,10 +134,10 @@ When starting AI-Lab as Docker container the command line will display a welcome
 $ docker run --publish 0.0.0.0:$PORT:8888 exasol/data-science-sandbox:$VERSION
 Server for Jupyter has been started successfully.
 
-You can connect with https://<host>:<port>/lab/tree/start.ipynb.
+You can connect with http://<host>:<port>/lab/tree/start.ipynb.
 
 If using a Docker daemon on your local machine and did forward the
-port to the same port then you can connect with https://localhost:8888.
+port to the same port then you can connect with http://localhost:8888.
 
 ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
 │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
