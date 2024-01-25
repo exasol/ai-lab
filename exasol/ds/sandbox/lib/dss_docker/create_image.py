@@ -40,17 +40,27 @@ def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
 
 def entrypoint(facts: AnsibleFacts) -> List[str]:
     def jupyter():
-        cmd = get_fact(facts, "jupyter", "command")
-        return [] if cmd is None else ["--jupyter-server", cmd ]
+        command = get_fact(facts, "jupyter", "command")
+        if command is None:
+            return []
+        user_name = get_fact(facts, "jupyter", "user")
+        password = get_fact(facts, "jupyter", "password")
+        logfile = get_fact(facts, "jupyter", "logfile")
+        return [
+            "--jupyter-server", command,
+             "--user", user_name,
+             "--password", password,
+             "--jupyter-logfile", logfile,
+        ]
 
     entrypoint = get_fact(facts, "entrypoint")
     if entrypoint is None:
-        return ["sleep", "infinity" ]
-    entrypoint_script = ["python3", entrypoint]
+        return ["sleep", "infinity"]
+    entry_cmd = ["python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
     if not folder:
-        return entrypoint_script + jupyter()
-    return entrypoint_script + [
+        return entry_cmd + jupyter()
+    return entry_cmd + [
        "--notebook-defaults", folder["initial"],
        "--notebooks", folder["final"]
     ] + jupyter()
@@ -135,7 +145,7 @@ class DssDockerImage:
             container: DockerContainer,
             facts: AnsibleFacts,
     ) -> DockerImage:
-        _logger.debug(f"Ansible facts: {facts}")
+        _logger.debug(f'DSS facts: {get_fact(facts)}')
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
         notebook_folder = get_fact(facts, "notebook_folder", "final")
