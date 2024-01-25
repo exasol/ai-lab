@@ -54,7 +54,7 @@ def start_jupyter_server(
 ):
     """
     :param poll_sleep: specifies the waiting time in seconds before reading
-    the a line from the logfile.
+    a line from the logfile.
     """
     def exit_on_error(rc):
         if rc is not None and rc != 0:
@@ -85,7 +85,7 @@ def start_jupyter_server(
         └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
         To update the password as user {user} run
-            {binary_path} server <new password>
+            {binary_path} server password
     """)
     with open(logfile, "r") as f:
         regexp = re.compile("Jupyter Server .* is running at:")
@@ -95,7 +95,7 @@ def start_jupyter_server(
             if re.search(regexp, line):
                 print(success_message, flush=True)
                 break
-            exit_on_error(p.poll())
+            exit_on_error(p.wait(poll_sleep))
         exit_on_error(p.wait())
 
 
