@@ -3,11 +3,16 @@
 import pathlib
 import json
 
-motd_message = """{{heading_jupyter_update_password}}
+motd_message = """
+Server for Jupyter has been started successfully.
 
-Run as user {{user_name}}:
-"{{jupyterlab_virtualenv}}/bin/jupyter server password"
-to update the password. (The default password is "{{jupyterlab_password}}")
+You can connect with https://<host>:8888.
+
+{{heading_jupyter_update_password}}
+
+The default password is "{{jupyterlab_password}}".
+To update the password as user {{user_name}} run
+    {{jupyterlab_virtualenv}}/bin/jupyter server password
 """
 
 server_config_file = pathlib.Path("{{jupyter_server_config_file}}")

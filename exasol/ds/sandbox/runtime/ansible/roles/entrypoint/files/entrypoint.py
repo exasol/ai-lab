@@ -80,12 +80,16 @@ def start_jupyter_server(
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f)
 
-    # TODO: display default password
+    url = "http://<host>:<port>"
+    localhost_url = url.replace("<host>", "localhost").replace("<port>", "8888")
     success_message = cleandoc(f"""
         Server for Jupyter has been started successfully.
-        You can connect with https://<ip address>:<port>.
-        If using a Docker daemon on your local machine and did forward the
-        port to the same port then you can connect with https://localhost:8888.
+
+        You can connect with {url}.
+
+        If using a Docker daemon on your local machine and you forward the
+        port to the same port then you can connect with
+        {localhost_url}.
 
         ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
         │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
