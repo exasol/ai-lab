@@ -48,7 +48,7 @@ Root location
 | Virtual environment | location `/$ROOT/jupyterenv` |
 | Location notebooks  | location `/$ROOT/notebooks`  |
 | Password            | `dss`                        |
-| Http Port           | `8888`                       |
+| Http Port           | `49494`                      |
 
 Exasol strongly recommends to change the Jupyter password as soon as possible. Details about how to do that will be shown in the login screen.
 

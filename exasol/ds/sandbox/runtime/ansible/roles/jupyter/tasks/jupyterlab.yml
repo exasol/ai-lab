@@ -24,6 +24,8 @@
       line: "c.NotebookApp.open_browser = False"
     - regexp: "c.LabApp.default_url"
       line: "c.LabApp.default_url = '{{ jupyterlab_default_url }}'"
+    - regexp: "c.ServerApp.port"
+      line: "c.ServerApp.port = {{ jupyterlab_port }}"
 
 - name: Generate a new password
   expect:

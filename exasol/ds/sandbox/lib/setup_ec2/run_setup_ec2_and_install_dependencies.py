@@ -48,7 +48,7 @@ def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
                       f"Status is {ec2_instance_description.state_name}")
             return
 
-        #Wait for the EC-2 instance to become ready.
+        # Wait for the EC-2 instance to become ready.
         time.sleep(configuration.time_to_wait_for_polling)
         host_name = ec2_instance_description.public_dns_name
         try:
@@ -61,7 +61,8 @@ def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
         LOG.info("-----------------------------------------------------")
         LOG.info("You can now login to the ec2 machine with\n"
                  f"'ssh -i {key_file_location} ubuntu@{host_name}'")
-        LOG.info(f"Also you can access Jupyterlab via http://{host_name}:8888/lab")
+        # literal value to be replaced by variable in ticket #140
+        LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
         LOG.info('Press Ctrl+C to stop and cleanup.')
 
         def signal_handler(sig, frame):

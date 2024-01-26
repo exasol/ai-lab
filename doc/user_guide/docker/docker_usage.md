@@ -131,13 +131,13 @@ docker run \
 When starting AI-Lab as Docker container the command line will display a welcome message showing connection instructions and a reminder to change the default password:
 
 ```
-$ docker run --publish 0.0.0.0:$PORT:8888 exasol/data-science-sandbox:$VERSION
+$ docker run --publish 0.0.0.0:$PORT:49494 exasol/data-science-sandbox:$VERSION
 Server for Jupyter has been started successfully.
 
 You can connect with http://<host>:<port>
 
 If using a Docker daemon on your local machine and did forward the
-port to the same port then you can connect with http://localhost:8888.
+port to the same port then you can connect with http://localhost:49494.
 
 ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
 │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │

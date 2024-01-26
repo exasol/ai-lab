@@ -43,14 +43,16 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         command = get_fact(facts, "jupyter", "command")
         if command is None:
             return []
+        port = get_fact(facts, "jupyter", "port")
         user_name = get_fact(facts, "jupyter", "user")
         password = get_fact(facts, "jupyter", "password")
         logfile = get_fact(facts, "jupyter", "logfile")
         return [
             "--jupyter-server", command,
-             "--user", user_name,
-             "--password", password,
-             "--jupyter-logfile", logfile,
+            "--port", port,
+            "--user", user_name,
+            "--password", password,
+            "--jupyter-logfile", logfile,
         ]
 
     entrypoint = get_fact(facts, "entrypoint")
@@ -148,11 +150,13 @@ class DssDockerImage:
         _logger.debug(f'DSS facts: {get_fact(facts)}')
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
+        port = get_fact(facts, "jupyter", "port")
         notebook_folder = get_fact(facts, "notebook_folder", "final")
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
             "Volumes": { notebook_folder: {}, },
+            "ExposedPorts": { f"{port}/tcp": {} },
             "Env": [ f"VIRTUAL_ENV={virtualenv}" ],
         }
         return container.commit(
