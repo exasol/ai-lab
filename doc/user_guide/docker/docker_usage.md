@@ -74,8 +74,6 @@ Section [Enable AI-Lab to Access the Docker Daemon](#enable-ai-lab-to-access-the
 
 The Unix shell commands in the following sections will use some environment variables to make the commands portable and enable to adapt to your specific preferences while at the same time maintaining the ability to execute the commands verbatim without any change:
 * Variable `VERSION` refers to the version of Exasol AI-Lab Docker Edition you want to use, alternativly you can use `latest`.
-* Variable `PORT` refers to a free IP port on the machine running the Docker daemon
-  * When running the Docker Container you must forward the port of the Jupyter service to this port in order to connect to it
 * Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing_user_data.md).
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
   * `0.0.0.0` means all IP-addresses are allowed.
@@ -87,7 +85,6 @@ Here are some sample values &mdash; please change to your needs:
 ```shell
 VERSION=0.1.0
 LISTEN_IP=0.0.0.0
-PORT=8888
 VOLUME=my-vol
 ```
 
@@ -98,17 +95,18 @@ The following command will
 * Run a Docker container using this image
 * Mount the volume `$VOLUME` to the directory `/root/notebooks` inside the container
   * If the volume does not exist yet, then it will be created automatically.
-* Forward the port `8888` to the specified `$PORT` on the daemon machine
-  * allowing to connections from the IP-addresses listed in `$LISTEN_IP`
+* Forward port `49494` on the daemon machine allowing connections from all IP addresses matched by `$LISTEN_IP`
 
 ```shell
 docker run \
   --volume ${VOLUME}:/root/notebooks \
-  --publish ${LISTEN_IP}:${PORT}:8888 \
+  --publish ${LISTEN_IP}:49494:49494 \
   exasol/data-science-sandbox:${VERSION}
 ```
 
-You can add the option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/).
+Additional options
+* Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/).
+* If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to port `55555` on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
 
 ### Enable AI-Lab to Access the Docker Daemon
 
@@ -116,13 +114,13 @@ Please see the limitations and security risks in section [Enabling Exasol AI-Lab
 
 Please note that
 * Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as `docker.sock`.
-* On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
 
+* On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
 ```shell
 docker run \
   --volume ${VOLUME}:/root/notebooks \
   --volume /var/run/docker.sock:/var/run/docker.sock \
-  --publish ${LISTEN_IP}:${PORT}:8888 \
+  --publish ${LISTEN_IP}:49494:49494 \
   exasol/data-science-sandbox:${VERSION}
 ```
 
@@ -148,11 +146,6 @@ To update the password as user root run
     /root/jupyterenv/bin/jupyter-lab server password
 ```
 
-Using an internet browser you then can connect to the Jupyter server running
-in the Docker container in order to follow the tutorials presented by a set of
-Jupyter notebooks, see [Connecting to Jupyter
-Service](../user_guide.md#connecting-to-jupyter-service).
+Using an internet browser you then can connect to the Jupyter server running in the Docker container in order to follow the tutorials presented by a set of Jupyter notebooks, see [Connecting to Jupyter Service](../user_guide.md#connecting-to-jupyter-service).
 
-* `<host>`: If you daemon machine is identical to the machine your browser is running on
-then you can replace the `host` by `localhost` otherwise please use the IP address of the daemon machine.
-* `<port>`: Please use the value of environment variable `$PORT`, which refers to the port on the daemon machine you forwarded port `8888` of the Jupyter server to.
+For parameter `<host>`: If you daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
