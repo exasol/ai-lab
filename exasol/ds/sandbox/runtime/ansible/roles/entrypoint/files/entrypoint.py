@@ -93,8 +93,7 @@ def start_jupyter_server(
         You can connect with {url}.
 
         If using a Docker daemon on your local machine and you forward the
-        port to the same port then you can connect with
-        {localhost_url}.
+        port to the same port then you can connect with {localhost_url}.
 
         ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
         │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
