@@ -43,11 +43,11 @@ Root location
 * For Exasol AI-Lab's VM and AMI editions the root location is `$ROOT=/home/ubuntu`.
 * For the Docker edition the root location is `$ROOT=/root`.
 
-| Item                | Location or value            |
-|---------------------|------------------------------|
-| Virtual environment | location `/$ROOT/jupyterenv` |
-| Location notebooks  | location `/$ROOT/notebooks`  |
-| Password            | `dss`                        |
+| Item                | Location or value                        |
+|---------------------|------------------------------------------|
+| Virtual environment | location `/$ROOT/jupyterenv`             |
+| Location notebooks  | location `/$ROOT/notebooks`              |
+| Password            | `dss`                                    |
 | Http Port           | `49494` (or the port you forwared it to) |
 
 Exasol strongly recommends to change the Jupyter password as soon as possible. Details about how to do that will be shown in the login screen.
