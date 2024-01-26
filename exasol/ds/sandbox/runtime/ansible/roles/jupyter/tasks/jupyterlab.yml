@@ -22,6 +22,8 @@
       line: "c.NotebookApp.ip = '{{ jupyterlab_ip }}'"
     - regexp: "c.NotebookApp.open_browser"
       line: "c.NotebookApp.open_browser = False"
+    - regexp: "c.LabApp.default_url"
+      line: "c.LabApp.default_url = '{{ jupyterlab_default_url }}'"
 
 - name: Generate a new password
   expect:
