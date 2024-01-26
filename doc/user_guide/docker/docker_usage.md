@@ -106,7 +106,7 @@ docker run \
 
 Additional options
 * Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/).
-* If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to port `55555` on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
+* If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
 
 ### Enable AI-Lab to Access the Docker Daemon
 
@@ -148,4 +148,4 @@ To update the password as user root run
 
 Using an internet browser you then can connect to the Jupyter server running in the Docker container in order to follow the tutorials presented by a set of Jupyter notebooks, see [Connecting to Jupyter Service](../user_guide.md#connecting-to-jupyter-service).
 
-For parameter `<host>`: If you daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
+For parameter `<host>`: If your daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
