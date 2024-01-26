@@ -54,6 +54,6 @@ Exasol strongly recommends to change the Jupyter password as soon as possible. D
 
 Check [Jupyter Home](https://jupyter.org/) for more information.
 
-You can open the starting page with `https://<host>:<port>/lab/tree/start.ipynb`
+You can open the starting page with `https://<host>:<port>`.
 
 Please note specific instructions for [AI-Lab Docker Edition](docker/docker_usage.md).
