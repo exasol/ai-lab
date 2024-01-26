@@ -39,10 +39,6 @@ def arg_parser():
         help="initial default password for Jupyter server",
     )
     parser.add_argument(
-        "--url", type=str,
-        help="URL for connecting to the Juypter server",
-    )
-    parser.add_argument(
         "--jupyter-logfile", type=Path,
         help="path to write Jupyter server log messages to",
     )
@@ -59,7 +55,6 @@ def start_jupyter_server(
         logfile: Path,
         user: str,
         password: str,
-        url: str,
         poll_sleep: float = 1,
 ):
     """
@@ -85,6 +80,7 @@ def start_jupyter_server(
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f)
 
+    url = "http://<host>:<port>"
     localhost_url = url.replace("<host>", "localhost").replace("<port>", "8888")
     success_message = cleandoc(f"""
         Server for Jupyter has been started successfully.
@@ -166,7 +162,6 @@ def main():
         and args.jupyter_logfile
         and args.user
         and args.password
-        and args.url
         ):
         start_jupyter_server(
             args.jupyter_server,
@@ -174,7 +169,6 @@ def main():
             args.jupyter_logfile,
             args.user,
             args.password,
-            args.url,
         )
     else:
         sleep_inifinity()
