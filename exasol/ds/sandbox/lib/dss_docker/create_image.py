@@ -22,6 +22,7 @@ from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 
 DEFAULT_ORG_AND_REPOSITORY = "exasol/ai-lab"
+# name of the project as specified in file pyproject.toml
 DSS_VERSION = version("exasol-data-science-sandbox")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
@@ -97,7 +98,7 @@ class DssDockerImage:
             "docker_container": self.container_name,
         }
         return AnsibleRunContext(
-            playbook="dss_docker_playbook.yml",
+            playbook="ai_lab_docker_playbook.yml",
             extra_vars=extra_vars,
         )
 
@@ -147,7 +148,7 @@ class DssDockerImage:
             container: DockerContainer,
             facts: AnsibleFacts,
     ) -> DockerImage:
-        _logger.debug(f'DSS facts: {get_fact(facts)}')
+        _logger.debug(f'AI-Lab facts: {get_fact(facts)}')
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
         port = get_fact(facts, "jupyter", "port")

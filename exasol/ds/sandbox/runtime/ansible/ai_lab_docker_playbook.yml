@@ -10,7 +10,7 @@
         groups: docker_container_group
         ansible_connection: docker
 
-- name: Setup DSS Docker Container
+- name: Setup AI-Lab Docker Container
   hosts: docker_container_group
   gather_facts: true
   vars:

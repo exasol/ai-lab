@@ -4,7 +4,7 @@ Resources:
     Properties:
       AccessControl: 'Private'
     Metadata:
-      Comment: 'Bucket to store data-science sandbox VM images'
+      Comment: 'Bucket to store AI-Lab VM images'
     DeletionPolicy: Retain
     UpdateReplacePolicy : Retain
   VMExportRole:
