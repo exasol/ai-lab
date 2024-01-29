@@ -1,4 +1,5 @@
 import io
+import os
 from inspect import cleandoc
 from pathlib import Path
 
@@ -49,7 +50,8 @@ def notebook_test_container(request, notebook_test_image):
                          image=notebook_test_image,
                          volumes={
                              '/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'},
-                         })
+                         },
+                         )
 
 
 @pytest.mark.parametrize(
@@ -65,4 +67,4 @@ def test_notebook(notebook_test_container, notebook_test_file):
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = f'{virtual_env}/bin/python -m pytest --setup-show -s {notebook_test_file}'
-    exec_command(command_run_test, container, print_output=True)
+    exec_command(command_run_test, container, print_output=True, environment=os.environ)
