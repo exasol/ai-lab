@@ -67,4 +67,7 @@ def test_notebook(notebook_test_container, notebook_test_file):
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = f'{virtual_env}/bin/python -m pytest --setup-show -s {notebook_test_file}'
-    exec_command(command_run_test, container, print_output=True, environment=os.environ)
+    environ = os.environ.copy()
+    environ["NBTEST_ACTIVE"] = "TRUE"
+    nbtest_environ = {key: value for key, value in environ if key.startswith("NBTEST_")}
+    exec_command(command_run_test, container, print_output=True, environment=nbtest_environ)
