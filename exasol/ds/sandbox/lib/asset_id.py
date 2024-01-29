@@ -23,4 +23,4 @@ class AssetId:
     def __repr__(self):
         return self._asset_id
 
-    BUCKET_PREFIX = "data_science_sandbox"
+    BUCKET_PREFIX = "ai_lab"
