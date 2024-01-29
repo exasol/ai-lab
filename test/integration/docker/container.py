@@ -13,9 +13,9 @@ def sanitize_test_name(test_name: str):
 
 
 def container(request, base_name: str, image: Union[Image, str], start: bool = True, **kwargs) -> Container:
-   """
-   Create a Docker container based on the specified Docker image.
-   """
+    """
+    Create a Docker container based on the specified Docker image.
+    """
     client = docker.from_env()
     base_container_name = base_name.replace("-", "_")
     test_name = sanitize_test_name(str(request.node.name))

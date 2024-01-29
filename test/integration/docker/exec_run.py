@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Callable, Union, Iterator, cast, Dict, Mapping
+from typing import Optional, Tuple, Callable, Union, Iterator, cast, Mapping
 
 from docker.models.containers import Container
 
