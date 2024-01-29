@@ -1,4 +1,4 @@
-# Data Science Sandbox User Guide
+# Exasol AI-Lab User Guide
 
 ## Overview
 
