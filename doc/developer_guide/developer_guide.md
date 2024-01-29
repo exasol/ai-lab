@@ -43,7 +43,7 @@ This project uses
 
 Script `start-test-release-build` requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
 
-## Table of Content
+## Table of Contents
 
 1. [AWS Build and Release Workflow](aws.md)
 2. [Command Line Usage](commands.md)
