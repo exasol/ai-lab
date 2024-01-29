@@ -4,7 +4,7 @@ Code name: Initial release
 
 ## Summary
 
-Initial release of the data-science-sandbox. It provides the creation of an Amazon Machine Image (AMI) and virtual machine images for a specific version of the data-science-sanbox-release project.
+Initial release of the Exasol AI-Lab. It provides the creation of an Amazon Machine Image (AMI), virtual machine images, and a docker image for a specific version of the AI-Lab project.
 
 ## AI-Lab-Release
 
