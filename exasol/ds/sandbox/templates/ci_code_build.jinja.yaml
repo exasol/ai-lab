@@ -89,7 +89,7 @@ Resources:
         Image: aws/codebuild/standard:5.0
       Source:
         Type: GITHUB
-        Location: "https://github.com/exasol/data-science-sandbox"
+        Location: "https://github.com/exasol/ai-lab"
         BuildSpec: "aws-code-build/ci/buildspec.yaml"
       TimeoutInMinutes: 240
 
