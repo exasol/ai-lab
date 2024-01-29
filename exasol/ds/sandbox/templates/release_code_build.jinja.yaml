@@ -79,7 +79,7 @@ Resources:
   DataScienceSandboxReleaseCodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:
-      Description: Release Build which creates a new AMI and VM iso images on data-science-sandbox
+      Description: Release Build which creates a new AMI and VM iso images of ai-lab
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Artifacts:
         Type: NO_ARTIFACTS
@@ -89,7 +89,7 @@ Resources:
         Image: aws/codebuild/standard:5.0
       Source:
         Type: GITHUB
-        Location: "https://github.com/exasol/data-science-sandbox"
+        Location: "https://github.com/exasol/ai-lab"
         BuildSpec: "aws-code-build/ci/buildspec_release.yaml"
       TimeoutInMinutes: 240
 

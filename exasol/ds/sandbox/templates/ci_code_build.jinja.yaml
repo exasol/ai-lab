@@ -69,7 +69,7 @@ Resources:
   DataScienceSandboxCICodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:
-      Description: CI Build which runs CI test of data-science-sandbox
+      Description: CI Build which runs CI test of the ai-lab
       Triggers:
         Webhook: True
         FilterGroups:
