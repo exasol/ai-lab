@@ -25,6 +25,13 @@ class BuildErrorWithLog(BuildError):
 
 
 def image(request, name: str, print_log=False, **kwargs) -> Image:
+    """
+    Create a Docker image.
+    The function supports a pair of pytest cli options with a suffix derived from parameter ``name``:
+    Option `--docker-image-(suffix)` specifies the name of an existing image to be used 
+    instead of creating a new one.
+    Option `--keep-docker-image-(suffix)` skips removing the image after test execution.
+    """
     base_command_line = name.replace("_", "-")
     image_tag = request.config.getoption(f"--docker-image-{base_command_line}")
     keep_image = request.config.getoption(f"--keep-docker-image-{base_command_line}")
