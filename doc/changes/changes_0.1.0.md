@@ -1,4 +1,4 @@
-# data-science-sandbox 0.1.0, released t.b.d.
+# ai-lab 0.1.0, released t.b.d.
 
 Code name: Initial release
 
@@ -6,7 +6,7 @@ Code name: Initial release
 
 Initial release of the data-science-sandbox. It provides the creation of an Amazon Machine Image (AMI) and virtual machine images for a specific version of the data-science-sanbox-release project.
 
-## Data-Science-Sandbox-Release
+## AI-Lab-Release
 
 Version: 0.1.0
 
