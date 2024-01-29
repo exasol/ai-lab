@@ -9,7 +9,7 @@
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
         port: "49494"
         user: "{{ user_name }}"
-        password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='dss') }}"
+        password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='ai-lab') }}"
         logfile: "{{ user_home }}/jupyter-server.log"
       notebook_folder:
         initial: "{{ initial_notebook_folder }}"

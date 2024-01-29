@@ -141,7 +141,7 @@ port to the same port then you can connect with http://localhost:49494.
 │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
 └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
-The default password is "dss".
+The default password is "ai-lab".
 To update the password as user root run
     /root/jupyterenv/bin/jupyter-lab server password
 ```
