@@ -4,7 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from test.integration.docker_utils import image, container, BuildContext, exec_command
+from test.integration.docker.exec_run import exec_command
+from test.integration.docker.image import image
+from test.integration.docker.in_memory_build_context import InMemoryBuildContext
+from test.integration.docker.container import container
 
 TEST_RESOURCE_PATH = Path(__file__).parent / "notebooks"
 
@@ -24,7 +27,7 @@ def notebook_test_dockerfile_content(dss_docker_image) -> str:
 
 @pytest.fixture(scope="session")
 def notebook_test_build_context(notebook_test_dockerfile_content) -> io.BytesIO:
-    with BuildContext() as context:
+    with InMemoryBuildContext() as context:
         context.add_string_to_file(name="Dockerfile", string=notebook_test_dockerfile_content)
         context.add_host_path(host_path=str(TEST_RESOURCE_PATH), path_in_tar="notebooks", recursive=True)
     yield context.fileobj
