@@ -1,13 +1,14 @@
 [tool.poetry]
 name = "exasol-data-science-sandbox"
 version = "0.1.0"
-description = "Manages virtual machines for the data science sandbox."
+description = "Provide AI-Lab editions."
 packages = [ {include = "exasol"}, ]
 license = "MIT"
 authors = [
     "Torsten Kilias <torsten.kilias@exasol.com>",
     "Mikhail Beck <mikhail.beck@exasol.com>",
-    "Christoph Kuhnke <christoph.kuhnke@exasol.com>"
+    "Christoph Kuhnke <christoph.kuhnke@exasol.com>",
+    "Maxim Lapan <maxim.lapan@exasol.com>",
 ]
 classifiers = [
    "Programming Language :: Python :: 3",
