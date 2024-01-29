@@ -50,6 +50,6 @@ Script `start-test-release-build` requires environment variable `GH_TOKEN` to co
 3. [Testing](testing.md)
 4. [Running tests in the CI](ci.md)
 5. [Updating Packages](updating_packages.md)
-6[Notebooks](notebooks.md)
+6. [Notebooks](notebooks.md)
 
 
