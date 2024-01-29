@@ -24,6 +24,10 @@ def exec_command(
 
 def exec_run(container: Container, cmd, stream=False, environment=None, workdir=None, user='') \
         -> Tuple[Callable[[], Optional[int]], Union[bytes, Iterator[bytes]]]:
+    """
+    Run a command in the provided Docker container and return 
+    a function to inquire the exit code and the stdout as stream or byte array.
+    """
     resp = container.client.api.exec_create(
         container.id, cmd, user=user, environment=environment,
         workdir=workdir,
