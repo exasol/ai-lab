@@ -26,7 +26,7 @@ Recommendations
 
 The ID of the AMI (Amazon Machine Image) is mentioned in the [release notes](https://github.com/exasol/ai-lab/releases/latest) and can be used to start an EC2-instance in your AWS account.
 
-The naming scheme is: "_Exasol-Data-Science-Sandbox-${VERSION}_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
+The naming scheme is: "_Exasol-AI-Lab-${VERSION}_", e.g. "_Exasol-AI-Lab-5.0.0_"
 
 See also [User Guide for AI-Lab AMI Edition](ami_usage.md).
 
