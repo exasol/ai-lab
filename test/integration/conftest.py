@@ -10,6 +10,18 @@ def pytest_addoption(parser):
         help="Name and version of existing Docker image to use for tests",
     )
     parser.addoption(
+        "--keep-dss-docker-image", action="store_true", default=False,
+        help="Keep the created dss docker image for inspection or reuse."
+    )
+    parser.addoption(
+        "--docker-image-notebook-test", default=None,
+        help="Name and version of existing Docker image for Notebook testing to use for tests",
+    )
+    parser.addoption(
+        "--keep-docker-image-notebook-test", action="store_true", default=False,
+        help="Keep the created notebook-test docker image for inspection or reuse.",
+    )
+    parser.addoption(
         "--docker-registry", default=None, metavar="HOST:PORT",
         help="Docker registry for pushing Docker images to",
     )
@@ -23,6 +35,7 @@ def dss_docker_image(request):
     --ds-docker-image-name.
     """
     existing = request.config.getoption("--dss-docker-image")
+    keep_image = request.config.getoption(f"--keep-dss-docker-image")
     if existing and ":" in existing:
         name, version = existing.split(":")
         yield DssDockerImage(name, version)
@@ -37,4 +50,5 @@ def dss_docker_image(request):
     try:
         yield testee
     finally:
-        docker.from_env().images.remove(testee.image_name)
+        if not keep_image:
+            docker.from_env().images.remove(testee.image_name, force=True)
