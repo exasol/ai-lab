@@ -16,7 +16,7 @@ Environment variables with the prefix `NBTEST_` with which you call
 into the Docker container and to the notebook test. You can use this to forward secrets to the notebook tests.
 
 Per default all created containers and images are removed after running the tests regardless of success or failure.
-However, with the following pytest commandline parameters you can keep them or reuse them for speed up local testing:
+However, with the following pytest commandline parameters you can keep them or reuse them to speed up local testing:
 
 ```
   --dss-docker-image=DSS_DOCKER_IMAGE
