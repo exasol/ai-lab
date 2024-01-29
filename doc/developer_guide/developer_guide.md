@@ -47,4 +47,6 @@ Script `start-test-release-build` requires environment variable `GH_TOKEN` to co
 
 1. [AWS Build and Release Workflow](aws.md)
 2. [Command Line Usage](commands.md)
-
+3. [Testing](testing.md)
+4. [Running tests in the CI](testing.md)
+5. [Updating Packages](updating_packages.md)
