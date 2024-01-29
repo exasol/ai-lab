@@ -69,5 +69,5 @@ def test_notebook(notebook_test_container, notebook_test_file):
     command_run_test = f'{virtual_env}/bin/python -m pytest --setup-show -s {notebook_test_file}'
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
-    nbtest_environ = {key: value for key, value in environ if key.startswith("NBTEST_")}
+    nbtest_environ = {key: value for key, value in environ.items() if key.startswith("NBTEST_")}
     exec_command(command_run_test, container, print_output=True, environment=nbtest_environ)
