@@ -23,7 +23,7 @@ from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 
 DEFAULT_ORG_AND_REPOSITORY = "exasol/ai-lab"
 # name of the project as specified in file pyproject.toml
-DSS_VERSION = version("exasol-data-science-sandbox")
+DSS_VERSION = version("exasol-ai-lab")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
 

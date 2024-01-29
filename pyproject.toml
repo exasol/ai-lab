@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "exasol-data-science-sandbox"
+name = "exasol-ai-lab"
 version = "0.1.0"
 description = "Provide AI-Lab editions."
 packages = [ {include = "exasol"}, ]
