@@ -4,7 +4,7 @@ Using Exasol AI-Lab Docker Edition requires some specific prerequisites but also
 
 ## Need to Know About Docker Images and Containers
 
-Exasol AI-Lab Docker Edition is published as a so-called _Docker Image_ on [Docker Hub](https://hub.docker.com/r/exasol/data-science-sandbox).
+Exasol AI-Lab Docker Edition is published as a so-called _Docker Image_ on [Docker Hub](https://hub.docker.com/r/exasol/ai-lab).
 
 In order to use such an image you need two components
 * Docker client
@@ -101,7 +101,7 @@ The following command will
 docker run \
   --volume ${VOLUME}:/root/notebooks \
   --publish ${LISTEN_IP}:49494:49494 \
-  exasol/data-science-sandbox:${VERSION}
+  exasol/ai-lab:${VERSION}
 ```
 
 Additional options
@@ -121,7 +121,7 @@ docker run \
   --volume ${VOLUME}:/root/notebooks \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --publish ${LISTEN_IP}:49494:49494 \
-  exasol/data-science-sandbox:${VERSION}
+  exasol/ai-lab:${VERSION}
 ```
 
 ## Connecting to Jupyter Service
@@ -129,7 +129,7 @@ docker run \
 When starting AI-Lab as Docker container the command line will display a welcome message showing connection instructions and a reminder to change the default password:
 
 ```
-$ docker run --publish 0.0.0.0:$PORT:49494 exasol/data-science-sandbox:$VERSION
+$ docker run --publish 0.0.0.0:$PORT:49494 exasol/ai-lab:$VERSION
 Server for Jupyter has been started successfully.
 
 You can connect with http://<host>:<port>

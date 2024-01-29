@@ -51,7 +51,7 @@ The following commands are used during the release AWS Codebuild job:
 * `create-vm`: Create a new AMI and VM images.
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
-* `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/data-science-sandbox.
+* `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
 
 Script `start-release-build`:
 * Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
@@ -158,7 +158,7 @@ poetry run test/integration/test_ci.py
 Creating a docker image is quite time-consuming, currently around 10 minutes. In order to use an existing docker image in the tests in `integration/test_create_dss_docker_image.py` simply add CLI option `--dss-docker-image` when calling `pytest`:
 
 ```shell
-poetry run pytest --dss-docker-image exasol/data-science-sandbox:0.1.0
+poetry run pytest --dss-docker-image exasol/ai-lab:0.1.0
 ```
 
 #### Executing tests involving AWS resources

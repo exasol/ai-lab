@@ -51,6 +51,6 @@ See also [User Guide for AI-Lab VM Edition](vm_usage.md).
 
 ### Docker Edition
 
-The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/data-science-sandbox.
+The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/ai-lab.
 
 See also [User Guide for AI-Lab Docker Edition](docker/docker_usage.md).

@@ -192,7 +192,7 @@ def test_print_docker(default_asset_id):
         )
         actual = buf.getvalue()
     assert "#### Docker Images" in actual
-    assert "docker pull exasol/data-science-sandbox:test" in actual
+    assert "docker pull exasol/ai-lab:test" in actual
 
 
 def test_asset_type_from_name():
