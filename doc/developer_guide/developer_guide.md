@@ -25,7 +25,7 @@ bash install.sh
 
 ## Design Goals
 
-The Exasol AI-Lab (XAL) uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
+The Exasol AI-Lab (XAIL) uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
 
 This project uses
 * `boto3` to interact with AWS
@@ -37,7 +37,7 @@ A CLI command has normally a respective function in the `lib` submodule. Hence, 
 
 ## Commands
 
-The commands offered by the XAL CLI can be organized into three groups:
+The commands offered by the XAIL CLI can be organized into three groups:
 
 | Group                | Usage                                   |
 |----------------------|-----------------------------------------|
@@ -111,7 +111,7 @@ Resources:
 
 ## Notebook Files
 
-XAL repository includes some Jupyter notebooks and scripts to add these notebooks to XAL images, e.g. AMI or Docker Images.
+XAIL repository includes some Jupyter notebooks and scripts to add these notebooks to XAIL images, e.g. AMI or Docker Images.
 
 Please add or update the notebook files in folder [exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook](../../exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook).
 
@@ -140,7 +140,7 @@ Also, the ssh password authentication will be enabled, and for security reasons 
 
 ### Tests
 
-XAL comes with a number of tests in directory `test`.
+XAIL comes with a number of tests in directory `test`.
 There are subdirectories clustering tests with common scope and prerequisites e.g. external resources.
 
 | Directory           | Content |
