@@ -107,14 +107,13 @@ def test_printing_s3_object(default_asset_id, printing_mocks, filter_value, expe
     asset_id = AssetId(filter_value) if filter_value else None
     print_with_printer(aws_access_mock, asset_id, (AssetTypes.VM_S3,), "*", printing_factory)
 
-    assert table_printer_mock.add_column.call_count == 4
+    assert table_printer_mock.add_column.call_count == 3
 
     if expected_found_s3_object:
-        s3_uri = f"s3://{TEST_BUCKET_ID}/{default_asset_id.bucket_prefix}/export-ami-123.vmdk"
         url = f"https://{TEST_CLOUDFRONT_DOMAIN_NAME}/{default_asset_id.bucket_prefix}/export-ami-123.vmdk"
         table_printer_mock.add_row.assert_called_once_with(
             f'{default_asset_id.bucket_prefix}/export-ami-123.vmdk',
-            "2.19 GB", s3_uri, url)
+            "2.19 GB", url)
     else:
         table_printer_mock.add_row.assert_not_called()
 

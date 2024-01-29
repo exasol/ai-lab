@@ -156,11 +156,10 @@ def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printin
     else:
         prefix = ""
 
-    table_printer = printing_factory.create_table_printer(title=f"S3 Objects (Bucket={vm_bucket} Prefix={prefix})")
+    table_printer = printing_factory.create_table_printer(title=f"VM Images, Prefix={prefix})")
 
     table_printer.add_column("Key", no_wrap=True)
     table_printer.add_column("Size", no_wrap=True)
-    table_printer.add_column("S3 URI", no_wrap=False)
     table_printer.add_column("URL", no_wrap=False)
 
     # How the filtering works:
@@ -181,16 +180,14 @@ def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printin
         if prefix[-1] != "*":
             prefix = f"{prefix}*"
         s3_objects = [s3_object for s3_object in s3_objects if fnmatch.fnmatch(s3_object.key, prefix)]
-    s3_bucket_uri = "s3://{bucket}/{{object}}".format(bucket=vm_bucket)
     https_bucket_url = "https://{url_for_bucket}/{{object}}".format(url_for_bucket=url_for_bucket)
 
     if s3_objects is not None:
         for s3_object in s3_objects:
             obj_size = humanfriendly.format_size(s3_object.size)
             key = s3_object.key
-            s3_uri = s3_bucket_uri.format(object=key)
             https_url = https_bucket_url.format(object=urllib.parse.quote(key))
-            table_printer.add_row(key, obj_size, s3_uri, https_url)
+            table_printer.add_row(key, obj_size, https_url)
 
     table_printer.finish()
 

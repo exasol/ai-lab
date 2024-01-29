@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import Dict, List
 
 from dateutil.tz import tzutc
 
@@ -22,7 +22,7 @@ TEST_ACL_ARN = "TEST-DOWNLOAD-ACL"
 INSTANCE_ID = "test-instance"
 
 
-def default_tags() -> List[Dict[str,str]]]:
+def default_tags() -> List[Dict[str, str]]:
     return create_default_asset_tag(DEFAULT_ASSET_ID.tag_value)
 
 
