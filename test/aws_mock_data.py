@@ -10,6 +10,7 @@ from exasol.ds.sandbox.lib.aws_access.key_pair import KeyPair
 from exasol.ds.sandbox.lib.aws_access.s3_object import S3Object
 from exasol.ds.sandbox.lib.aws_access.snapshot import Snapshot
 from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
+from exasol.ds.sandbox.lib.tags import create_default_asset_tag
 from test.conftest import DEFAULT_ASSET_ID
 
 TEST_ROLE_ID = 'VM-DSS-Bucket-VMImportRole-TEST'
@@ -19,6 +20,10 @@ TEST_CLOUDFRONT_ID = "test-cloudfrontet-TEST"
 TEST_CLOUDFRONT_DOMAIN_NAME = "test-s3.cloudfront.net"
 TEST_ACL_ARN = "TEST-DOWNLOAD-ACL"
 INSTANCE_ID = "test-instance"
+
+
+def default_tags() -> List[Dict[str,str]]]:
+    return create_default_asset_tag(DEFAULT_ASSET_ID.tag_value)
 
 
 def get_ami_image_mock_data(state: str) -> Ami:
@@ -43,7 +48,7 @@ def get_ami_image_mock_data(state: str) -> Ami:
                 'Name': DEFAULT_ASSET_ID.ami_name,
                 'RootDeviceName': '/dev/sda1',
                 'RootDeviceType': 'ebs', 'SriovNetSupport': 'simple',
-                'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+                'Tags': default_tags(),
                 'VirtualizationType': 'hvm'})
 
 
@@ -53,7 +58,7 @@ def get_snapshot_mock_data():
         'OwnerId': '123', 'Progress': '100%', 'SnapshotId': 'snap-123',
         'StartTime': datetime.datetime(2022, 8, 16, 15, 3, 40, 662000, tzinfo=tzutc()), 'State': 'completed',
         'VolumeId': 'vol-123', 'VolumeSize': 100,
-        'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+        'Tags': default_tags(),
         'StorageTier': 'standard'
     })
 
@@ -71,7 +76,7 @@ def get_export_image_task_mock_data(in_progress: bool):
             'Progress': "50%",
             "StatusMessage": "creating the image",
             'Status': 'active',
-            'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}]
+            'Tags': default_tags(),
         })
     else:
         return ExportImageTask({
@@ -83,7 +88,7 @@ def get_export_image_task_mock_data(in_progress: bool):
                     'S3Prefix': DEFAULT_ASSET_ID.bucket_prefix
                 },
             'Status': 'completed',
-            'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}]
+            'Tags': default_tags()
         })
 
 
@@ -107,7 +112,7 @@ def get_ec2_cloudformation_mock_data():
         'RollbackConfiguration': {},
         'StackStatus': 'CREATE_COMPLETE',
         'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': ['CAPABILITY_IAM'],
-        'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+        'Tags': default_tags(),
         'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'}
     })
 
@@ -137,9 +142,8 @@ def get_ec2_key_pair_mock_data():
         'KeyFingerprint': '12:34:56:78:90:12:34:56:78:90:12:34:56:78:90:12:34:56:78:90',
         'KeyName': 'ec2-key-test-key',
         'KeyType': 'rsa',
-        'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
-        'CreateTime': datetime.datetime(2022, 8, 16, 15, 30, 41,
-                                        tzinfo=tzutc())
+        'Tags': default_tags(),
+        'CreateTime': datetime.datetime(2022, 8, 16, 15, 30, 41, tzinfo=tzutc())
     })
 
 
@@ -153,7 +157,7 @@ def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
         'RollbackConfiguration': {},
         'StackStatus': 'CREATE_COMPLETE',
         'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': ['CAPABILITY_IAM'],
-        'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+        'Tags': default_tags(),
         'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'},
         'Outputs': [{'OutputKey': 'VMBucketId',
                      'OutputValue': TEST_BUCKET_ID, 'Description': ''},
@@ -178,7 +182,7 @@ def get_waf_cloudformation_mock_data() -> List[CloudformationStack]:
         'RollbackConfiguration': {},
         'StackStatus': 'CREATE_COMPLETE',
         'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': [],
-        'Tags': [{'Key': 'exa_dss_id', 'Value': DEFAULT_ASSET_ID.tag_value}],
+        'Tags': default_tags(),
         'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'},
         'Outputs': [{'OutputKey': 'VMDownloadACLArn',
                      'OutputValue': TEST_ACL_ARN, 'Description': ''}

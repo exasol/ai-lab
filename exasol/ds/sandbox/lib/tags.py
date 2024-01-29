@@ -1,4 +1,4 @@
-DEFAULT_TAG_KEY = "exa_dss_id"
+DEFAULT_TAG_KEY = "exa_ai_lab_id"
 
 
 def create_default_asset_tag(value: str) -> list:
