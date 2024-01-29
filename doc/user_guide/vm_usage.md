@@ -29,4 +29,4 @@
 ![image info](./img/tutorial-screenshot-open-preferences.png)
 - Then the IP address will be shown:<br />
 ![image info](./img/tutorial-screenshot-show-ip.png)
-- Use _IP-Address_:8888 to connect to the [Jupterlab](#Jupyter)
+- Use _IP-Address_:49494 to connect to the [Jupterlab](#Jupyter)

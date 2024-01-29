@@ -40,7 +40,7 @@ def dockerfile(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
-def docker_test_container(test_config, dockerfile):
+def docker_test_container(test_config, dockerfile, jupyter_port):
     with tempfile.TemporaryDirectory() as tmp_path:
         docker_env = docker.from_env()
         docker_env.images.build(
@@ -49,7 +49,7 @@ def docker_test_container(test_config, dockerfile):
         )
         socket_mount = Mount("/var/run/docker.sock", "/var/run/docker.sock", type="bind")
         tmp_mount = Mount(tmp_path, tmp_path, type="bind")
-        mapped_ports = {'8888/tcp': 8888}
+        mapped_ports = { f'{jupyter_port/tcp': jupyter_port}
         test_container = docker_env.containers.create(image=TEST_CONTAINER_IMAGE_TAG,
                                                       name=TEST_CONTAINER_NAME, mounts=[socket_mount, tmp_mount],
                                                       command="sleep infinity", detach=True, ports=mapped_ports)
@@ -74,7 +74,7 @@ def docker_test_container(test_config, dockerfile):
             test_container.remove()
 
 
-def test_install_dependencies_jupyterlab(docker_test_container):
+def test_install_dependencies_jupyterlab(docker_test_container, jupyter_port):
     """"
     Test that jupyterlab is configured properly
     """
@@ -84,7 +84,7 @@ def test_install_dependencies_jupyterlab(docker_test_container):
     time.sleep(5.0)
     container.reload()
     docker_test_container_ip = container.attrs['NetworkSettings']['IPAddress']
-    http_conn = requests.get(f"http://{docker_test_container_ip}:8888/lab")
+    http_conn = requests.get(f"http://{docker_test_container_ip}:{jupyter_port}/lab")
     assert http_conn.status_code == 200
 
 

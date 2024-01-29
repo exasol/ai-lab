@@ -19,9 +19,9 @@ from exasol.ds.sandbox.lib import pretty_print
 
 
 @pytest.fixture
-def dss_docker_container(dss_docker_image):
+def dss_docker_container(dss_docker_image, jupyter_port):
     client = docker.from_env()
-    mapped_ports = {'8888/tcp': 8888}
+    mapped_ports = { f'{jupyter_port}/tcp': jupyter_port }
     container = client.containers.create(
         image=dss_docker_image.image_name,
         name=dss_docker_image.container_name,
@@ -44,7 +44,7 @@ def retry(exception: typing.Type[BaseException], timeout: timedelta):
     )
 
 
-def test_jupyterlab(dss_docker_container):
+def test_jupyterlab(dss_docker_container, jupyter_port):
     """"
     Test that jupyterlab is configured properly
     """
@@ -52,7 +52,7 @@ def test_jupyterlab(dss_docker_container):
     ip_address = container.attrs['NetworkSettings']['IPAddress']
     if ip_address == "":
         ip_address = "localhost"
-    url = f"http://{ip_address}:8888/lab"
+    url = f"http://{ip_address}:{jupyter_port}/lab"
 
     @retry(requests.exceptions.ConnectionError, timedelta(seconds=5))
     def request_with_retry(url: str) -> requests.Response:

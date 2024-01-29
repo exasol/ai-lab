@@ -78,6 +78,7 @@ def test_entrypoint_default(facts):
 
 def test_entrypoint_with_copy_args():
     jupyter = "/root/jupyterenv/bin/jupyter-lab"
+    port = "port"
     entrypoint = "/path/to/entrypoint.py"
     initial = "/path/to/initial"
     final = "/path/to/final"
@@ -88,6 +89,7 @@ def test_entrypoint_with_copy_args():
         "dss_facts": {
             "jupyter": {
                 "command": jupyter,
+                "port": port,
                 "user": user,
                 "password": password,
                 "logfile": logfile,
@@ -103,6 +105,7 @@ def test_entrypoint_with_copy_args():
         "--notebook-defaults", initial,
         "--notebooks", final,
         "--jupyter-server", jupyter,
+        "--port", port,
         "--user", user,
         "--password", password,
         "--jupyter-logfile", logfile,

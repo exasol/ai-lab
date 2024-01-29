@@ -29,6 +29,7 @@ Version: 0.1.0
 * #78: Described persistent storage of notebook files and credential store
 * #76: Added display of usage instructions for AI-Lab Docker edition
 * #137: Set Jupyter lab default URL to AI-Lab start page
+* #75: Changed default port of Jupyter server to 49494
 
 ## Bug Fixes
 

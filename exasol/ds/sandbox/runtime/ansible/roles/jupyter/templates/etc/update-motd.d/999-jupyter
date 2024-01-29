@@ -6,7 +6,7 @@ import json
 motd_message = """
 Server for Jupyter has been started successfully.
 
-You can connect with https://<host>:8888.
+You can connect with https://<host>:{{jupyterlab_port}}.
 
 {{heading_jupyter_update_password}}
 

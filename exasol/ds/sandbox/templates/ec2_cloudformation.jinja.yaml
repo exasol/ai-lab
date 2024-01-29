@@ -9,9 +9,10 @@ Resources:
           IpProtocol: tcp
           ToPort: 22
         - CidrIp: 0.0.0.0/0
-          FromPort: 8888
+          # literal value to be replaced by variable in ticket #140
+          FromPort: 49494
           IpProtocol: tcp
-          ToPort: 8888
+          ToPort: 49494
       Tags:
         - Key: "exasol:project"
           Value: "DataScienceSandbox"

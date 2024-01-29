@@ -34,6 +34,7 @@ class Testee:
     def run(self):
         entrypoint.start_jupyter_server(
             self.script,
+            "port",
             "notebooks",
             self.logfile,
             "user",

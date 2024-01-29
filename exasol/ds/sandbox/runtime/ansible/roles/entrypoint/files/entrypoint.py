@@ -31,6 +31,10 @@ def arg_parser():
         help="start server for Jupyter notebooks",
     )
     parser.add_argument(
+        "--port", type=int,
+        help="IP port Jupyter server is listening to",
+    )
+    parser.add_argument(
         "--user", type=str,
         help="user name for running jupyter server",
     )
@@ -51,6 +55,7 @@ def arg_parser():
 
 def start_jupyter_server(
         binary_path: str,
+        port: int,
         notebook_dir: str,
         logfile: Path,
         user: str,
@@ -81,15 +86,14 @@ def start_jupyter_server(
         p = subprocess.Popen(command_line, stdout=f, stderr=f)
 
     url = "http://<host>:<port>"
-    localhost_url = url.replace("<host>", "localhost").replace("<port>", "8888")
+    localhost_url = url.replace("<host>", "localhost").replace("<port>", str(port))
     success_message = cleandoc(f"""
         Server for Jupyter has been started successfully.
 
         You can connect with {url}.
 
         If using a Docker daemon on your local machine and you forward the
-        port to the same port then you can connect with
-        {localhost_url}.
+        port to the same port then you can connect with {localhost_url}.
 
         ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
         │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
@@ -165,6 +169,7 @@ def main():
         ):
         start_jupyter_server(
             args.jupyter_server,
+            args.port,
             args.notebooks,
             args.jupyter_logfile,
             args.user,
