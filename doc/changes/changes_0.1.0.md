@@ -48,3 +48,4 @@ Version: 0.1.0
 ## Documentation
 
 * #58: Added location of Juypter notebooks to developer guide
+* #145: Split Development Guide
