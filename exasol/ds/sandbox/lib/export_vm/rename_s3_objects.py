@@ -14,7 +14,7 @@ def build_image_source(prefix: str, export_image_task_id: str, vm_image_format: 
 
 def build_image_destination(prefix: str, asset_id: AssetId, vm_image_format: VmDiskImageFormat) -> str:
     img_format = vm_image_format.value.lower()
-    return "{bucket_prefix}exasol-data-science-sandbox-{asset_id}.{img_format}".format(
+    return "{bucket_prefix}exasol-ai-lab-{asset_id}.{img_format}".format(
         bucket_prefix=prefix,
         asset_id=str(asset_id),
         img_format=img_format)
@@ -26,7 +26,7 @@ def rename_image_in_s3(aws_access: AwsAccess, export_image_task: ExportImageTask
     """
     Renames the resulting S3 object of an export-image-task.
     The source objects always have the format "$export-image-task-id.$format".
-    The destination objects always have the format "exasol-data-science-sandbox-{asset_id}.{img_format}"
+    The destination objects always have the format "exasol-ai-lab-{asset_id}.{img_format}"
     The bucket and prefix in bucket do not change.
     :param aws_access: Access proxy to Aws
     :param export_image_task: The export image task which is expected to be completed successfully.

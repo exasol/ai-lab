@@ -1,4 +1,4 @@
-# Data Science Sandbox User Guide
+# Exasol AI-Lab User Guide
 
 ## Overview
 
@@ -29,7 +29,7 @@ AI-Lab can automatically launch such an instance on demand. However when using A
 Username: **ubuntu**
 
 At the first login to the sandbox (image or AMI) you will be prompted to change your password.
-The default password is: **dss**
+The default password is: **ai-lab**
 
 However, we suggest to use ssh-keys for the connection. When you use the AWS AMI, this will work automatically. When using the VM images, you need to deploy your ssh-keys. After you enabled ssh-keys, we recommend to disable ssh password authentication:
 ```shell
@@ -47,7 +47,7 @@ Root location
 |---------------------|------------------------------------------|
 | Virtual environment | location `/$ROOT/jupyterenv`             |
 | Location notebooks  | location `/$ROOT/notebooks`              |
-| Password            | `dss`                                    |
+| Password            | `ai-lab`                                 |
 | Http Port           | `49494` (or the port you forwared it to) |
 
 Exasol strongly recommends to change the Jupyter password as soon as possible. Details about how to do that will be shown in the login screen.

@@ -1,10 +1,11 @@
+from enum import Enum
+
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.render_template import render_template
-from enum import Enum
-
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import find_acl_arn
+from exasol.ds.sandbox.lib.asset_id import AssetId
 
 STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-Bucket"
 
@@ -21,10 +22,15 @@ LOG = get_status_logger(LogType.VM_BUCKET)
 
 def create_vm_bucket_cf_template(waf_webacl_arn: str) -> str:
     # All output keys (class OutputKey) are parameters in the vm_bucket_cloudformation.jinja.yaml
-    # Simply map the output key enums values to them self and pass them to jinja.
+    # Simply map the output key enums values to themselves and pass them to jinja.
     # Thus, we ensure that the output keys in the cloudformation match with the values in class OutputKey
     output_keys_dict = {output_key.value: output_key.value for output_key in OutputKey}
-    return render_template("vm_bucket_cloudformation.jinja.yaml", acl_arn=waf_webacl_arn, **output_keys_dict)
+    return render_template(
+        "vm_bucket_cloudformation.jinja.yaml",
+        acl_arn=waf_webacl_arn,
+        path_in_bucket=AssetId.BUCKET_PREFIX,
+        **output_keys_dict,
+    )
 
 
 def _find_vm_bucket_stack_output(aws_access: AwsAccess, output_key: OutputKey):

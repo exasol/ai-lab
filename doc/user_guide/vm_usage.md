@@ -11,7 +11,7 @@
 
 ### Step-by-step
 
-1. Download the `VMDK` file from the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest).
+1. Download the `VMDK` file from the [release notes](https://github.com/exasol/ai-lab/releases/latest).
 2. Open Boxes
 3. Create a new VM: Click the + Button
 4. Choose: "Create virtual machine from file"<br />

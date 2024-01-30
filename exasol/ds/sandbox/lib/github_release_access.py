@@ -70,5 +70,5 @@ class GithubReleaseAccess:
     @property
     def _get_repo(self) -> Repository:
         gh = Github(self._gh_token)
-        gh_repo = gh.get_repo("exasol/data-science-sandbox")
+        gh_repo = gh.get_repo("exasol/ai-lab")
         return gh_repo
