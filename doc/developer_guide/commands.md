@@ -1,6 +1,6 @@
 # Commands
 
-The commands offered by the DSS CLI can be organized into three groups:
+The AI-Lab CLI offers commands in the following three groups:
 
 | Group                | Usage                                   |
 |----------------------|-----------------------------------------|
@@ -14,7 +14,7 @@ The following commands are used during the release AWS Codebuild job:
 * `create-vm`: Create a new AMI and VM images.
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
-* `create-docker-image`: Create a Docker image for data-science-sandbox and deploy it to hub.docker.com/exasol/data-science-sandbox.
+* `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
 
 Script `start-release-build`:
 * Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
