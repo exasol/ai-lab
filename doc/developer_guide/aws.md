@@ -65,4 +65,3 @@ The command tags only the dynamically created entities with the *asset-id* but n
 The command `show-aws-assets` lists all assets which were created during the execution.
 * This is very useful if an error occured.
 * If the creation of a sandbox finished normally the list should contain only the AMI, images (S3 objects) and the export tasks (one for each image).
-
