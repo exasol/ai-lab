@@ -57,7 +57,7 @@ Resources:
             Principal:
               Service: "cloudfront.amazonaws.com"
             Resource:
-              - !Sub "arn:aws:s3:::${ VMBucket }/data_science_sandbox/*"
+              - !Sub "arn:aws:s3:::${ VMBucket }/{{path_in_bucket}}/*"
             Condition:
               StringEquals:
                 'AWS:SourceArn': !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CfDistribution}"

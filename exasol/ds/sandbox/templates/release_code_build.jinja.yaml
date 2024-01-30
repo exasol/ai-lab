@@ -70,7 +70,7 @@ Resources:
                 - s3:PutObject
                 - s3:GetObject
                 - s3:DeleteObject
-                Resource: arn:aws:s3:::{{vm_bucket}}/data_science_sandbox/*
+                Resource: arn:aws:s3:::{{vm_bucket}}/{{path_in_bucket}}/*
                 Effect: Allow
               - Action:
                 - secretsmanager:GetSecretValue
