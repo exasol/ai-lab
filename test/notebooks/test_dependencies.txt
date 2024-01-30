@@ -1,0 +1,5 @@
+nbclient
+nbformat
+pytest
+testbook
+pytest-check-links

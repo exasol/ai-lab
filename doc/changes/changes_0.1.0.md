@@ -30,6 +30,7 @@ Version: 0.1.0
 * #76: Added display of usage instructions for AI-Lab Docker edition
 * #137: Set Jupyter lab default URL to AI-Lab start page
 * #75: Changed default port of Jupyter server to 49494
+* #145: Add Docket Test Library to prepare Notebook tests
 
 ## Bug Fixes
 
@@ -47,3 +48,4 @@ Version: 0.1.0
 ## Documentation
 
 * #58: Added location of Juypter notebooks to developer guide
+* #145: Split Development Guide

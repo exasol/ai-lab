@@ -1,25 +1,22 @@
+from datetime import datetime
+from functools import reduce
+from typing import Dict, List, Optional
+
 import docker
 import humanfriendly
 import importlib_resources
-
-from functools import reduce
-from datetime import datetime
-from docker.types import Mount
-from exasol.ds.sandbox.lib import pretty_print
-from importlib_metadata import version
-from pathlib import Path
-from typing import Dict, List, Optional
-
 from docker.models.containers import Container as DockerContainer
 from docker.models.images import Image as DockerImage
+from importlib_metadata import version
 
+from exasol.ds.sandbox.lib import pretty_print
+from exasol.ds.sandbox.lib.ansible import ansible_repository
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
+from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.config import ConfigObject, SLC_VERSION
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-from exasol.ds.sandbox.lib.ansible import ansible_repository
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
-from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
+from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
 DEFAULT_ORG_AND_REPOSITORY = "exasol/data-science-sandbox"
 DSS_VERSION = version("exasol-data-science-sandbox")
@@ -151,13 +148,18 @@ class DssDockerImage:
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
         port = get_fact(facts, "jupyter", "port")
-        notebook_folder = get_fact(facts, "notebook_folder", "final")
+        notebook_folder_final = get_fact(facts, "notebook_folder", "final")
+        notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
-            "Volumes": { notebook_folder: {}, },
-            "ExposedPorts": { f"{port}/tcp": {} },
-            "Env": [ f"VIRTUAL_ENV={virtualenv}" ],
+            "Volumes": {notebook_folder_final: {}, },
+            "ExposedPorts": {f"{port}/tcp": {}},
+            "Env": [
+                f"VIRTUAL_ENV={virtualenv}",
+                f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
+                f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}"
+            ],
         }
         return container.commit(
             repository=self.image_name,
