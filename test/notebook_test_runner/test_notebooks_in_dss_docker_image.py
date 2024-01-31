@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from test.docker import exec_command
-from test.docker import image
-from test.docker import InMemoryBuildContext
-from test.docker import container
+from test.docker.exec_run import exec_command
+from test.docker.image import image
+from test.docker.in_memory_build_context import InMemoryBuildContext
+from test.docker.container import container
 
 TEST_RESOURCE_PATH = Path(__file__).parent.parent / "notebooks"
 
