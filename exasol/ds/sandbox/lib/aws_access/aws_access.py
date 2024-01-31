@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import boto3
 import botocore
+import humanfriendly
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
@@ -34,6 +35,22 @@ def _log_function_start(func):
         result = func(self, *args, **kwargs)
         return result
     return wrapper
+
+
+class Progress:
+    def __init__(self, report_every: str = "50 MB"):
+        self.report_every = humanfriendly.parse_size(report_every)
+        self.processed: int = 0
+        self.unreported: int = 0
+
+    def report(self, chunk: int):
+        self.unreported += chunk
+        if self.unreported < self.report_every:
+            return
+        self.processed += self.unreported
+        self.unreported = 0
+        display = round(self.processed / 1024 / 1024)
+        LOG.info(f'Transferred {display} MB ...')
 
 
 class AwsAccess(object):
@@ -419,6 +436,7 @@ class AwsAccess(object):
         copy_source = {'Bucket': bucket, 'Key': source}
         cloud_client.copy_object(Bucket=bucket, CopySource=copy_source, Key=dest)
 
+
     @_log_function_start
     def transfer_to_s3(
             self,
@@ -437,6 +455,9 @@ class AwsAccess(object):
         """
         cloud_client = self._get_aws_client("s3")
         config = boto3.s3.transfer.TransferConfig()
+        if callback is None:
+            progress = Progress("50 MB")
+            callback = progress.report
         cloud_client.upload_file(source, bucket, dest, Config=config, Callback=callback)
 
     @_log_function_start
