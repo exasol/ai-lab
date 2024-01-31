@@ -127,7 +127,7 @@ def _store_aws_credentials(store_path: Path, store_password: str, bucket_name: s
     conf.save(CKey.aws_secret_access_key, os.environ["NBTEST_AWS_SECRET_ACCESS_KEY"])
     conf.save(CKey.aws_region, os.environ["NBTEST_AWS_DEFAULT_REGION"])
     conf.save(CKey.sme_aws_bucket, bucket_name)
-    conf.save(CKey.sme.aws_role, role_name)
+    conf.save(CKey.sme_aws_role, role_name)
 
 
 def _create_sagemaker_role_with_policy() -> str:
