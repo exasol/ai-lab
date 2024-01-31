@@ -3,7 +3,10 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import boto3
 import botocore
+import os
 import humanfriendly
+
+from tempfile import NamedTemporaryFile
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
@@ -39,18 +42,22 @@ def _log_function_start(func):
 
 class Progress:
     def __init__(self, report_every: str = "50 MB"):
-        self.report_every = humanfriendly.parse_size(report_every)
-        self.processed: int = 0
-        self.unreported: int = 0
+        self._report_every = humanfriendly.parse_size(report_every)
+        self._processed: int = 0
+        self._unreported: int = 0
 
     def report(self, chunk: int):
-        self.unreported += chunk
-        if self.unreported < self.report_every:
+        self._unreported += chunk
+        if self._unreported < self._report_every:
             return
-        self.processed += self.unreported
-        self.unreported = 0
-        display = round(self.processed / 1024 / 1024)
-        LOG.info(f'Transferred {display} MB ...')
+        self._processed += self._unreported
+        self._unreported = 0
+        display = round(self._processed / 1024 / 1024)
+        LOG.info(f'Transferred {display} MB')
+
+    def reset(self):
+        self._processed = 0
+        self._unreported = 0
 
 
 class AwsAccess(object):
@@ -436,29 +443,60 @@ class AwsAccess(object):
         copy_source = {'Bucket': bucket, 'Key': source}
         cloud_client.copy_object(Bucket=bucket, CopySource=copy_source, Key=dest)
 
-
     @_log_function_start
-    def transfer_to_s3(
+    def upload_large_s3_object(
             self,
             bucket: str,
             source: str,
             dest: str,
-            callback: Callable[[int], None] = None,
+            progress: Progress = None,
     ):
         """
-        Transfers a file to an AWS bucket using an AWS transfer object.
-        The transfer object will perform a multi-part upload which supports to
-        transfer even files larger than 5 GB.
-
-        Optional parameter :callback: is method which takes a number of bytes
-        transferred to be periodically called during the upload.
+        :param source: path in the local filesystem.
         """
         cloud_client = self._get_aws_client("s3")
         config = boto3.s3.transfer.TransferConfig()
-        if callback is None:
+        if progress is None:
             progress = Progress("50 MB")
-            callback = progress.report
-        cloud_client.upload_file(source, bucket, dest, Config=config, Callback=callback)
+        cloud_client.upload_file(
+            source,
+            bucket,
+            dest,
+            Config=config,
+            Callback=progress.report,
+        )
+
+    @_log_function_start
+    def copy_large_s3_object(
+            self,
+            bucket: str,
+            source: str,
+            dest: str,
+            progress: Progress = None,
+    ):
+        """
+        Copies an s3 object within a bucket but uses a TransferConfig to
+        process files larger than 5 GB as multi-part.
+
+        The copy operation requires to first download the file from S3 to
+        local filesystem and then upload it again.
+        """
+        cloud_client = self._get_aws_client("s3")
+        config = boto3.s3.transfer.TransferConfig()
+
+        if progress is None:
+            progress = Progress("50 MB")
+
+        callback = progress.report
+        tmpfile = NamedTemporaryFile(delete=False).name
+        try:
+            LOG.info(f"Downloading (large) S3 object {source} to temp file")
+            cloud_client.download_file(bucket, source, tmpfile, Callback=callback, Config=config)
+            progress.reset()
+            LOG.info(f"Uploading (large) temp file to S3 {dest}")
+            cloud_client.upload_file(tmpfile, bucket, dest, Config=config, Callback=callback)
+        finally:
+            os.unlink(tmpfile)
 
     @_log_function_start
     def delete_s3_object(self, bucket: str, source: str):
