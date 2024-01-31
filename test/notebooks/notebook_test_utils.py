@@ -131,10 +131,19 @@ def notebook_runner(access_to_temp_secret_store) -> Callable:
 
 @pytest.fixture
 def uploading_hack() -> Tuple[str, str]:
+    """
+    This fixture is a hack that inserts a pause after uploading a big archive into the BucketFS.
+    The BucketFS performs the decompression and file copying asynchronously. The files may still
+    not be ready after the call to the BucketFS function returns. This hack ensures that this
+    operation is completed before resuming the notebook execution from the next cell.
+    """
     return (
         'uploading_model',
         textwrap.dedent("""
+        def pause_notebook_execution():
             import time
             time.sleep(20)
+            
+        pause_notebook_execution()
         """)
     )
