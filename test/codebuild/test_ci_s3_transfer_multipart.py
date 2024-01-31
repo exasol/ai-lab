@@ -29,11 +29,10 @@ def sample_file(tmp_path):
     file.unlink()
 
 
-@pytest.mark.skipif(
-    os.environ.get('DSS_RUN_S3_TEST') != 'true',
-    reason="Tests accessing real S3 buckets need to be activated by env variable DSS_RUN_S3_TEST")
+@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
+                    reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_s3_transfer_multipart(sample_file):
-    aws = AwsAccess(aws_profile="ci4_mfa")
+    aws = AwsAccess(None)
     source = sample_file
     bucket = find_vm_bucket(aws)
     s3_key = f"{AssetId.BUCKET_PREFIX}-itest-sample-file"
