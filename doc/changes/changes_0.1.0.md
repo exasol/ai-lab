@@ -35,6 +35,8 @@ Version: 0.1.0
 * #150: Used multipart upload for VM images
 * #145: Added Docker Test Library to prepare Notebook tests
 * #151: Setup SageMaker Credentials for notebook testing in the CI
+* #155: Added a Notebook Link Checker to Github Actions
+* #157: Added link checker for the documentation
 
 ## Bug Fixes
 

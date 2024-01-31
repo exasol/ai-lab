@@ -7,12 +7,12 @@ Please add or update the notebook files in folder [exasol/ds/sandbox/runtime/ans
 ## Notebook Testing
 
 We are running tests for the notebooks in the Docker Edition of the AI Lab. For this we are creating a Docker test setup in 
-[test_notebooks_in_dss_docker_image.py](test/integration/test_notebooks_in_dss_docker_image.py) which installs test libraries into the AI Lab Docker Image.
-It further creates a new test and Docker Container for each notebook test in [test/notebooks](test/notebooks). 
+[test_notebooks_in_dss_docker_image.py](../../test/notebook_test_runner/test_notebooks_in_dss_docker_image.py) which installs test libraries into the AI Lab Docker Image.
+It further creates a new test and Docker Container for each notebook test in [test/notebooks](../../test/notebooks). 
 Notebook test names need to fit the pattern `nbtest_*.py`, to prevent pytest running them outside of Docker setup.
 
 Environment variables with the prefix `NBTEST_` with which you call
-[test_notebooks_in_dss_docker_image.py](test/integration/test_notebooks_in_dss_docker_image.py) are forwarded 
+[test_notebooks_in_dss_docker_image.py](../../test/notebook_test_runner/test_notebooks_in_dss_docker_image.py) are forwarded 
 into the Docker container and to the notebook test. You can use this to forward secrets to the notebook tests.
 
 By default all created containers and images are removed after running the tests regardless of success or failure.
