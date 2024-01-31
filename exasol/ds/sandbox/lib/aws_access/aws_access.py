@@ -430,15 +430,13 @@ class AwsAccess(object):
         """
         Transfers a file to an AWS bucket using an AWS transfer object.
         The transfer object will perform a multi-part upload which supports to
-        transfer even large files bigger than 5 GM. Pleaes note minimum file size is 5 MB.
+        transfer even files larger than 5 GB.
 
         Optional parameter :callback: is method which takes a number of bytes
         transferred to be periodically called during the upload.
         """
         cloud_client = self._get_aws_client("s3")
         config = boto3.s3.transfer.TransferConfig()
-        # transfer = boto3.s3.transfer.S3Transfer(client=cloud_client, config=config)
-        # transfer.upload_file(source, bucket, dest)
         cloud_client.upload_file(source, bucket, dest, Config=config, Callback=callback)
 
     @_log_function_start
