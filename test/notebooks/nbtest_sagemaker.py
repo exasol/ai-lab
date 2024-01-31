@@ -7,7 +7,7 @@ import pytest
 from exasol.secret_store import Secrets
 from exasol.ai_lab_config import AILabConfig as CKey
 
-from notebook_test_utils import (access_to_temp_secret_store, run_notebook)
+from notebook_test_utils import (access_to_temp_secret_store, run_notebook, uploading_hack)
 
 
 def _create_aws_s3_bucket() -> str:
@@ -130,8 +130,7 @@ def aws_sagemaker_role() -> str:
     return role_name
 
 
-@pytest.mark.skip(reason="the infrastructure is not quite ready yet")
-def test_sagemaker(access_to_temp_secret_store, aws_s3_bucket, aws_sagemaker_role):
+def test_sagemaker(access_to_temp_secret_store, aws_s3_bucket, aws_sagemaker_role, uploading_hack):
 
     store_path, store_password = access_to_temp_secret_store
     store_file = str(store_path)
@@ -143,7 +142,7 @@ def test_sagemaker(access_to_temp_secret_store, aws_s3_bucket, aws_sagemaker_rol
         os.chdir('./data')
         run_notebook('data_telescope.ipynb', store_file, store_password)
         os.chdir('../sagemaker')
-        run_notebook('sme_init.ipynb', store_file, store_password)
+        run_notebook('sme_init.ipynb', store_file, store_password, hacks=[uploading_hack])
         run_notebook('sme_train_model.ipynb', store_file, store_password)
         run_notebook('sme_deploy_model.ipynb', store_file, store_password)
     finally:

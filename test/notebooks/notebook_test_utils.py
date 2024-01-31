@@ -3,6 +3,7 @@ from pathlib import Path
 from functools import partial
 import random
 import string
+import textwrap
 
 import pytest
 import nbformat
@@ -126,3 +127,14 @@ def notebook_runner(access_to_temp_secret_store) -> Callable:
 
     store_path, store_password = access_to_temp_secret_store
     return partial(run_notebook, store_file=str(store_path), store_password=store_password)
+
+
+@pytest.fixture
+def uploading_hack() -> Tuple[str, str]:
+    return (
+        'uploading_model',
+        textwrap.dedent("""
+            import time
+            time.sleep(20)
+        """)
+    )

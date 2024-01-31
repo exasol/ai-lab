@@ -2,7 +2,7 @@ import os
 import textwrap
 import pytest
 
-from notebook_test_utils import (access_to_temp_secret_store, notebook_runner)
+from notebook_test_utils import (access_to_temp_secret_store, notebook_runner, uploading_hack)
 
 
 @pytest.mark.parametrize(
@@ -18,15 +18,8 @@ from notebook_test_utils import (access_to_temp_secret_store, notebook_runner)
         'zero_shot_classification.ipynb'
     ]
 )
-def test_transformers(notebook_runner, notebook_file) -> None:
+def test_transformers(notebook_runner, uploading_hack, notebook_file) -> None:
 
-    uploading_hack = (
-        'uploading_model',
-        textwrap.dedent("""
-            import time
-            time.sleep(20)
-        """)
-    )
     running_hack = (
         'running_model',
         textwrap.dedent("""
