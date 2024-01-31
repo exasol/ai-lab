@@ -34,6 +34,7 @@ Version: 0.1.0
 * #255: Renamed data science sandbox to exasol-ai-lab
 * #145: Added Docker Test Library to prepare Notebook tests
 * #151: Setup SageMaker Credentials for notebook testing in the CI
+* #155: Added a Notebook Link Checker to Github Actions
 
 ## Bug Fixes
 
