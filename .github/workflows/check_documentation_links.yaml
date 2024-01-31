@@ -1,0 +1,23 @@
+name: Check Notebook Links
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+
+jobs:
+  check_documentation_links:
+    runs-on: ubuntu-latest
+
+    steps:
+     - uses: actions/checkout@v3
+       with:
+         fetch-depth: 0
+
+    - name: Link Checker
+      id: lychee
+      uses: lycheeverse/lychee-action@v1.9.0
+      with:
+        fail: true
+        args: --verbose --no-progress 'doc/**/*.md' 'README.md'
+
