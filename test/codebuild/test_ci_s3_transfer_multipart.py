@@ -6,11 +6,11 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket
 
 # from dataclasses import dataclass
-#
+# 
 # @dataclass
 # class Progress:
 #     bytes: int = 0
-#
+# 
 #     def report(self, bytes: int):
 #         self.bytes += bytes
 #         display = round(self.bytes / 1024 / 1024)
@@ -24,7 +24,7 @@ def sample_file(tmp_path):
     """
     file = tmp_path / "sample-file.txt"
     one_kb = "123456789 " * 102 + "1234"
-    file.write_text(one_kb * 1024 * 6)
+    file.write_text(one_kb * 1024 * 16)
     yield file
     file.unlink()
 
