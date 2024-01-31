@@ -15,11 +15,11 @@ def run_update_release(aws_access: AwsAccess, gh_access: GithubReleaseAccess,
     additional_release_notes = render_template("additional_release_notes.jinja")
     with tempfile.TemporaryDirectory() as temp_dir:
         artifacts_file = f"{temp_dir}/artifacts.md"
-        asset_types = tuple((
+        asset_types = (
             AssetTypes.DOCKER,
             AssetTypes.AMI,
             AssetTypes.VM_S3,
-        ))
+        )
         with open(artifacts_file, "w") as file:
             print_assets(aws_access, asset_id, file, asset_types)
         content = additional_release_notes + open(artifacts_file, "r").read()
