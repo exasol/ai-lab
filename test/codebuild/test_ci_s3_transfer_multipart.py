@@ -5,16 +5,16 @@ from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket
 
-from dataclasses import dataclass
-
-@dataclass
-class Progress:
-    bytes: int = 0
-
-    def report(self, bytes: int):
-        self.bytes += bytes
-        display = round(self.bytes / 1024 / 1024)
-        print(f'\rTransferred {display} MB ...', flush=True, end="")
+# from dataclasses import dataclass
+#
+# @dataclass
+# class Progress:
+#     bytes: int = 0
+#
+#     def report(self, bytes: int):
+#         self.bytes += bytes
+#         display = round(self.bytes / 1024 / 1024)
+#         print(f'\rTransferred {display} MB ...', flush=True, end="")
 
 
 @pytest.fixture
@@ -36,14 +36,14 @@ def test_s3_transfer_multipart(sample_file):
     source = sample_file
     bucket = find_vm_bucket(aws)
     s3_key = f"{AssetId.BUCKET_PREFIX}-itest-sample-file"
-    progress = Progress()
-    print("")
+    # progress = Progress()
+    # print("")
     try:
         aws.transfer_to_s3(
             bucket=bucket,
             source=source,
             dest=s3_key,
-            callback=progress.report,
+            # callback=progress.report,
         )
     finally:
         aws.delete_s3_object(bucket, s3_key)
