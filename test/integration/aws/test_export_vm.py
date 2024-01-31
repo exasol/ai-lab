@@ -112,5 +112,5 @@ def test_export_vm(aws_vm_export_mock, default_asset_id, vm_formats_to_test, tes
         expected_calls_copy.append(call(bucket=TEST_BUCKET_ID, source=source, dest=dest))
         expected_calls_delete.append(call(bucket=TEST_BUCKET_ID, source=source))
 
-    assert mock_cast(aws_vm_export_mock.copy_s3_object).call_args_list == expected_calls_copy
+    assert mock_cast(aws_vm_export_mock.copy_large_s3_object).call_args_list == expected_calls_copy
     assert mock_cast(aws_vm_export_mock.delete_s3_object).call_args_list == expected_calls_delete
