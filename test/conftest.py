@@ -17,6 +17,10 @@ DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-a
 
 TEST_DUMMY_AMI_ID = "ami-123"
 
+pytest_plugins = (
+    "test.docker.dss_docker_image",
+)
+
 
 @pytest.fixture
 def default_asset_id():
@@ -30,7 +34,6 @@ def jupyter_port():
 
 @pytest.fixture
 def ec2_cloudformation_yml():
-
     return render_template("ec2_cloudformation.jinja.yaml", key_name="test_key", user_name="test_user",
                            trace_tag=DEFAULT_TAG_KEY, trace_tag_value=DEFAULT_ASSET_ID.tag_value,
                            ami_id=TEST_DUMMY_AMI_ID)
