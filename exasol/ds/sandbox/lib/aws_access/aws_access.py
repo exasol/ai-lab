@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Optional, Any, List, Dict, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import boto3
 import botocore
@@ -418,6 +418,28 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("s3")
         copy_source = {'Bucket': bucket, 'Key': source}
         cloud_client.copy_object(Bucket=bucket, CopySource=copy_source, Key=dest)
+
+    @_log_function_start
+    def transfer_to_s3(
+            self,
+            bucket: str,
+            source: str,
+            dest: str,
+            callback: Callable[[int], None] = None,
+    ):
+        """
+        Transfers a file to an AWS bucket using an AWS transfer object.
+        The transfer object will perform a multi-part upload which supports to
+        transfer even large files bigger than 5 GM. Pleaes note minimum file size is 5 MB.
+
+        Optional parameter :callback: is method which takes a number of bytes
+        transferred to be periodically called during the upload.
+        """
+        cloud_client = self._get_aws_client("s3")
+        config = boto3.s3.transfer.TransferConfig()
+        # transfer = boto3.s3.transfer.S3Transfer(client=cloud_client, config=config)
+        # transfer.upload_file(source, bucket, dest)
+        cloud_client.upload_file(source, bucket, dest, Config=config, Callback=callback)
 
     @_log_function_start
     def delete_s3_object(self, bucket: str, source: str):
