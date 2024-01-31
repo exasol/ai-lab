@@ -1,10 +1,15 @@
-# ai-lab 0.1.0, released t.b.d.
+# ai-lab 0.1.0, released 2024-01-31
 
 Code name: Initial release
 
 ## Summary
 
-Initial release of the Exasol AI-Lab. It provides the creation of an Amazon Machine Image (AMI), virtual machine images, and a docker image for a specific version of the AI-Lab project.
+Initial release of the Exasol AI Lab. The project enables users to try out data science algorithms 
+in Jupyter notebooks connected to the Exasol database. This release provides: 
+- A JupyterLab environment with reference implementation notebooks of data science task using Exasol
+- A Secure Configuration Store to easily and securely manage your credentials to a Exasol database and other external service
+- The creation of an Amazon Machine Image (AMI), Virtual Machine Images, and a Docker Image for a specific version 
+of the Exasol AI Lab project.
 
 ## AI-Lab-Release
 
@@ -30,13 +35,13 @@ Version: 0.1.0
 * #76: Added display of usage instructions for AI-Lab Docker edition
 * #137: Set Jupyter lab default URL to AI-Lab start page
 * #75: Changed default port of Jupyter server to 49494
-* #145: Add Docker Test Library to prepare Notebook tests
 * #255: Renamed data science sandbox to exasol-ai-lab
 * #150: Used multipart upload for VM images
 * #145: Added Docker Test Library to prepare Notebook tests
 * #151: Setup SageMaker Credentials for notebook testing in the CI
 * #155: Added a Notebook Link Checker to Github Actions
 * #157: Added link checker for the documentation
+* #136: Implemented notebook testing
 
 ## Bug Fixes
 
