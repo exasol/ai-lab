@@ -9,7 +9,7 @@ Exasol AI-Lab is available in the following editions:
 | Docker Edition          | Docker Image                                                             |
 
 Each of the editions is associated with an _image_ in a specific format which
-* Is linked in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) for download
+* Is linked in the [release notes](https://github.com/exasol/ai-lab/releases/latest) for download
 * Contains all necessary dependencies
 * Provides a running Jupyterlab instance which is automatically started when booting or running the image
 
@@ -24,9 +24,9 @@ Recommendations
 
 ### AMI Edition
 
-The ID of the AMI (Amazon Machine Image) is mentioned in the [release notes](https://github.com/exasol/data-science-sandbox/releases/latest) and can be used to start an EC2-instance in your AWS account.
+The ID of the AMI (Amazon Machine Image) is mentioned in the [release notes](https://github.com/exasol/ai-lab/releases/latest) and can be used to start an EC2-instance in your AWS account.
 
-The naming scheme is: "_Exasol-Data-Science-Sandbox-${VERSION}_", e.g. "_Exasol-Data-Science-Sandbox-5.0.0_"
+The naming scheme is: "_Exasol-AI-Lab-${VERSION}_", e.g. "_Exasol-AI-Lab-5.0.0_"
 
 See also [User Guide for AI-Lab AMI Edition](ami_usage.md).
 
@@ -51,6 +51,6 @@ See also [User Guide for AI-Lab VM Edition](vm_usage.md).
 
 ### Docker Edition
 
-The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/data-science-sandbox.
+The Docker image is published to DockerHub at https://hub.docker.com/r/exasol/ai-lab.
 
 See also [User Guide for AI-Lab Docker Edition](docker/docker_usage.md).

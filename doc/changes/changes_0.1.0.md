@@ -1,12 +1,12 @@
-# data-science-sandbox 0.1.0, released t.b.d.
+# ai-lab 0.1.0, released t.b.d.
 
 Code name: Initial release
 
 ## Summary
 
-Initial release of the data-science-sandbox. It provides the creation of an Amazon Machine Image (AMI) and virtual machine images for a specific version of the data-science-sanbox-release project.
+Initial release of the Exasol AI-Lab. It provides the creation of an Amazon Machine Image (AMI), virtual machine images, and a docker image for a specific version of the AI-Lab project.
 
-## Data-Science-Sandbox-Release
+## AI-Lab-Release
 
 Version: 0.1.0
 
@@ -31,6 +31,7 @@ Version: 0.1.0
 * #137: Set Jupyter lab default URL to AI-Lab start page
 * #75: Changed default port of Jupyter server to 49494
 * #145: Add Docket Test Library to prepare Notebook tests
+* #255: Renamed data science sandbox to exasol-ai-lab
 
 ## Bug Fixes
 

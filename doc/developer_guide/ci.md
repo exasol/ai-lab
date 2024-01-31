@@ -26,7 +26,7 @@ The CodeBuild will take about 20 minutes to complete.
 
 To run these tests locally please use
 
- ```shell 
- export DSS_RUN_CI_TEST=true; poetry run test/codebuild/test_ci.py 
+```shell 
+export DSS_RUN_CI_TEST=true; poetry run test/codebuild/test_ci.py 
 ```
 

@@ -58,10 +58,10 @@ def create_docker_image(
         log_level: str,
 ):
     """
-    Create a Docker image for data-science-sandbox.  If option
-    ``--publish`` is specified then deploy the image to the Docker registry
-    using the specified user name and reading the password from environment
-    variable ``PASSWORD_ENV``.
+    Create a Docker image for ai-lab.  If option ``--publish`` is
+    specified then deploy the image to the Docker registry using the specified
+    user name and reading the password from environment variable
+    ``PASSWORD_ENV``.
     """
     def registry_password():
         if registry_user is None:

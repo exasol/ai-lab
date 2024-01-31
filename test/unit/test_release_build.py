@@ -12,7 +12,7 @@ from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_rele
     run_start_test_release_build
 from test.mock_cast import mock_cast
 
-UPLOAD_URL = "https://uploads.github.com/repos/exasol/data-science-sandbox/releases/123/assets{?name,label}"
+UPLOAD_URL = "https://uploads.github.com/repos/exasol/ai-lab/releases/123/assets{?name,label}"
 BRANCH = "main"
 GITHUB_TOKEN = "gh_secret"
 
