@@ -35,7 +35,7 @@ Version: 0.1.0
 * #76: Added display of usage instructions for AI-Lab Docker edition
 * #137: Set Jupyter lab default URL to AI-Lab start page
 * #75: Changed default port of Jupyter server to 49494
-* #255: Renamed data science sandbox to exasol-ai-lab
+* #79: Renamed data science sandbox to exasol-ai-lab
 * #150: Used multipart upload for VM images
 * #145: Added Docker Test Library to prepare Notebook tests
 * #151: Setup SageMaker Credentials for notebook testing in the CI
