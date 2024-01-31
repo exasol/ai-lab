@@ -28,7 +28,7 @@ ChangeSetResult = collections.namedtuple(
     "ChangeSetResult", ["changeset_id", "changeset_type"])
 
 
-DEFAULT_CHANGE_SET_PREFIX="dss-ci-setup-deploy-"
+DEFAULT_CHANGE_SET_PREFIX="ai-lab-ci-setup-deploy-"
 
 
 class Deployer(object):

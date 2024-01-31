@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "exasol-data-science-sandbox"
+name = "exasol-ai-lab"
 version = "0.1.0"
-description = "Manages virtual machines for the data science sandbox."
+description = "Provide AI-Lab editions."
 packages = [ {include = "exasol"}, ]
 license = "MIT"
 authors = [
     "Torsten Kilias <torsten.kilias@exasol.com>",
     "Mikhail Beck <mikhail.beck@exasol.com>",
-    "Christoph Kuhnke <christoph.kuhnke@exasol.com>"
+    "Christoph Kuhnke <christoph.kuhnke@exasol.com>",
+    "Maxim Lapan <maxim.lapan@exasol.com>",
 ]
 classifiers = [
    "Programming Language :: Python :: 3",
@@ -19,10 +20,10 @@ readme = "README.md"
 
 
 [tool.poetry.urls]
-"Homepage" = "https://github.com/exasol/data-science-sandbox"
-"Documentation" = "https://github.io/exasol/data-science-sandbox"
-"Source" = "https://github.io/exasol/data-science-sandbox"
-"Issues" = "https://github.io/exasol/data-science-sandbox/issues"
+"Homepage" = "https://github.com/exasol/ai-lab"
+"Documentation" = "https://github.io/exasol/ai-lab"
+"Source" = "https://github.io/exasol/ai-lab"
+"Issues" = "https://github.io/exasol/ai-lab/issues"
 
 
 [tool.poetry.dependencies]

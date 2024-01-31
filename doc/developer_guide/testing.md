@@ -10,9 +10,9 @@ Creating a docker image is quite time-consuming, currently around 7 minutes. In 
 docker image in the tests in `integration/test_create_dss_docker_image.py` 
 simply add CLI option `--dss-docker-image` when calling `pytest`:
 
- ```shell  
-  poetry run pytest --dss-docker-image exasol/data-science-sandbox:0.1.0 
-  ```
+```shell  
+poetry run pytest --dss-docker-image exasol/ai-lab:0.1.0 
+```
 
 #### Executing tests involving AWS resources
 
