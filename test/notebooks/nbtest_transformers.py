@@ -13,7 +13,8 @@ from notebook_test_utils import (access_to_temp_secret_store, notebook_runner)
         'masked_modelling.ipynb',
         'token_classification.ipynb',
         'text_generation.ipynb',
-        'translation.ipynb',
+        pytest.param('translation.ipynb', marks=pytest.mark.xfail(
+            reason='waiting for the Sacremoses tokenizer to be installed in the SLC')),
         'zero_shot_classification.ipynb'
     ]
 )
