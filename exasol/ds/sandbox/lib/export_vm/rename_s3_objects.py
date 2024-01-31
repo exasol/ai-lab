@@ -39,5 +39,5 @@ def rename_image_in_s3(aws_access: AwsAccess, export_image_task: ExportImageTask
                                 vm_image_format=vm_image_format)
     dest = build_image_destination(prefix=export_image_task.s3_prefix, asset_id=asset_id,
                                    vm_image_format=vm_image_format)
-    aws_access.transfer_to_s3(bucket=export_image_task.s3_bucket, source=source, dest=dest)
+    aws_access.copy_large_s3_object(bucket=export_image_task.s3_bucket, source=source, dest=dest)
     aws_access.delete_s3_object(bucket=export_image_task.s3_bucket, source=source)
