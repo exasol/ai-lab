@@ -190,9 +190,8 @@ def test_sagemaker(access_to_temp_secret_store, uploading_hack):
         os.chdir('../sagemaker')
         run_notebook('sme_init.ipynb', store_file, store_password,
                      hacks=[uploading_hack])
-        run_notebook(
-            '../../exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/sagemaker/sme_train_model.ipynb', store_file, store_password,
-            hacks=[get_job_polling_hack()])
+        run_notebook('sme_train_model.ipynb', store_file, store_password,
+                     hacks=[get_job_polling_hack()])
         run_notebook('sme_deploy_model.ipynb', store_file, store_password)
     finally:
         os.chdir(current_dir)
