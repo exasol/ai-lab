@@ -1,4 +1,4 @@
-name: Check Notebook Links
+name: Check Documentation Links
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
        with:
          fetch-depth: 0
 
-    - name: Link Checker
-      id: lychee
-      uses: lycheeverse/lychee-action@v1.9.0
-      with:
-        fail: true
-        args: --verbose --no-progress 'doc/**/*.md' 'README.md'
+     - name: Link Checker
+       id: lychee
+       uses: lycheeverse/lychee-action@v1.9.0
+       with:
+         fail: true
+         args: --verbose --no-progress 'doc/**/*.md' 'README.md'
 
