@@ -1,4 +1,4 @@
-# ai-lab 0.1.0, released t.b.d.
+# ai-lab 0.1.0, released 2024-01-31
 
 Code name: Initial release
 
