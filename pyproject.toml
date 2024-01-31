@@ -40,6 +40,9 @@ pandas = "^1.4.0"
 humanfriendly = "^10.0"
 tenacity = "^8.2.3"
 
+[tool.poetry.group.dev.dependencies]
+pytest-check-links = "^0.9.0"
+
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
