@@ -24,7 +24,10 @@ def run_install_dependencies(ansible_access: AnsibleAccess,
     are copied as flat copy to the dynamic working copy, too.
     The playbook is indicated by variable ansible_run_context, which also might contain additional ansible variables.
     """
-    new_extra_vars = {"slc_version": configuration.slc_version}
+    new_extra_vars = {
+        "slc_version": configuration.slc_version,
+        "ai_lab_version": configuration.ai_lab_version,
+    }
     if ansible_run_context.extra_vars is not None:
         new_extra_vars.update(ansible_run_context.extra_vars)
     new_ansible_run_context = AnsibleRunContext(ansible_run_context.playbook, new_extra_vars)

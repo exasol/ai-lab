@@ -1,5 +1,7 @@
 from importlib_metadata import version
 
+# name of the project as specified in file pyproject.toml
+AI_LAB_VERSION = version("exasol-ai-lab")
 SLC_VERSION = version("exasol_script_languages_release")
 
 _default_config = {
@@ -12,6 +14,7 @@ _default_config = {
         "state": "available"
     },
     "slc_version": SLC_VERSION,
+    "ai_lab_version": AI_LAB_VERSION,
     "waf_region": "us-east-1"
 }
 
