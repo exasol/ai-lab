@@ -75,7 +75,7 @@ def run_start_release_build(aws_access: AwsAccess, config: ConfigObject,
                             upload_url: str, branch: str, gh_token: str) -> None:
     logging.info(f"run_start_release_build for aws profile {aws_access.aws_profile_for_logging} "
                  f"with upload url: {upload_url}")
-    _execute_release_build(aws_access, branch, asset_id=config.slc_version,
+    _execute_release_build(aws_access, branch, asset_id=config.ai_lab_version,
                            release_id=_parse_upload_url(upload_url=upload_url), gh_token=gh_token,
                            make_ami_public=True)
 

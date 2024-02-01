@@ -17,10 +17,9 @@ from exasol.ds.sandbox.lib.config import ConfigObject, SLC_VERSION
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
+from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
 
 DEFAULT_ORG_AND_REPOSITORY = "exasol/ai-lab"
-# name of the project as specified in file pyproject.toml
-DSS_VERSION = version("exasol-ai-lab")
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
 
@@ -78,7 +77,7 @@ class DssDockerImage:
             version: str = None,
             keep_container: bool = False,
     ):
-        version = version if version else DSS_VERSION
+        version = version if version else AI_LAB_VERSION
         self.container_name = f"ds-sandbox-{DssDockerImage.timestamp()}"
         self.repository = repository
         self.version = version
@@ -103,6 +102,7 @@ class DssDockerImage:
         return ConfigObject(
             time_to_wait_for_polling=0.1,
             slc_version=SLC_VERSION,
+            ai_lab_version=AI_LAB_VERSION,
         )
 
     def _docker_file(self) -> importlib_resources.abc.Traversable:
