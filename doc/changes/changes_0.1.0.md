@@ -47,7 +47,6 @@ Version: 0.1.0
 
 * #1: Fixed CI build
 * #61: Change initial password of Jupyter notebooks to "dss"
-* #161: Fixed the bug in the Transformers' Translation notebook.
 
 ## Refactoring
 
@@ -56,7 +55,6 @@ Version: 0.1.0
 * #63: Improved logging of Ansible tasks
 * #46: Enabled to suppress ansible output
 * #52: Created CI build workflow to build and push Docker Image
-* #160: Implemented the PM's recommendations of 2024-01-24.
 
 ## Documentation
 

@@ -1,4 +1,3 @@
-import pytest
 from exasol.secret_store import Secrets
 from exasol.itde_manager import (
     bring_itde_up,
@@ -7,7 +6,6 @@ from exasol.itde_manager import (
 from exasol.connections import open_pyexasol_connection
 
 
-@pytest.mark.skip('just want to see if the translation works')
 def test_itde(tmp_path):
     store_path = tmp_path / 'tmp_config.sqlite'
     store_password = "password"
