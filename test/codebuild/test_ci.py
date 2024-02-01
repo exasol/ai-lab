@@ -14,7 +14,7 @@ from invoke import Responder
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.config import default_config_object, SLC_VERSION
+from exasol.ds.sandbox.lib.config import default_config_object, AI_LAB_VERSION
 from exasol.ds.sandbox.lib.run_create_vm import run_create_vm
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
@@ -42,14 +42,25 @@ def change_password(host: str, user: str, curr_pass: str, new_password: str) -> 
         assert res.ok
 
 
+def _create_asset_id():
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    return AssetId(
+        f"ci-test-{AI_LAB_VERSION}-{timestamp}",
+        stack_prefix="stack",
+        ami_prefix="ami",
+    )
+
+
 @pytest.fixture(scope="session")
 def new_ec2_from_ami():
     """
-    This fixtures starts the EC-2 instance, runs all setup, exports the AMI,
-    then starts another EC-2 instance, based on the new AMI, then changes the password (which is expired),
-    and finally  returns that EC-2 name together with the new temporary password.
+    Start the EC-2 instance, run all setup, export the AMI, then start
+    another EC-2 instance, based on the new AMI, then change the password
+    (which is expired), and finally return that EC-2 name together with the
+    new temporary password.
     """
-    # Create default_password (the one burned into the AMI) and the new password (which will be set during first login)
+    # Create default_password (the one burned into the AMI) and the new password
+    # (which will be set during first login)
     # We use different sizes of both in order to avoid equality of both!
     default_password = generate_random_password(length=12)
     new_password = generate_random_password(length=14)
@@ -58,10 +69,7 @@ def new_ec2_from_ami():
     assert default_password != new_password
     aws_access = AwsAccess(aws_profile=None)
     user_name = os.getenv("AWS_USER_NAME")
-    asset_id = AssetId("ci-test-{suffix}-{now}".format(now=datetime.now().strftime("%Y-%m-%d-%H-%M-%S"),
-                                                       suffix=SLC_VERSION),
-                       stack_prefix="stack",
-                       ami_prefix="ami")
+    asset_id = _create_asset_id()
     run_create_vm(aws_access, None, None,
                   AnsibleAccess(), default_password, tuple(), asset_id,
                   default_config_object, user_name, make_ami_public=False)
@@ -71,8 +79,9 @@ def new_ec2_from_ami():
     assert len(amis) == 1
     ami = amis[0]
 
-    lifecycle_generator = run_lifecycle_for_ec2(aws_access, None, None, asset_id=asset_id,
-                                                ami_id=ami.id, user_name=user_name)
+    lifecycle_generator = run_lifecycle_for_ec2(
+        aws_access, None, None, asset_id=asset_id,
+        ami_id=ami.id, user_name=user_name)
 
     try:
         with EC2StackLifecycleContextManager(lifecycle_generator, default_config_object) as ec2_data:

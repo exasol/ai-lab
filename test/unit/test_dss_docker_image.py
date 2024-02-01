@@ -3,10 +3,8 @@ import pytest
 from unittest.mock import MagicMock, Mock, create_autospec
 from datetime import datetime
 from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
-from exasol.ds.sandbox.lib.dss_docker.create_image import (
-    DssDockerImage,
-    DSS_VERSION,
-)
+from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
+from exasol.ds.sandbox.lib.dss_docker.create_image import DssDockerImage
 
 
 @pytest.fixture
@@ -16,7 +14,7 @@ def sample_repo():
 
 def test_constructor_defaults(sample_repo):
     testee = DssDockerImage(sample_repo)
-    assert testee.image_name == f"{sample_repo}:{DSS_VERSION}"
+    assert testee.image_name == f"{sample_repo}:{AI_LAB_VERSION}"
     assert testee.keep_container == False
 
 
