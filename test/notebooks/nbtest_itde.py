@@ -5,6 +5,7 @@ from exasol.itde_manager import (
 )
 from exasol.connections import open_pyexasol_connection
 
+
 def test_itde(tmp_path):
     store_path = tmp_path / 'tmp_config.sqlite'
     store_password = "password"
