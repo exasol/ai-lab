@@ -78,8 +78,8 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
     def init_notebook_test():
         from pathlib import Path
         from exasol.secret_store import Secrets
-        global sb_config
-        sb_config = Secrets(Path("{store_file}"), "{store_password}")
+        global ai_lab_config
+        ai_lab_config = Secrets(Path("{store_file}"), "{store_password}")
     init_notebook_test()
     '''
     nb.cells.insert(0, nbformat.v4.new_code_cell(init_code))

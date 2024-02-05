@@ -152,13 +152,13 @@ def get_job_polling_hack() -> Tuple[str, str]:
             from exasol.connections import open_pyexasol_connection
             from exasol.language_container_activation import get_activation_sql
 
-            sql = f'EXECUTE SCRIPT {sb_config.db_schema}."SME_POLL_SAGEMAKER_AUTOPILOT_JOB_STATUS"(' \
-                f"'{sb_config.JOB_NAME}'," \
-                f"'{sb_config.sme_aws_connection}'," \
-                f"'{sb_config.aws_region}');"
+            sql = f'EXECUTE SCRIPT {ai_lab_config.db_schema}."SME_POLL_SAGEMAKER_AUTOPILOT_JOB_STATUS"(' \
+                f"'{ai_lab_config.JOB_NAME}'," \
+                f"'{ai_lab_config.sme_aws_connection}'," \
+                f"'{ai_lab_config.aws_region}');"
 
-            with open_pyexasol_connection(sb_config, compression=True) as conn:
-                conn.execute(get_activation_sql(sb_config))
+            with open_pyexasol_connection(ai_lab_config, compression=True) as conn:
+                conn.execute(get_activation_sql(ai_lab_config))
                 t_start = time.time()
                 job_status = 'Unknown'
                 while job_status != 'Completed':
