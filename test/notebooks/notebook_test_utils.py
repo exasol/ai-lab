@@ -93,7 +93,7 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
 def access_to_temp_secret_store(tmp_path: Path) -> Tuple[Path, str]:
     """
     Creates a temporary configuration store.
-    Brings up and subsequently destroys the Docker-DB.
+    Brings up and subsequently destroys the Exasol Docker-DB.
     Returns the temporary configuration store path and password.
     """
 
@@ -108,10 +108,10 @@ def access_to_temp_secret_store(tmp_path: Path) -> Tuple[Path, str]:
     secrets = Secrets(store_path, master_password=store_password)
 
     # Set the configuration required by the ITDE manager and those the
-    # manager will not set after starting the Docker-DB.
+    # manager will not set after starting the Exasol Docker-DB.
     _init_secret_store(secrets)
 
-    # Start the Docker-DB and then destroy it after the test finishes.
+    # Start the Exasol Docker-DB and then destroy it after the test finishes.
     bring_itde_up(secrets)
     try:
         yield store_path, store_password
