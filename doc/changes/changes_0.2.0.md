@@ -19,6 +19,7 @@ Version: 0.2.0
 ## Refactoring
 
 * #160: Implemented the PM's recommendations of 2024-01-24.
+* #120: Passing the secret store object (sb_config) as a parameter to all functions that need it.
 * #165: Reduced log output in Codebuild ai-lab
 
 ## Documentation
