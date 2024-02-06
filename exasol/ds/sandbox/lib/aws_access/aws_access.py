@@ -41,7 +41,7 @@ def _log_function_start(func):
 
 
 class Progress:
-    def __init__(self, report_every: str = "50 MB"):
+    def __init__(self, report_every: str = "500 MB"):
         self._report_every = humanfriendly.parse_size(report_every)
         self._processed: int = 0
         self._unreported: int = 0
@@ -457,7 +457,7 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("s3")
         config = boto3.s3.transfer.TransferConfig()
         if progress is None:
-            progress = Progress("50 MB")
+            progress = Progress("500 MB")
         cloud_client.upload_file(
             source,
             bucket,
@@ -485,7 +485,7 @@ class AwsAccess(object):
         config = boto3.s3.transfer.TransferConfig()
 
         if progress is None:
-            progress = Progress("50 MB")
+            progress = Progress("500 MB")
 
         callback = progress.report
         tmpfile = NamedTemporaryFile(delete=False).name
