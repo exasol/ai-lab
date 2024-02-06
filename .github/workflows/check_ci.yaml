@@ -17,6 +17,9 @@ jobs:
      - name: Setup Python & Poetry Environment
        uses: ./.github/actions/prepare_poetry_env
 
+     - name: Show commit message
+       run: echo ${{ github.event.head_commit.message }}
+
      - name: Run build ai-lab tests
        run: >
          poetry run pytest
