@@ -29,5 +29,3 @@ Version: 0.2.0
 * #170: Renaming the section name "Set up" to "Setup".
 * #182: Renaming the secret store global variable from "sb_config" to "ai_lab_config".
 * #169: Renaming the default database schema from "IDA" to "AI_LAB".
-
-## Documentation
