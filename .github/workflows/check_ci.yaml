@@ -17,9 +17,6 @@ jobs:
      - name: Setup Python & Poetry Environment
        uses: ./.github/actions/prepare_poetry_env
 
-     - name: Show commit message
-       run: echo ${{ github.event.head_commit.message }}
-
      - name: Run build ai-lab tests
        run: >
          poetry run pytest
@@ -56,6 +53,9 @@ jobs:
          sudo rm -rf /usr/local/share/chromium
          sudo rm -rf /usr/local/lib/node_modules
          sudo rm -rf /opt/ghc
+
+     - name: Show available disk space
+       run: df -h
 
      - name: Setup Python & Poetry Environment
        uses: ./.github/actions/prepare_poetry_env
