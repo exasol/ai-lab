@@ -34,7 +34,7 @@ jobs:
          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
   run_nodebook_tests:
-    # if: "contains(github.event.head_commit.message, '[run-notebook-tests]')"
+    if: "contains(github.event.head_commit.message, '[run-notebook-tests]')"
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-latest
 
