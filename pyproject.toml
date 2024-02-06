@@ -65,8 +65,12 @@ testpaths = [
     "test"
 ]
 
-# ignore warnings caused by docker lib
 filterwarnings = [
+    # ignore warnings caused by docker lib
     "ignore:the imp module is deprecated:DeprecationWarning",
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
+    # ignoring pytest warnings caused by deprecated code in dependencies
+    "ignore:Jupyter is migrating its paths to use standard platformdirs:DeprecationWarning",
+    "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+    "ignore:Deprecated call to `pkg_resources.declare_namespace:DeprecationWarning",
 ]
