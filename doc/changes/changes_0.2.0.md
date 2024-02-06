@@ -24,5 +24,10 @@ Version: 0.2.0
 
 * #160: Implemented the PM's recommendations of 2024-01-24.
 * #120: Passing the secret store object (sb_config) as a parameter to all functions that need it.
+* #167: Replacing the term "Docker-DB" with "Exasol Docker-DB" in all notebooks and documentation.
+* #168: Renaming the section name “Access Configuration” to "Open Secure Configuration Storage".
+* #170: Renaming the section name "Set up" to "Setup".
+* #182: Renaming the secret store global variable from "sb_config" to "ai_lab_config".
+* #169: Renaming the default database schema from "IDA" to "AI_LAB".
 
 ## Documentation
