@@ -33,7 +33,7 @@ jobs:
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
-  run_nodebook_tests:
+  run_notebook_tests:
     if: "contains(github.event.head_commit.message, '[run-notebook-tests]')"
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-latest
