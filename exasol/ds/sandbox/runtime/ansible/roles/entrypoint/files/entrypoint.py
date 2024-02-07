@@ -100,7 +100,7 @@ def start_jupyter_server(
         └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
         The default password is "{password}".
-        To update the password as user {user} run
+        To update the password, log in to the Docker container as the user {user} and run
             {binary_path} server password
     """)
     with open(logfile, "r") as f:
