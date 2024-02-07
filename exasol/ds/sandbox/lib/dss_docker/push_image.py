@@ -17,10 +17,10 @@ class ProgressReporter:
     """
     Optional parameter :verbosity: controls the verbosity. If :verbosity:
     is :None: then report neither status nor progress.  If :verbosity: is a
-    float value then report every status change and this share of the progress
+    float value then report every status change and this fraction of the progress
     messages for a given status.
 
-    If :verbosity: is set to 0.1 then report only every 10th progress message.
+    For example, if :verbosity: is set to 0.1 then report only every 10th progress message.
     """
     def __init__(
             self,
