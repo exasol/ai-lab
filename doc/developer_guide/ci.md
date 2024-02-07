@@ -8,7 +8,7 @@ The project has two types of CI tests:
 All these tests need to pass before the approval of a Github PR.
 The Github workflow will run on each push to a branch in the Github repository.
 
-However, the notebook tests and the AWS Codebuild will only run after you push a commit containing a special string "[CodeBuild]" in the commit message, see the following sections.
+However, the notebook tests and the AWS Codebuild will only run after you push a commit containing a special string in the commit message, see the following sections.
 
 ### Executing Notebook Tests
 
