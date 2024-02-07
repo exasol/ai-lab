@@ -142,10 +142,35 @@ port to the same port then you can connect with http://localhost:49494.
 └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
 The default password is "ai-lab".
-To update the password as user root run
+To update the password, log in to the Docker container as the user root and run
     /root/jupyterenv/bin/jupyter-lab server password
 ```
 
 Using an internet browser you then can connect to the Jupyter server running in the Docker container in order to follow the tutorials presented by a set of Jupyter notebooks, see [Connecting to Jupyter Service](../user_guide.md#connecting-to-jupyter-service).
 
 For parameter `<host>`: If your daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
+
+The following section explains how to log in to the Docker container to change settings, such as the default password.
+
+## Login to the Docker container
+
+To update the password you must log in to the Docker container.
+
+First, you need to find out the container's ID. The following command shows the list of currently running Docker containers.
+
+```shell
+docker ps
+```
+
+Here is a sample output
+
+```
+CONTAINER ID   IMAGE     COMMAND        NAMES
+1199447716d4   image:2   "entrypoint"   funny_rabbit
+```
+
+The following command enables you to log in as the user `root` to the specified container:
+
+```shell
+docker exec --user root -it ${CONTAINER_ID} bash
+```
