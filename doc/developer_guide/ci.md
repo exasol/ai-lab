@@ -1,13 +1,24 @@
 ## Running tests in the CI
 
 The project has two types of CI tests:
-* unit tests and integration tests which run in a Github workflow
+* Unit tests and integration tests which run in a Github workflow
+* Special integration tests verifying the content of the Jupyter notebook files
 * A system test which runs on a AWS Codebuild
 
-Both ci tests need to pass before the approval of a Github PR.
-The Github workflow will run on each push to a branch in the Github repository. However, the AWS Codebuild will only run after you push a commit containing the string "[CodeBuild]" in the commit message, see [Executing AWS CodeBuild](#executing-aws-codebuild).
+All these tests need to pass before the approval of a Github PR.
+The Github workflow will run on each push to a branch in the Github repository.
 
-## Executing AWS CodeBuild
+However, the notebook tests and the AWS Codebuild will only run after you push a commit containing a special string in the commit message, see the following sections.
+
+### Executing Notebook Tests
+
+Use the following git commands to execute the notebook tests:
+
+```shell
+git commit -m "[run-notebook-tests]" --allow-empty && git push
+```
+
+### Executing AWS CodeBuild
 
 Use the following git commands to execute the AWS CodeBuild script:
 
@@ -26,7 +37,7 @@ The CodeBuild will take about 20 minutes to complete.
 
 To run these tests locally please use
 
-```shell 
-export DSS_RUN_CI_TEST=true; poetry run test/codebuild/test_ci.py 
+```shell
+export DSS_RUN_CI_TEST=true; poetry run test/codebuild/test_ci.py
 ```
 

@@ -65,8 +65,8 @@ testpaths = [
     "test"
 ]
 
-# ignore warnings caused by docker lib
 filterwarnings = [
+    # ignore warnings caused by docker lib
     "ignore:the imp module is deprecated:DeprecationWarning",
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
 ]

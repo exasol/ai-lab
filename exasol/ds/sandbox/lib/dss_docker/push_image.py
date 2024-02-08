@@ -14,30 +14,56 @@ _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
 
 class ProgressReporter:
-    def __init__(self, verbose: bool):
-        self.last_status = None
-        self.verbose = verbose
-        self.need_linefeed = False
+    """
+    Optional parameter :verbosity: controls the verbosity. If :verbosity:
+    is :None: then report neither status nor progress.  If :verbosity: is a
+    float value then report every status change and this fraction of the progress
+    messages for a given status.
+
+    For example, if :verbosity: is set to 0.1 then report only every 10th progress message.
+    """
+    def __init__(
+            self,
+            verbosity: Optional[float] = 1.0,
+            on_status: Callable = None,
+            on_progress: Callable = None,
+    ):
+        self._last_status = None
+        self._verbosity = verbosity
+        self._need_linefeed = False
+        self._on_status = on_status or _logger.info
+        self._on_progress = on_progress or print
+        self._suppressed = 0
 
     def _report(self, printer: Callable, msg: Optional[str], **kwargs):
-        if msg is not None:
-            printer(msg, **kwargs)
+        printer(msg, **kwargs)
 
     def _linefeed(self):
-        if self.need_linefeed:
-            self.need_linefeed = False
-            print()
+        if self._need_linefeed:
+            self._need_linefeed = False
+            self._on_progress()
+
+    def _needs_report(self, msg: Optional[str]):
+        if msg is None or self._verbosity is None:
+            return False
+        self._suppressed += 1
+        if self._suppressed * self._verbosity < 1:
+            return False
+        self._suppressed = 0
+        return True
+
 
     def report(self, status: Optional[str], progress: Optional[str]):
-        if not self.verbose:
+        if self._verbosity is None:
             return
-        if status == self.last_status:
-            self._report(print, progress, end="\r")
-            self.need_linefeed = progress
+        if status == self._last_status:
+            if self._needs_report(progress):
+                self._report(self._on_progress, progress, end="\r")
+                self._need_linefeed = progress
         else:
-            self.last_status = status
+            self._last_status = status
             self._linefeed()
-            self._report(_logger.info, status)
+            self._report(self._on_status, status)
 
 
 class DockerRegistry:
@@ -58,7 +84,8 @@ class DockerRegistry:
             stream=True,
             decode=True,
         )
-        reporter = ProgressReporter(_logger.isEnabledFor(logging.INFO))
+        verbosity = 0.01 if _logger.isEnabledFor(logging.INFO) else 0
+        reporter = ProgressReporter(verbosity)
         for el in resp:
             error = el.get("error", None)
             if error is not None:

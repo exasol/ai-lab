@@ -17,7 +17,7 @@ TEST_RESOURCE_PATH = Path(__file__).parent.parent / "notebooks"
 def notebook_test_dockerfile_content(dss_docker_image) -> str:
     yield cleandoc(
         f"""
-        FROM {dss_docker_image.image_name} 
+        FROM {dss_docker_image.image_name}
         COPY notebooks/* /tmp/notebooks/
         RUN mv /tmp/notebooks/* "$NOTEBOOK_FOLDER_INITIAL" && rmdir /tmp/notebooks/
         WORKDIR $NOTEBOOK_FOLDER_INITIAL
@@ -45,13 +45,32 @@ def notebook_test_image(request, notebook_test_build_context):
 
 @pytest.fixture()
 def notebook_test_container(request, notebook_test_image):
-    yield from container(request,
-                         base_name="notebook_test_container",
-                         image=notebook_test_image,
-                         volumes={
-                             '/var/run/docker.sock': {'bind': '/var/run/docker.sock', 'mode': 'rw'},
-                         },
-                         )
+    yield from container(
+        request,
+        base_name="notebook_test_container",
+        image=notebook_test_image,
+        volumes={
+            '/var/run/docker.sock': {
+                'bind': '/var/run/docker.sock',
+                'mode': 'rw',
+            },
+        },
+    )
+
+
+def ignored_warnings():
+    warnings = {
+        "DeprecationWarning": [
+            "Jupyter is migrating its paths to use standard platformdirs",
+            "pkg_resources is deprecated as an API",
+            "Deprecated call to \\`pkg_resources.declare_namespace",
+        ]
+    }
+    args = ""
+    for category,messages in warnings.items():
+        for m in messages:
+            args += f' -W "{m}:{category}"'
+    return args
 
 
 @pytest.mark.parametrize(
@@ -66,7 +85,11 @@ def test_notebook(notebook_test_container, notebook_test_file):
     container = notebook_test_container
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
-    command_run_test = f'{virtual_env}/bin/python -m pytest --setup-show -s {notebook_test_file}'
+    command_run_test = (
+        f"{virtual_env}/bin/python"
+        f" -m pytest --setup-show -s {notebook_test_file}"
+        f"{ignored_warnings()}"
+    )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
     nbtest_environ = {key: value for key, value in environ.items() if key.startswith("NBTEST_")}
