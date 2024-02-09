@@ -6,8 +6,8 @@ from inspect import cleandoc
 import textwrap
 
 import pytest
-from exasol.secret_store import Secrets
-from exasol.ai_lab_config import AILabConfig as CKey
+from exasol.nb_connector.secret_store import Secrets
+from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 
 from notebook_test_utils import (access_to_temp_secret_store, run_notebook, uploading_hack)
 
@@ -150,8 +150,8 @@ def get_job_polling_hack() -> Tuple[str, str]:
         textwrap.dedent("""
         def continuous_job_polling():
             import time
-            from exasol.connections import open_pyexasol_connection
-            from exasol.language_container_activation import get_activation_sql
+            from exasol.nb_connector.connections import open_pyexasol_connection
+            from exasol.nb_connector.language_container_activation import get_activation_sql
 
             sql = f'EXECUTE SCRIPT {ai_lab_config.db_schema}."SME_POLL_SAGEMAKER_AUTOPILOT_JOB_STATUS"(' \
                 f"'{ai_lab_config.JOB_NAME}'," \

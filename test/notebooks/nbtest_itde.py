@@ -1,9 +1,9 @@
-from exasol.secret_store import Secrets
-from exasol.itde_manager import (
+from exasol.nb_connector.secret_store import Secrets
+from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
 )
-from exasol.connections import open_pyexasol_connection
+from exasol.nb_connector.connections import open_pyexasol_connection
 
 
 def test_itde(tmp_path):

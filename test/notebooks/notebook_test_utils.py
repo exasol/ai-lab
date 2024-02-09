@@ -10,9 +10,9 @@ import nbformat
 from nbclient import NotebookClient
 import requests
 
-from exasol.secret_store import Secrets
-from exasol.ai_lab_config import AILabConfig as CKey
-from exasol.itde_manager import (
+from exasol.nb_connector.secret_store import Secrets
+from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
+from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
 )
@@ -77,7 +77,7 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
     init_code = f'''
     def init_notebook_test():
         from pathlib import Path
-        from exasol.secret_store import Secrets
+        from exasol.nb_connector.secret_store import Secrets
         global ai_lab_config
         ai_lab_config = Secrets(Path("{store_file}"), "{store_password}")
     init_notebook_test()
