@@ -46,7 +46,7 @@ def test_run_ansible_default_values(test_config):
     ansible_access = AnsibleTestAccess()
     run_install_dependencies(ansible_access, test_config)
     expected_ansible_run_context = AnsibleRunContext(
-        playbook="slc_setup.yml",
+        playbook="ai_lab_docker_playbook.yml",
         extra_vars=_extra_vars(test_config),
     )
     assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
@@ -114,9 +114,9 @@ def test_run_ansible_check_default_repository(test_config):
      2. One of the role files exists (Validate deep copy)
     """
     def check_playbook(work_dir: str, ansible_run_context: AnsibleRunContext):
-        p = pathlib.Path(work_dir) / "slc_setup.yml"
+        p = pathlib.Path(work_dir) / "ai_lab_docker_playbook.yml"
         assert p.exists()
-        p = pathlib.Path(work_dir) / "roles" / "script_languages" / "tasks" / "main.yml"
+        p = pathlib.Path(work_dir) / "roles" / "jupyter" / "tasks" / "main.yml"
         assert p.exists()
 
     run_install_dependencies(AnsibleTestAccess(check_playbook), test_config)
@@ -128,9 +128,9 @@ def test_run_ansible_check_multiple_repositories(test_config):
     For simplicity, we check only if the playbook of the repositories exists on target.
     """
     def check_playbooks(work_dir: str, ansible_run_context: AnsibleRunContext):
-        p = pathlib.Path(f"{work_dir}/slc_setup.yml")
+        p = pathlib.Path(f"{work_dir}/general_setup_tasks.yml")
         assert p.exists()
-        p = pathlib.Path(f"{work_dir}/slc_setup_test.yml")
+        p = pathlib.Path(f"{work_dir}/ansible_sample_playbook.yml")
         assert p.exists()
 
     test_repositories = default_repositories + (AnsibleResourceRepository(test.ansible),)

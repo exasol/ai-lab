@@ -1,0 +1,25 @@
+- name: Prepare environment
+  hosts: localhost
+  gather_facts: false
+  vars:
+      ansible_python_interpreter: python3
+  tasks:
+    - name: Add docker container to inventory
+      add_host:
+        name: "{{docker_container}}"
+        groups: docker_container_group
+        ansible_connection: docker
+
+- name: Setup AI-Lab Docker Container
+  hosts: docker_container_group
+  gather_facts: true
+  vars:
+      ansible_python_interpreter: python3
+      user_name: "{{ ansible_user_id }}"
+      user_home: "{{ ansible_env.HOME }}"
+      initial_notebook_folder: "{{ user_home }}/notebook-defaults"
+      need_sudo: false
+      docker_integration_test: true
+  tasks:
+    - import_tasks: general_setup_tasks.yml
+    - import_tasks: cleanup_tasks.yml

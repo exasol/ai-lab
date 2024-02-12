@@ -1,8 +1,0 @@
----
-
-- name: Install dependent apt packages
-  apt:
-    name: "{{apt_dependencies}}"
-    state: present
-    update_cache: yes
-  become: "{{need_sudo}}"

@@ -110,23 +110,6 @@ def new_ec2_from_ami():
 
 @pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
                     reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
-def test_exaslct_with_ec2_based_on_new_ami(new_ec2_from_ami):
-    """
-    This test validates that exaslct is correctly working on the EC-2 instance, which was launched from the
-    newly created AMI.
-    """
-    ec2_instance, password, _ = new_ec2_from_ami
-    with fabric.Connection(ec2_instance, user='ubuntu',
-                           connect_kwargs={"password": password}) as con:
-        with con.cd("script-languages-release"):
-            cmd = "./exaslct build --flavor-path ./flavors/python-3.8-minimal-EXASOL-6.2.0"
-            result = con.run(cmd)
-            assert result.ok
-            assert result.return_code == 0
-
-
-@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
-                    reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_jupyter_with_ec2_based_on_new_ami(new_ec2_from_ami, jupyter_port):
     """
     This test validates that Jupyterlab is correctly working on the EC-2 instance, which was launched from the
