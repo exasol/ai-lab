@@ -36,7 +36,6 @@ class AnsibleTestAccess:
 
 def _extra_vars(config):
     return {
-        "slc_version": config.slc_version,
         "ai_lab_version": config.ai_lab_version,
     }
 
