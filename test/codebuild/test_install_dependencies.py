@@ -49,7 +49,7 @@ def docker_test_container(test_config, dockerfile, jupyter_port):
         )
         socket_mount = Mount("/var/run/docker.sock", "/var/run/docker.sock", type="bind")
         tmp_mount = Mount(tmp_path, tmp_path, type="bind")
-        mapped_ports = { f'{jupyter_port/tcp': jupyter_port}
+        mapped_ports = { f'{jupyter_port}/tcp': jupyter_port}
         test_container = docker_env.containers.create(image=TEST_CONTAINER_IMAGE_TAG,
                                                       name=TEST_CONTAINER_NAME, mounts=[socket_mount, tmp_mount],
                                                       command="sleep infinity", detach=True, ports=mapped_ports)
@@ -110,7 +110,7 @@ def test_install_dependencies_script_languages(docker_test_container):
 
 def test_install_notebook_connector(docker_test_container):
     container, _ = docker_test_container
-    command = f'/root/jupyterenv/bin/python -c "import exasol.secret_store"'
+    command = f'/root/jupyterenv/bin/python -c "import exasol.nb_connector.secret_store"'
     exit_code, output = container.exec_run(command)
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
