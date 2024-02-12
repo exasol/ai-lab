@@ -69,7 +69,7 @@ def ignored_warnings():
     args = ""
     for category,messages in warnings.items():
         for m in messages:
-            args += f' -W "{m}:{category}"'
+            args += f' -W "ignore:{m}:{category}"'
     return args
 
 

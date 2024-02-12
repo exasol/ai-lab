@@ -32,3 +32,4 @@ Version: 0.2.0
 * #182: Renaming the secret store global variable from "sb_config" to "ai_lab_config".
 * #169: Renaming the default database schema from "IDA" to "AI_LAB".
 * #128: Removed unused dependencies
+* #188: Start using the new namespace of the notebook-connector 0.2.7.
