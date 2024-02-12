@@ -46,7 +46,7 @@ def test_run_ansible_default_values(test_config):
     ansible_access = AnsibleTestAccess()
     run_install_dependencies(ansible_access, test_config)
     expected_ansible_run_context = AnsibleRunContext(
-        playbook="ai_lab_docker_playbook.yml",
+        playbook="ec2_playbook.yml",
         extra_vars=_extra_vars(test_config),
     )
     assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
