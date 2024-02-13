@@ -34,11 +34,11 @@ jinja2 = ">=3.1.0"
 ansible-runner = "^2.2.1"
 ansible = "^6.1.0"
 importlib_resources = ">=5.4.0"
-exasol_script_languages_release = { git = "https://github.com/exasol/script-languages-release.git", tag = "5.0.0"}
 rich = "^12.5.1"
 pandas = "^1.4.0"
 humanfriendly = "^10.0"
 tenacity = "^8.2.3"
+pygithub = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-check-links = "^0.9.0"

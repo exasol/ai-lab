@@ -25,7 +25,6 @@ def run_install_dependencies(ansible_access: AnsibleAccess,
     The playbook is indicated by variable ansible_run_context, which also might contain additional ansible variables.
     """
     new_extra_vars = {
-        "slc_version": configuration.slc_version,
         "ai_lab_version": configuration.ai_lab_version,
     }
     if ansible_run_context.extra_vars is not None:
