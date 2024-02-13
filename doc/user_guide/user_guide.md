@@ -57,3 +57,12 @@ Check [Jupyter Home](https://jupyter.org/) for more information.
 You can open the starting page with `https://<host>:<port>`.
 
 Please note specific instructions for [AI-Lab Docker Edition](docker/docker_usage.md).
+
+## Installing Additional Dependencies
+
+Using one of the Jupyter notebooks you can simply add a cell and execute [magic-pip](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip) in it.
+
+The following command installs Python dependendy `stream-zip`:
+```shell
+%pip install --upgrade stream-zip
+```

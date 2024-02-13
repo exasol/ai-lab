@@ -83,7 +83,7 @@ The Unix shell commands in the following sections will use some environment vari
 Here are some sample values &mdash; please change to your needs:
 
 ```shell
-VERSION=0.1.0
+VERSION=0.2.0
 LISTEN_IP=0.0.0.0
 VOLUME=my-vol
 ```
@@ -174,3 +174,9 @@ The following command enables you to log in as the user `root` to the specified 
 ```shell
 docker exec --user root -it ${CONTAINER_ID} bash
 ```
+
+## Installing Additional Dependencies
+
+See [User Guide](../user_guide.md#installing-additional-dependencies).
+
+Please note: Removing the docker container `docker rm <container>` will discard all dependencies that have been installed additionally.

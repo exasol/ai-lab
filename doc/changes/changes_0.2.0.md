@@ -19,6 +19,7 @@ Version: 0.2.0
 ## Documentation
 
 * #125: Explained login to docker container
+* #174: Added to FAQ: How to install additional python packages into the Docker container
 
 ## Refactoring
 
