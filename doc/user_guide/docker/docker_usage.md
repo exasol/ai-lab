@@ -190,4 +190,4 @@ pip install --upgrade stream-zip
 exit
 ```
 
-Please note: Removing the docker container `docker rm <container>` will discard all dependencies that habe been installed additionally.
+Please note: Removing the docker container `docker rm <container>` will discard all dependencies that have been installed additionally.
