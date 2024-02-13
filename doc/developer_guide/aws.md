@@ -12,7 +12,6 @@ After the export has finished, the cloudformation stack and the keypair is remov
 ### Install
 
 Installs all dependencies via Ansible:
-* installs Poetry
 * installs and configures Jupyter
 * installs Docker and adds the user `ubuntu` to the docker group
 * changes the netplan configuration. This is necessary to have proper network configuration when running the VM image
