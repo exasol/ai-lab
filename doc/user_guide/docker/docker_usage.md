@@ -177,11 +177,6 @@ docker exec --user root -it ${CONTAINER_ID} bash
 
 ## Installing Additional Dependencies
 
-Using one of the Jupyter notebooks you can simply add a cell and execute [magic-pip](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip) in it.
-
-The following command installs Python dependendy `stream-zip`:
-```shell
-%pip install --upgrade stream-zip
-```
+See [User Guide](../user_guide.md#installing-additional-dependencies).
 
 Please note: Removing the docker container `docker rm <container>` will discard all dependencies that have been installed additionally.
