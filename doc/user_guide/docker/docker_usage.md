@@ -177,7 +177,7 @@ docker exec --user root -it ${CONTAINER_ID} bash
 
 ## Installing Additional Dependencies
 
-In case you want to install additional dependencies for using those in your Jupyter notebooks, please
+In case you want to install additional dependencies for using them in your Jupyter notebooks, please
 1. [Login to the Docker container](#login-to-the-docker-container)
 2. Activate jupyterenv
 3. Install dependencies via `pip install`
