@@ -83,7 +83,7 @@ The Unix shell commands in the following sections will use some environment vari
 Here are some sample values &mdash; please change to your needs:
 
 ```shell
-VERSION=0.1.0
+VERSION=0.2.0
 LISTEN_IP=0.0.0.0
 VOLUME=my-vol
 ```
@@ -173,4 +173,19 @@ The following command enables you to log in as the user `root` to the specified 
 
 ```shell
 docker exec --user root -it ${CONTAINER_ID} bash
+```
+
+## Installing Additional Dependencies
+
+In case you want to install additional dependencies for using those in your Jupyter notebooks, please
+1. [Login to the Docker container](#login-to-the-docker-container)
+2. Activate jupyterenv
+3. Install dependencies via `pip install`
+
+After logging in to the Docker container, the following example activates the jupyterenv and installs the library `stream-zip` from pypi:
+
+```shell
+source /root/jupyterenv/bin/activate
+pip install --upgrade stream-zip
+exit
 ```
