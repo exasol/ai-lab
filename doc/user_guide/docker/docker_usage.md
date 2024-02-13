@@ -183,19 +183,4 @@ When using one of the Jupyter notebooks you can simply add a cell and execute [m
 %pip install --upgrade stream-zip
 ```
 
-
-
-In case you want to install additional dependencies for using them in your Jupyter notebooks, please
-1. [Login to the Docker container](#login-to-the-docker-container)
-2. Activate the virtual environment - jupyterenv, as per the the example below.
-3. Install dependencies via `pip install`
-
-After logging in to the Docker container, the following example activates the jupyterenv and installs the library `stream-zip` from pypi:
-
-```shell
-source /root/jupyterenv/bin/activate
-pip install --upgrade stream-zip
-exit
-```
-
 Please note: Removing the docker container `docker rm <container>` will discard all dependencies that have been installed additionally.
