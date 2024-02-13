@@ -1,6 +1,3 @@
-- name: Install Script_languages
-  include_role:
-    name: script_languages
 - name: Update netplan
   include_role:
     name: netplan

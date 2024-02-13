@@ -2,7 +2,6 @@ from importlib_metadata import version
 
 # name of the project as specified in file pyproject.toml
 AI_LAB_VERSION = version("exasol-ai-lab")
-SLC_VERSION = version("exasol_script_languages_release")
 
 _default_config = {
     "time_to_wait_for_polling": 10.0,
@@ -13,7 +12,6 @@ _default_config = {
         "architecture": "x86_64",
         "state": "available"
     },
-    "slc_version": SLC_VERSION,
     "ai_lab_version": AI_LAB_VERSION,
     "waf_region": "us-east-1"
 }

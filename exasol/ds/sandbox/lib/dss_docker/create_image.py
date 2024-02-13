@@ -13,7 +13,7 @@ from exasol.ds.sandbox.lib import pretty_print
 from exasol.ds.sandbox.lib.ansible import ansible_repository
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.config import ConfigObject, SLC_VERSION
+from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
@@ -101,7 +101,6 @@ class DssDockerImage:
     def _ansible_config(self) -> ConfigObject:
         return ConfigObject(
             time_to_wait_for_polling=0.1,
-            slc_version=SLC_VERSION,
             ai_lab_version=AI_LAB_VERSION,
         )
 

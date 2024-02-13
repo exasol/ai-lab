@@ -1,6 +1,6 @@
 ### Ansible packages
 
-The packages to be installed by Ansible are using pinned versions, e.g. for [poetry](../../exasol/ds/sandbox/runtime/ansible/roles/poetry/defaults/main.yml).
+The packages to be installed by Ansible are using pinned versions, e.g. for [docker](../../exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml).
 
 In case ansible reports "no available installation candidate" for a specific version of a package, please search for newer versions of the package on https://packages.ubuntu.com/.
 
