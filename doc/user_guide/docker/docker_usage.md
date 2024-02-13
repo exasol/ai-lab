@@ -177,6 +177,14 @@ docker exec --user root -it ${CONTAINER_ID} bash
 
 ## Installing Additional Dependencies
 
+When using one of the Jupyter notebooks you can simply add a cell and execute [magic-pip](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip) in it:
+
+```shell
+%pip install --upgrade stream-zip
+```
+
+
+
 In case you want to install additional dependencies for using them in your Jupyter notebooks, please
 1. [Login to the Docker container](#login-to-the-docker-container)
 2. Activate the virtual environment - jupyterenv, as per the the example below.
