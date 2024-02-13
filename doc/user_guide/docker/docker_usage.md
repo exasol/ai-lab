@@ -189,3 +189,5 @@ source /root/jupyterenv/bin/activate
 pip install --upgrade stream-zip
 exit
 ```
+
+Please note: Removing the docker container `docker rm <container>` will discard all installed dependencies.
