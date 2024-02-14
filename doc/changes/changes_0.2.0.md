@@ -11,6 +11,10 @@ Version: 0.2.0
 
 ## Features
 
+## Security
+
+* #187: Fixed vulnerabilities by updating dependencies
+
 ## Bug Fixes
 
 * #163: Fixed version number of VM images etc.
