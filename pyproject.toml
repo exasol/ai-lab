@@ -27,12 +27,12 @@ readme = "README.md"
 
 
 [tool.poetry.dependencies]
-python = ">=3.8.0,<4.0"
+python = ">=3.9.0,<4.0"
 click = "^8.1.3"
 boto3 = "^1.22.0"
 jinja2 = ">=3.1.0"
 ansible-runner = "^2.2.1"
-ansible = "^6.1.0"
+ansible = "^7.0.0"
 importlib_resources = ">=5.4.0"
 rich = "^12.5.1"
 pandas = "^1.4.0"
@@ -54,7 +54,8 @@ pytest = "^7.1.1"
 pytest-mock = "^3.7.0"
 cfn-lint = "^0.65.1"
 gitpython = ">=2.1.0"
-localstack = "^0.14.0"
+localstack = "^3.0.0"
+# localstack = "^0.14.0"
 docker = {version = ">=5.0.0", markers = "sys_platform != 'win32'"}
 fabric = "^2.7.1"
 
