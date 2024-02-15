@@ -1,5 +1,4 @@
 import os
-
 from notebook_test_utils import notebook_runner
 
 
