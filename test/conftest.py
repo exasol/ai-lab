@@ -1,17 +1,16 @@
 import os
+import pytest
 import shlex
 import subprocess
-from copy import copy
 
-import pytest
+from copy import copy
 
 from exasol.ds.sandbox.lib.config import default_config_object, ConfigObject
 from exasol.ds.sandbox.lib.render_template import render_template
 from importlib.metadata import version
-
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-
 from exasol.ds.sandbox.lib.asset_id import AssetId
+from test.aws_local_stack_access import AwsLocalStackAccess
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 
@@ -71,6 +70,11 @@ def local_stack():
 
     command = "localstack stop"
     subprocess.run(shlex.split(command), env=env_variables)
+
+
+@pytest.fixture(scope="session")
+def local_stack_aws_access(local_stack):
+    return AwsLocalStackAccess().with_user("default_user")
 
 
 @pytest.fixture(scope="session")
