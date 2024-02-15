@@ -1,9 +1,10 @@
-# ai-lab 0.2.0, released TBD
+# ai-lab 0.2.0, released 2024-02-15
 
 Code name: Post release fixes
 
 ## Summary
 
+This release comes with a number of updates and improvements and enhanced and fixed documentation.
 
 ## AI-Lab-Release
 
