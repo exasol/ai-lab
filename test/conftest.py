@@ -46,9 +46,18 @@ def local_stack():
     """
     command = "localstack start -d"
 
-    # We set the specific version for the docker image for localstack to use ("IMAGE_NAME"),
-    # otherwise localstack uses tag "latest" which might break the CI tests.
-    image_name = {"IMAGE_NAME": f"localstack/localstack:{version('localstack')}"}
+    image_version = version('localstack')
+    # See https://github.com/localstack/localstack/issues/8254
+    # and https://github.com/localstack/localstack/issues/9939
+    #
+    # Until an official release of localstack Docker image with a concrete
+    # version is available incl. a fix for issue 9939 we only can use version
+    # "latest".
+    #
+    # See ai-lab issue for replacing this with a concrete version in order to
+    # make CI tests more robust.
+    image_version = "latest"
+    image_name = {"IMAGE_NAME": f"localstack/localstack:{image_version}"}
     env_variables = {**os.environ, **image_name}
 
     process = subprocess.run(shlex.split(command), env=env_variables)
