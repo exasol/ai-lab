@@ -10,7 +10,7 @@ the virtual image formats.
 
 This package requires:
 
-* Python (>=3.8)
+* Python (>=3.9)
 * Poetry (>=1.2.0)
 * Docker (for integration tests)
 * AWS CLI
