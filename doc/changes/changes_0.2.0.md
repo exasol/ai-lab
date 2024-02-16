@@ -6,8 +6,6 @@ Code name: Post release fixes
 
 This release comes with a number of updates and improvements and enhanced and fixed documentation.
 
-Additionally the release fixes vulnerabilities by updating dependencies in file `poetry.lock` and Ansible files.
-
 ## AI-Lab-Release
 
 Version: 0.2.0
