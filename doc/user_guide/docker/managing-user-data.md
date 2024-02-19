@@ -2,7 +2,7 @@
 
 Exasol AI-Lab comes with a set of Jupyter Notebook Files with file extension `.ipynb` demonstrating AI applications on top of the Exasol database.
 
-Additionally the demos in the Exasol AI-Lab require some credentials and other configuration strings which are managed in a [Secure Configuration Storage](secure_configuration_storage.md) (SCS).
+Additionally the demos in the Exasol AI-Lab require some credentials and other configuration strings which are managed in a [Secure Configuration Storage](secure-configuration-storage.md) (SCS).
 
 By default the AI-Lab will instantiate the notebook files with a predefined content. The predefined content may change with each release of the AI-Lab. However, the AI-Lab won't overwrite existing files.
 
@@ -21,7 +21,7 @@ In order to save your changes persistently, to reuse, backup, and restore them, 
 
 ## Additional Environment Variables
 
-Following the general [User Guide for the AI-Lab Docker Edition](docker_usage.md#defining-environment-variables) this document uses some additional environment variables:
+Following the general [User Guide for the AI-Lab Docker Edition](docker-usage.md#defining-environment-variables) this document uses some additional environment variables:
 * Variable `VOLUME` is expected to contain the name of your Docker volume.
 * Variable `DIR` is expected to point to a directory to contain your backup.
 
@@ -67,4 +67,26 @@ C=$(docker run --detach -v ${VOLUME}:/notebooks ubuntu sleep infinity)
 docker cp ${DIR}/notebooks ${C}:/
 docker rm -f ${C}
 unset C
+```
+
+## Replacing the Docker Volume
+
+In order to use notebook files of a newer version of the AI-Lab you must use a different Docker volume. Otherwise the newer version will still display the old notebooks contained in your Docker volume.
+
+You can also delete the old volume:
+* If you modified some of the files then please consider to make a backup first.
+* Docker volumes can only be deleted if there aren't any Docker containers using them.
+* Also stopped containers still prevent Docker volumes from being deleted.
+
+Use the following command to find out the ID of existing Docker containers, including also stopped containers, see also [User Guide for AI-Lab Docker edition](docker-usage.md#logging-in-to-the-docker-container):
+
+```shell
+docker ps --all
+```
+
+The following commands will remove the container with ID `${CONTAINER}` and the volume:
+
+```shell
+docker rm -f ${CONTAINER}
+docker volume rm -f ${VOLUME}
 ```

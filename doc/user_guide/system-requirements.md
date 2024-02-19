@@ -1,0 +1,14 @@
+# AI-Lab System Requirements
+
+The editions of the AI-Lab have common requirements to be available on your system:
+* CPU Architecture: x86
+* CPU cores: minimum 1, recommended 2 cores
+* Main memory (RAM): minimum 2 GiB, recommended 8 GiB
+* Network access
+* Recommend access to a running instance of Exasol database, otherwise you can start a small Exasol Docker-DB
+  * Please note: AI-Lab currently does not support Exasol SaaS.
+
+As the AI-Lab is meant to explore AI applications on top of Exasol database, you need an instance of Exasol database running and be able to connect to it.
+
+<!-- Are AMI and VM images able to spawn a Exasol Docker DB or does his only apply to the AI-Lab Docker edition? -->
+AI-Lab can automatically launch such an instance on demand. However when using AI-Lab's Docker Edition there are [additional constraints](docker/os-setup.md#enabling-exasol-ai-lab-to-use-docker-features).

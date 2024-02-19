@@ -1,6 +1,14 @@
-# Using the Amazon Machine Image (AMI Edition)
+# AI-Lab AMI Edition (Amazon Machine Image)
 
-__Important__: The AMI is currently only available in the AWS region `eu-central-1`. If you want to use the image in another region, you need to copy it before. Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html) for details about how to copy the image.
+The ID of the AMI (Amazon Machine Image) is mentioned in the [release notes](https://github.com/exasol/ai-lab/releases/latest) and can be used to start an EC2-instance in your AWS account.
+
+The naming scheme is: "_Exasol-AI-Lab-${VERSION}_", e.g. "_Exasol-AI-Lab-5.0.0_"
+
+The AMI is currently only available in the AWS region `eu-central-1`.
+
+If you want to use the image in another region, you need to copy it before.
+
+Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html) for details about how to copy the image.
 
 ## Overview
 
@@ -31,3 +39,7 @@ __Important__: The AMI is currently only available in the AWS region `eu-central
      - For the storage we recommend to keep the pre-selected 100GB volume
      - Click button "Launch instance"
 6. As soon as the machine becomes available you can connect per ssh with user `ubuntu`: `ssh -i your_key.pem ubuntu@the_new_ec_instance`
+
+## Login
+
+See [Login to AMI and VM Editions](login-vm-and-ami.md) for logging in to the system.

@@ -19,7 +19,7 @@ In each future session AI-Lab will
 * Ask you again for the master password
 * Use it to unlock and access the configuration strings stored in previous sessions.
 
-See [Managing User Data](managing_user_data.md) for instructions about how to
+See [Managing User Data](managing-user-data.md) for instructions about how to
 * Save the SCS peristently
 * Reuse the SCS in future sessions
 * Create a backup of the SCS

@@ -1,16 +1,11 @@
 # Exasol AI-Lab
 
-## Overview
+This project enables users to try out data science algorithms in Jupyter notebooks connected to the Exasol database.
 
-This project provides an automated mechanism to build and export virtual machines images (AWS AMI, VMDK,...)
-enabling users to try out data science algorithms in Jupyter notebooks connected to the Exasol database.
+The AI-Lab is available in multiple [Editions](doc/user_guide/editions.md) involving different technology stacks, see also common [System Requirements](doc/user_guide/system-requirements.md).
 
-## Where to find the VM images
+After downloading the required files and having started the AI-Lab you can connect to AI-Lab's [Jupyter Service](doc/user_guide/jupyter.md).
 
-The release process will automatically store the links to the images in the [release notes](https://github.com/exasol/ai-lab/releases/latest), as there will be a specific AMI per release.
-Please check the user guide about details of the image.
+## Additional Links
 
-## Links
-
-* [User Guide](doc/user_guide/user_guide.md)
 * [Developer Guide](doc/developer_guide/developer_guide.md)
