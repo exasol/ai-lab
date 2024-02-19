@@ -29,6 +29,8 @@ Version: 0.3.0
 
 ## Bug Fixes
 
+* #205: Error on cloud storage notebook init
+
 ## Documentation
 
 ## Refactoring
