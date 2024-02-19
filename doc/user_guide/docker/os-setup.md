@@ -26,6 +26,3 @@ In all scenarios additionally the daemon machine must allow to run the Exasol Do
 Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular code running inside the AI-Lab could create privileged containers, mount the filesystem of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
 
 Section [Enable AI-Lab to Access the Docker Daemon](docker-usage.md#enable-ai-lab-to-access-the-docker-daemon) shows the corresponding commandline options, for details see [Docker FAQ](https://docs.docker.com/desktop/faqs/general/#how-do-i-connect-to-the-remote-docker-engine-api).
-
-[file](u.md)
-[intra](existing.md#abc)
