@@ -14,7 +14,6 @@ class AwsLocalStackAccess(AwsAccess):
     def with_user(self, user_name: str = "default_user") -> "AwsLocalStackAccess":
         self._create_user(user_name)
         key = self._create_access_key(user_name)
-        # print(f'key_id = {key["AccessKeyId"]}, secret_key = {key["SecretAccessKey"]}')
         return AwsLocalStackAccess(
             key_id=key["AccessKeyId"],
             secret_key=key["SecretAccessKey"],

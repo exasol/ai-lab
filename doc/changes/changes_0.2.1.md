@@ -17,6 +17,8 @@ Version: 0.2.1
 
 ## Features
 
+n/a
+
 ## Security
 
 * #187: Fixed vulnerabilities by updating dependencies
@@ -39,4 +41,8 @@ Version: 0.2.1
 
 ## Documentation
 
+n/a
+
 ## Refactoring
+
+n/a
