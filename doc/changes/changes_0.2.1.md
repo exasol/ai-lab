@@ -26,6 +26,7 @@ Version: 0.3.0
   * `cryptography` from 41.0.1 to 42.0.2 to fix CVE-2023-50782, CVE-2023-49083, CVE-2023-38325.
   * `certifi` from 2023.5.7 to 2024.2.2 to fix CVE-2023-37920.
   * `requests` from 2.25.1 to 2.31.0 to fix CVE-2023-32681.
+  * `localstack` from 0.14.0 to 3.1.0 to fix CVE-2023-48054.
 
 ## Bug Fixes
 
