@@ -15,4 +15,4 @@ jobs:
       - name: Setup Python & Poetry Environment
         uses: ./.github/actions/prepare_poetry_env
       - name: Check Release
-        run: ./scripts/build/check_release.sh "python3.8"
+        run: ./scripts/build/check_release.sh "python3.10"

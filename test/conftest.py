@@ -1,17 +1,16 @@
 import os
+import pytest
 import shlex
 import subprocess
-from copy import copy
 
-import pytest
+from copy import copy
 
 from exasol.ds.sandbox.lib.config import default_config_object, ConfigObject
 from exasol.ds.sandbox.lib.render_template import render_template
 from importlib.metadata import version
-
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-
 from exasol.ds.sandbox.lib.asset_id import AssetId
+from test.aws_local_stack_access import AwsLocalStackAccess
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 
@@ -46,9 +45,18 @@ def local_stack():
     """
     command = "localstack start -d"
 
-    # We set the specific version for the docker image for localstack to use ("IMAGE_NAME"),
-    # otherwise localstack uses tag "latest" which might break the CI tests.
-    image_name = {"IMAGE_NAME": f"localstack/localstack:{version('localstack')}"}
+    image_version = version('localstack')
+    # See https://github.com/localstack/localstack/issues/8254
+    # and https://github.com/localstack/localstack/issues/9939
+    #
+    # Until an official release of localstack Docker image with a concrete
+    # version is available incl. a fix for issue 9939 we only can use version
+    # "latest".
+    #
+    # See ai-lab issue for replacing this with a concrete version in order to
+    # make CI tests more robust.
+    image_version = "latest"
+    image_name = {"IMAGE_NAME": f"localstack/localstack:{image_version}"}
     env_variables = {**os.environ, **image_name}
 
     process = subprocess.run(shlex.split(command), env=env_variables)
@@ -62,6 +70,11 @@ def local_stack():
 
     command = "localstack stop"
     subprocess.run(shlex.split(command), env=env_variables)
+
+
+@pytest.fixture(scope="session")
+def local_stack_aws_access(local_stack):
+    return AwsLocalStackAccess().with_user("default_user")
 
 
 @pytest.fixture(scope="session")
