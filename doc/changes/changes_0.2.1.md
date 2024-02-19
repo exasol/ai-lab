@@ -1,14 +1,16 @@
-# ai-lab 0.3.0, released 2024-??-??
+# ai-lab 0.2.1, released 2024-??-??
 
-Code name: Post release fixes
+Code name: Fix Cloud Storage Notebook
 
 ## Summary
 
-This release fixes vulnerabilities by updating dependencies in file `poetry.lock` and Ansible files.
+This release fixes the Cloud Storage notebook and also fixes vulnerabilities by updating dependencies in file `poetry.lock` and Ansible files.
+
+Updating the dependencies required to upgrade the build environment from python 3.8 to 3.10. The Jupyterlab notebooks and their libraries remain on python 3.8 for now.
 
 ## AI-Lab-Release
 
-Version: 0.3.0
+Version: 0.2.1
 
 ## Features
 
