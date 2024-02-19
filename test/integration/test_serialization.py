@@ -11,10 +11,13 @@ from test.aws_local_stack_access import AwsLocalStackAccess
 import multiprocessing as mp
 
 
-def create_key_pair_and_serialize(tmp_location: Path, q: mp.Queue, default_asset_id: AssetId):
+def create_key_pair_and_serialize(
+        aws_key_id: str,
+        aws_secret_key: str,
+        tmp_location: Path, q: mp.Queue, default_asset_id: AssetId):
     try:
-        aws_access = AwsLocalStackAccess(None)
-        key_file_manager = KeyFileManager(aws_access, None, None, default_asset_id.tag_value)
+        aws = AwsLocalStackAccess(aws_key_id, aws_secret_key)
+        key_file_manager = KeyFileManager(aws, None, None, default_asset_id.tag_value)
         key_file_manager.create_key_if_needed()
         q.put(key_file_manager.key_name)
         q.put(key_file_manager.key_file_location)
@@ -25,13 +28,21 @@ def create_key_pair_and_serialize(tmp_location: Path, q: mp.Queue, default_asset
         raise e
 
 
-def test_keypair_manager_with_local_stack(tmp_path, local_stack, default_asset_id):
+def test_keypair_manager_with_local_stack(tmp_path, local_stack_aws_access, default_asset_id):
     """
-    Test that serialization and deserialization of KeyFileManager work!
+    Test that serialization and deserialization of KeyFileManager works
     """
     tmp_file = Path(tmp_path) / "key_file_manager.data"
     q = mp.Queue()
-    p = mp.Process(target=create_key_pair_and_serialize, args=(tmp_file, q, default_asset_id))
+    p = mp.Process(
+        target=create_key_pair_and_serialize,
+        args=(
+            local_stack_aws_access.key_id,
+            local_stack_aws_access.secret_key,
+            tmp_file,
+            q,
+            default_asset_id,
+        ))
     p.start()
     p.join()
     assert p.exitcode == 0
@@ -48,17 +59,23 @@ def test_keypair_manager_with_local_stack(tmp_path, local_stack, default_asset_i
     assert os.path.exists(restored_key_file_location) is False
 
 
-def create_cloudformation_stack_and_serialize(tmp_location_key_manager: Path, tmp_location_cloudformation: Path,
-                                              q: mp.Queue, default_asset_id: AssetId,
-                                              test_dummy_ami_id: str):
+def create_cloudformation_stack_and_serialize(
+        aws_key_id: str,
+        aws_secret_key: str,
+        tmp_location_key_manager: Path,
+        tmp_location_cloudformation: Path,
+        q: mp.Queue,
+        default_asset_id: AssetId,
+        test_dummy_ami_id: str,
+):
     try:
-        aws_access = AwsLocalStackAccess(None)
-        key_file_manager = KeyFileManager(aws_access, None, None, default_asset_id.tag_value)
+        aws = AwsLocalStackAccess(aws_key_id, aws_secret_key)
+        key_file_manager = KeyFileManager(aws, None, None, default_asset_id.tag_value)
         key_file_manager.create_key_if_needed()
         with open(tmp_location_key_manager, "wb") as f:
             pickle.dump(key_file_manager, f)
-        cloudformation = CloudformationStack(aws_access, key_file_manager.key_name,
-                                             aws_access.get_user(), default_asset_id,
+        cloudformation = CloudformationStack(aws, key_file_manager.key_name,
+                                             aws.get_user(), default_asset_id,
                                              test_dummy_ami_id)
         cloudformation.upload_cloudformation_stack()
         with open(tmp_location_cloudformation, "wb") as f:
@@ -70,15 +87,24 @@ def create_cloudformation_stack_and_serialize(tmp_location_key_manager: Path, tm
         raise e
 
 
-def test_cloudformation_stack_with_local_stack(tmp_path, local_stack, default_asset_id, test_dummy_ami_id):
+def test_cloudformation_stack_with_local_stack(tmp_path, local_stack_aws_access, default_asset_id, test_dummy_ami_id):
     """
     Test that serialization and deserialization of CloudformationStack work!
     """
     tmp_file_key_file = Path(tmp_path) / "key_file_manager.data"
     tmp_file_cloud_formation = Path(tmp_path) / "cloudformation.data"
     q = mp.Queue()
-    p = mp.Process(target=create_cloudformation_stack_and_serialize,
-                   args=(tmp_file_key_file, tmp_file_cloud_formation, q, default_asset_id, test_dummy_ami_id))
+    p = mp.Process(
+        target=create_cloudformation_stack_and_serialize,
+        args=(
+            local_stack_aws_access.key_id,
+            local_stack_aws_access.secret_key,
+            tmp_file_key_file,
+            tmp_file_cloud_formation,
+            q,
+            default_asset_id,
+            test_dummy_ami_id,
+        ))
     p.start()
     p.join()
     assert p.exitcode == 0
