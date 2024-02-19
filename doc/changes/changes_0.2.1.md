@@ -11,6 +11,8 @@ Impact and delimitation
 * Also AWS codebuild image need to be upgraded from `aws/codebuild/standard:5.0` to `6.0`.
 * The Jupyterlab notebooks and their libraries remain on Python `3.8` for now.
 
+Additionally the release updates the User Guide.
+
 ## AI-Lab-Release
 
 Version: 0.2.1
@@ -41,7 +43,7 @@ n/a
 
 ## Documentation
 
-n/a
+* #203: Updated User Guide
 
 ## Refactoring
 
