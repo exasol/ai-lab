@@ -25,7 +25,7 @@ Notes for Hypervisors based on KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU):
 
 1. Open the `VMDK` image
 2. Select Ubuntu 20.04 LTS as template
-3. Configure RAM
+3. [Configure RAM](system-requirements.md)
 4. Start the VM
 
 ### Step-by-step
