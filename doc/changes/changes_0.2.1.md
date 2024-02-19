@@ -4,9 +4,12 @@ Code name: Fix Cloud Storage Notebook
 
 ## Summary
 
-This release fixes the Cloud Storage notebook and also fixes vulnerabilities by updating dependencies in file `poetry.lock` and Ansible files.
+This release fixes the Cloud Storage notebook and also fixes vulnerabilities by updating dependencies in file `poetry.lock` and GitHub workflows.
 
-Updating the dependencies required to upgrade the build environment from python 3.8 to 3.10. The Jupyterlab notebooks and their libraries remain on python 3.8 for now.
+Impact and delimitation
+* Updating the dependencies required to upgrade the build environment from Python `3.8` to `3.10`.
+* Also AWS codebuild image need to be upgraded from `aws/codebuild/standard:5.0` to `6.0`.
+* The Jupyterlab notebooks and their libraries remain on Python `3.8` for now.
 
 ## AI-Lab-Release
 
