@@ -24,13 +24,13 @@ LISTEN_IP=0.0.0.0
 VOLUME=my-vol
 ```
 
-## Creating a Docker Container from the Docker Image
+## Creating a Docker Container for the AI- Lab from the AI-Lab Docker Image
 
 You can use an Exasol database with AI-Lab in two ways
 * [External Exasol database](#ai-lab-with-external-exasol-database)
 * Integrated [Exasol Docker-DB](#ai-lab-managing-exasol-docker-db-internally) managed by AI-Lab
 
-### AI-Lab with External Exasol Database
+### AI-Lab with exclusively External Exasol Database
 
 In this scenario the AI-Lab Docker container does not need access to the Docker daemon.
 
@@ -48,13 +48,13 @@ docker run \
   exasol/ai-lab:${VERSION}
 ```
 
-If you want to use a newer version of the AI-Lab then please [delete Docker volumes](managing-user-data.md#replacing-the-docker-volume) created with older versions.
+If you want to use a newer version of the AI-Lab then please [delete the Docker volumes](managing-user-data.md#replacing-the-docker-volume) created with older versions.
 
 Additional options
 * Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and section [Stopping the AI-Lab Docker Container](#stopping-the-ai-lab-docker-container).
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
 
-### AI-Lab Managing Exasol Docker-DB Internally
+### AI-Lab with a internal Exasol Docker-DB
 
 In this scenario you must enable the AI-Lab Docker container to access the Docker daemon.
 
@@ -100,9 +100,9 @@ docker network connect db_network_DemoDb <CONTAINER>
 
 See also https://docs.docker.com/engine/reference/commandline/network_connect/.
 
-## Connecting to Jupyter Service
+## Connecting to the Jupyter Service
 
-When starting AI-Lab as Docker container the command line will display a welcome message showing connection instructions and a reminder to change the default password:
+When starting AI-Lab as a Docker container the command line will display a welcome message showing connection instructions and a reminder to change the default password:
 
 ```
 $ docker run --publish 0.0.0.0:$PORT:49494 exasol/ai-lab:$VERSION
@@ -124,7 +124,7 @@ To update the password, log in to the Docker container as the user root and run
 
 Using an internet browser you then can connect to the Jupyter server running in the Docker container in order to follow the tutorials presented by a set of Jupyter notebooks, see [Connecting to Jupyter Service](../jupyter.md#open-jupyter-in-your-browser).
 
-For parameter `<host>`: If your daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
+For the parameter `<host>`: If your daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
 
 The following section explains how to log in to the Docker container to change settings, such as the default password.
 

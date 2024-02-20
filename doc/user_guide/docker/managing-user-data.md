@@ -83,9 +83,9 @@ Use the following command to find out the ID of existing Docker containers, incl
 docker ps --all
 ```
 
-The following commands will remove the container with ID `${CONTAINER}` and the volume with the name `${VOLUME}`:
+The following commands will remove the container with name `${CONTAINER_NAME}` and the volume with the name `${VOLUME}`:
 
 ```shell
-docker rm -f ${CONTAINER}
+docker rm -f ${CONTAINER_NAME}
 docker volume rm -f ${VOLUME}
 ```
