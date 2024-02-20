@@ -77,7 +77,7 @@ If you used one of the commands given in preceding sections without option `--de
 If you used option `--detach` then you need to use the following command:
 
 ```shell
-docker stop <CONTAINER>
+docker stop ${CONTAINER_NAME}
 ```
 
 See also https://docs.docker.com/engine/reference/commandline/container_stop/.
@@ -87,7 +87,7 @@ See also https://docs.docker.com/engine/reference/commandline/container_stop/.
 In general we recommend to restart a stopped container instead of creating a new one. This has the benefit of keeping [additional dependencies](#installing-additional-dependencies) that you did install:
 
 ```shell
-docker start <CONTAINER>
+docker start ${CONTAINER_NAME}
 ```
 
 **Please note**
@@ -148,7 +148,7 @@ CONTAINER ID   IMAGE     COMMAND        NAMES
 The following command enables you to log in as the user `root` to the specified container:
 
 ```shell
-docker exec --user root -it ${CONTAINER_ID} bash
+docker exec --user root -it ${CONTAINER_NAME} bash
 ```
 
 ## Installing Additional Dependencies
