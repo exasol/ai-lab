@@ -73,10 +73,9 @@ unset C
 
 In order to use notebook files of a newer version of the AI-Lab you must use a different Docker volume. Otherwise the newer version will still display the old notebooks contained in your Docker volume.
 
-You can also delete the old volume:
-* If you modified some of the files then please consider to make a backup first.
-* Docker volumes can only be deleted if there aren't any Docker containers using them.
-* Also stopped containers still prevent Docker volumes from being deleted.
+You can also delete the old volume. If you modified some of the files then please consider to make a backup first.
+
+Docker volumes can only be deleted if there aren't any Docker containers using them.
 
 Use the following command to find out the ID of existing Docker containers, including the stopped ones, see also [User Guide for AI-Lab Docker edition](docker-usage.md#logging-in-to-the-docker-container):
 
