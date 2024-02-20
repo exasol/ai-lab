@@ -51,7 +51,7 @@ docker run \
 If you want to use a newer version of the AI-Lab then please [delete Docker volumes](managing-user-data.md#replacing-the-docker-volume) created with older versions.
 
 Additional options
-* Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/).
+* Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and section [Stopping the AI-Lab Docker Container](#stopping-the-ai-lab-docker-container).
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
 
 ### AI-Lab Managing Exasol Docker-DB Internally
@@ -70,6 +70,18 @@ docker run \
   exasol/ai-lab:${VERSION}
 ```
 
+## Stopping the AI-Lab Docker Container
+
+If you used one of the commands given in preceding sections without option `--detach` then you can stop the AI-Lab Docker container by simply pressing Ctrl-C.
+
+If you used option `--detach` then you need to use the following command:
+
+```shell
+docker stop <CONTAINER>
+```
+
+See also https://docs.docker.com/engine/reference/commandline/container_stop/.
+
 ## Restarting a Stopped Container
 
 In general we recommend to restart a stopped container instead of creating a new one. This has the benefit of keeping [additional dependencies](#installing-additional-dependencies) that you did install:
@@ -86,7 +98,7 @@ docker start <CONTAINER>
 docker network connect db_network_DemoDb <CONTAINER>
 ```
 
-See also https://docs.docker.com/engine/reference/commandline/network_connect/
+See also https://docs.docker.com/engine/reference/commandline/network_connect/.
 
 ## Connecting to Jupyter Service
 
