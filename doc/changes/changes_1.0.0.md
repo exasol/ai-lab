@@ -1,6 +1,6 @@
-# AI-Lab 0.2.1, released 2024-??-??
+# AI-Lab 1.0.0 released 2024-02-20
 
-Code name: Fix Cloud Storage Notebook
+Code name: First Official Release
 
 ## Summary
 
@@ -10,6 +10,8 @@ Impact and delimitation
 * Updating the dependencies required to upgrade the build environment from Python `3.8` to `3.10`.
 * Also AWS codebuild image need to be upgraded from `aws/codebuild/standard:5.0` to `6.0`.
 * The Jupyterlab notebooks and their libraries remain on Python `3.8` for now.
+
+Additionally the release updates the User Guide.
 
 ## AI-Lab-Release
 
@@ -41,7 +43,7 @@ n/a
 
 ## Documentation
 
-n/a
+* #203: Updated User Guide
 
 ## Refactoring
 

@@ -1,16 +1,20 @@
 # Exasol AI-Lab
 
-## Overview
+The Exasol AI-Lab is a pre-configured container designed to empower data scientists. It streamlines common data science and AI tasks, including data loading, preparation, exploration, model training, and deployment. Whether you’re a seasoned practitioner or just getting started, the AI-Lab provides a hassle-free experience.
 
-This project provides an automated mechanism to build and export virtual machines images (AWS AMI, VMDK,...)
-enabling users to try out data science algorithms in Jupyter notebooks connected to the Exasol database.
+![Transformers Extension](doc/user_guide/ai-lab-screenshot.png)
 
-## Where to find the VM images
+Key Features:
+* Jupyter Notebook Environment: The heart of the AI-Lab is a robust Jupyter Notebook environment. It’s where you’ll work on your data science projects.
+* Exasol Integration: Leverage Exasol’s power for your AI and machine learning use cases. The AI-Lab includes essential Exasol packages, extensions, and configuration tasks.
+* Example Notebooks: Jumpstart your work with ready-to-use example notebooks. Explore classic machine learning scenarios (think scikit-learn), seamlessly integrate Exasol with AWS Sagemaker, and tap into Huggingface models directly within Exasol.
 
-The release process will automatically store the links to the images in the [release notes](https://github.com/exasol/ai-lab/releases/latest), as there will be a specific AMI per release.
-Please check the user guide about details of the image.
+Feel free to explore the Exasol AI-Lab and unleash your data science potential!
 
-## Links
+The AI-Lab is available in multiple [Editions](doc/user_guide/editions.md) involving different technology stacks, see also common [System Requirements](doc/user_guide/system-requirements.md).
 
-* [User Guide](doc/user_guide/user_guide.md)
+After downloading the required files and having started the AI-Lab you can connect to AI-Lab's [Jupyter Service](doc/user_guide/jupyter.md).
+
+## Additional Links
+
 * [Developer Guide](doc/developer_guide/developer_guide.md)

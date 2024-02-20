@@ -60,10 +60,9 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
     if not folder:
         return entry_cmd + jupyter()
     return entry_cmd + [
-       "--notebook-defaults", folder["initial"],
-       "--notebooks", folder["final"]
+        "--notebook-defaults", folder["initial"],
+        "--notebooks", folder["final"]
     ] + jupyter()
-
 
 
 class DssDockerImage:
@@ -111,13 +110,27 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
+    def _auth_config(self) -> Optional[Dict[str, any]]:
+        if self.registry is None:
+            return None
+        return {
+            "username": self.registry.username,
+            "password": self.registry.password,
+        }
+
     def _start_container(self) -> DockerContainer:
         self._start = datetime.now()
         docker_client = docker.from_env()
         docker_file = self._docker_file()
         _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
         with docker_file.open("rb") as fileobj:
-            docker_client.images.build(fileobj=fileobj, tag=self.image_name)
+            auth_config = self._auth_config()
+            if auth_config is not None:
+                docker_client.login(**auth_config)
+            docker_client.images.build(
+                fileobj=fileobj,
+                tag=self.image_name,
+            )
         container = docker_client.containers.create(
             image=self.image_name,
             name=self.container_name,
