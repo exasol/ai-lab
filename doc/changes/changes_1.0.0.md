@@ -1,4 +1,4 @@
-# AI-Lab 0.2.1, released 2024-??-??
+# AI-Lab 1.0.0 released 2024-02-20
 
 Code name: Fix Cloud Storage Notebook
 
