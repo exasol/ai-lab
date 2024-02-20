@@ -29,10 +29,10 @@ CONTAINER_NAME=ai-lab
 ## Creating a Docker Container for the AI- Lab from the AI-Lab Docker Image
 
 You can use an Exasol database with AI-Lab in two ways
-* [External Exasol database](#ai-lab-with-exclusive-external-exasol-database)
+* [External Exasol database](#ai-lab-with-exclusively-external-exasol-database)
 * Integrated [Exasol Docker-DB](#ai-lab-with-integrated-exasol-docker-db) managed by AI-Lab
 
-### AI-Lab with Exclusive External Exasol Database
+### AI-Lab with External Exasol Database Only
 
 In this scenario the AI-Lab Docker container does not need access to the Docker daemon.
 
