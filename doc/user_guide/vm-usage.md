@@ -53,4 +53,4 @@ Notes for Hypervisors based on KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU):
 
 ## Login
 
-See [Login to AMI and VM Editions](login-vm-and-ami.md) for logging in to the system.
+See [Log in to AMI and VM Editions](login-vm-and-ami.md) for logging into the system.

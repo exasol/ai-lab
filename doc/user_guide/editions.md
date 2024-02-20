@@ -1,6 +1,6 @@
 # AI-Lab Editions
 
-Exasol AI-Lab is available in the multiple editions as shown in the following table.
+Exasol AI-Lab is available in multiple editions as shown in the following table.
 
 Please see common [system requirements](system-requirements.md) for all editions and select your favorite edition depending on your operating system, infrastructure, administrative permissions, and technical skills.
 

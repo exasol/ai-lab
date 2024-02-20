@@ -28,4 +28,4 @@ The following command installs Python dependendy `stream-zip`:
 %pip install --upgrade stream-zip
 ```
 
-Please note limited lifetime of additional dependencies for [AI-Lab Docker Edition](docker/docker-usage.md#installing-additional-dependencies).
+Please note the limited lifetime of additional dependencies for [AI-Lab Docker Edition](docker/docker-usage.md#installing-additional-dependencies).

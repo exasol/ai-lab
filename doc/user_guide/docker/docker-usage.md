@@ -53,7 +53,7 @@ Additional options
 
 The following command will enable AI-Lab to start an instance of Exasol Docker-DB, however
 * Additional [Limitations and security risks](os-setup.md#enabling-exasol-ai-lab-to-use-docker-features) apply.
-* Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as `docker.sock`.
+* Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as the `docker.sock`.
 * On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
 ```shell
 docker run \
