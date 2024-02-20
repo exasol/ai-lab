@@ -57,7 +57,7 @@ Additional options
 * Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and section [Stopping the AI-Lab Docker Container](#stopping-the-ai-lab-docker-container).
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
 
-### AI-Lab with integrated Exasol Docker-DB
+### AI-Lab with Integrated Exasol Docker-DB
 
 In this scenario you must enable the AI-Lab Docker container to access the Docker daemon.
 
