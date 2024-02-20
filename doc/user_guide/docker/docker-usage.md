@@ -15,6 +15,7 @@ The Unix shell commands in the following sections will use some environment vari
   * `0.0.0.0` means all IP-addresses are allowed.
   * For local setups, we recommend `127.0.0.1`.
   * Please contact your IT department if there are security restrictions.
+* Variable `CONTAINER_NAME` defines the name for the AI-Lab Docker container. Giving the running container a name makes it easier to refer to it when [stopping](#stopping-the-ai-lab-docker-container) or [restarting](#restarting-a-stopped-container) it.
 
 Here is an example:
 
@@ -22,6 +23,7 @@ Here is an example:
 VERSION=0.2.0
 LISTEN_IP=0.0.0.0
 VOLUME=my-vol
+CONTAINER_NAME=ai-lab
 ```
 
 ## Creating a Docker Container for the AI- Lab from the AI-Lab Docker Image
@@ -43,6 +45,7 @@ The following command will
 
 ```shell
 docker run \
+  --name ${CONTAINER_NAME} \
   --volume ${VOLUME}:/root/notebooks \
   --publish ${LISTEN_IP}:49494:49494 \
   exasol/ai-lab:${VERSION}
@@ -64,6 +67,7 @@ In this scenario you must enable the AI-Lab Docker container to access the Docke
 * On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
 ```shell
 docker run \
+  --name ${CONTAINER_NAME} \
   --volume ${VOLUME}:/root/notebooks \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --publish ${LISTEN_IP}:49494:49494 \
