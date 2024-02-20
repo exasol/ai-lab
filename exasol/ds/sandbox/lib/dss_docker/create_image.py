@@ -60,10 +60,9 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
     if not folder:
         return entry_cmd + jupyter()
     return entry_cmd + [
-       "--notebook-defaults", folder["initial"],
-       "--notebooks", folder["final"]
+        "--notebook-defaults", folder["initial"],
+        "--notebooks", folder["final"]
     ] + jupyter()
-
 
 
 class DssDockerImage:
@@ -125,10 +124,12 @@ class DssDockerImage:
         docker_file = self._docker_file()
         _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
         with docker_file.open("rb") as fileobj:
+            auth_config = self._auth_config()
+            if auth_config is not None:
+                docker_client.login(**auth_config)
             docker_client.images.build(
                 fileobj=fileobj,
                 tag=self.image_name,
-                auth_config=self._auth_config(),
             )
         container = docker_client.containers.create(
             image=self.image_name,
