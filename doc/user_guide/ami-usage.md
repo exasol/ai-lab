@@ -6,8 +6,6 @@ The naming scheme is: "_Exasol-AI-Lab-${VERSION}_", e.g. "_Exasol-AI-Lab-5.0.0_"
 
 The AMI is currently only available in the AWS region `eu-central-1`.
 
-If you want to use the image in another region, you need to copy it before.
-
 Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html) for details about how to copy the image.
 
 ## Overview

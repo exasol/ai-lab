@@ -2,13 +2,13 @@
 
 Using Exasol AI-Lab Docker Edition requires some specific [prerequisites](prerequisites.md) but also offers additional benefits.
 
-The [Operating System and Setup Guide](os-setup.md) helps you first the initial system setup as using Docker can be simple on Linux systems but more complex on other platforms and in distributed scenarios.
+The [Operating System and Setup Guide](os-setup.md) helps you with the initial system setup.
 
 AI-Lab also offers a [short introduction](intro.md) to Docker Images and Containers if you are new to this technology.
 
 ## Defining Environment Variables
 
-The Unix shell commands in the following sections will use some environment variables to make the commands portable and enable to adapt to your specific preferences while at the same time maintaining the ability to execute the commands verbatim without any change:
+The Unix shell commands in the following sections will use some environment variables. By this you can adapt the commands to your specific preferences while still being able to to execute them literally:
 * Variable `VERSION` refers to the version of Exasol AI-Lab Docker Edition you want to use, alternativly you can use `latest`.
 * Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing-user-data.md).
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
@@ -16,7 +16,7 @@ The Unix shell commands in the following sections will use some environment vari
   * For local setups, we recommend `127.0.0.1`.
   * Please contact your IT department if there are security restrictions.
 
-Here are some sample values &mdash; please change to your needs:
+Here is an example:
 
 ```shell
 VERSION=0.2.0
@@ -27,11 +27,11 @@ VOLUME=my-vol
 ## Starting a Docker Container from the Docker Image
 
 The following command will
-* Download the Docker image for the specified version `$VERSION` of the AI-Lab if not yet available in your Docker service
+* Download the Docker image for the specified version `$VERSION` of the AI-Lab if the image of the specified version is not yet available in your Docker service
 * Run a Docker container using this image
 * Mount the volume `$VOLUME` to the directory `/root/notebooks` inside the container
   * If the volume does not exist yet, then it will be created automatically.
-* Forward port `49494` on the [daemon machine](prerequisites.md) allowing connections from all IP addresses matched by `$LISTEN_IP`
+* Forward port `49494` on the [daemon machine](prerequisites.md) to allow connections from all IP addresses matched by `$LISTEN_IP`
 
 ```shell
 docker run \
@@ -41,7 +41,7 @@ docker run \
 ```
 
 Please note
-* In this scenario you need to connect the AI-Lab to an Exasol database that is already up and running.
+* This is how you can start the AI-Lab if you are going to connect to an existing Exasol database.
 * The [following section](#enable-ai-lab-to-access-the-docker-daemon) shows how to enable the AI-Lab to start an instance of Exasol Docker-DB.
 * If you want to use a newer version of the AI-Lab then please delete Docker volumes created with older versions.
 

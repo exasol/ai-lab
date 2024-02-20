@@ -78,13 +78,13 @@ You can also delete the old volume:
 * Docker volumes can only be deleted if there aren't any Docker containers using them.
 * Also stopped containers still prevent Docker volumes from being deleted.
 
-Use the following command to find out the ID of existing Docker containers, including also stopped containers, see also [User Guide for AI-Lab Docker edition](docker-usage.md#logging-in-to-the-docker-container):
+Use the following command to find out the ID of existing Docker containers, including the stopped ones, see also [User Guide for AI-Lab Docker edition](docker-usage.md#logging-in-to-the-docker-container):
 
 ```shell
 docker ps --all
 ```
 
-The following commands will remove the container with ID `${CONTAINER}` and the volume:
+The following commands will remove the container with ID `${CONTAINER}` and the volume with the name `${VOLUME}`:
 
 ```shell
 docker rm -f ${CONTAINER}

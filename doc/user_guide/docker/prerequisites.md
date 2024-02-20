@@ -8,7 +8,7 @@ Before using Exasol AI-Lab Docker Edition you need to meet the following prerequ
   * Run a Docker daemon accessible from the Docker client
   * Have sufficient disk space to host the Docker image (size 1-2 GB) and run the Docker container
   * Have a free IP port to enable accessing the Jupyter server inside the Docker container
-    * When using Docker Desktop then docker will forward the port to its internal VM _and_ to your client machine as well. In this case the IP port must be free on both systems, see also https://docs.docker.com/desktop/networking/.
+    * When using Docker Desktop, it will forward the port to its internal VM _and_ to your client machine as well. In this case the IP port must be free on both systems, see also https://docs.docker.com/desktop/networking/.
 
 ![Image](docker.png)
 

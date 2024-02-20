@@ -16,8 +16,9 @@ Recommendations
 | [Docker Edition](docker/docker-usage.md) | Docker Image                                                             |
 | [Virtual Machine Edition](vm-usage.md)   | VMware Virtual Machine Disk (VMDK), Virtual Hard Disk by Microsoft (VHD) |
 
-Each of the editions is associated with an _image_ in a specific format which
-* Is linked in the [release notes](https://github.com/exasol/ai-lab/releases/latest) for download
-* Contains all necessary dependencies
-* Provides a running Jupyterlab instance which is automatically started when booting or running the image
+Each of the editions is associated with an _image_ in a specific format.
+
+The image contains all necessary dependencies and provides a running instance of Jupyterlab which is automatically started when booting or running the image.
+
+For download goto the [release notes](https://github.com/exasol/ai-lab/releases/latest).
 
