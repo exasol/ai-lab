@@ -8,8 +8,8 @@ AI-Lab also offers a [short introduction](intro.md) to Docker Images and Contain
 
 ## Defining Environment Variables
 
-The Unix shell commands in the following sections will use some environment variables. By this you can adapt the commands to your specific preferences while still being able to to execute them literally:
-* Variable `VERSION` refers to the version of Exasol AI-Lab Docker Edition you want to use, alternativly you can use `latest`.
+The Unix shell commands in the following sections will use some environment variables. By this you can adapt the commands to your specific preferences while still being able to execute them literally:
+* Variable `VERSION` refers to the version of Exasol AI-Lab Docker Edition you want to use, alternatively you can use `latest`.
 * Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing-user-data.md).
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
   * `0.0.0.0` means all IP-addresses are allowed.

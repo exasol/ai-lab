@@ -25,15 +25,15 @@ Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuid
     - Create  inbound rules:
       - One of type `ssh`
       - If you plan to connect to the Jupyter lab, add another rule of type "Custom TCP" with port 49494.
-        - **Important**: With this rule you expose the Jupyter lab to the internet; anybody who has access to the password will be able to execute commands. For a minimum of security you should change the default Jupyter password. Details about how to do that will be shown in the login screen when you login via ssh. However, you should consider to use only `ssh` with port forwarding.
+        - **Important**: With this rule you expose the Jupyter lab to the internet; anybody who has access to the password will be able to execute commands. For a minimum of security you should change the default Jupyter password. Details about how to do that will be shown in the login screen when you log in via ssh. However, you should consider to use only `ssh` with port forwarding.
  4. Go back to the EC2 console
  5. Launch the EC2 instance:
      - In the navigation bar on the left select "Instances"
      - Click button "Launch instances"
-     - At field "Application and OS Images" select the AMI id of the sandbox (found in the [release notes](https://github.com/exasol/ai-lab/releases/latest))
+     - At field "Application and OS Images" select the AMI ID of the sandbox (found in the [release notes](https://github.com/exasol/ai-lab/releases/latest))
      - Select an appropriate instance type (at least "t2.small" or similar)
      - Choose your key pair
-     - Choose the security group which your created in step 3.
+     - Choose the security group which you created in step 3.
      - For the storage we recommend to keep the pre-selected 100GB volume
      - Click button "Launch instance"
 6. As soon as the machine becomes available you can connect per ssh with user `ubuntu`: `ssh -i your_key.pem ubuntu@the_new_ec_instance`

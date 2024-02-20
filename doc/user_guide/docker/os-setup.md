@@ -2,7 +2,7 @@
 
 Docker technology is available for a variety of operating systems. On some platforms, there are multiple editions of it.
 
-When your local machine runs on Linux operating system then there are no specific restrictions besides the general [system requirements](../system-requirements.md). In this case Exasol recommends to run the Docker daemon on the same machine to simplify the usage.
+When your local machine runs on Linux operating system then there are no specific restrictions besides the general [system requirements](../system-requirements.md). In this case Exasol recommends running the Docker daemon on the same machine to simplify the usage.
 
 When your client is running on Windows or MacOSX then at least the daemon machine must run on Linux. Docker Desktop usually includes a Linux VM with the Docker daemon.
 
@@ -21,8 +21,8 @@ This is only possible when using
 * MacOSX Docker Desktop
 * MacOSX Docker Desktop with a remote Docker daemon
 
-In all scenarios the daemon machine must allow to run the Exasol Docker-DB with option [`--privileged`](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities).
+In all scenarios the daemon machine must allow running the Exasol Docker-DB with option [`--privileged`](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities).
 
-Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular, code running inside the AI-Lab could create privileged containers, mount the filesystem of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
+Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular, code running inside the AI-Lab could create privileged containers, mount the file system of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
 
-Section [Enable AI-Lab to Access the Docker Daemon](docker-usage.md#enable-ai-lab-to-access-the-docker-daemon) shows the corresponding commandline options, for details see [Docker FAQ](https://docs.docker.com/desktop/faqs/general/#how-do-i-connect-to-the-remote-docker-engine-api).
+Section [Enable AI-Lab to Access the Docker Daemon](docker-usage.md#enable-ai-lab-to-access-the-docker-daemon) shows the corresponding command line options, for details see [Docker FAQ](https://docs.docker.com/desktop/faqs/general/#how-do-i-connect-to-the-remote-docker-engine-api).

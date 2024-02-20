@@ -14,4 +14,4 @@ Before using Exasol AI-Lab Docker Edition you need to meet the following prerequ
 
 Please refer to the [Official Docker documentation](https://docs.docker.com) for installation and configuration.
 
-Docker volumes and port forwarding apply only for the daemon machine and you need to access the ports via the IP of the daemon machine. An exception is described in https://docs.docker.com/desktop/networking/.
+Docker volumes and port forwarding apply only for the daemon machine, and you need to access the ports via the IP of the daemon machine. An exception is described in https://docs.docker.com/desktop/networking/.
