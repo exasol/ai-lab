@@ -2,6 +2,8 @@
 
 The Exasol AI-Lab is a pre-configured container designed to empower data scientists. It streamlines common data science and AI tasks, including data loading, preparation, exploration, model training, and deployment. Whether you’re a seasoned practitioner or just getting started, the AI-Lab provides a hassle-free experience.
 
+![Transformers Extension](doc/user_guide/ai-lab-screenshot.png)
+
 Key Features:
 * Jupyter Notebook Environment: The heart of the AI-Lab is a robust Jupyter Notebook environment. It’s where you’ll work on your data science projects.
 * Exasol Integration: Leverage Exasol’s power for your AI and machine learning use cases. The AI-Lab includes essential Exasol packages, extensions, and configuration tasks.
