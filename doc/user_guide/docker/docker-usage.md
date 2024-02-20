@@ -2,7 +2,7 @@
 
 Using Exasol AI-Lab Docker Edition requires some specific [prerequisites](prerequisites.md) but also offers additional benefits.
 
-The [Operating System and Setup Guide](os-setup.md) helps you with the initial system setup.
+The [Operating System and Setup Guide](prerequisites.md#operating-systems-and-setups) helps you with the initial system setup.
 
 AI-Lab also offers a [short introduction](intro.md) to Docker Images and Containers if you are new to this technology.
 
@@ -29,10 +29,10 @@ CONTAINER_NAME=ai-lab
 ## Creating a Docker Container for the AI- Lab from the AI-Lab Docker Image
 
 You can use an Exasol database with AI-Lab in two ways
-* [External Exasol database](#ai-lab-with-external-exasol-database)
-* Integrated [Exasol Docker-DB](#ai-lab-managing-exasol-docker-db-internally) managed by AI-Lab
+* [External Exasol database](#ai-lab-with-exclusive-external-exasol-database)
+* Integrated [Exasol Docker-DB](#ai-lab-with-integrated-exasol-docker-db) managed by AI-Lab
 
-### AI-Lab with exclusively External Exasol Database
+### AI-Lab with Exclusive External Exasol Database
 
 In this scenario the AI-Lab Docker container does not need access to the Docker daemon.
 
@@ -57,12 +57,12 @@ Additional options
 * Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and section [Stopping the AI-Lab Docker Container](#stopping-the-ai-lab-docker-container).
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`
 
-### AI-Lab with a internal Exasol Docker-DB
+### AI-Lab with integrated Exasol Docker-DB
 
 In this scenario you must enable the AI-Lab Docker container to access the Docker daemon.
 
 **Please note**
-* Additional [Limitations and security risks](os-setup.md#enabling-exasol-ai-lab-to-use-docker-features) apply.
+* Additional [Limitations and security risks](prerequisites.md#enabling-exasol-ai-lab-to-use-docker-features) apply.
 * Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as the `docker.sock`.
 * On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
 ```shell
