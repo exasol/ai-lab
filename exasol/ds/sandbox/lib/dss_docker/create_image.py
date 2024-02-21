@@ -7,7 +7,6 @@ import humanfriendly
 import importlib_resources
 from docker.models.containers import Container as DockerContainer
 from docker.models.images import Image as DockerImage
-from docker import DockerClient
 from importlib_metadata import version
 
 from exasol.ds.sandbox.lib import pretty_print
