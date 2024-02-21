@@ -7,6 +7,7 @@ import humanfriendly
 import importlib_resources
 from docker.models.containers import Container as DockerContainer
 from docker.models.images import Image as DockerImage
+from docker import DockerClient
 from importlib_metadata import version
 
 from exasol.ds.sandbox.lib import pretty_print
@@ -83,6 +84,7 @@ class DssDockerImage:
         self.keep_container = keep_container
         self._start = None
         self.registry = None
+        self._client = None
 
     @property
     def image_name(self):
@@ -103,6 +105,11 @@ class DssDockerImage:
             ai_lab_version=AI_LAB_VERSION,
         )
 
+    def _docker_client(self) -> DockerClient:
+        if self._client is None:
+            self._client = docker.from_env()
+        return self._client
+
     def _docker_file(self) -> importlib_resources.abc.Traversable:
         return (
             importlib_resources
@@ -110,28 +117,37 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
-    def _auth_config(self) -> Optional[Dict[str, any]]:
+    def _docker_login(self):
         if self.registry is None:
-            return None
-        return {
-            "username": self.registry.username,
-            "password": self.registry.password,
-        }
+            return
+        client = self._docker_client()
+        client.login(self.registry.username, self.registry.password)
 
-    def _start_container(self) -> DockerContainer:
-        self._start = datetime.now()
-        docker_client = docker.from_env()
+    def _create_initial_image(self) -> DockerImage:
+        client = self._docker_client()
         docker_file = self._docker_file()
         _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
         with docker_file.open("rb") as fileobj:
-            auth_config = self._auth_config()
-            if auth_config is not None:
-                docker_client.login(**auth_config)
-            docker_client.images.build(
+            self._docker_login()
+            return client.images.build(
                 fileobj=fileobj,
                 tag=self.image_name,
+                rm=True,
+            )[0]
+
+    def _start_container(self) -> DockerContainer:
+        self._start = datetime.now()
+        client = self._docker_client()
+        docker_file = self._docker_file()
+        _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+        with docker_file.open("rb") as fileobj:
+            self._docker_login()
+            client.images.build(
+                fileobj=fileobj,
+                tag=self.image_name,
+                rm=True,
             )
-        container = docker_client.containers.create(
+        container = client.containers.create(
             image=self.image_name,
             name=self.container_name,
             command="sleep infinity",
@@ -151,6 +167,12 @@ class DssDockerImage:
             ansible_run_context=self._ansible_run_context(),
             ansible_repositories=ansible_repository.default_repositories,
         )
+
+    def _final_repository(self) -> str:
+        suffix = self.repository
+        if self.registry is None or self.registry.host_and_port is None:
+            return suffix
+        return f"{self.registry.host_and_port}/{suffix}"
 
     def _commit_container(
             self,
@@ -174,12 +196,18 @@ class DssDockerImage:
                 f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}"
             ],
         }
-        return container.commit(
+        img = container.commit(
             repository=self.image_name,
             conf=conf,
         )
+        repo = self._final_repository()
+        img.tag(repo, "latest")
+        img.tag(repo, self.version)
+        return img
 
     def _cleanup(self, container: DockerContainer):
+        if container is None:
+            return
         if self.keep_container:
             _logger.info("Keeping container running")
             return
@@ -190,9 +218,10 @@ class DssDockerImage:
 
     def _push(self):
         if self.registry is not None:
-            self.registry.push(self.repository, self.version)
+            self.registry.push(self._final_repository(), self.version)
 
     def create(self):
+        container = None
         try:
             container = self._start_container()
             facts = self._install_dependencies()

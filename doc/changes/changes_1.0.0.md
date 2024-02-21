@@ -19,7 +19,7 @@ Version: 0.2.1
 
 ## Features
 
-n/a
+* 223: Added support to add docker image tag "latest"
 
 ## Security
 
