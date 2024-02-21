@@ -200,9 +200,10 @@ class DssDockerImage:
             repository=self.image_name,
             conf=conf,
         )
+
         repo = self._final_repository()
-        img.tag(repo, "latest")
         img.tag(repo, self.version)
+        img.tag(repo, "latest")
         return img
 
     def _cleanup(self, container: DockerContainer):
@@ -219,6 +220,7 @@ class DssDockerImage:
     def _push(self):
         if self.registry is not None:
             self.registry.push(self._final_repository(), self.version)
+            self.registry.push(self._final_repository(), "latest")
 
     def create(self):
         container = None
