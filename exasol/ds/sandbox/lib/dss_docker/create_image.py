@@ -105,11 +105,6 @@ class DssDockerImage:
             ai_lab_version=AI_LAB_VERSION,
         )
 
-    def _docker_client(self) -> DockerClient:
-        if self._client is None:
-            self._client = docker.from_env()
-        return self._client
-
     def _docker_file(self) -> importlib_resources.abc.Traversable:
         return (
             importlib_resources
@@ -117,37 +112,20 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
-    def _docker_login(self):
-        if self.registry is None:
-            return
-        client = self._docker_client()
-        client.login(self.registry.username, self.registry.password)
-
-    def _create_initial_image(self) -> DockerImage:
-        client = self._docker_client()
-        docker_file = self._docker_file()
-        _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
-        with docker_file.open("rb") as fileobj:
-            self._docker_login()
-            return client.images.build(
-                fileobj=fileobj,
-                tag=self.image_name,
-                rm=True,
-            )[0]
-
     def _start_container(self) -> DockerContainer:
         self._start = datetime.now()
-        client = self._docker_client()
+        docker_client = docker.from_env()
         docker_file = self._docker_file()
         _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+        if self.registry is not None:
+            docker_client.login(self.registry.username, self.registry.password)
         with docker_file.open("rb") as fileobj:
-            self._docker_login()
-            client.images.build(
+            docker_client.images.build(
                 fileobj=fileobj,
                 tag=self.image_name,
                 rm=True,
             )
-        container = client.containers.create(
+        container = docker_client.containers.create(
             image=self.image_name,
             name=self.container_name,
             command="sleep infinity",
