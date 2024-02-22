@@ -7,5 +7,4 @@ jupysql==0.10.7
 sqlalchemy_exasol==4.6.3
 stopwatch.py==2.0.1
 boto3==1.26.163
---extra-index-url https://download.pytorch.org/whl/cpu
-git+https://github.com/exasol/notebook-connector.git@0.2.7
+exasol-notebook-connector==0.2.8
