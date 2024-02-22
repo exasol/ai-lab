@@ -13,6 +13,7 @@ Version: 1.1.0
 ## Features
 
 * 223: Added support to add docker image tag "latest"
+* 204: Updated developer guide
 
 ## Security
 
@@ -24,7 +25,7 @@ n/a
 
 ## Documentation
 
-n/a
+* 204: Updated developer guide
 
 ## Refactoring
 
