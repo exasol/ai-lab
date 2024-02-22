@@ -1,3 +1,22 @@
+## How to Release the AI-Lab
+
+1. Take care to update latest file `doc/changes/changes_*.md`
+   * Correct version number
+   * Current date
+   * Code name
+   * Summary
+   * Remove sections without tickets or add `n/a`
+2. Push and merge your current Pull-request
+3. Run [release-droid](https://github.com/exasol/release-droid)
+4. Edit draft release on GitHub and make it final
+
+Release-droid command line:
+```shell
+java -jar ~/path/to/release-droid-*.jar \
+     -n ai-lab -goal release \
+     -guide /tmp/release-guide.html
+```
+
 ## AWS Build and Release Workflow
 
 The following diagram shows the high-level steps to generate the images:
@@ -50,7 +69,7 @@ The following resources are permanent and need to be deployed using the "deploy"
 
 The EC2-stack lives only during the creation of a new sandbox image.
 
-## Tagging
+## Tagging AWS Resources
 
 Each of the involved resources might cause costs: cloudformation stacks, AMI, EC2 key-pairs.
 
