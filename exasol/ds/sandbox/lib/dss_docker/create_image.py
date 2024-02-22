@@ -110,26 +110,18 @@ class DssDockerImage:
             .joinpath("Dockerfile")
         )
 
-    def _auth_config(self) -> Optional[Dict[str, any]]:
-        if self.registry is None:
-            return None
-        return {
-            "username": self.registry.username,
-            "password": self.registry.password,
-        }
-
     def _start_container(self) -> DockerContainer:
         self._start = datetime.now()
         docker_client = docker.from_env()
         docker_file = self._docker_file()
         _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+        if self.registry is not None:
+            docker_client.login(self.registry.username, self.registry.password)
         with docker_file.open("rb") as fileobj:
-            auth_config = self._auth_config()
-            if auth_config is not None:
-                docker_client.login(**auth_config)
             docker_client.images.build(
                 fileobj=fileobj,
                 tag=self.image_name,
+                rm=True,
             )
         container = docker_client.containers.create(
             image=self.image_name,
@@ -174,12 +166,13 @@ class DssDockerImage:
                 f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}"
             ],
         }
-        return container.commit(
-            repository=self.image_name,
-            conf=conf,
-        )
+        img = container.commit(repository=self.image_name, conf=conf)
+        img.tag(self.repository, "latest")
+        return img
 
     def _cleanup(self, container: DockerContainer):
+        if container is None:
+            return
         if self.keep_container:
             _logger.info("Keeping container running")
             return
@@ -191,8 +184,10 @@ class DssDockerImage:
     def _push(self):
         if self.registry is not None:
             self.registry.push(self.repository, self.version)
+            self.registry.push(self.repository, "latest")
 
     def create(self):
+        container = None
         try:
             container = self._start_container()
             facts = self._install_dependencies()

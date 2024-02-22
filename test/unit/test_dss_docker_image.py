@@ -126,5 +126,8 @@ def test_push_called(mocker, mocked_docker_image):
     testee.registry = create_autospec(DockerRegistry)
     testee.create()
     assert testee.registry.push.called
-    expected = mocker.call(testee.repository, testee.version)
-    assert testee.registry.push.call_args == expected
+    expected = [
+        mocker.call(testee.repository, testee.version),
+        mocker.call(testee.repository, "latest"),
+    ]
+    assert testee.registry.push.call_args_list == expected

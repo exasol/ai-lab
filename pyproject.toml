@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exasol-ai-lab"
-version = "1.0.0"
+version = "1.1.0"
 description = "Provide AI-Lab editions."
 packages = [ {include = "exasol"}, ]
 license = "MIT"
@@ -56,7 +56,9 @@ pytest-mock = "^3.7.0"
 cfn-lint = "^0.65.1"
 gitpython = ">=2.1.0"
 localstack = "^3.1.0"
-docker = {version = ">=5.0.0", markers = "sys_platform != 'win32'"}
+# docker 7.0.0 is broken
+# see https://github.com/docker/docker-py/issues/3223
+docker = {version = "^6.1.3", markers = "sys_platform != 'win32'"}
 fabric = "^2.7.1"
 
 [tool.pytest.ini_options]
