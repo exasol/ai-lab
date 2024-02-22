@@ -83,7 +83,6 @@ class DssDockerImage:
         self.keep_container = keep_container
         self._start = None
         self.registry = None
-        self._client = None
 
     @property
     def image_name(self):
