@@ -14,6 +14,7 @@ Version: 1.1.0
 
 * 223: Added support to add docker image tag "latest"
 * 204: Updated developer guide
+* 177: Disabled core dumps
 
 ## Security
 
