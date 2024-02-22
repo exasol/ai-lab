@@ -144,12 +144,6 @@ class DssDockerImage:
             ansible_repositories=ansible_repository.default_repositories,
         )
 
-    def _final_repository(self) -> str:
-        suffix = self.repository
-        if self.registry is None or self.registry.host_and_port is None:
-            return suffix
-        return f"{self.registry.host_and_port}/{suffix}"
-
     def _commit_container(
             self,
             container: DockerContainer,
@@ -172,14 +166,8 @@ class DssDockerImage:
                 f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}"
             ],
         }
-        img = container.commit(
-            repository=self.image_name,
-            conf=conf,
-        )
-
-        repo = self._final_repository()
-        img.tag(repo, self.version)
-        img.tag(repo, "latest")
+        img = container.commit(repository=self.image_name, conf=conf)
+        img.tag(self.repository, "latest")
         return img
 
     def _cleanup(self, container: DockerContainer):
@@ -195,8 +183,8 @@ class DssDockerImage:
 
     def _push(self):
         if self.registry is not None:
-            self.registry.push(self._final_repository(), self.version)
-            self.registry.push(self._final_repository(), "latest")
+            self.registry.push(self.repository, self.version)
+            self.registry.push(self.repository, "latest")
 
     def create(self):
         container = None

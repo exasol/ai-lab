@@ -67,10 +67,9 @@ class ProgressReporter:
 
 
 class DockerRegistry:
-    def __init__(self, username: str, password: str, host_and_port: Optional[str] = None):
+    def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
-        self.host_and_port = host_and_port
 
     def push(self, repository: str, tag: str):
         auth_config = {

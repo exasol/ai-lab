@@ -123,7 +123,7 @@ def mocked_docker_image():
 
 def test_push_called(mocker, mocked_docker_image):
     testee = mocked_docker_image
-    testee.registry = create_autospec(DockerRegistry, host_and_port=None)
+    testee.registry = create_autospec(DockerRegistry)
     testee.create()
     assert testee.registry.push.called
     expected = [

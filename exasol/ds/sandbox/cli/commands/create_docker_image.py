@@ -20,23 +20,20 @@ PASSWORD_ENV = "DOCKER_REGISTRY_PASSWORD"
 @cli.command()
 @add_options([
     click.option(
-        "--repository", type=str, metavar="ORG/REPO",
+        "--repository", type=str, metavar="[HOST[:PORT]/]ORG/REPO",
         show_default=True,
         default=DEFAULT_ORG_AND_REPOSITORY,
-        help="Organization and repository to publish the docker image to."),
+        help="""
+        Organization and repository on hub.docker.com to publish the
+        docker image to. Optionally prefixed by a host and a port,
+        see https://docs.docker.com/engine/reference/commandline/tag.
+        """),
     click.option(
-        "--version", type=str, metavar="VERSION",
+        "--version", type=str,  metavar="VERSION",
         help="Docker image version tag"),
     click.option(
         "--publish", type=bool, is_flag=True,
         help="Whether to publish the created Docker image"),
-    click.option(
-        "--registry", type=str, metavar="HOST[:PORT]",
-        help="""
-        Optional host and port of Docker registry. If not specified then the
-        command will use hub.docker.com:5000, see
-        https://docs.docker.com/engine/reference/commandline/tag.
-        """),
     click.option(
         "--registry-user", type=str, metavar="USER",
         default=lambda: os.environ.get(USER_ENV, None),
@@ -54,7 +51,6 @@ PASSWORD_ENV = "DOCKER_REGISTRY_PASSWORD"
 @add_options(logging_options)
 def create_docker_image(
         repository: str,
-        registry: str,
         version: str,
         publish: bool,
         registry_user: str,
@@ -75,9 +71,5 @@ def create_docker_image(
     set_log_level(log_level)
     creator = DssDockerImage(repository, version, keep_container)
     if publish:
-        creator.registry = DockerRegistry(
-            registry_user,
-            registry_password(),
-            host_and_port=registry,
-        )
+        creator.registry = DockerRegistry(registry_user, registry_password())
     creator.create()

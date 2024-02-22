@@ -26,7 +26,8 @@ class LocalDockerRegistry(DockerRegistry):
     image.
     """
     def __init__(self, host_and_port: str):
-        super().__init__(username=None, password=None, host_and_port=host_and_port)
+        super().__init__(username=None, password=None)
+        self.host_and_port = host_and_port
 
     @property
     def url(self):
