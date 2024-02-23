@@ -148,10 +148,6 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
             ensure_dir(copy / name)
 
 
-def disable_core_dumps():
-    subprocess.run(["bash", "-c", "ulimit -c 0"])
-
-
 def sleep_inifinity():
     while True:
         time.sleep(1)
@@ -165,7 +161,6 @@ def main():
             args.notebooks,
             args.warning_as_error,
         )
-    disable_core_dumps()
     if (args.jupyter_server
         and args.notebooks
         and args.jupyter_logfile
