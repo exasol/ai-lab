@@ -30,4 +30,7 @@ n/a
 
 ## Refactoring
 
-n/a
+* #217: Changed notebook-connector dependency, now installing it from PyPi.
+* #220: Changed default ports in the external database configuration.
+* #221: Changed wording in the main configuration notebook, as suggested by PM.
+
