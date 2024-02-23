@@ -4,3 +4,10 @@
   ansible.builtin.synchronize:
     src: "notebook/"
     dest: "{{ jupyterlab_notebook_folder_initial }}"
+
+- name: Create directory for final notebooks
+  ansible.builtin.file:
+    path: "{{ jupyterlab_notebook_folder }}"
+    state: directory
+    owner: "{{ user_name }}"
+    mode: '0755'

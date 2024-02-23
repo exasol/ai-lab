@@ -1,0 +1,4 @@
+- name: Add user 'jupyter' for running jupyter
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    home: "{{ user_home }}"

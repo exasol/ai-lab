@@ -15,11 +15,14 @@
   gather_facts: true
   vars:
       ansible_python_interpreter: python3
-      user_name: "{{ ansible_user_id }}"
-      user_home: "{{ ansible_env.HOME }}"
+      # user_name: "{{ ansible_user_id }}"
+      # user_home: "{{ ansible_env.HOME }}"
+      user_name: "jupyter"
+      user_home: "/home/jupyter"
       initial_notebook_folder: "{{ user_home }}/notebook-defaults"
       need_sudo: false
       docker_integration_test: true
   tasks:
+    - import_tasks: create_jupyter_user.yml
     - import_tasks: general_setup_tasks.yml
     - import_tasks: cleanup_tasks.yml
