@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import re
+import resource
 import shutil
 import subprocess
 import sys
@@ -148,6 +149,10 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
             ensure_dir(copy / name)
 
 
+def disable_core_dumps():
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+
+
 def sleep_inifinity():
     while True:
         time.sleep(1)
@@ -161,6 +166,7 @@ def main():
             args.notebooks,
             args.warning_as_error,
         )
+    disable_core_dumps()
     if (args.jupyter_server
         and args.notebooks
         and args.jupyter_logfile
