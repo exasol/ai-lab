@@ -43,6 +43,3 @@
 - name: Install Docker
   include_role:
     name: docker
-- name: Disable Core Dumps
-  include_role:
-    name: coredumps
