@@ -15,11 +15,6 @@
         initial: "{{ initial_notebook_folder }}"
         final: "{{user_home}}/notebooks"
     cacheable: yes
-- name: Update and upgrade apt packages
-  apt:
-    upgrade: yes
-    update_cache: yes
-  become: "{{need_sudo}}"
 - name: Install rsync
   include_role:
     name: rsync
@@ -37,6 +32,8 @@
     jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
     jupyterlab_notebook_folder: "{{ dss_facts.notebook_folder.final }}"
 - name: Clear pip cache
+  # TBD: do we need become: "{{ need_sudo }}" here?
+  # should folder /root be replaced by {{ my_ansible_user_home }} ?
   ansible.builtin.file:
     path: /root/.cache/pip
     state: absent

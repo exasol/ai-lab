@@ -8,6 +8,7 @@
       need_sudo: yes
   remote_user: ubuntu
   tasks:
+    - import_tasks: apt_update.yml
     - import_tasks: general_setup_tasks.yml
     - import_tasks: ec2_setup_tasks.yml
     - import_tasks: cleanup_tasks.yml

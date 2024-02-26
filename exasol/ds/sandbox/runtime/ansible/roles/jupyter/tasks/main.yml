@@ -7,6 +7,7 @@
       apt:
         name: "{{apt_dependencies}}"
         state: present
+        install_recommends: false
       become: "{{need_sudo}}"
 
     - name: Update pip version

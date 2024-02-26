@@ -1,0 +1,28 @@
+- name: Install sudo
+  apt:
+    name: "{{apt_dependencies}}"
+    state: latest
+    install_recommends: false
+
+- name: Add to sudoers
+  community.general.sudoers:
+    name: Add-Ansible
+    user: "{{ my_ansible_user }}"
+    state: present
+    nopassword: true
+    commands: ALL
+
+- name: Create group for command su and ansible_common_remote_group
+  ansible.builtin.group:
+    name: jupyter
+    state: present
+
+- name: Add dedicated user for executing ansible tasks
+  ansible.builtin.user:
+    name: "{{ my_ansible_user }}"
+    group: jupyter
+- name: Add user for running jupyter
+  ansible.builtin.user:
+    name: "{{ jupyter_user }}"
+    home: "{{ jupyter_user_home }}"
+    group: "{{ jupyter_group }}"

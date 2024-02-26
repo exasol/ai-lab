@@ -1,0 +1,4 @@
+---
+
+apt_dependencies:
+  - sudo=1.8.31-1ubuntu1.5
