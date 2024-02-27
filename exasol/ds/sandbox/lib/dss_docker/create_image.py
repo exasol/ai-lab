@@ -205,15 +205,3 @@ class DssDockerImage:
         size = humanfriendly.format_size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(self._start)
         _logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
-
-
-import sys
-from exasol.ds.sandbox.lib.logging import set_log_level
-if __name__ == "__main__":
-    set_log_level("info")
-    di = DssDockerImage("exasol/ai-lab", "9.9.9", True)
-    if len(sys.argv) > 1:
-        di.container_name = sys.argv[1]
-        di._install_dependencies()
-    else:
-        di.create()
