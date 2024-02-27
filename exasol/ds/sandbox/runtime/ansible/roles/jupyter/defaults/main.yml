@@ -11,7 +11,7 @@ jupyterlab_default_url: "/lab/tree/start.ipynb"
 # overridden in include_role
 jupyterlab_virtualenv: "{{ user_home }}/jupyterenv"
 jupyterlab_command: "{{ jupyterlab_virtualenv }}/bin/jupyter-lab"
-jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='ai-lab') }}"
+jupyterlab_password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='ailab') }}"
 jupyterlab_notebook_folder_initial: "{{ user_home }}/notebooks"
 jupyterlab_notebook_folder: "{{ user_home }}/notebooks"
 

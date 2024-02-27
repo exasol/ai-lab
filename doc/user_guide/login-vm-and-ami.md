@@ -3,7 +3,7 @@
 Username: **ubuntu**
 
 At the first login to the AI-Lab (image or AMI) you will be prompted to change your password.
-The default password is: **ai-lab**
+The default password is: **ailab**
 
 However, we suggest to use ssh-keys for the connection. When you use the AWS AMI, this will work automatically. When using the VM images, you need to deploy your ssh-keys. After you enabled ssh-keys, we recommend to disable ssh password authentication:
 ```shell
