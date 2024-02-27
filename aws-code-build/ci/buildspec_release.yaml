@@ -3,7 +3,7 @@ version: 0.2
 env:
   shell: bash
   variables:
-    DEFAULT_PASSWORD: "ai-lab"
+    DEFAULT_PASSWORD: "ailab"
     ASSET_ID: ""
     AWS_USER_NAME: "release_user"
     MAKE_AMI_PUBLIC_OPTION: "--no-make-ami-public"

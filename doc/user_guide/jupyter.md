@@ -8,7 +8,7 @@ Root location
 |---------------------|-------------------------------------------|
 | Virtual environment | location `/$ROOT/jupyterenv`              |
 | Location notebooks  | location `/$ROOT/notebooks`               |
-| Password            | `ai-lab`                                  |
+| Password            | `ailab`                                   |
 | HTTP Port           | `49494` (or the port you forwarded it to) |
 
 Exasol strongly recommends changing the Jupyter password as soon as possible. Details about how to do that will be shown in the login screen.
