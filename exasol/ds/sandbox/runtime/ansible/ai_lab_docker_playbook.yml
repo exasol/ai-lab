@@ -4,7 +4,7 @@
   vars:
       ansible_python_interpreter: python3
   tasks:
-    - name: Add docker container to inventory
+    - name: Add Docker Container to Ansible Inventory
       add_host:
         name: "{{docker_container}}"
         groups: docker_container_group
