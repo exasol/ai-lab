@@ -2,7 +2,7 @@
 
 Root location
 * For Exasol AI-Lab's VM and AMI editions the root location is `$ROOT=/home/ubuntu`.
-* For the Docker edition the root location is `$ROOT=/root`.
+* For the Docker edition the root location is `$ROOT=/home/jupyter`.
 
 | Item                | Location or value                         |
 |---------------------|-------------------------------------------|
