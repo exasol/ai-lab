@@ -12,8 +12,7 @@
 # - it has all rows commented out
 #
 # Set environment variable $HOME to {{user_home}} to force the directory for
-# creating the config file.  Unfortunately this does not affect the file
-# jupyter_server_config.json.
+# creating the config file.
 - name: Generate JupyterLab config
   ansible.builtin.command: "{{jupyterlab_virtualenv}}/bin/jupyter lab --generate-config"
   environment:
@@ -36,6 +35,8 @@
       line: "c.ServerApp.port = {{ jupyterlab_port }}"
   become: "{{ need_sudo }}"
 
+# Set environment variable $HOME to {{user_home}} to force the directory for
+# creating the file jupyter_server_config.json.
 - name: Generate a new password
   expect:
     command: "{{jupyterlab_virtualenv}}/bin/jupyter server password"

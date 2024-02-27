@@ -1,10 +1,7 @@
 ---
 
 jupyterlab_ip: '*'
-# Setting environment variable $HOME to {{user_home}} forces the directory for
-# creating the config file.  Unfortunately this does not affect the json file.
 jupyterlab_config: "{{user_home}}/.jupyter/jupyter_lab_config.py"
-# jupyterlab_config_json: "{{ansible_env.HOME}}/.jupyter/jupyter_server_config.json"
 jupyterlab_config_json: "{{user_home}}/.jupyter/jupyter_server_config.json"
 jupyterlab_default_url: "/lab/tree/start.ipynb"
 
