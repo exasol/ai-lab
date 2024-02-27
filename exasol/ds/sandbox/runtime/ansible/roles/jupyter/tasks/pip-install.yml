@@ -1,0 +1,21 @@
+---
+
+- name: Copy requirements file {{ requirements_file }}
+  ansible.builtin.copy:
+    src: "{{requirements_file}}"
+    dest: "/tmp/{{requirements_file}}"
+    mode: 0644
+  register: copy_req_file
+
+- name: Call pip install {{ requirements_file }}
+  ansible.builtin.pip:
+    requirements: "{{ copy_req_file.dest }}"
+    state: latest
+    virtualenv: "{{jupyterlab_virtualenv}}"
+    virtualenv_python: python3.8
+  become: "{{need_sudo}}"
+
+- name: Remove requirements file {{ requirements_file }}
+  ansible.builtin.file:
+    path: "{{ copy_req_file.dest }}"
+    state: absent
