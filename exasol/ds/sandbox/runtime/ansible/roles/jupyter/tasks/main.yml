@@ -14,20 +14,20 @@
       include_tasks:
         file: update-pip.yml
 
-    - name: Install JupyterLab and its dependencies
+    - name: Install JupyterLab and required packages
       include_tasks:
         file: install-pip-packages.yml
       vars:
-        - pip_requirements_file: "requirements_jupyter.txt"
+        pip_requirements_file: "jupyter_requirements.txt"
 
     - name: Setup Jupyterlab
       ansible.builtin.import_tasks: jupyterlab.yml
 
-    - name: Install dependencies used in Jupyterlab
+    - name: Install packages to be used inside Jupyter notebooks
       include_tasks:
         file: install-pip-packages.yml
       vars:
-        - pip_requirements_file: "requirements_dependencies.txt"
+        pip_requirements_file: "notebook_requirements.txt"
 
     - name: Setup Systemd service
       ansible.builtin.import_tasks: systemd.yml

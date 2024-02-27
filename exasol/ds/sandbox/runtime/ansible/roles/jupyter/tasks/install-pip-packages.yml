@@ -1,13 +1,13 @@
 ---
 
-- name: Copy pip requirements file
+- name: Copy requirements file {{ pip_requirements_file }}
   ansible.builtin.copy:
     src: "{{pip_requirements_file}}"
     dest: "/tmp/{{pip_requirements_file}}"
     mode: 0644
   register: pip_requirements_file_loc
 
-- name: Install Python packages via pip
+- name: Call pip install {{ pip_requirements_file }}
   ansible.builtin.pip:
     requirements: "{{ pip_requirements_file_loc.dest }}"
     state: latest
@@ -15,7 +15,7 @@
     virtualenv_python: python3.8
   become: "{{need_sudo}}"
 
-- name: Remove the requirements file (delete file)
+- name: Remove requirements file {{ pip_requirements_file }}
   ansible.builtin.file:
     path: "{{ pip_requirements_file_loc.dest }}"
     state: absent
