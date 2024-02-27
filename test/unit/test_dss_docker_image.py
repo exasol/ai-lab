@@ -75,7 +75,7 @@ def test_entrypoint_default(facts):
 
 
 def test_entrypoint_with_copy_args():
-    jupyter = "/root/jupyterenv/bin/jupyter-lab"
+    jupyter = "/home/jupyter/jupyterenv/bin/jupyter-lab"
     port = "port"
     entrypoint = "/path/to/entrypoint.py"
     initial = "/path/to/initial"

@@ -66,7 +66,7 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
 
 def test_install_notebook_connector(dss_docker_container):
     container = dss_docker_container
-    command = '/root/jupyterenv/bin/python -c "import exasol.nb_connector.secret_store"'
+    command = '/home/jupyter/jupyterenv/bin/python -c "import exasol.nb_connector.secret_store"'
     exit_code, output = container.exec_run(command)
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
@@ -77,7 +77,7 @@ def test_install_notebooks(dss_docker_container):
         return set(re.split(r'\s+', string.strip()))
 
     exit_code, output = dss_docker_container.exec_run(
-        "ls --indicator-style=slash /root/notebooks"
+        "ls --indicator-style=slash /home/jupyter/notebooks"
     )
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
