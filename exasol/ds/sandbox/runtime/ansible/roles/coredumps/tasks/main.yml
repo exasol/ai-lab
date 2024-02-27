@@ -4,3 +4,4 @@
     regexp: ^[^#].*core
     line: '*        hard       core      0'
     create: true
+  become: "{{ need_sudo }}"
