@@ -35,6 +35,14 @@
     - name: Copy tutorial notebook
       ansible.builtin.import_tasks: tutorial.yml
 
+    - name: Change owner of all files and dirs in home directory
+      ansible.builtin.file:
+        path: "{{ user_home }}"
+        owner: "{{ user_name }}"
+        group: "{{ user_group }}"
+        recurse: true
+      become: "{{ need_sudo }}"
+
     - name: Setup motd
       ansible.builtin.import_tasks: motd.yml
 

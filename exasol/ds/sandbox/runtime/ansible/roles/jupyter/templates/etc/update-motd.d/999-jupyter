@@ -15,7 +15,7 @@ To update the password as user {{user_name}} run
     {{jupyterlab_virtualenv}}/bin/jupyter server password
 """
 
-server_config_file = pathlib.Path("{{jupyter_server_config_file}}")
+server_config_file = pathlib.Path("{{jupyterlab_config_json}}")
 
 if server_config_file.exists():
     with open(server_config_file) as f:

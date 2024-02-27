@@ -18,6 +18,9 @@
 - name: Install rsync
   include_role:
     name: rsync
+- name: Create Group and User for Running Jupyter Server
+  include_role:
+    name: jupyter_user
 - name: Copy Entry Point Script
   include_role:
     name: entrypoint
@@ -31,9 +34,16 @@
     jupyterlab_password: "{{ dss_facts.jupyter.password }}"
     jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
     jupyterlab_notebook_folder: "{{ dss_facts.notebook_folder.final }}"
+- name: Change owner of all files and dirs in home directory
+  ansible.builtin.file:
+    path: "{{ user_home }}"
+    owner: "{{ user_name }}"
+    group: "{{ user_group }}"
+    recurse: true
+  become: "{{ need_sudo }}"
 - name: Clear pip cache
   # TBD: do we need become: "{{ need_sudo }}" here?
-  # should folder /root be replaced by {{ my_ansible_user_home }} ?
+  # should folder /root be replaced by {{ user_home }} ?
   ansible.builtin.file:
     path: /root/.cache/pip
     state: absent

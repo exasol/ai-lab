@@ -13,6 +13,7 @@
     state: latest
     virtualenv: "{{jupyterlab_virtualenv}}"
     virtualenv_python: python3.8
+  become: "{{need_sudo}}"
 
 - name: Remove the requirements file (delete file)
   ansible.builtin.file:
