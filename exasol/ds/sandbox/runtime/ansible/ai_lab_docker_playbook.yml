@@ -14,11 +14,11 @@
   hosts: docker_container_group
   gather_facts: true
   vars:
-    my_ansible_user: "ansible"
+    my_ansible_user: "ubuntu"
     jupyter_user: "jupyter"
     jupyter_group: "jupyter"
     jupyter_user_home: "/home/jupyter"
-    need_sudo: yes
+    need_sudo: no
   tasks:
     - import_tasks: apt_update.yml
     - name: Ansible Access
@@ -27,7 +27,7 @@
 
 - name: Setup AI-Lab Docker Container
   hosts: docker_container_group
-  remote_user: "ansible"
+  remote_user: "ubuntu"
   gather_facts: true
   vars:
     ansible_python_interpreter: python3
