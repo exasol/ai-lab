@@ -1,13 +1,9 @@
 ## Open Jupyter In Your Browser
 
-Root location
-* For Exasol AI-Lab's VM and AMI editions the root location is `$ROOT=/home/ubuntu`.
-* For the Docker edition the root location is `$ROOT=/home/jupyter`.
-
 | Item                | Location or value                         |
 |---------------------|-------------------------------------------|
-| Virtual environment | location `/$ROOT/jupyterenv`              |
-| Location notebooks  | location `/$ROOT/notebooks`               |
+| Virtual environment | location `/home/jupyter/jupyterenv`       |
+| Location notebooks  | location `/home/jupyter/notebooks`        |
 | Password            | `ailab`                                   |
 | HTTP Port           | `49494` (or the port you forwarded it to) |
 

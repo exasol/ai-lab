@@ -37,6 +37,7 @@ Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuid
      - For the storage we recommend to keep the pre-selected 100GB volume
      - Click button "Launch instance"
 6. As soon as the machine becomes available you can connect per ssh with user `ubuntu`: `ssh -i your_key.pem ubuntu@the_new_ec_instance`
+<!-- I assume the ssh user for AMI and VM Editions is still ubuntu. -->
 
 ## Login
 
