@@ -1,4 +1,4 @@
-- name: Set facts for entry point
+- name: Set facts for Entry Point
   vars:
     jupyter_virtualenv: "{{user_home}}/jupyterenv"
   ansible.builtin.set_fact:
@@ -41,9 +41,7 @@
     group: "{{ user_group }}"
     recurse: true
   become: "{{ need_sudo }}"
-- name: Clear pip cache
-  # TBD: do we need become: "{{ need_sudo }}" here?
-  # should folder /root be replaced by {{ user_home }} ?
+- name: Clear pip Cache
   ansible.builtin.file:
     path: /root/.cache/pip
     state: absent

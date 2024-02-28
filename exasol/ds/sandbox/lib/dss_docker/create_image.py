@@ -112,7 +112,8 @@ class DssDockerImage:
 
     def _start_container(self) -> DockerContainer:
         self._start = datetime.now()
-        docker_client = docker.from_env()
+        # default timeout is 60 seconds.
+        docker_client = docker.from_env(600)
         try:
             return docker_client.containers.get(self.container_name)
         except:
