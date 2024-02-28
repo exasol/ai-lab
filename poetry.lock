@@ -13,17 +13,17 @@ files = [
 
 [[package]]
 name = "ansible"
-version = "9.2.0"
+version = "9.3.0"
 description = "Radically simple IT automation"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "ansible-9.2.0-py3-none-any.whl", hash = "sha256:39b19c252800aeed531413a626ccd07473b79615a3cea77568a1624c1aefaf7c"},
-    {file = "ansible-9.2.0.tar.gz", hash = "sha256:a207a4a00a45e5cd178a7f94ca42afe26f23c9d27be49901ea8c45d18a07b7c6"},
+    {file = "ansible-9.3.0-py3-none-any.whl", hash = "sha256:471993dd239611b4b6134e46911612f85639035f10d82b6c888528b5ffb3b16a"},
+    {file = "ansible-9.3.0.tar.gz", hash = "sha256:7f4ea0e4d065538879b3e11e81e85eed4d802d1940f6564ad950e9d11a31b03c"},
 ]
 
 [package.dependencies]
-ansible-core = ">=2.16.3,<2.17.0"
+ansible-core = ">=2.16.4,<2.17.0"
 
 [[package]]
 name = "ansible-core"
@@ -181,17 +181,17 @@ css = ["tinycss2 (>=1.1.0,<1.3)"]
 
 [[package]]
 name = "boto3"
-version = "1.34.50"
+version = "1.34.51"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "boto3-1.34.50-py3-none-any.whl", hash = "sha256:8d709365231234bc4f0ca98fdf33a25eeebf78072853c6aa3d259f0f5cf09877"},
-    {file = "boto3-1.34.50.tar.gz", hash = "sha256:290952be7899560039cb0042e8a2354f61a7dead0d0ca8bea6ba901930df0468"},
+    {file = "boto3-1.34.51-py3-none-any.whl", hash = "sha256:67732634dc7d0afda879bd9a5e2d0818a2c14a98bef766b95a3e253ea5104cb9"},
+    {file = "boto3-1.34.51.tar.gz", hash = "sha256:2cd9463e738a184cbce8a6824027c22163c5f73e277a35ff5aa0fb0e845b4301"},
 ]
 
 [package.dependencies]
-botocore = ">=1.34.50,<1.35.0"
+botocore = ">=1.34.51,<1.35.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -200,13 +200,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.50"
+version = "1.34.51"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">= 3.8"
 files = [
-    {file = "botocore-1.34.50-py3-none-any.whl", hash = "sha256:fda510559dbe796eefdb59561cc81be1b99afba3dee53fd23db9a3d587adc0ab"},
-    {file = "botocore-1.34.50.tar.gz", hash = "sha256:33ab82cb96c4bb684f0dbafb071808e4817d83debc88b223e7d988256370c6d7"},
+    {file = "botocore-1.34.51-py3-none-any.whl", hash = "sha256:01d5156247f991b3466a8404e3d7460a9ecbd9b214f9992d6ba797d9ddc6f120"},
+    {file = "botocore-1.34.51.tar.gz", hash = "sha256:5086217442e67dd9de36ec7e87a0c663f76b7790d5fb6a12de565af95e87e319"},
 ]
 
 [package.dependencies]
@@ -464,47 +464,56 @@ test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
 
 [[package]]
 name = "cryptography"
-version = "41.0.7"
+version = "42.0.5"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "cryptography-41.0.7-cp37-abi3-macosx_10_12_universal2.whl", hash = "sha256:3c78451b78313fa81607fa1b3f1ae0a5ddd8014c38a02d9db0616133987b9cdf"},
-    {file = "cryptography-41.0.7-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:928258ba5d6f8ae644e764d0f996d61a8777559f72dfeb2eea7e2fe0ad6e782d"},
-    {file = "cryptography-41.0.7-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5a1b41bc97f1ad230a41657d9155113c7521953869ae57ac39ac7f1bb471469a"},
-    {file = "cryptography-41.0.7-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:841df4caa01008bad253bce2a6f7b47f86dc9f08df4b433c404def869f590a15"},
-    {file = "cryptography-41.0.7-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:5429ec739a29df2e29e15d082f1d9ad683701f0ec7709ca479b3ff2708dae65a"},
-    {file = "cryptography-41.0.7-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:43f2552a2378b44869fe8827aa19e69512e3245a219104438692385b0ee119d1"},
-    {file = "cryptography-41.0.7-cp37-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:af03b32695b24d85a75d40e1ba39ffe7db7ffcb099fe507b39fd41a565f1b157"},
-    {file = "cryptography-41.0.7-cp37-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:49f0805fc0b2ac8d4882dd52f4a3b935b210935d500b6b805f321addc8177406"},
-    {file = "cryptography-41.0.7-cp37-abi3-win32.whl", hash = "sha256:f983596065a18a2183e7f79ab3fd4c475205b839e02cbc0efbbf9666c4b3083d"},
-    {file = "cryptography-41.0.7-cp37-abi3-win_amd64.whl", hash = "sha256:90452ba79b8788fa380dfb587cca692976ef4e757b194b093d845e8d99f612f2"},
-    {file = "cryptography-41.0.7-pp310-pypy310_pp73-macosx_10_12_x86_64.whl", hash = "sha256:079b85658ea2f59c4f43b70f8119a52414cdb7be34da5d019a77bf96d473b960"},
-    {file = "cryptography-41.0.7-pp310-pypy310_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:b640981bf64a3e978a56167594a0e97db71c89a479da8e175d8bb5be5178c003"},
-    {file = "cryptography-41.0.7-pp310-pypy310_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:e3114da6d7f95d2dee7d3f4eec16dacff819740bbab931aff8648cb13c5ff5e7"},
-    {file = "cryptography-41.0.7-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:d5ec85080cce7b0513cfd233914eb8b7bbd0633f1d1703aa28d1dd5a72f678ec"},
-    {file = "cryptography-41.0.7-pp38-pypy38_pp73-macosx_10_12_x86_64.whl", hash = "sha256:7a698cb1dac82c35fcf8fe3417a3aaba97de16a01ac914b89a0889d364d2f6be"},
-    {file = "cryptography-41.0.7-pp38-pypy38_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:37a138589b12069efb424220bf78eac59ca68b95696fc622b6ccc1c0a197204a"},
-    {file = "cryptography-41.0.7-pp38-pypy38_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:68a2dec79deebc5d26d617bfdf6e8aab065a4f34934b22d3b5010df3ba36612c"},
-    {file = "cryptography-41.0.7-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:09616eeaef406f99046553b8a40fbf8b1e70795a91885ba4c96a70793de5504a"},
-    {file = "cryptography-41.0.7-pp39-pypy39_pp73-macosx_10_12_x86_64.whl", hash = "sha256:48a0476626da912a44cc078f9893f292f0b3e4c739caf289268168d8f4702a39"},
-    {file = "cryptography-41.0.7-pp39-pypy39_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:c7f3201ec47d5207841402594f1d7950879ef890c0c495052fa62f58283fde1a"},
-    {file = "cryptography-41.0.7-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:c5ca78485a255e03c32b513f8c2bc39fedb7f5c5f8535545bdc223a03b24f248"},
-    {file = "cryptography-41.0.7-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:d6c391c021ab1f7a82da5d8d0b3cee2f4b2c455ec86c8aebbc84837a631ff309"},
-    {file = "cryptography-41.0.7.tar.gz", hash = "sha256:13f93ce9bea8016c253b34afc6bd6a75993e5c40672ed5405a9c832f0d4a00bc"},
+    {file = "cryptography-42.0.5-cp37-abi3-macosx_10_12_universal2.whl", hash = "sha256:a30596bae9403a342c978fb47d9b0ee277699fa53bbafad14706af51fe543d16"},
+    {file = "cryptography-42.0.5-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:b7ffe927ee6531c78f81aa17e684e2ff617daeba7f189f911065b2ea2d526dec"},
+    {file = "cryptography-42.0.5-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2424ff4c4ac7f6b8177b53c17ed5d8fa74ae5955656867f5a8affaca36a27abb"},
+    {file = "cryptography-42.0.5-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:329906dcc7b20ff3cad13c069a78124ed8247adcac44b10bea1130e36caae0b4"},
+    {file = "cryptography-42.0.5-cp37-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:b03c2ae5d2f0fc05f9a2c0c997e1bc18c8229f392234e8a0194f202169ccd278"},
+    {file = "cryptography-42.0.5-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:f8837fe1d6ac4a8052a9a8ddab256bc006242696f03368a4009be7ee3075cdb7"},
+    {file = "cryptography-42.0.5-cp37-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:0270572b8bd2c833c3981724b8ee9747b3ec96f699a9665470018594301439ee"},
+    {file = "cryptography-42.0.5-cp37-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:b8cac287fafc4ad485b8a9b67d0ee80c66bf3574f655d3b97ef2e1082360faf1"},
+    {file = "cryptography-42.0.5-cp37-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:16a48c23a62a2f4a285699dba2e4ff2d1cff3115b9df052cdd976a18856d8e3d"},
+    {file = "cryptography-42.0.5-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:2bce03af1ce5a5567ab89bd90d11e7bbdff56b8af3acbbec1faded8f44cb06da"},
+    {file = "cryptography-42.0.5-cp37-abi3-win32.whl", hash = "sha256:b6cd2203306b63e41acdf39aa93b86fb566049aeb6dc489b70e34bcd07adca74"},
+    {file = "cryptography-42.0.5-cp37-abi3-win_amd64.whl", hash = "sha256:98d8dc6d012b82287f2c3d26ce1d2dd130ec200c8679b6213b3c73c08b2b7940"},
+    {file = "cryptography-42.0.5-cp39-abi3-macosx_10_12_universal2.whl", hash = "sha256:5e6275c09d2badf57aea3afa80d975444f4be8d3bc58f7f80d2a484c6f9485c8"},
+    {file = "cryptography-42.0.5-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e4985a790f921508f36f81831817cbc03b102d643b5fcb81cd33df3fa291a1a1"},
+    {file = "cryptography-42.0.5-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7cde5f38e614f55e28d831754e8a3bacf9ace5d1566235e39d91b35502d6936e"},
+    {file = "cryptography-42.0.5-cp39-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:7367d7b2eca6513681127ebad53b2582911d1736dc2ffc19f2c3ae49997496bc"},
+    {file = "cryptography-42.0.5-cp39-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:cd2030f6650c089aeb304cf093f3244d34745ce0cfcc39f20c6fbfe030102e2a"},
+    {file = "cryptography-42.0.5-cp39-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:a2913c5375154b6ef2e91c10b5720ea6e21007412f6437504ffea2109b5a33d7"},
+    {file = "cryptography-42.0.5-cp39-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:c41fb5e6a5fe9ebcd58ca3abfeb51dffb5d83d6775405305bfa8715b76521922"},
+    {file = "cryptography-42.0.5-cp39-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:3eaafe47ec0d0ffcc9349e1708be2aaea4c6dd4978d76bf6eb0cb2c13636c6fc"},
+    {file = "cryptography-42.0.5-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:1b95b98b0d2af784078fa69f637135e3c317091b615cd0905f8b8a087e86fa30"},
+    {file = "cryptography-42.0.5-cp39-abi3-win32.whl", hash = "sha256:1f71c10d1e88467126f0efd484bd44bca5e14c664ec2ede64c32f20875c0d413"},
+    {file = "cryptography-42.0.5-cp39-abi3-win_amd64.whl", hash = "sha256:a011a644f6d7d03736214d38832e030d8268bcff4a41f728e6030325fea3e400"},
+    {file = "cryptography-42.0.5-pp310-pypy310_pp73-macosx_10_12_x86_64.whl", hash = "sha256:9481ffe3cf013b71b2428b905c4f7a9a4f76ec03065b05ff499bb5682a8d9ad8"},
+    {file = "cryptography-42.0.5-pp310-pypy310_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:ba334e6e4b1d92442b75ddacc615c5476d4ad55cc29b15d590cc6b86efa487e2"},
+    {file = "cryptography-42.0.5-pp310-pypy310_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:ba3e4a42397c25b7ff88cdec6e2a16c2be18720f317506ee25210f6d31925f9c"},
+    {file = "cryptography-42.0.5-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:111a0d8553afcf8eb02a4fea6ca4f59d48ddb34497aa8706a6cf536f1a5ec576"},
+    {file = "cryptography-42.0.5-pp39-pypy39_pp73-macosx_10_12_x86_64.whl", hash = "sha256:cd65d75953847815962c84a4654a84850b2bb4aed3f26fadcc1c13892e1e29f6"},
+    {file = "cryptography-42.0.5-pp39-pypy39_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:e807b3188f9eb0eaa7bbb579b462c5ace579f1cedb28107ce8b48a9f7ad3679e"},
+    {file = "cryptography-42.0.5-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:f12764b8fffc7a123f641d7d049d382b73f96a34117e0b637b80643169cec8ac"},
+    {file = "cryptography-42.0.5-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:37dd623507659e08be98eec89323469e8c7b4c1407c85112634ae3dbdb926fdd"},
+    {file = "cryptography-42.0.5.tar.gz", hash = "sha256:6fe07eec95dfd477eb9530aef5bead34fec819b3aaf6c5bd6d20565da607bfe1"},
 ]
 
 [package.dependencies]
-cffi = ">=1.12"
+cffi = {version = ">=1.12", markers = "platform_python_implementation != \"PyPy\""}
 
 [package.extras]
 docs = ["sphinx (>=5.3.0)", "sphinx-rtd-theme (>=1.1.1)"]
-docstest = ["pyenchant (>=1.6.11)", "sphinxcontrib-spelling (>=4.0.1)", "twine (>=1.12.0)"]
+docstest = ["pyenchant (>=1.6.11)", "readme-renderer", "sphinxcontrib-spelling (>=4.0.1)"]
 nox = ["nox"]
-pep8test = ["black", "check-sdist", "mypy", "ruff"]
+pep8test = ["check-sdist", "click", "mypy", "ruff"]
 sdist = ["build"]
 ssh = ["bcrypt (>=3.1.5)"]
-test = ["pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-xdist"]
+test = ["certifi", "pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-xdist"]
 test-randomorder = ["pytest-randomly"]
 
 [[package]]
@@ -999,42 +1008,42 @@ files = [
 
 [[package]]
 name = "localstack"
-version = "3.1.0"
+version = "3.2.0"
 description = "LocalStack - A fully functional local Cloud stack"
 optional = false
 python-versions = "*"
 files = [
-    {file = "localstack-3.1.0.tar.gz", hash = "sha256:927487cccce7e6f50c8c49eff700ed70678724568df171b7961225f7fac363f5"},
+    {file = "localstack-3.2.0.tar.gz", hash = "sha256:df50d82f5fa6ceae7e78d35bc9a46e00f4c5ae0c5ecc3563be9030a1199c7124"},
 ]
 
 [package.dependencies]
 localstack-core = "*"
-localstack-ext = "3.1.0"
+localstack-ext = "3.2.0"
 
 [package.extras]
-full = ["localstack-core[runtime]", "localstack-ext[runtime] (==3.1.0)"]
-runtime = ["localstack-core[runtime]", "localstack-ext[runtime] (==3.1.0)"]
+full = ["localstack-core[runtime]", "localstack-ext[runtime] (==3.2.0)"]
+runtime = ["localstack-core[runtime]", "localstack-ext[runtime] (==3.2.0)"]
 
 [[package]]
 name = "localstack-core"
-version = "3.1.0"
+version = "3.2.0"
 description = "The core library and runtime of LocalStack"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "localstack-core-3.1.0.tar.gz", hash = "sha256:0934f6b51115b9324c8601d91f202f740b57de7231dbc242ba8a6d90616cb94b"},
-    {file = "localstack_core-3.1.0-py3-none-any.whl", hash = "sha256:2b6c0fb667181eea7da667e4a4ee8b9c50bf83ba42eb4ffff77f1e37799f1398"},
+    {file = "localstack-core-3.2.0.tar.gz", hash = "sha256:2e22c4984ec37bf116b9ce88ccb528ba02e68d5c0e065ffa8ed5b79de2ddc036"},
+    {file = "localstack_core-3.2.0-py3-none-any.whl", hash = "sha256:1427258bbd64a1ed473cf6b78ae9b1483322a083aa02e3df2b95746b274a0817"},
 ]
 
 [package.dependencies]
 cachetools = ">=5.0"
 click = ">=7.1"
-cryptography = "<42.0.0"
+cryptography = "*"
 dill = "0.3.6"
 dnslib = ">=0.9.10"
 dnspython = ">=1.16.0"
-plux = ">=1.3.1"
-psutil = ">=5.4.8,<6.0.0"
+plux = ">=1.7"
+psutil = ">=5.4.8"
 python-dotenv = ">=0.19.1"
 pyyaml = ">=5.1"
 requests = ">=2.20.0"
@@ -1044,42 +1053,41 @@ stevedore = ">=3.4.0"
 tailer = ">=0.4.1"
 
 [package.extras]
-base-runtime = ["Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "awscrt (>=0.13.14)", "boto3 (>=1.26.121)", "botocore (>=1.34.12)", "cbor2 (>=5.2.0)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "jsonpatch (>=1.24,<2.0)", "pyopenssl (>=23.0.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.2,<0.3)", "urllib3 (>=2.0.7)", "xmltodict (>=0.13.0)"]
-dev = ["Cython", "black (==23.10.0)", "coveralls (>=3.3.1)", "networkx (>=2.8.4)", "pandoc", "pre-commit (==3.5.0)", "pypandoc", "rstr (>=3.2.0)", "ruff (==0.1.0)"]
-full = ["Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "airspeed-ext (>=0.6.3)", "amazon-kclpy (>=2.0.6,!=2.1.0)", "antlr4-python3-runtime (==4.13.1)", "apispec (>=5.1.1)", "aws-sam-translator (>=1.15.1)", "awscli (>=1.22.90)", "awscrt (>=0.13.14)", "boto3 (>=1.26.121)", "botocore (>=1.34.12)", "cbor2 (>=5.2.0)", "crontab (>=0.22.6)", "cryptography (>=41.0.5,<42.0.0)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "json5 (==0.9.11)", "jsonpatch (>=1.24,<2.0)", "jsonpath-ng (==1.5.3)", "jsonpath-rw (>=1.4.0,<2.0.0)", "jsonschema (<=4.19.0)", "moto-ext[all] (==5.0.0a1.post1)", "opensearch-py (>=2.4.1)", "pymongo (>=4.2.0)", "pyopenssl (>=23.0.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.2,<0.3)", "urllib3 (>=2.0.7)", "xmltodict (>=0.13.0)"]
-runtime = ["Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "airspeed-ext (>=0.6.3)", "amazon-kclpy (>=2.0.6,!=2.1.0)", "antlr4-python3-runtime (==4.13.1)", "apispec (>=5.1.1)", "aws-sam-translator (>=1.15.1)", "awscli (>=1.22.90)", "awscrt (>=0.13.14)", "boto3 (>=1.26.121)", "botocore (>=1.34.12)", "cbor2 (>=5.2.0)", "crontab (>=0.22.6)", "cryptography (>=41.0.5,<42.0.0)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "json5 (==0.9.11)", "jsonpatch (>=1.24,<2.0)", "jsonpath-ng (==1.5.3)", "jsonpath-rw (>=1.4.0,<2.0.0)", "jsonschema (<=4.19.0)", "moto-ext[all] (==5.0.0a1.post1)", "opensearch-py (>=2.4.1)", "pymongo (>=4.2.0)", "pyopenssl (>=23.0.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.2,<0.3)", "urllib3 (>=2.0.7)", "xmltodict (>=0.13.0)"]
-test = ["aws-cdk-lib (>=2.88.0)", "coverage[toml] (>=5.5)", "deepdiff (>=6.4.1)", "jsonpath-ng (>=1.5.3)", "pluggy (>=1.3.0)", "pytest (==7.4.2)", "pytest-httpserver (>=1.0.1)", "pytest-rerunfailures (==12.0)", "pytest-split (>=0.8.0)", "pytest-tinybird (>=0.2.0)", "websocket-client (>=1.7.0)"]
-typehint = ["boto3-stubs[acm,acm-pca,amplify,apigateway,apigatewayv2,appconfig,appconfigdata,appsync,athena,autoscaling,backup,batch,ce,cloudcontrol,cloudformation,cloudfront,cloudtrail,cloudwatch,codecommit,cognito-identity,cognito-idp,dms,docdb,dynamodb,dynamodbstreams,ec2,ecr,ecs,efs,eks,elasticache,elasticbeanstalk,elbv2,emr,emr-serverless,es,events,firehose,fis,glacier,glue,iam,identitystore,iot,iot-data,iotanalytics,iotwireless,kafka,kinesis,kinesisanalytics,kinesisanalyticsv2,kms,lakeformation,lambda,logs,managedblockchain,mediaconvert,mediastore,mq,mwaa,neptune,opensearch,organizations,pi,qldb,qldb-session,rds,rds-data,redshift,redshift-data,resource-groups,resourcegroupstaggingapi,route53,route53resolver,s3,s3control,sagemaker,sagemaker-runtime,secretsmanager,serverlessrepo,servicediscovery,ses,sesv2,sns,sqs,ssm,stepfunctions,sts,timestream-query,timestream-write,transcribe,wafv2,xray]"]
+base-runtime = ["Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "awscrt (>=0.13.14)", "boto3 (>=1.26.121)", "botocore (==1.34.49)", "cbor2 (>=5.2.0)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "jsonpatch (>=1.24)", "pyopenssl (>=23.0.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.3)", "urllib3 (>=2.0.7)", "xmltodict (>=0.13.0)"]
+dev = ["Cython", "Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "airspeed-ext (>=0.6.3)", "amazon-kclpy (>=2.0.6,!=2.1.0)", "antlr4-python3-runtime (==4.13.1)", "apispec (>=5.1.1)", "aws-cdk-lib (>=2.88.0)", "aws-sam-translator (>=1.15.1)", "awscli (>=1.22.90)", "awscrt (>=0.13.14)", "black (>=23.10.0,<24)", "boto3 (>=1.26.121)", "botocore (==1.34.49)", "cbor2 (>=5.2.0)", "coverage[toml] (>=5.5)", "coveralls (>=3.3.1)", "crontab (>=0.22.6)", "cryptography (>=41.0.5)", "deepdiff (>=6.4.1)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "json5 (>=0.9.11)", "jsonpatch (>=1.24)", "jsonpath-ng (>=1.6.1)", "jsonpath-rw (>=1.4.0)", "localstack-snapshot (>=0.1.1)", "moto-ext[all] (==5.0.2.post1)", "networkx (>=2.8.4)", "opensearch-py (>=2.4.1)", "pandoc", "pluggy (>=1.3.0)", "pre-commit (>=3.5.0)", "pymongo (>=4.2.0)", "pyopenssl (>=23.0.0)", "pypandoc", "pytest (>=7.4.2)", "pytest-httpserver (>=1.0.1)", "pytest-rerunfailures (>=12.0)", "pytest-split (>=0.8.0)", "pytest-tinybird (>=0.2.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.3)", "rstr (>=3.2.0)", "ruff (>=0.1.0)", "urllib3 (>=2.0.7)", "websocket-client (>=1.7.0)", "xmltodict (>=0.13.0)"]
+runtime = ["Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "airspeed-ext (>=0.6.3)", "amazon-kclpy (>=2.0.6,!=2.1.0)", "antlr4-python3-runtime (==4.13.1)", "apispec (>=5.1.1)", "aws-sam-translator (>=1.15.1)", "awscli (>=1.22.90)", "awscrt (>=0.13.14)", "boto3 (>=1.26.121)", "botocore (==1.34.49)", "cbor2 (>=5.2.0)", "crontab (>=0.22.6)", "cryptography (>=41.0.5)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "json5 (>=0.9.11)", "jsonpatch (>=1.24)", "jsonpath-ng (>=1.6.1)", "jsonpath-rw (>=1.4.0)", "moto-ext[all] (==5.0.2.post1)", "opensearch-py (>=2.4.1)", "pymongo (>=4.2.0)", "pyopenssl (>=23.0.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.3)", "urllib3 (>=2.0.7)", "xmltodict (>=0.13.0)"]
+test = ["Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "airspeed-ext (>=0.6.3)", "amazon-kclpy (>=2.0.6,!=2.1.0)", "antlr4-python3-runtime (==4.13.1)", "apispec (>=5.1.1)", "aws-cdk-lib (>=2.88.0)", "aws-sam-translator (>=1.15.1)", "awscli (>=1.22.90)", "awscrt (>=0.13.14)", "boto3 (>=1.26.121)", "botocore (==1.34.49)", "cbor2 (>=5.2.0)", "coverage[toml] (>=5.5)", "crontab (>=0.22.6)", "cryptography (>=41.0.5)", "deepdiff (>=6.4.1)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "json5 (>=0.9.11)", "jsonpatch (>=1.24)", "jsonpath-ng (>=1.6.1)", "jsonpath-rw (>=1.4.0)", "localstack-snapshot (>=0.1.1)", "moto-ext[all] (==5.0.2.post1)", "opensearch-py (>=2.4.1)", "pluggy (>=1.3.0)", "pymongo (>=4.2.0)", "pyopenssl (>=23.0.0)", "pytest (>=7.4.2)", "pytest-httpserver (>=1.0.1)", "pytest-rerunfailures (>=12.0)", "pytest-split (>=0.8.0)", "pytest-tinybird (>=0.2.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.3)", "urllib3 (>=2.0.7)", "websocket-client (>=1.7.0)", "xmltodict (>=0.13.0)"]
+typehint = ["Cython", "Quart (>=0.19.2)", "Werkzeug (>=3.0.0)", "airspeed-ext (>=0.6.3)", "amazon-kclpy (>=2.0.6,!=2.1.0)", "antlr4-python3-runtime (==4.13.1)", "apispec (>=5.1.1)", "aws-cdk-lib (>=2.88.0)", "aws-sam-translator (>=1.15.1)", "awscli (>=1.22.90)", "awscrt (>=0.13.14)", "black (>=23.10.0,<24)", "boto3 (>=1.26.121)", "boto3-stubs[acm,acm-pca,amplify,apigateway,apigatewayv2,appconfig,appconfigdata,application-autoscaling,appsync,athena,autoscaling,backup,batch,ce,cloudcontrol,cloudformation,cloudfront,cloudtrail,cloudwatch,codecommit,cognito-identity,cognito-idp,dms,docdb,dynamodb,dynamodbstreams,ec2,ecr,ecs,efs,eks,elasticache,elasticbeanstalk,elbv2,emr,emr-serverless,es,events,firehose,fis,glacier,glue,iam,identitystore,iot,iot-data,iotanalytics,iotwireless,kafka,kinesis,kinesisanalytics,kinesisanalyticsv2,kms,lakeformation,lambda,logs,managedblockchain,mediaconvert,mediastore,mq,mwaa,neptune,opensearch,organizations,pi,pipes,qldb,qldb-session,rds,rds-data,redshift,redshift-data,resource-groups,resourcegroupstaggingapi,route53,route53resolver,s3,s3control,sagemaker,sagemaker-runtime,secretsmanager,serverlessrepo,servicediscovery,ses,sesv2,sns,sqs,ssm,sso-admin,stepfunctions,sts,timestream-query,timestream-write,transcribe,wafv2,xray]", "botocore (==1.34.49)", "cbor2 (>=5.2.0)", "coverage[toml] (>=5.5)", "coveralls (>=3.3.1)", "crontab (>=0.22.6)", "cryptography (>=41.0.5)", "deepdiff (>=6.4.1)", "dnspython (>=1.16.0)", "docker (>=6.1.1,<7.0.0)", "flask (>=3.0.0)", "hypercorn (>=0.14.4)", "json5 (>=0.9.11)", "jsonpatch (>=1.24)", "jsonpath-ng (>=1.6.1)", "jsonpath-rw (>=1.4.0)", "localstack-snapshot (>=0.1.1)", "moto-ext[all] (==5.0.2.post1)", "networkx (>=2.8.4)", "opensearch-py (>=2.4.1)", "pandoc", "pluggy (>=1.3.0)", "pre-commit (>=3.5.0)", "pymongo (>=4.2.0)", "pyopenssl (>=23.0.0)", "pypandoc", "pytest (>=7.4.2)", "pytest-httpserver (>=1.0.1)", "pytest-rerunfailures (>=12.0)", "pytest-split (>=0.8.0)", "pytest-tinybird (>=0.2.0)", "readerwriterlock (>=1.0.7)", "requests-aws4auth (>=1.0)", "rolo (>=0.3)", "rstr (>=3.2.0)", "ruff (>=0.1.0)", "urllib3 (>=2.0.7)", "websocket-client (>=1.7.0)", "xmltodict (>=0.13.0)"]
 
 [[package]]
 name = "localstack-ext"
-version = "3.1.0"
+version = "3.2.0"
 description = "Extensions for LocalStack"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "localstack-ext-3.1.0.tar.gz", hash = "sha256:144f46f2b4fbc6e0f2f112184b4c6ce3cf340ab5dfdf8d835b9690ff7b2b66a2"},
+    {file = "localstack-ext-3.2.0.tar.gz", hash = "sha256:e77a5bb7b90d698411b0b6fe388f202f0477701135f1928b6661b868fd7ff771"},
 ]
 
 [package.dependencies]
 dill = ">=0.3.2"
 dnslib = ">=0.9.10"
 dnspython = ">=1.16.0"
-localstack-core = "3.1.0"
+localstack-core = "3.2.0"
 packaging = "*"
 plux = ">=1.5.0"
 pyaes = ">=1.6.0"
 python-dateutil = ">=2.8"
-python-jose = {version = ">=3.1.0,<4.0.0", extras = ["cryptography"]}
+python-jose = {version = ">=3.1.0", extras = ["cryptography"]}
 requests = ">=2.20.0"
 tabulate = "*"
 windows-curses = {version = "*", markers = "platform_system == \"Windows\""}
 
 [package.extras]
 package = ["python-minifier"]
-runtime = ["Js2Py (>=0.71)", "PyJWT (>=1.7.0)", "Whoosh (>=2.7.4)", "amazon.ion (>=0.9.3,<0.10)", "avro (>=1.11.0)", "aws-encryption-sdk (>=3.1.0)", "dirtyjson (==1.0.7)", "distro", "docker-registry-client (>=0.5.2)", "dulwich (>=0.19.16)", "graphql-core (>=3.0.3)", "janus (>=0.5.0)", "jsonpatch (>=1.32)", "kafka-python", "kubernetes (==21.7.0)", "localstack-core[runtime] (==3.1.0)", "paho-mqtt (>=1.5)", "parquet[snappy] (>=1.3.1)", "parse (==1.19.0)", "pg8000 (>=1.10)", "postgres (>=2.2.2)", "postgresql-proxy (>=0.2.0)", "pproxy-ext (>=2.7.9)", "presto-python-client (>=0.7.0)", "pure-sasl (>=0.6.2)", "pyftpdlib (>=1.5.6)", "pyhive[hive-pure-sasl] (>=0.7.0)", "pyion2json (>=0.0.2)", "pymysql", "pyqldb (>=3.2,<4.0)", "python-snappy (>=0.6)", "readerwriterlock (>=1.0.7)", "redis (>=5.0)", "rsa (>=4.0)", "sql-metadata (>=2.6.0)", "sqlglot", "srp-ext (==1.0.7.1)", "testing.common.database (>=1.1.0)", "thrift (>=0.10.0)", "thrift_sasl (>=0.1.0)", "tornado (>=6.0)", "warrant-ext (>=0.6.2)", "websockets (>=8.1)"]
-test = ["Js2Py (>=0.71)", "PyAthena[pandas]", "aiohttp", "async-timeout", "aws-cdk-lib (>=2.88.0)", "aws_cdk.aws_neptune_alpha", "aws_cdk.aws_redshift_alpha", "aws_xray_sdk (>=2.4.2)", "awswrangler (>=2.19.0)", "black (==23.10.0)", "coverage[toml] (>=5.0.0)", "coveralls (>=3.3.1)", "deepdiff (>=5.5.0)", "gremlinpython", "jws (>=0.1.3)", "localstack-core[test] (==3.1.0)", "lxml (>=4.6.5,<5.0)", "msal", "msal-extensions", "msrest", "mysql-connector-python", "neo4j", "nest-asyncio (>=1.4.1)", "paramiko (>=2.11.0,<2.12.0)", "portalocker", "pre-commit (==3.5.0)", "pyarrow", "pymongo", "pymssql (>=2.2.8)", "pytest-instafail (>=0.4.2)", "python-terraform", "redshift_connector", "ruff (==0.1.0)", "stomp.py (==8.0.1)"]
-typehint = ["boto3-stubs[acm,amplify,apigateway,apigatewayv2,appconfig,appsync,athena,autoscaling,backup,batch,ce,cloudcontrol,cloudformation,cloudfront,cloudtrail,cloudwatch,codecommit,cognito-identity,cognito-idp,dms,docdb,dynamodb,dynamodbstreams,ec2,ecr,ecs,efs,eks,elasticache,elasticbeanstalk,elbv2,emr,emr-serverless,es,events,firehose,fis,glacier,glue,iam,iot,iot-data,iotanalytics,iotwireless,kafka,kinesis,kinesisanalytics,kinesisanalyticsv2,kms,lakeformation,lambda,logs,mediaconvert,mediastore,mq,mwaa,neptune,opensearch,organizations,pi,qldb,qldb-session,rds,rds-data,redshift,redshift-data,resource-groups,resourcegroupstaggingapi,route53,route53resolver,s3,s3control,sagemaker,sagemaker-runtime,secretsmanager,serverlessrepo,servicediscovery,ses,sesv2,sns,sqs,ssm,sso-admin,stepfunctions,sts,timestream-query,timestream-write,transcribe,xray]"]
+runtime = ["Js2Py (>=0.71)", "PyJWT (>=1.7.0)", "Whoosh (>=2.7.4)", "amazon.ion (>=0.9.3)", "avro (>=1.11.0)", "aws-encryption-sdk (>=3.1.0)", "dirtyjson (>=1.0.7)", "distro", "docker-registry-client (>=0.5.2)", "dulwich (>=0.19.16)", "graphql-core (>=3.0.3)", "janus (>=0.5.0)", "jsonpatch (>=1.32)", "kafka-python", "kubernetes (>=21.7.0)", "localstack-core[runtime] (==3.2.0)", "paho-mqtt (>=1.5)", "parquet[snappy] (>=1.3.1)", "parse (>=1.19.0)", "pg8000 (>=1.10)", "postgres (>=2.2.2)", "postgresql-proxy (>=0.2.0)", "pproxy-ext (>=2.7.9)", "presto-python-client (>=0.7.0)", "pure-sasl (>=0.6.2)", "pyftpdlib (>=1.5.6)", "pyhive[hive-pure-sasl] (>=0.7.0)", "pyion2json (>=0.0.2)", "pymysql", "pyqldb (>=3.2,<4.0)", "python-snappy (>=0.6)", "readerwriterlock (>=1.0.7)", "redis (>=5.0)", "rsa (>=4.0)", "sql-metadata (>=2.6.0)", "sqlglot", "srp-ext (>=1.0.7.1)", "testing.common.database (>=1.1.0)", "thrift (>=0.10.0)", "thrift_sasl (>=0.1.0)", "tornado (>=6.0)", "warrant-ext (>=0.6.2)", "websockets (>=8.1)"]
+test = ["Js2Py (>=0.71)", "Js2Py (>=0.71)", "PyAthena[pandas]", "PyJWT (>=1.7.0)", "Whoosh (>=2.7.4)", "aiohttp", "amazon.ion (>=0.9.3)", "async-timeout", "avro (>=1.11.0)", "aws-cdk-lib (>=2.88.0)", "aws-encryption-sdk (>=3.1.0)", "aws_cdk.aws_neptune_alpha", "aws_cdk.aws_redshift_alpha", "aws_xray_sdk (>=2.4.2)", "awswrangler (>=3.5.2)", "black (>=23.10.0,<24)", "coverage[toml] (>=5.0.0)", "coveralls (>=3.3.1)", "deepdiff (>=5.5.0)", "dirtyjson (>=1.0.7)", "distro", "docker-registry-client (>=0.5.2)", "dulwich (>=0.19.16)", "graphql-core (>=3.0.3)", "gremlinpython", "janus (>=0.5.0)", "jsonpatch (>=1.32)", "jws (>=0.1.3)", "kafka-python", "kubernetes (>=21.7.0)", "localstack-core[runtime] (==3.2.0)", "localstack-core[test] (==3.2.0)", "msal", "msal-extensions", "msrest", "mysql-connector-python", "neo4j", "nest-asyncio (>=1.4.1)", "paho-mqtt (>=1.5)", "paramiko (>=2.11.0,<2.12.0)", "parquet[snappy] (>=1.3.1)", "parse (>=1.19.0)", "pg8000 (>=1.10)", "portalocker", "postgres (>=2.2.2)", "postgresql-proxy (>=0.2.0)", "pproxy-ext (>=2.7.9)", "pre-commit (>=3.5.0)", "presto-python-client (>=0.7.0)", "pure-sasl (>=0.6.2)", "pyarrow", "pyftpdlib (>=1.5.6)", "pyhive[hive-pure-sasl] (>=0.7.0)", "pyion2json (>=0.0.2)", "pymongo", "pymssql (>=2.2.8)", "pymysql", "pyqldb (>=3.2,<4.0)", "pytest-instafail (>=0.4.2)", "python-snappy (>=0.6)", "python-terraform", "readerwriterlock (>=1.0.7)", "redis (>=5.0)", "redshift_connector", "rsa (>=4.0)", "ruff (>=0.1.0)", "sql-metadata (>=2.6.0)", "sqlglot", "srp-ext (>=1.0.7.1)", "stomp.py (>=8.0.1)", "testing.common.database (>=1.1.0)", "thrift (>=0.10.0)", "thrift_sasl (>=0.1.0)", "tornado (>=6.0)", "warrant-ext (>=0.6.2)", "websockets (>=8.1)"]
+typehint = ["Js2Py (>=0.71)", "Js2Py (>=0.71)", "PyAthena[pandas]", "PyJWT (>=1.7.0)", "Whoosh (>=2.7.4)", "aiohttp", "amazon.ion (>=0.9.3)", "async-timeout", "avro (>=1.11.0)", "aws-cdk-lib (>=2.88.0)", "aws-encryption-sdk (>=3.1.0)", "aws_cdk.aws_neptune_alpha", "aws_cdk.aws_redshift_alpha", "aws_xray_sdk (>=2.4.2)", "awswrangler (>=3.5.2)", "black (>=23.10.0,<24)", "boto3-stubs[acm,amplify,apigateway,apigatewayv2,appconfig,appsync,athena,autoscaling,backup,batch,ce,cloudcontrol,cloudformation,cloudfront,cloudtrail,cloudwatch,codecommit,cognito-identity,cognito-idp,dms,docdb,dynamodb,dynamodbstreams,ec2,ecr,ecs,efs,eks,elasticache,elasticbeanstalk,elbv2,emr,emr-serverless,es,events,firehose,fis,glacier,glue,iam,iot,iot-data,iotanalytics,iotwireless,kafka,kinesis,kinesisanalytics,kinesisanalyticsv2,kms,lakeformation,lambda,logs,mediaconvert,mediastore,mq,mwaa,neptune,opensearch,organizations,pi,qldb,qldb-session,rds,rds-data,redshift,redshift-data,resource-groups,resourcegroupstaggingapi,route53,route53resolver,s3,s3control,sagemaker,sagemaker-runtime,secretsmanager,serverlessrepo,servicediscovery,ses,sesv2,sns,sqs,ssm,sso-admin,stepfunctions,sts,timestream-query,timestream-write,transcribe,xray]", "coverage[toml] (>=5.0.0)", "coveralls (>=3.3.1)", "deepdiff (>=5.5.0)", "dirtyjson (>=1.0.7)", "distro", "docker-registry-client (>=0.5.2)", "dulwich (>=0.19.16)", "graphql-core (>=3.0.3)", "gremlinpython", "janus (>=0.5.0)", "jsonpatch (>=1.32)", "jws (>=0.1.3)", "kafka-python", "kubernetes (>=21.7.0)", "localstack-core[runtime] (==3.2.0)", "localstack-core[test] (==3.2.0)", "msal", "msal-extensions", "msrest", "mysql-connector-python", "neo4j", "nest-asyncio (>=1.4.1)", "paho-mqtt (>=1.5)", "paramiko (>=2.11.0,<2.12.0)", "parquet[snappy] (>=1.3.1)", "parse (>=1.19.0)", "pg8000 (>=1.10)", "portalocker", "postgres (>=2.2.2)", "postgresql-proxy (>=0.2.0)", "pproxy-ext (>=2.7.9)", "pre-commit (>=3.5.0)", "presto-python-client (>=0.7.0)", "pure-sasl (>=0.6.2)", "pyarrow", "pyftpdlib (>=1.5.6)", "pyhive[hive-pure-sasl] (>=0.7.0)", "pyion2json (>=0.0.2)", "pymongo", "pymssql (>=2.2.8)", "pymysql", "pyqldb (>=3.2,<4.0)", "pytest-instafail (>=0.4.2)", "python-snappy (>=0.6)", "python-terraform", "readerwriterlock (>=1.0.7)", "redis (>=5.0)", "redshift_connector", "rsa (>=4.0)", "ruff (>=0.1.0)", "sql-metadata (>=2.6.0)", "sqlglot", "srp-ext (>=1.0.7.1)", "stomp.py (>=8.0.1)", "testing.common.database (>=1.1.0)", "thrift (>=0.10.0)", "thrift_sasl (>=0.1.0)", "tornado (>=6.0)", "warrant-ext (>=0.6.2)", "websockets (>=8.1)"]
 
 [[package]]
 name = "lockfile"
@@ -1564,13 +1572,13 @@ files = [
 
 [[package]]
 name = "pydantic"
-version = "2.6.2"
+version = "2.6.3"
 description = "Data validation using Python type hints"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pydantic-2.6.2-py3-none-any.whl", hash = "sha256:37a5432e54b12fecaa1049c5195f3d860a10e01bdfd24f1840ef14bd0d3aeab3"},
-    {file = "pydantic-2.6.2.tar.gz", hash = "sha256:a09be1c3d28f3abe37f8a78af58284b236a92ce520105ddc91a6d29ea1176ba7"},
+    {file = "pydantic-2.6.3-py3-none-any.whl", hash = "sha256:72c6034df47f46ccdf81869fddb81aade68056003900a8724a4f160700016a2a"},
+    {file = "pydantic-2.6.3.tar.gz", hash = "sha256:e07805c4c7f5c6826e33a1d4c9d47950d7eaf34868e2690f8594d2e30241f11f"},
 ]
 
 [package.dependencies]
