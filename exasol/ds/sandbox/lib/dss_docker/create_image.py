@@ -180,7 +180,7 @@ class DssDockerImage:
         if container is None:
             return
         if self.keep_container:
-            _logger.info("Keeping container running")
+            _logger.info(f"Keeping container {self.container_name} running")
             return
         _logger.info("Stopping container")
         container.stop()
