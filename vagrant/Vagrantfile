@@ -1,0 +1,44 @@
+home_directory = Dir.home
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2204"
+  config.vm.hostname = "ai-lab"
+  config.vm.network :forwarded_port, guest: 8888, host: 8888
+  config.vm.network :forwarded_port, guest: 6666, host: 6666
+  config.vm.synced_folder "#{home_directory}", "/home/vagrant/", type: "rsync", rsync__exclude: "*", rsync__args: ["--verbose", "--archive", "--delete", "-z", "--links", "--include",".gitconfig",  "--include",".git-credentials"], rsync__verbose: true
+  config.vm.synced_folder ".", "/home/vagrant/vagrant", type: "rsync", rsync__exclude: ".git/"
+  config.vm.synced_folder "..", "/home/vagrant/project", type: "rsync", rsync__exclude: [".build_output", ".conda_env", ".luarocks"], rsync__args: ["--verbose", "--archive", "--delete", "-z", "--links"], rsync__verbose: true
+
+  config.vm.provider :libvirt do |v|
+    v.qemu_use_session = true
+    v.cpus = 2
+    v.memory = 6000
+    v.machine_virtual_size = 100
+    v.random_hostname = true
+    v.default_prefix = config.vm.hostname + "_"
+  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 6000
+    v.cpus = 2
+  end
+
+  config.trigger.before [:provision] do |trigger|
+    trigger.run = { inline: "vagrant rsync"}
+  end
+
+  config.vm.provision "shell" do |s|
+    s.path="provisioning/dns.sh"
+  end
+
+  config.vm.provision "shell" do |s|
+    s.path="provisioning/install.sh"
+  end
+
+  config.vm.provision "shell" do |s|
+    s.path="provisioning/install_poetry.sh"
+    s.privileged=false
+  end
+
+end
+
