@@ -122,7 +122,7 @@ port to the same port then you can connect with http://localhost:49494.
 └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
 The default password is "ailab".
-To update the password, log in to the Docker container as the user root and run
+To update the password, log in to the Docker container as the user jupyter and run
     /home/jupyter/jupyterenv/bin/jupyter-lab server password
 ```
 

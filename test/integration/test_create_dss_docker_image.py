@@ -1,7 +1,6 @@
 import docker
 import io
 import pytest
-import os
 import re
 import requests
 import sys
@@ -45,8 +44,6 @@ def retry(exception: typing.Type[BaseException], timeout: timedelta):
     )
 
 
-@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
-                    reason="CI tests need to be activated by env variable DSS_RUN_CI_TEST")
 def test_jupyterlab(dss_docker_container, jupyter_port):
     """"
     Test that jupyterlab is configured properly
@@ -67,8 +64,6 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
     assert response.status_code == 200
 
 
-@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
-                    reason="CI tests need to be activated by env variable DSS_RUN_CI_TEST")
 def test_install_notebook_connector(dss_docker_container):
     container = dss_docker_container
     command = '/home/jupyter/jupyterenv/bin/python -c "import exasol.nb_connector.secret_store"'
@@ -77,8 +72,6 @@ def test_install_notebook_connector(dss_docker_container):
     assert exit_code == 0, f'Got output "{output}".'
 
 
-@pytest.mark.skipif(os.environ.get('DSS_RUN_CI_TEST') != 'true',
-                    reason="CI tests need to be activated by env variable DSS_RUN_CI_TEST")
 def test_install_notebooks(dss_docker_container):
     def filename_set(string: str) -> Set[str]:
         return set(re.split(r'\s+', string.strip()))

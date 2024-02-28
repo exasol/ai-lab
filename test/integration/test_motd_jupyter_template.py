@@ -11,7 +11,6 @@ jupyter_update_msg_heading = """__TEST_JUPYTER_PASSWORD_HEADING___"""
 
 @pytest.fixture()
 def motd_file(tmp_path):
-    # jupyterlab_config_json
     config_file = tmp_path / "jupyter_server_config.json"
     python_file = tmp_path / "999_jupyter.py"
 

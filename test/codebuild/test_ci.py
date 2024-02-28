@@ -94,7 +94,6 @@ def new_ec2_from_ami():
                 status = aws_access.get_instance_status(ec2_instance_description.id)
             assert status.ok
             time.sleep(10)
-            # probably we need to set the password for user "jupyter" here.
             change_password(host=ec2_instance_description.public_dns_name, user='ubuntu',
                             curr_pass=default_password, new_password=new_password)
             yield ec2_instance_description.public_dns_name, new_password, default_password
