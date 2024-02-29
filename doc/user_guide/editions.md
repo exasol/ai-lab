@@ -10,11 +10,11 @@ Recommendations
 * When you want to use the VM Edition then select an appropriate VM image format depending on the Hypervisor software available on your system.
 
 
-| Description                              | Format(s)                                                                |
-|------------------------------------------|--------------------------------------------------------------------------|
-| [AMI Edition](ami-usage.md)              | Amazon Machine Image (AMI)                                               |
-| [Docker Edition](docker/docker-usage.md) | Docker Image                                                             |
-| [Virtual Machine Edition](vm-usage.md)   | VMware Virtual Machine Disk (VMDK), Virtual Hard Disk by Microsoft (VHD) |
+| Description                                       | Format(s)                                                                |
+|---------------------------------------------------|--------------------------------------------------------------------------|
+| [AMI Edition](ami-usage.md)                       | Amazon Machine Image (AMI)                                               |
+| [Docker Edition](docker/docker-usage.md)          | Docker Image                                                             |
+| [Virtual Machine Edition](vm-edition/vm-usage.md) | VMware Virtual Machine Disk (VMDK), Virtual Hard Disk by Microsoft (VHD) |
 
 Each of the editions is associated with an _image_ in a specific format.
 

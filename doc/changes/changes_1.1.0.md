@@ -27,6 +27,7 @@ n/a
 ## Documentation
 
 * 204: Updated developer guide
+* #219: Described Virtual Box setup in user guide
 
 ## Refactoring
 

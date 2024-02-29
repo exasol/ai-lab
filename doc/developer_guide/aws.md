@@ -62,7 +62,7 @@ The bucket has private access. In order to control access, the Bucket cloudforma
 The following diagram shows the involved cloudformation stacks:
 ![image info](./img/cloudformation-stacks.drawio.png)
 
-The following resources are permanent and need to be deployed using the "deploy" [commands](#deployment-commands):
+The following resources are permanent and need to be deployed using the "deploy" [commands](commands.md#deployment-commands):
 * `DATA-SCIENCE-SANDBOX-VM-Bucket`
 * `DATA-SCIENCE-SANDBOX-CI-TEST-CODEBUILD`
 * `DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD`
