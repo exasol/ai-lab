@@ -7,8 +7,9 @@ import pytest
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.export_vm.run_make_ami_public import run_make_ami_public
-from test.aws_mock_data import get_ami_image_mock_data
+from test.aws.mock_data import get_ami_image_mock_data
 
+from test.aws.fixtures import default_asset_id
 from test.mock_cast import mock_cast
 
 
