@@ -13,15 +13,6 @@ def local_stack():
     command = "localstack start -d"
 
     image_version = version('localstack')
-    # See https://github.com/localstack/localstack/issues/8254
-    # and https://github.com/localstack/localstack/issues/9939
-    #
-    # Until an official release of localstack Docker image with a concrete
-    # version is available incl. a fix for issue 9939 we only can use version
-    # "latest".
-    #
-    # See https://github.com/exasol/ai-lab/issues/200 for replacing this with
-    # a concrete version in order to make CI tests more robust.
     image_version = "3.2.0"
     image_name = {"IMAGE_NAME": f"localstack/localstack:{image_version}"}
     env_variables = {**os.environ, **image_name}
