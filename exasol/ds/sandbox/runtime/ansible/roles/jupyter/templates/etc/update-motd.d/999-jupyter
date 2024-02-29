@@ -11,8 +11,8 @@ You can connect with https://<host>:{{jupyterlab_port}}.
 {{heading_jupyter_update_password}}
 
 The default password is "{{jupyterlab_password}}".
-To update the password run as user {{ user_name }} the following command
-    {{jupyterlab_virtualenv}}/bin/jupyter server password
+To update the password run the following command
+    sudo --login --user {{ user_name }} {{jupyterlab_virtualenv}}/bin/jupyter server password
 """
 
 server_config_file = pathlib.Path("{{jupyterlab_config_json}}")
