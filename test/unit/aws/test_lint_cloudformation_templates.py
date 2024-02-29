@@ -31,12 +31,14 @@ def validate_using_cfn_lint(tmp_path, cloudformation_yml):
         raise e
 
 
-@pytest.mark.parametrize("template", [
-    ci_codebuild_template(),
-    release_codebuild_template(),
-    ec2_template(),
-    vm_bucket_template(),
-    waf_template(),
-])
-def test_lint_cloudformation_templates(tmp_path, template):
-    validate_using_cfn_lint(tmp_path, template)
+TEMPLATES = {
+    "ci-codebuild": ci_codebuild_template(),
+    "release-codebuild": release_codebuild_template(),
+    "ec2": ec2_template(),
+    "vm-bucket": vm_bucket_template(),
+    "waf": waf_template(),
+}
+
+@pytest.mark.parametrize("template_key", TEMPLATES)
+def test_lint_cloudformation_templates(tmp_path, template_key):
+    validate_using_cfn_lint(tmp_path, TEMPLATES[template_key])
