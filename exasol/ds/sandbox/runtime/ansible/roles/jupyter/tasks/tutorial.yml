@@ -4,3 +4,18 @@
   ansible.builtin.synchronize:
     src: "notebook/"
     dest: "{{ jupyterlab_notebook_folder_initial }}"
+  become: "{{ need_sudo }}"
+
+# 1. create_image.py adds this directory as volume mount point to the Docker
+# image which makes root the owner. 2. entrypoint.py running as separate user
+# fails to copy the notebook files to it.  3. Mitigation: Ansible creates the
+# directory in advance with appropriate owner.
+
+- name: Create directory for final notebooks
+  ansible.builtin.file:
+    path: "{{ jupyterlab_notebook_folder }}"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_group }}"
+    mode: '0755'
+  become: "{{ need_sudo }}"

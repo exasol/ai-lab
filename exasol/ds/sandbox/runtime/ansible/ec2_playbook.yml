@@ -2,12 +2,14 @@
   hosts: ec2
   vars:
       ansible_python_interpreter: /usr/bin/python3
-      user_name: ubuntu
-      user_home: /home/ubuntu
+      user_name: jupyter
+      user_home: /home/jupyter
+      user_group: jupyter
       initial_notebook_folder: "{{ user_home }}/notebooks"
       need_sudo: yes
   remote_user: ubuntu
   tasks:
+    - import_tasks: apt_update.yml
     - import_tasks: general_setup_tasks.yml
     - import_tasks: ec2_setup_tasks.yml
     - import_tasks: cleanup_tasks.yml

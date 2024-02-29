@@ -112,7 +112,12 @@ class DssDockerImage:
 
     def _start_container(self) -> DockerContainer:
         self._start = datetime.now()
-        docker_client = docker.from_env()
+        # default timeout is 60 seconds.
+        docker_client = docker.from_env(timeout=600)
+        try:
+            return docker_client.containers.get(self.container_name)
+        except:
+            pass
         docker_file = self._docker_file()
         _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
         if self.registry is not None:
@@ -157,6 +162,7 @@ class DssDockerImage:
         notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
         conf = {
             "Entrypoint": entrypoint(facts),
+            "User": get_fact(facts, "jupyter", "user"),
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},
@@ -174,7 +180,7 @@ class DssDockerImage:
         if container is None:
             return
         if self.keep_container:
-            _logger.info("Keeping container running")
+            _logger.info(f"Keeping container {self.container_name} running")
             return
         _logger.info("Stopping container")
         container.stop()

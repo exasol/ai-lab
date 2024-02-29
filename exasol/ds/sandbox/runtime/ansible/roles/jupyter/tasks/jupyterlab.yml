@@ -5,12 +5,19 @@
   ansible.builtin.file:
     path: "{{ jupyterlab_config }}"
     state: absent
+  become: "{{ need_sudo }}"
 
-# this generates /root/.jupyter/jupyter_lab_config.py (it has all rows commented out)
-# this config file is very large (>30K)
+# it generates file ~/.jupyter/jupyter_lab_config.py
+# - the config file is very large (>30K)
+# - it has all rows commented out
+#
+# Set environment variable $HOME to {{user_home}} to force the directory for
+# creating the config file.
 - name: Generate JupyterLab config
   ansible.builtin.command: "{{jupyterlab_virtualenv}}/bin/jupyter lab --generate-config"
-  # this command automatically outputs to ~/.jupyter/
+  environment:
+    HOME: "{{ user_home }}"
+  become: "{{ need_sudo }}"
 
 - name: Edit JupyterLab config with our settings
   ansible.builtin.lineinfile:
@@ -26,16 +33,23 @@
       line: "c.LabApp.default_url = '{{ jupyterlab_default_url }}'"
     - regexp: "c.ServerApp.port"
       line: "c.ServerApp.port = {{ jupyterlab_port }}"
+  become: "{{ need_sudo }}"
 
+# Set environment variable $HOME to {{user_home}} to force the directory for
+# creating the file jupyter_server_config.json.
 - name: Generate a new password
   expect:
     command: "{{jupyterlab_virtualenv}}/bin/jupyter server password"
     responses:
       Enter password: "{{jupyterlab_password}}"
       Verify password: "{{jupyterlab_password}}"
+  environment:
+    HOME: "{{ user_home }}"
+  become: "{{ need_sudo }}"
 
 - name: Create the notebook directory
   ansible.builtin.file:
     path: "{{ dss_facts.notebook_folder.initial }}"
     state: directory
     mode: '0755'
+  become: "{{ need_sudo }}"

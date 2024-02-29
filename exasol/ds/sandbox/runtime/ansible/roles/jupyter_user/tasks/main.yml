@@ -1,0 +1,11 @@
+- name: Create group for jupyter user
+  ansible.builtin.group:
+    name: "{{ user_group }}"
+    state: present
+  become: "{{ need_sudo }}"
+- name: Add user for running jupyter
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    home: "{{ user_home }}"
+    group: "{{ user_group }}"
+  become: "{{ need_sudo }}"

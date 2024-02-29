@@ -32,7 +32,7 @@ After the export has finished, the cloudformation stack and the keypair is remov
 
 Installs all dependencies via Ansible:
 * installs and configures Jupyter
-* installs Docker and adds the user `ubuntu` to the docker group
+* installs Docker and adds the user `jupyter` to the docker group
 * changes the netplan configuration. This is necessary to have proper network configuration when running the VM image
 
 Finally, the default password will be set, and also the password will be marked as expired, such that the user will be forced to enter a new password during initial login.

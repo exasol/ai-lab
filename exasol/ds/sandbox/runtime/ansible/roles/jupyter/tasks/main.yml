@@ -7,32 +7,41 @@
       apt:
         name: "{{apt_dependencies}}"
         state: present
+        install_recommends: false
       become: "{{need_sudo}}"
 
     - name: Update pip version
       include_tasks:
         file: update-pip.yml
 
-    - name: Install JupyterLab and its dependencies
+    - name: Install JupyterLab and required packages
       include_tasks:
-        file: install-pip-packages.yml
+        file: pip-install.yml
       vars:
-        - pip_requirements_file: "requirements_jupyter.txt"
+        requirements_file: "jupyter_requirements.txt"
 
     - name: Setup Jupyterlab
       ansible.builtin.import_tasks: jupyterlab.yml
 
-    - name: Install dependencies used in Jupyterlab
+    - name: Install packages to be used inside Jupyter notebooks
       include_tasks:
-        file: install-pip-packages.yml
+        file: pip-install.yml
       vars:
-        - pip_requirements_file: "requirements_dependencies.txt"
+        requirements_file: "notebook_requirements.txt"
 
     - name: Setup Systemd service
       ansible.builtin.import_tasks: systemd.yml
 
     - name: Copy tutorial notebook
       ansible.builtin.import_tasks: tutorial.yml
+
+    - name: Change owner of all files and dirs in home directory
+      ansible.builtin.file:
+        path: "{{ user_home }}"
+        owner: "{{ user_name }}"
+        group: "{{ user_group }}"
+        recurse: true
+      become: "{{ need_sudo }}"
 
     - name: Setup motd
       ansible.builtin.import_tasks: motd.yml

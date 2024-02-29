@@ -1,5 +1,6 @@
 ## Login to AMI and VM Editions
 
+<!-- I assume the login user for AMI and VM Editions is still ubuntu. -->
 Username: **ubuntu**
 
 At the first login to the AI-Lab (image or AMI) you will be prompted to change your password.

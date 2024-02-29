@@ -162,7 +162,7 @@ def test_jupyter_password_message_shown(new_ec2_from_ami):
         prompts = ((r"Enter password: ", f"{random_jupyter_password}\n"),
                    (r"Verify password: ", f"{random_jupyter_password}\n"))
         responders = [Responder(pattern=prompt, response=response) for prompt, response in prompts]
-        res = con.run("./jupyterenv/bin/jupyter server password",
+        res = con.run("sudo --login --user=jupyter ./jupyterenv/bin/jupyter server password",
                       watchers=responders,
                       pty=True)
         assert res.ok

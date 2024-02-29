@@ -16,8 +16,8 @@ The Docker Edition of Exasol AI-Lab allows you to
 ## Basics
 
 In order to save your changes persistently, to reuse, backup, and restore them, the AI-Lab
-* Keeps the notebook files as well as the SCS in the directory `/root/notebooks` inside the Docker container
-* Uses a so-called [_Docker Volume_](https://docs.docker.com/storage/volumes) mounted to `/root/notebooks` to store the content independent of the Docker container
+* Keeps the notebook files as well as the SCS in the directory `/home/jupyter/notebooks` inside the Docker container
+* Uses a so-called [_Docker Volume_](https://docs.docker.com/storage/volumes) mounted to `/home/jupyter/notebooks` to store the content independent of the Docker container
 
 ## Additional Environment Variables
 

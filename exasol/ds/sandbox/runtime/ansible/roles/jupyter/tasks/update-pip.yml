@@ -7,3 +7,4 @@
     virtualenv: "{{jupyterlab_virtualenv}}"
     virtualenv_python: python3.8
     extra_args: "--upgrade"
+  become: "{{need_sudo}}"

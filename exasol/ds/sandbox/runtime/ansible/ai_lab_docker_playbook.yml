@@ -4,22 +4,39 @@
   vars:
       ansible_python_interpreter: python3
   tasks:
-    - name: Add docker container to inventory
+    - name: Add Docker Container to Ansible Inventory
       add_host:
         name: "{{docker_container}}"
         groups: docker_container_group
         ansible_connection: docker
 
-- name: Setup AI-Lab Docker Container
+- name: Prepare Ansible Access
   hosts: docker_container_group
   gather_facts: true
   vars:
-      ansible_python_interpreter: python3
-      user_name: "{{ ansible_user_id }}"
-      user_home: "{{ ansible_env.HOME }}"
-      initial_notebook_folder: "{{ user_home }}/notebook-defaults"
-      need_sudo: false
-      docker_integration_test: true
+    my_ansible_user: "ubuntu"
+    jupyter_user: "jupyter"
+    jupyter_group: "jupyter"
+    jupyter_user_home: "/home/jupyter"
+    need_sudo: no
+  tasks:
+    - import_tasks: apt_update.yml
+    - name: Ansible Access
+      include_role:
+        name: ansible_access
+
+- name: Setup AI-Lab Docker Container
+  hosts: docker_container_group
+  remote_user: "ubuntu"
+  gather_facts: true
+  vars:
+    ansible_python_interpreter: python3
+    user_name: "jupyter"
+    user_group: "jupyter"
+    user_home: "/home/jupyter"
+    initial_notebook_folder: "{{ user_home }}/notebook-defaults"
+    need_sudo: yes
+    docker_integration_test: true
   tasks:
     - import_tasks: general_setup_tasks.yml
     - import_tasks: cleanup_tasks.yml

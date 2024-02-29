@@ -1,8 +1,9 @@
 ---
 
 - name: read current server config file
-  shell: "cat {{user_home}}/.jupyter/jupyter_server_config.json"
+  shell: "cat {{jupyterlab_config_json}}"
   register: jupyter_server_config
+  become: "{{ need_sudo }}"
 
 - name: save the Json data to a Variable as a Fact
   set_fact:
@@ -25,5 +26,4 @@
   with_items:
     - 'etc/update-motd.d/999-jupyter'
   vars:
-    jupyter_server_config_file: "{{user_home}}/.jupyter/jupyter_server_config.json"
     heading_jupyter_update_password: "{{lookup('ansible.builtin.file', 'heading_jupyter_update_password.txt') }}"

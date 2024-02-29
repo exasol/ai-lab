@@ -2,6 +2,7 @@
 
 jupyterlab_ip: '*'
 jupyterlab_config: "{{user_home}}/.jupyter/jupyter_lab_config.py"
+jupyterlab_config_json: "{{user_home}}/.jupyter/jupyter_server_config.json"
 jupyterlab_default_url: "/lab/tree/start.ipynb"
 
 # overridden in include_role

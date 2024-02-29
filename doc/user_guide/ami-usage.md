@@ -38,6 +38,8 @@ Check the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuid
      - Click button "Launch instance"
 6. As soon as the machine becomes available you can connect per ssh with user `ubuntu`: `ssh -i your_key.pem ubuntu@the_new_ec_instance`
 
+**Please note**: When you want to modify the settings of jupyterlab or to install additional pip packages into the virtual env `jupyterenv`, you need to prefix your commands with `sudo --login --user jupyter`.
+
 ## Login
 
 See [Login to AMI and VM Editions](login-vm-and-ami.md) for logging in to the system.

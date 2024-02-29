@@ -1,0 +1,16 @@
+- name: Install sudo
+  apt:
+    name: "{{apt_dependencies}}"
+    state: latest
+    install_recommends: false
+
+- name: Add dedicated user for executing ansible tasks
+  ansible.builtin.user:
+    name: "{{ my_ansible_user }}"
+- name: Add to sudoers
+  community.general.sudoers:
+    name: Add user ansible
+    user: "{{ my_ansible_user }}"
+    state: present
+    nopassword: true
+    commands: ALL

@@ -1,0 +1,5 @@
+- name: Update and Upgrade apt Packages
+  apt:
+    upgrade: yes
+    update_cache: yes
+  become: "{{need_sudo}}"

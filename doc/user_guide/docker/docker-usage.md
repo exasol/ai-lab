@@ -39,14 +39,14 @@ In this scenario the AI-Lab Docker container does not need access to the Docker 
 The following command will
 * Download the Docker image for the specified version `$VERSION` of the AI-Lab if the image of the specified version is not yet available in your Docker service
 * Run a Docker container using this image
-* Mount the volume `$VOLUME` to the directory `/root/notebooks` inside the container
+* Mount the volume `$VOLUME` to the directory `/home/jupyter/notebooks` inside the container
   * If the volume does not exist yet, then it will be created automatically.
 * Forward port `49494` on the [daemon machine](prerequisites.md) to allow connections from all IP addresses matched by `$LISTEN_IP`
 
 ```shell
 docker run \
   --name ${CONTAINER_NAME} \
-  --volume ${VOLUME}:/root/notebooks \
+  --volume ${VOLUME}:/home/jupyter/notebooks \
   --publish ${LISTEN_IP}:49494:49494 \
   exasol/ai-lab:${VERSION}
 ```
@@ -68,7 +68,7 @@ In this scenario you must enable the AI-Lab Docker container to access the Docke
 ```shell
 docker run \
   --name ${CONTAINER_NAME} \
-  --volume ${VOLUME}:/root/notebooks \
+  --volume ${VOLUME}:/home/jupyter/notebooks \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --publish ${LISTEN_IP}:49494:49494 \
   exasol/ai-lab:${VERSION}
@@ -122,8 +122,8 @@ port to the same port then you can connect with http://localhost:49494.
 └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
 
 The default password is "ailab".
-To update the password, log in to the Docker container as the user root and run
-    /root/jupyterenv/bin/jupyter-lab server password
+To update the password, log in to the Docker container as the user jupyter and run
+    /home/jupyter/jupyterenv/bin/jupyter-lab server password
 ```
 
 Using an internet browser you then can connect to the Jupyter server running in the Docker container in order to follow the tutorials presented by a set of Jupyter notebooks, see [Connecting to Jupyter Service](../jupyter.md#open-jupyter-in-your-browser).

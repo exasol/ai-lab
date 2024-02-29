@@ -5,7 +5,7 @@ Description=Jupyter Notebook
 Type=simple
 PIDFile=/run/jupyter.pid
 ExecStart="{{jupyterlab_command}}" --notebook-dir="{{jupyterlab_notebook_folder}}" --no-browser
-User={{user_name}}
+User={{ user_name }}
 Restart=always
 RestartSec=10
 
