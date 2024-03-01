@@ -32,7 +32,6 @@ class AnsibleRunner:
         self._ansible_access = ansible_access
         self._work_dir = work_dir
         self._duration_logger = AnsibleRunner.duration_logger()
-        self._last_task = None
 
     @classmethod
     def duration_logger(cls) -> logging.Logger:
@@ -49,18 +48,8 @@ class AnsibleRunner:
         if not "event_data" in event:
             return True
         duration = event["event_data"].get("duration", 0)
-        if duration < 0.5:
-            return True
-
-        task = event["event_data"].get("task_uuid")
-        if not task or task == self._last_task:
-            return True
-
-        self._last_task = task
-        n = len(self._duration_logger.handlers)
-        self._duration_logger.debug(
-            f"duration: {round(duration)} seconds task {task} ({n} handlers)")
-        self._duration_logger.handlers[0].flush()
+        if duration > 0.5:
+            self._duration_logger.debug(f"duration: {round(duration)} seconds")
         return True
 
     def run(
