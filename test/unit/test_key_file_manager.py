@@ -1,8 +1,11 @@
 import os
 from unittest.mock import MagicMock
 
-from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, KeyFileManagerContextManager
-
+from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import (
+    KeyFileManager,
+    KeyFileManagerContextManager,
+)
+from test.aws.fixtures import default_asset_id
 
 def test_external_keys(tmp_path, default_asset_id):
     """"

@@ -6,7 +6,7 @@ from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
 from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2, \
     EC2StackLifecycleContextManager
-
+from test.aws.fixtures import default_asset_id, test_dummy_ami_id
 
 def test_run_lifecycle_for_ec2(default_asset_id, test_dummy_ami_id):
     """
