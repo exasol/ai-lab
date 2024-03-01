@@ -4,8 +4,7 @@
 import pytest
 import subprocess
 
-from test.aws.fixtures import vm_bucket_cloudformation_yml
-from test.aws.fixtures import (
+from test.aws.templates import (
     ec2_template,
     waf_template,
     vm_bucket_template,
@@ -38,6 +37,7 @@ TEMPLATES = {
     "vm-bucket": vm_bucket_template(),
     "waf": waf_template(),
 }
+
 
 @pytest.mark.parametrize("template_key", TEMPLATES)
 def test_lint_cloudformation_templates(tmp_path, template_key):

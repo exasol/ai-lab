@@ -7,13 +7,6 @@ from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
 )
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
-from test.aws.fixtures import (
-    default_asset_id,
-    test_dummy_ami_id,
-    ec2_cloudformation_yml,
-    local_stack_aws_access,
-)
-from test.aws.local_stack import local_stack
 
 def test_ec2_lifecycle_with_local_stack(
         local_stack_aws_access,

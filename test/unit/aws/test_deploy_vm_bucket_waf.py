@@ -7,8 +7,8 @@ from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import (
     find_acl_arn,
     get_cloudformation_template,
 )
-from test.aws.fixtures import TEST_IP
-from test.aws.mock_data import get_waf_cloudformation_mock_data, TEST_ACL_ARN
+from test.aws.templates import TEST_IP, TEST_ACL_ARN
+from test.aws.mock_data import get_waf_cloudformation_mock_data
 from test.mock_cast import mock_cast
 
 

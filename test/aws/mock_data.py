@@ -11,15 +11,14 @@ from exasol.ds.sandbox.lib.aws_access.s3_object import S3Object
 from exasol.ds.sandbox.lib.aws_access.snapshot import Snapshot
 from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
-from test.aws.fixtures import DEFAULT_ASSET_ID
-from test.aws.fixtures import TEST_ACL_ARN
+from test.aws.templates import DEFAULT_ASSET_ID
+from test.aws.templates import TEST_ACL_ARN
 
 TEST_ROLE_ID = 'VM-DSS-Bucket-VMImportRole-TEST'
 TEST_BUCKET_ID = 'vm-dss-bucket-vmdssbucket-TEST'
 TEST_AMI_ID = "AMI-IMAGE-12345"
 TEST_CLOUDFRONT_ID = "test-cloudfrontet-TEST"
 TEST_CLOUDFRONT_DOMAIN_NAME = "test-s3.cloudfront.net"
-# TEST_ACL_ARN = "TEST-DOWNLOAD-ACL"
 INSTANCE_ID = "test-instance"
 
 

@@ -10,12 +10,6 @@ from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack
 from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager
 from test.aws.local_stack_access import AwsLocalStackAccess
-from test.aws.fixtures import (
-    local_stack_aws_access,
-    default_asset_id,
-    test_dummy_ami_id,
-)
-from test.aws.local_stack import local_stack
 
 def create_key_pair_and_serialize(
         aws_key_id: str,

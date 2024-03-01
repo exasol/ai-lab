@@ -5,11 +5,6 @@ from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
     CloudformationStackContextManager,
 )
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
-from test.aws.fixtures import (
-    default_asset_id,
-    ec2_cloudformation_yml,
-    test_dummy_ami_id,
-)
 
 
 def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id, test_dummy_ami_id):

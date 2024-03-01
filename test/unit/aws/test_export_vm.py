@@ -22,7 +22,6 @@ from test.aws.mock_data import (
     get_s3_cloudformation_mock_data,
     get_waf_cloudformation_mock_data,
 )
-from test.aws.fixtures import default_asset_id
 from test.mock_cast import mock_cast
 
 

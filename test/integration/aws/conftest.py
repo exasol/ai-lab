@@ -4,6 +4,12 @@ import subprocess
 import shlex
 
 from importlib.metadata import version
+from test.aws.local_stack_access import AwsLocalStackAccess
+from test.aws.conftest import (
+    default_asset_id,
+    test_dummy_ami_id,
+)
+
 
 @pytest.fixture(scope="session")
 def local_stack():
@@ -28,3 +34,8 @@ def local_stack():
 
     command = "localstack stop"
     subprocess.run(shlex.split(command), env=env_variables)
+
+
+@pytest.fixture(scope="session")
+def local_stack_aws_access(local_stack):
+    return AwsLocalStackAccess().with_user("default_user")
