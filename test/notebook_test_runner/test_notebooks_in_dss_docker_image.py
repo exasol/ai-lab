@@ -19,7 +19,7 @@ def notebook_test_dockerfile_content(dss_docker_image) -> str:
         f"""
         FROM {dss_docker_image.image_name}
         COPY notebooks/* /tmp/notebooks/
-        RUN mv /tmp/notebooks/* "$NOTEBOOK_FOLDER_INITIAL" && rmdir /tmp/notebooks/
+        RUN cp -r /tmp/notebooks/* "$NOTEBOOK_FOLDER_INITIAL"
         WORKDIR $NOTEBOOK_FOLDER_INITIAL
         RUN "$VIRTUAL_ENV/bin/python3" -m pip install -r test_dependencies.txt
         """
