@@ -8,6 +8,7 @@ from test.aws.local_stack_access import AwsLocalStackAccess
 from test.aws.conftest import (
     default_asset_id,
     test_dummy_ami_id,
+    ec2_cloudformation_yml,
 )
 
 
