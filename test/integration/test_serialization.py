@@ -15,7 +15,7 @@ from test.aws.fixtures import (
     default_asset_id,
     test_dummy_ami_id,
 )
-from test.aws.localstack import local_stack
+from test.aws.local_stack import local_stack
 
 def create_key_pair_and_serialize(
         aws_key_id: str,

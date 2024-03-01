@@ -13,9 +13,7 @@ from test.aws.fixtures import (
     ec2_cloudformation_yml,
     local_stack_aws_access,
 )
-from test.aws.localstack import (
-    local_stack,
-)
+from test.aws.local_stack import local_stack
 
 def test_ec2_lifecycle_with_local_stack(
         local_stack_aws_access,
