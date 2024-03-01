@@ -51,7 +51,10 @@ class AnsibleRunner:
             return True
 
         self._last_task = task
-        self._duration_logger.debug(f"duration: {round(duration)} seconds")
+        n = len(self._duration_logger.handlers)
+        self._duration_logger.debug(
+            f"duration: {round(duration)} seconds task {task} ({n} handlers)")
+        self._duration_logger.handlers[0].flush()
         return True
 
     def run(

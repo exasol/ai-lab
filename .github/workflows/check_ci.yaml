@@ -36,6 +36,17 @@ jobs:
      - name: Setup Python & Poetry Environment
        uses: ./.github/actions/prepare_poetry_env
 
+     - name: Run tests for creating the docker image
+       run: >
+         poetry run pytest
+         --capture=no
+         --override-ini=log_cli=true
+         --override-ini=log_cli_level=INFOtest/integration/test_create_dss_docker_image.py
+       env: # Set the secret as an env variable
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+         AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+
      - name: Run build ai-lab tests
        run: >
          poetry run pytest
