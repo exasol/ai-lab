@@ -47,13 +47,13 @@ class AnsibleRunner:
             return True
 
         task = event["event_data"].get("task_uuid")
-        if task and task == self._last_task:
+        if not task or task == self._last_task:
             return True
 
         self._last_task = task
         # self._duration_logger.debug(f"task: {task} last {self._last_task}")
-        self._duration_logger.debug(f"event: {json.dumps(event, indent=4)}")
-        self._duration_logger.debug(f"duration: {round(duration)} seconds")
+        # self._duration_logger.debug(f"event: {json.dumps(event, indent=4)}")
+        self._duration_logger.debug(f"duration: {round(duration)} seconds task {task}")
         return True
 
     def run(
