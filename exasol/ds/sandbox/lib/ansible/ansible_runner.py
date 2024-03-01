@@ -51,9 +51,7 @@ class AnsibleRunner:
             return True
 
         self._last_task = task
-        # self._duration_logger.debug(f"task: {task} last {self._last_task}")
-        # self._duration_logger.debug(f"event: {json.dumps(event, indent=4)}")
-        self._duration_logger.debug(f"duration: {round(duration)} seconds task {task}")
+        self._duration_logger.debug(f"duration: {round(duration)} seconds")
         return True
 
     def run(
