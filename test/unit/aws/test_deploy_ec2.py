@@ -38,6 +38,10 @@ def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id, test
     aws.stack_exists.return_value = False
     with CloudformationStackContextManager(
             CloudformationStack(
-                aws, "test_key", "test_user", default_asset_id, test_dummy_ami_id,
+                aws,
+                "test_key",
+                "test_user",
+                default_asset_id,
+                test_dummy_ami_id,
             )) as cloudformation:
         assert cloudformation.stack_name.startswith("test-stack")
