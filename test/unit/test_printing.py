@@ -26,7 +26,7 @@ from test.aws.mock_data import (
     TEST_CLOUDFRONT_DOMAIN_NAME,
 )
 from test.mock_cast import mock_cast
-from test.aws.conftest import default_asset_id
+from test.aws.fixtures import default_asset_id
 
 
 @pytest.fixture
