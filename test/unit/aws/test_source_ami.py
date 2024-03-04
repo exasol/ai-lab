@@ -997,9 +997,9 @@ def test_find_source_ami_returns_latest_ami(test_config):
     """
     Test that find_source_ami returns the latest AMI image based on the filters given in the global config.
     """
-    aws_mock = MagicMock()
-    aws_mock.list_amis.return_value = mock_data
-    latest_ami = find_source_ami(aws_mock, test_config.source_ami_filters)
+    aws = MagicMock()
+    aws.list_amis.return_value = mock_data
+    latest_ami = find_source_ami(aws, test_config.source_ami_filters)
     # ami-0d203747b007677da is the latest one in the mock data
     assert latest_ami.id == "ami-0d203747b007677da"
 

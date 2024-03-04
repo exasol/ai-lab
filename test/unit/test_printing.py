@@ -12,11 +12,21 @@ from exasol.ds.sandbox.lib.asset_printing.print_assets import (
     print_assets,
 )
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from test.aws.mock_data import get_ami_image_mock_data, TEST_AMI_ID, get_snapshot_mock_data, \
-    get_export_image_task_mock_data, get_s3_object_mock_data, TEST_BUCKET_ID, \
-    get_ec2_cloudformation_mock_data, get_ec2_cloudformation_stack_resources_mock_data, get_ec2_key_pair_mock_data, \
-    get_s3_cloudformation_mock_data, TEST_CLOUDFRONT_DOMAIN_NAME
+from test.aws.mock_data import (
+    get_ami_image_mock_data,
+    TEST_AMI_ID,
+    get_snapshot_mock_data,
+    get_export_image_task_mock_data,
+    get_s3_object_mock_data,
+    TEST_BUCKET_ID,
+    get_ec2_cloudformation_mock_data,
+    get_ec2_cloudformation_stack_resources_mock_data,
+    get_ec2_key_pair_mock_data,
+    get_s3_cloudformation_mock_data,
+    TEST_CLOUDFRONT_DOMAIN_NAME,
+)
 from test.mock_cast import mock_cast
+from test.aws.conftest import default_asset_id
 
 
 @pytest.fixture
@@ -37,10 +47,16 @@ def test_printing_ami(default_asset_id, printing_mocks):
     print_with_printer(aws_mock, None, (AssetTypes.AMI,), "*", printing_factory)
 
     assert table_printer_mock.add_column.call_count == 8
-    table_printer_mock.add_row.assert_called_once_with(TEST_AMI_ID, default_asset_id.ami_name,
-                                                       'Image Description', "no", '123/some_dummy_location',
-                                                       '2022-08-16T15:02:10.000Z', "available",
-                                                       default_asset_id.tag_value)
+    table_printer_mock.add_row.assert_called_once_with(
+        TEST_AMI_ID,
+        default_asset_id.ami_name,
+        "Image Description",
+        "no",
+        "123/some_dummy_location",
+        "2022-08-16T15:02:10.000Z",
+        "available",
+        default_asset_id.tag_value,
+    )
     table_printer_mock.finish.assert_called_once()
     assert text_printer_mock.print.call_count == 2
 
@@ -53,9 +69,15 @@ def test_printing_snapshot(default_asset_id, printing_mocks):
     print_with_printer(aws_mock, None, (AssetTypes.SNAPSHOT,), "*", printing_factory)
 
     assert table_printer_mock.add_column.call_count == 7
-    table_printer_mock.add_row.assert_called_once_with('snap-123', 'Created by foo',
-                                                       '100%', 'vol-123', '2022-08-16, 15:03',
-                                                       'completed', default_asset_id.tag_value)
+    table_printer_mock.add_row.assert_called_once_with(
+        "snap-123",
+        "Created by foo",
+        "100%",
+        "vol-123",
+        "2022-08-16, 15:03",
+        "completed",
+        default_asset_id.tag_value,
+    )
     table_printer_mock.finish.assert_called_once()
     assert text_printer_mock.print.call_count == 2
 
@@ -76,10 +98,16 @@ def test_print_export_image_tasks(default_asset_id, printing_mocks, progress, st
 
     assert table_printer_mock.add_column.call_count == 8
 
-    table_printer_mock.add_row.assert_called_once_with('export-ami-123', 'VM Description',
-                                                       progress,  TEST_BUCKET_ID,
-                                                       default_asset_id.bucket_prefix,
-                                                       status, status_message, default_asset_id.tag_value)
+    table_printer_mock.add_row.assert_called_once_with(
+        "export-ami-123",
+        "VM Description",
+        progress,
+        TEST_BUCKET_ID,
+        default_asset_id.bucket_prefix,
+        status,
+        status_message,
+        default_asset_id.tag_value,
+    )
     table_printer_mock.finish.assert_called_once()
     assert text_printer_mock.print.call_count == 2
 
@@ -98,7 +126,12 @@ filter_for_s3 = [
 
 
 @pytest.mark.parametrize("filter_value,expected_found_s3_object", filter_for_s3)
-def test_printing_s3_object(default_asset_id, printing_mocks, filter_value, expected_found_s3_object):
+def test_printing_s3_object(
+        default_asset_id,
+        printing_mocks,
+        filter_value,
+        expected_found_s3_object,
+):
     table_printer_mock, text_printer_mock, printing_factory = printing_mocks
 
     aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
@@ -110,7 +143,11 @@ def test_printing_s3_object(default_asset_id, printing_mocks, filter_value, expe
     assert table_printer_mock.add_column.call_count == 3
 
     if expected_found_s3_object:
-        url = f"https://{TEST_CLOUDFRONT_DOMAIN_NAME}/{default_asset_id.bucket_prefix}/export-ami-123.vmdk"
+        url = (
+            f"https://{TEST_CLOUDFRONT_DOMAIN_NAME}"
+            f"/{default_asset_id.bucket_prefix}"
+            "/export-ami-123.vmdk"
+        )
         table_printer_mock.add_row.assert_called_once_with(
             f'{default_asset_id.bucket_prefix}/export-ami-123.vmdk',
             "2.19 GB", url)
@@ -132,14 +169,26 @@ filter_for_cloudformation = [
 
 
 @pytest.mark.parametrize("filter_value,expected_found_cloudformation", filter_for_cloudformation)
-def test_print_cloudformation_stack(default_asset_id, printing_mocks, filter_value, expected_found_cloudformation):
+def test_print_cloudformation_stack(
+        default_asset_id,
+        printing_mocks,
+        filter_value,
+        expected_found_cloudformation,
+):
     table_printer_mock, text_printer_mock, printing_factory = printing_mocks
 
     aws_mock = MagicMock()
     aws_mock.describe_stacks.return_value = [get_ec2_cloudformation_mock_data()]
     asset_id = AssetId(filter_value) if filter_value else None
-    aws_mock.get_all_stack_resources.return_value = get_ec2_cloudformation_stack_resources_mock_data()
-    print_with_printer(aws_mock, asset_id, (AssetTypes.CLOUDFORMATION,), filter_value, printing_factory)
+    aws_mock.get_all_stack_resources.return_value = \
+        get_ec2_cloudformation_stack_resources_mock_data()
+    print_with_printer(
+        aws_mock,
+        asset_id,
+        (AssetTypes.CLOUDFORMATION,),
+        filter_value,
+        printing_factory,
+    )
 
     assert table_printer_mock.add_column.call_count == 7
 
