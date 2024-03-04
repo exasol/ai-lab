@@ -34,7 +34,7 @@ def test_find_bucket_success(test_config):
     assert TEST_BUCKET_ID == bucket
 
 
-def test_vm_bucket_undeployed(test_config):
+def test_vm_bucket_not_deployed(test_config):
     """
     This test uses a mock to validate the raising of a RuntimeError
     exception if the VM bucket was not deployed.
@@ -47,7 +47,7 @@ def test_vm_bucket_undeployed(test_config):
         find_vm_bucket(aws)
 
 
-def test_waf_undeployed(test_config):
+def test_waf_not_deployed(test_config):
     """
     This test uses a mock to validate the raising of a RuntimeError
     exception if the WAF and VM bucket were not deployed.
