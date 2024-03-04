@@ -1,15 +1,15 @@
 import contextlib
+import multiprocessing as mp
 import os.path
 import pickle
 import traceback
+
 from pathlib import Path
 
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack
 from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager
 from test.aws.local_stack_access import AwsLocalStackAccess
-import multiprocessing as mp
-
 
 def create_key_pair_and_serialize(
         aws_key_id: str,
@@ -87,7 +87,12 @@ def create_cloudformation_stack_and_serialize(
         raise e
 
 
-def test_cloudformation_stack_with_local_stack(tmp_path, local_stack_aws_access, default_asset_id, test_dummy_ami_id):
+def test_cloudformation_stack_with_local_stack(
+        tmp_path,
+        local_stack_aws_access,
+        default_asset_id,
+        test_dummy_ami_id,
+):
     """
     Test that serialization and deserialization of CloudformationStack work!
     """

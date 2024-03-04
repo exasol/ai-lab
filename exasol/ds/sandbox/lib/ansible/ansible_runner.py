@@ -1,3 +1,4 @@
+import json
 import logging
 
 from pathlib import Path
@@ -16,9 +17,16 @@ from exasol.ds.sandbox.lib.render_template import render_template
 LOG = get_status_logger(LogType.ANSIBLE)
 
 
+class DurationHandler(logging.StreamHandler):
+    def __init__(self):
+        super().__init__()
+        self.setFormatter(logging.Formatter('%(message)s'))
+
+
 class AnsibleRunner:
     """
-    Encapsulates invocation ansible access. It creates the inventory file, writing the host info, during run.
+    Encapsulates invocation ansible access. It creates the inventory file,
+    writing the host info, during run.
     """
     def __init__(self, ansible_access: AnsibleAccess, work_dir: Path):
         self._ansible_access = ansible_access
@@ -27,14 +35,13 @@ class AnsibleRunner:
 
     @classmethod
     def duration_logger(cls) -> logging.Logger:
-        def handler():
-            handler = logging.StreamHandler()
-            handler.setFormatter(logging.Formatter('%(message)s'))
-            return handler
         logger = logging.getLogger(f"{__name__}:{cls.__name__}")
+        for h in logger.handlers:
+            if isinstance(h, DurationHandler):
+                return logger
         logger.setLevel(logging.DEBUG)
         logger.propagate = False
-        logger.addHandler(handler())
+        logger.addHandler(DurationHandler())
         return logger
 
     def event_handler(self, event: AnsibleEvent) -> bool:
