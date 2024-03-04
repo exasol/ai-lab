@@ -6,8 +6,6 @@ import shlex
 from importlib.metadata import version
 from test.aws.local_stack_access import AwsLocalStackAccess
 
-pytest_plugins = "test.aws.fixtures"
-
 
 @pytest.fixture(scope="session")
 def local_stack():

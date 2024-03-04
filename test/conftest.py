@@ -13,6 +13,7 @@ from exasol.ds.sandbox.lib.asset_id import AssetId
 
 pytest_plugins = (
     "test.docker.dss_docker_image",
+    "aws.fixtures",
 )
 
 
