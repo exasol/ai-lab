@@ -10,7 +10,7 @@ from exasol.ds.sandbox.lib.render_template import render_template
 from importlib.metadata import version
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
 from exasol.ds.sandbox.lib.asset_id import AssetId
-from test.aws_local_stack_access import AwsLocalStackAccess
+from test.aws.local_stack_access import AwsLocalStackAccess
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 

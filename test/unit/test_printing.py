@@ -12,7 +12,7 @@ from exasol.ds.sandbox.lib.asset_printing.print_assets import (
     print_assets,
 )
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from test.aws_mock_data import get_ami_image_mock_data, TEST_AMI_ID, get_snapshot_mock_data, \
+from test.aws.mock_data import get_ami_image_mock_data, TEST_AMI_ID, get_snapshot_mock_data, \
     get_export_image_task_mock_data, get_s3_object_mock_data, TEST_BUCKET_ID, \
     get_ec2_cloudformation_mock_data, get_ec2_cloudformation_stack_resources_mock_data, get_ec2_key_pair_mock_data, \
     get_s3_cloudformation_mock_data, TEST_CLOUDFRONT_DOMAIN_NAME
