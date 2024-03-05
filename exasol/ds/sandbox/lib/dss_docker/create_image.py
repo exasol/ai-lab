@@ -40,6 +40,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         command = get_fact(facts, "jupyter", "command")
         if command is None:
             return []
+        docker_group = get_fact(facts, "docker_group")
         port = get_fact(facts, "jupyter", "port")
         user_name = get_fact(facts, "jupyter", "user")
         user_home = get_fact(facts, "jupyter", "home")
@@ -50,6 +51,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
             "--jupyter-server", command,
             "--port", port,
             "--user", user_name,
+            "--group", docker_group,
             "--password", password,
             "--jupyter-logfile", logfile,
         ]

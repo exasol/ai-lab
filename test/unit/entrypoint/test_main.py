@@ -20,7 +20,7 @@ def test_no_args(mocker):
 
 
 def test_user_arg(mocker):
-    mocker.patch("sys.argv", ["app", "--user", "jennifer"])
+    mocker.patch("sys.argv", ["app", "--user", "jennifer", "--group", "heroes"])
     user = create_autospec(entrypoint.User)
     user.own.return_value = user
     mocker.patch(entrypoint_method("User"), return_value=user)

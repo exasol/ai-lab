@@ -30,5 +30,5 @@
   user:
     name: "{{user_name}}"
     append: yes
-    groups: docker
+    groups: "{{ docker_group }}"
   become: "{{need_sudo}}"

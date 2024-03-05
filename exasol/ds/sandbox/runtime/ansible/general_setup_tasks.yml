@@ -1,9 +1,11 @@
 - name: Set facts for Entry Point
   vars:
     jupyter_virtualenv: "{{user_home}}/jupyterenv"
+    dockerjupyter_virtualenv: "{{user_home}}/jupyterenv"
   ansible.builtin.set_fact:
     dss_facts:
       entrypoint: "{{user_home}}/entrypoint.py"
+      docker_group: "{{ user_group }}"
       jupyter:
         virtualenv: "{{ jupyter_virtualenv }}"
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
@@ -49,6 +51,8 @@
 - name: Install Docker
   include_role:
     name: docker
+  vars:
+    docker_group: "{{ dss_facts.docker_group }}"
 - name: Disable Core Dumps
   include_role:
     name: coredumps

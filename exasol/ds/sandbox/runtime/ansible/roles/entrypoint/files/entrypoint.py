@@ -1,5 +1,6 @@
 import argparse
 import logging
+import grp
 import os
 import pwd
 import re
@@ -42,6 +43,10 @@ def arg_parser():
         help="user name for running jupyter server",
     )
     parser.add_argument(
+        "--group", type=str,
+        help="user group for running jupyter server and accessing Docker socket",
+    )
+    parser.add_argument(
         "--home", type=str,
         help="home directory of user running jupyter server",
     )
@@ -58,18 +63,6 @@ def arg_parser():
         help="treat warning as error",
     )
     return parser
-
-
-def start_subprocess_as_user(
-        command_line: List[str],
-        logfile: str,
-        home_directory: str,
-) -> subprocess.Popen:
-    env = os.environ.copy()
-    env["HOME"] = home_directory
-    with open(logfile, "w") as f:
-        p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
-    return p
 
 
 def start_jupyter_server(
@@ -181,33 +174,43 @@ def sleep_infinity():
 
 
 class User:
-    def __init__(self, name: str):
-        self.name = name
-        self._id = None
+    def __init__(self, user_name: str, group_name: str):
+        self.user_name = user_name
+        self.group_name = group_name
+        self._uid = None
+        self._gid = None
 
     @property
-    def id(self):
-        if self._id is None:
-            self._id = pwd.getpwnam(self.name).pw_uid
-        return self._id
+    def uid(self):
+        if self._uid is None:
+            self._uid = pwd.getpwnam(self.user_name).pw_uid
+        return self._uid
+
+    @property
+    def gid(self):
+        if self._gid is None:
+            self._gid = grp.getgrnam(self.group_name).gr_gid
+        return self._gid
 
     def own(self, path: str):
         if Path(path).exists():
-            unchanged_gid = -1
-            os.chown(path, self.id, unchanged_gid)
+            unchanged_uid = -1
+            os.chown(path, unchanged_uid, self.gid)
         return self
 
     def switch_to(self):
-        uid = self.id
+        uid = self.uid
+        gid = self.gid
         os.setresuid(uid, uid, uid)
+        os.setresgid(gid, gid, gid)
         return self
 
 
 def main():
     args = arg_parser().parse_args()
-    if args.user:
+    if args.user and args.group:
         (
-            User(args.user)
+            User(args.user, args.group)
             .own("/var/run/docker.sock")
             .switch_to()
         )
@@ -218,10 +221,10 @@ def main():
             args.warning_as_error,
         )
     disable_core_dumps()
-    if (args.user
-        and args.jupyter_server
+    if (args.jupyter_server
         and args.notebooks
         and args.jupyter_logfile
+        and args.user
         and args.home
         and args.password
         ):

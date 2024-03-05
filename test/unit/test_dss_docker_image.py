@@ -75,42 +75,47 @@ def test_entrypoint_default(facts):
 
 
 def test_entrypoint_with_copy_args():
-    jupyter = "/home/jupyter/jupyterenv/bin/jupyter-lab"
-    port = "port"
-    entrypoint = "/path/to/entrypoint.py"
-    initial = "/path/to/initial"
-    final = "/path/to/final"
-    user = "jupyter-user-name"
-    home = "/home/user"
-    password = "jupyter-default-password"
-    logfile = "/path/to/jupyter-server.log"
     facts = {
         "dss_facts": {
+            "docker_group": "docker-group-name",
             "jupyter": {
-                "command": jupyter,
-                "port": port,
-                "user": user,
-                "home": home,
-                "password": password,
-                "logfile": logfile,
+                "command": "/home/jupyter/jupyterenv/bin/jupyter-lab",
+                "port": "port",
+                "user": "jupyter-user-name",
+                "home": "docker-group-name",
+                "password": "jupyter-default-password",
+                "logfile": "/path/to/jupyter-server.log",
             },
-            "entrypoint": entrypoint,
+            "entrypoint": "/path/to/entrypoint.py",
             "notebook_folder": {
-                "initial": initial,
-                "final": final,
+                "initial": "/path/to/initial",
+                "final": "/path/to/final",
             }}}
-    assert create_image.entrypoint(facts) == [
-        "python3",
-        entrypoint,
-        "--notebook-defaults", initial,
-        "--notebooks", final,
-        "--home", home,
-        "--jupyter-server", jupyter,
-        "--port", port,
-        "--user", user,
-        "--password", password,
-        "--jupyter-logfile", logfile,
-    ]
+
+    def fact(*args):
+        return create_image.get_fact(facts, *args)
+
+    expected = {
+        "python3": fact("entrypoint"),
+        "--notebook-defaults": fact("notebook_folder", "initial"),
+        "--notebooks": fact("notebook_folder", "final"),
+        "--home": fact("jupyter", "home"),
+        "--jupyter-server": fact("jupyter", "command"),
+        "--port": fact("jupyter", "port"),
+        "--user": fact("jupyter", "user"),
+        "--group": fact("docker_group"),
+        "--password": fact("jupyter", "password"),
+        "--jupyter-logfile": fact("jupyter", "logfile"),
+    }
+    # convert dict into a set to simplify comparisson
+    expected = set((k,v) for k,v in expected.items())
+
+    actual = create_image.entrypoint(facts)
+    it = iter(actual)
+    actual = set(zip(it, it))
+
+    assert expected == actual
+
 
 @pytest.fixture
 def mocked_docker_image():
