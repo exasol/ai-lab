@@ -82,7 +82,8 @@ def test_entrypoint_with_copy_args():
                 "command": "/home/jupyter/jupyterenv/bin/jupyter-lab",
                 "port": "port",
                 "user": "jupyter-user-name",
-                "home": "docker-group-name",
+                "group": "jupyter-group-name",
+                "home": "/home/user",
                 "password": "jupyter-default-password",
                 "logfile": "/path/to/jupyter-server.log",
             },
@@ -97,13 +98,14 @@ def test_entrypoint_with_copy_args():
 
     expected = {
         "python3": fact("entrypoint"),
+        "--docker-group": fact("docker_group"),
         "--notebook-defaults": fact("notebook_folder", "initial"),
         "--notebooks": fact("notebook_folder", "final"),
         "--home": fact("jupyter", "home"),
         "--jupyter-server": fact("jupyter", "command"),
         "--port": fact("jupyter", "port"),
         "--user": fact("jupyter", "user"),
-        "--group": fact("docker_group"),
+        "--group": fact("jupyter", "group"),
         "--password": fact("jupyter", "password"),
         "--jupyter-logfile": fact("jupyter", "logfile"),
     }
