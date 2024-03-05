@@ -164,7 +164,6 @@ class DssDockerImage:
         notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
         conf = {
             "Entrypoint": entrypoint(facts),
-            # "User": get_fact(facts, "jupyter", "user"),
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},

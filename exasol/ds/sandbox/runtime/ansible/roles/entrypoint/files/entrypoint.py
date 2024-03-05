@@ -100,7 +100,7 @@ def start_jupyter_server(
         binary_path,
         f"--notebook-dir={notebook_dir}",
         "--no-browser",
-        "--allow-root"
+        "--allow-root",
     ]
 
     env = os.environ.copy()
