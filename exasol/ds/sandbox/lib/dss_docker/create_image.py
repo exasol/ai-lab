@@ -42,9 +42,11 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
             return []
         port = get_fact(facts, "jupyter", "port")
         user_name = get_fact(facts, "jupyter", "user")
+        user_home = get_fact(facts, "jupyter", "home")
         password = get_fact(facts, "jupyter", "password")
         logfile = get_fact(facts, "jupyter", "logfile")
         return [
+            "--home", user_home,
             "--jupyter-server", command,
             "--port", port,
             "--user", user_name,
@@ -162,7 +164,7 @@ class DssDockerImage:
         notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
         conf = {
             "Entrypoint": entrypoint(facts),
-            "User": get_fact(facts, "jupyter", "user"),
+            # "User": get_fact(facts, "jupyter", "user"),
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},

@@ -33,6 +33,7 @@ class Testee:
 
     def run(self):
         entrypoint.start_jupyter_server(
+            "home",
             self.script,
             "port",
             "notebooks",

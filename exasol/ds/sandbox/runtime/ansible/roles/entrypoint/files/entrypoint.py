@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import pwd
 import re
 import resource
 import shutil
@@ -10,6 +11,7 @@ import time
 
 from inspect import cleandoc
 from pathlib import Path
+from typing import List, TextIO
 
 
 _logger = logging.getLogger(__name__)
@@ -40,6 +42,10 @@ def arg_parser():
         help="user name for running jupyter server",
     )
     parser.add_argument(
+        "--home", type=str,
+        help="home directory of user running jupyter server",
+    )
+    parser.add_argument(
         "--password", type=str,
         help="initial default password for Jupyter server",
     )
@@ -54,7 +60,20 @@ def arg_parser():
     return parser
 
 
+def start_subprocess_as_user(
+        command_line: List[str],
+        logfile: str,
+        home_directory: str,
+) -> subprocess.Popen:
+    env = os.environ.copy()
+    env["HOME"] = home_directory
+    with open(logfile, "w") as f:
+        p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
+    return p
+
+
 def start_jupyter_server(
+        home_directory: str,
         binary_path: str,
         port: int,
         notebook_dir: str,
@@ -81,10 +100,13 @@ def start_jupyter_server(
         binary_path,
         f"--notebook-dir={notebook_dir}",
         "--no-browser",
-        "--allow-root",
+        "--allow-root"
     ]
+
+    env = os.environ.copy()
+    env["HOME"] = home_directory
     with open(logfile, "w") as f:
-        p = subprocess.Popen(command_line, stdout=f, stderr=f)
+        p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
     url = "http://<host>:<port>"
     localhost_url = url.replace("<host>", "localhost").replace("<port>", str(port))
@@ -153,13 +175,42 @@ def disable_core_dumps():
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
 
-def sleep_inifinity():
+def sleep_infinity():
     while True:
         time.sleep(1)
 
 
+class User:
+    def __init__(self, name: str):
+        self.name = name
+        self._id = None
+
+    @property
+    def id(self):
+        if self._id is None:
+            self._id = pwd.getpwnam(self.name).pw_uid
+        return self._id
+
+    def own(self, path: str):
+        if Path(path).exists():
+            unchanged_gid = -1
+            os.chown(path, self.id, unchanged_gid)
+        return self
+
+    def switch_to(self):
+        uid = self.id
+        os.setresuid(uid, uid, uid)
+        return self
+
+
 def main():
     args = arg_parser().parse_args()
+    if args.user:
+        (
+            User(args.user)
+            .own("/var/run/docker.sock")
+            .switch_to()
+        )
     if args.notebook_defaults and args.notebooks:
         copy_rec(
             args.notebook_defaults,
@@ -167,13 +218,15 @@ def main():
             args.warning_as_error,
         )
     disable_core_dumps()
-    if (args.jupyter_server
+    if (args.user
+        and args.jupyter_server
         and args.notebooks
         and args.jupyter_logfile
-        and args.user
+        and args.home
         and args.password
         ):
         start_jupyter_server(
+            args.home,
             args.jupyter_server,
             args.port,
             args.notebooks,
@@ -182,7 +235,7 @@ def main():
             args.password,
         )
     else:
-        sleep_inifinity()
+        sleep_infinity()
 
 
 if __name__ == "__main__":

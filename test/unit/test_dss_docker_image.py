@@ -81,6 +81,7 @@ def test_entrypoint_with_copy_args():
     initial = "/path/to/initial"
     final = "/path/to/final"
     user = "jupyter-user-name"
+    home = "/home/user"
     password = "jupyter-default-password"
     logfile = "/path/to/jupyter-server.log"
     facts = {
@@ -89,6 +90,7 @@ def test_entrypoint_with_copy_args():
                 "command": jupyter,
                 "port": port,
                 "user": user,
+                "home": home,
                 "password": password,
                 "logfile": logfile,
             },
@@ -102,6 +104,7 @@ def test_entrypoint_with_copy_args():
         entrypoint,
         "--notebook-defaults", initial,
         "--notebooks", final,
+        "--home", home,
         "--jupyter-server", jupyter,
         "--port", port,
         "--user", user,
