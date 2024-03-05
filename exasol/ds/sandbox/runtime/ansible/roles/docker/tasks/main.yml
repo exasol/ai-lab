@@ -28,7 +28,7 @@
 
 - name: Adding docker users (for use without sudo)
   user:
-    name: "{{user_name}}"
+    name: "{{ user_name }}"
     append: yes
     groups: "{{ docker_group }}"
   become: "{{need_sudo}}"

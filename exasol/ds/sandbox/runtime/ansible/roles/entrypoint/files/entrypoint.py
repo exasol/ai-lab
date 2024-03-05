@@ -44,7 +44,11 @@ def arg_parser():
     )
     parser.add_argument(
         "--group", type=str,
-        help="user group for running jupyter server and accessing Docker socket",
+        help="user group for running jupyter server",
+    )
+    parser.add_argument(
+        "--docker-group", type=str,
+        help="user group for accessing Docker socket",
     )
     parser.add_argument(
         "--home", type=str,
@@ -173,47 +177,59 @@ def sleep_infinity():
         time.sleep(1)
 
 
+class Group:
+    def __init__(self, name: str):
+        self.name = name
+        self._id = None
+
+    @property
+    def id(self):
+        if self._id is None:
+            self._id = grp.getgrnam(self.name).gr_gid
+        return self._id
+
+
 class User:
-    def __init__(self, user_name: str, group_name: str):
-        self.user_name = user_name
-        self.group_name = group_name
-        self._uid = None
-        self._gid = None
+    def __init__(self, user_name: str, group: Group, docker_group: Group):
+        self.name = user_name
+        self._id = None
+        self.group = group
+        self.docker_group = docker_group
+
+    @property
+    def is_specified(self) -> bool:
+        return bool(
+            self.name
+            and self.group.name
+            and self.docker_group.name
+        )
 
     @property
     def uid(self):
-        if self._uid is None:
-            self._uid = pwd.getpwnam(self.user_name).pw_uid
-        return self._uid
-
-    @property
-    def gid(self):
-        if self._gid is None:
-            self._gid = grp.getgrnam(self.group_name).gr_gid
-        return self._gid
+        if self._id is None:
+            self._id = pwd.getpwnam(self.name).pw_uid
+        return self._id
 
     def own(self, path: str):
         if Path(path).exists():
             unchanged_uid = -1
-            os.chown(path, unchanged_uid, self.gid)
+            os.chown(path, unchanged_uid, self.docker_group.id)
         return self
 
     def switch_to(self):
         uid = self.uid
-        gid = self.gid
         os.setresuid(uid, uid, uid)
+        gid = self.group.id
         os.setresgid(gid, gid, gid)
+        os.setgroups([self.docker_group.id])
         return self
 
 
 def main():
     args = arg_parser().parse_args()
-    if args.user and args.group:
-        (
-            User(args.user, args.group)
-            .own("/var/run/docker.sock")
-            .switch_to()
-        )
+    user = User(args.user, Group(args.group), Group(args.docker_group))
+    if user.is_specified:
+        user.own("/var/run/docker.sock").switch_to()
     if args.notebook_defaults and args.notebooks:
         copy_rec(
             args.notebook_defaults,
