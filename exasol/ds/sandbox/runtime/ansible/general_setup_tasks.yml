@@ -4,8 +4,8 @@
   ansible.builtin.set_fact:
     dss_facts:
       entrypoint: "{{user_home}}/entrypoint.py"
+      docker_user: "{{ ansible_user }}"
       docker_group: "{{ docker_group }}"
-      docker_runner: "{{ ansible_user }}"
       jupyter:
         virtualenv: "{{ jupyter_virtualenv }}"
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"

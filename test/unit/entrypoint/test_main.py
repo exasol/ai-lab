@@ -32,10 +32,11 @@ def test_user_arg(mocker):
     mocker.patch(entrypoint_method("sleep_infinity"))
     entrypoint.main()
     assert entrypoint.User.called
-    args = entrypoint.User.call_args[0]
-    assert args[0] == "jennifer"
-    assert args[1].name == "users"
-    assert args[2].name == "docker"
+    args = entrypoint.User.call_args = mocker.call(
+        "jennifer",
+        entrypoint.Group("users"),
+        entrypoint.Group("docker"),
+    )
     assert user.own.called
     assert user.own.call_args == mocker.call("/var/run/docker.sock")
     assert user.switch_to.called

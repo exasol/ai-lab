@@ -188,6 +188,11 @@ class Group:
             self._id = grp.getgrnam(self.name).gr_gid
         return self._id
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Group):
+            return False
+        return other.name == self.name
+
 
 class User:
     def __init__(self, user_name: str, group: Group, docker_group: Group):

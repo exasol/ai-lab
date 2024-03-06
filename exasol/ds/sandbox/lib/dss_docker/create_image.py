@@ -171,7 +171,7 @@ class DssDockerImage:
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},
-            "User": get_fact(facts, "docker_runner"),
+            "User": get_fact(facts, "docker_user"),
             "Env": [
                 f"VIRTUAL_ENV={virtualenv}",
                 f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
