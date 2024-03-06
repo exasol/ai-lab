@@ -51,8 +51,6 @@
 - name: Install Docker
   include_role:
     name: docker
-  vars:
-    docker_group: "{{ docker_group }}"
 - name: Disable Core Dumps
   include_role:
     name: coredumps
