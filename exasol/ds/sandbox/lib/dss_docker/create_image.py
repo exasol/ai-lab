@@ -61,7 +61,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
     entrypoint = get_fact(facts, "entrypoint")
     if entrypoint is None:
         return ["sleep", "infinity"]
-    entry_cmd = ["python3", entrypoint]
+    entry_cmd = ["sudo", "python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
     if not folder:
         return entry_cmd + jupyter()
@@ -171,6 +171,7 @@ class DssDockerImage:
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},
+            "User": get_fact(facts, "docker_runner"),
             "Env": [
                 f"VIRTUAL_ENV={virtualenv}",
                 f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",

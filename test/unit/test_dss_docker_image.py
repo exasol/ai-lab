@@ -5,7 +5,7 @@ from datetime import datetime
 from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
 from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
 from exasol.ds.sandbox.lib.dss_docker.create_image import DssDockerImage
-
+from typing import Dict, List
 
 @pytest.fixture
 def sample_repo():
@@ -108,16 +108,13 @@ def test_entrypoint_with_copy_args():
         "--password": fact("jupyter", "password"),
         "--jupyter-logfile": fact("jupyter", "logfile"),
     }
-
     actual = create_image.entrypoint(facts)
-    assert [ "python3", fact("entrypoint") ] == actual[:2]
 
-    # convert dicts into sets to simplify comparisson
+    def as_dict(lst: List[str]) -> Dict[str, str]:
+        return { lst[i]: lst[i + 1] for i in range(0, len(lst), 2) }
 
-    expected_set = set((k,v) for k,v in expected.items())
-    it = iter(actual[2:])
-    actual_set = set(zip(it, it))
-    assert expected_set == actual_set
+    assert [ "sudo", "python3", fact("entrypoint") ] == actual[:3] \
+        and expected == as_dict(actual[3:])
 
 
 @pytest.fixture
