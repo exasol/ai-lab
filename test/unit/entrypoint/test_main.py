@@ -20,12 +20,22 @@ def test_no_args(mocker):
 
 
 def test_user_arg(mocker):
-    mocker.patch("sys.argv", ["app", "--user", "jennifer", "--group", "heroes"])
+    mocker.patch("sys.argv", [
+        "app",
+        "--user", "jennifer",
+        "--group", "users",
+        "--docker-group", "docker",
+    ])
     user = create_autospec(entrypoint.User)
-    user.own.return_value = user
     mocker.patch(entrypoint_method("User"), return_value=user)
+    user.own.return_value = user
     mocker.patch(entrypoint_method("sleep_infinity"))
     entrypoint.main()
+    assert entrypoint.User.called
+    args = entrypoint.User.call_args[0]
+    assert args[0] == "jennifer"
+    assert args[1].name == "users"
+    assert args[2].name == "docker"
     assert user.own.called
     assert user.own.call_args == mocker.call("/var/run/docker.sock")
     assert user.switch_to.called

@@ -205,7 +205,7 @@ class User:
         )
 
     @property
-    def uid(self):
+    def id(self):
         if self._id is None:
             self._id = pwd.getpwnam(self.name).pw_uid
         return self._id
@@ -217,10 +217,10 @@ class User:
         return self
 
     def switch_to(self):
-        os.setgroups([self.docker_group.id])
         gid = self.group.id
+        uid = self.id
+        os.setgroups([self.docker_group.id])
         os.setresgid(gid, gid, gid)
-        uid = self.uid
         os.setresuid(uid, uid, uid)
         _logger.debug(
             f"uid = {os.getresuid()}"

@@ -17,7 +17,7 @@ def group(name: str, id: int):
 def user():
     return entrypoint.User(
         "jennifer",
-        group("family", 901),
+        group("users", 901),
         group("docker", 902),
     )
 
@@ -53,7 +53,7 @@ def test_user_specified(user, group, docker, expected):
 
 def test_uid(mocker, user):
     mocker.patch("pwd.getpwnam")
-    user.uid
+    user.id
     assert pwd.getpwnam.called
     assert pwd.getpwnam.call_args == mocker.call("jennifer")
 
@@ -77,8 +77,11 @@ def test_switch_to(mocker, user_with_id):
     mocker.patch("os.setgroups")
     user_with_id.switch_to()
     assert os.setresuid.called
-    assert os.setresuid.call_args == mocker.call(100, 100, 100)
+    uid = user_with_id.id
+    assert os.setresuid.call_args == mocker.call(uid, uid, uid)
     assert os.setresgid.called
-    assert os.setresgid.call_args == mocker.call(901, 901, 901)
+    gid = user_with_id.group.id
+    assert os.setresgid.call_args == mocker.call(gid, gid, gid)
     assert os.setgroups.called
-    assert os.setgroups.call_args == mocker.call([902])
+    groups = [ user_with_id.docker_group.id ]
+    assert os.setgroups.call_args == mocker.call(groups)

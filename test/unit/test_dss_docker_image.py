@@ -97,7 +97,6 @@ def test_entrypoint_with_copy_args():
         return create_image.get_fact(facts, *args)
 
     expected = {
-        "python3": fact("entrypoint"),
         "--docker-group": fact("docker_group"),
         "--notebook-defaults": fact("notebook_folder", "initial"),
         "--notebooks": fact("notebook_folder", "final"),
@@ -109,14 +108,16 @@ def test_entrypoint_with_copy_args():
         "--password": fact("jupyter", "password"),
         "--jupyter-logfile": fact("jupyter", "logfile"),
     }
-    # convert dict into a set to simplify comparisson
-    expected = set((k,v) for k,v in expected.items())
 
     actual = create_image.entrypoint(facts)
-    it = iter(actual)
-    actual = set(zip(it, it))
+    assert [ "python3", fact("entrypoint") ] == actual[:2]
 
-    assert expected == actual
+    # convert dicts into sets to simplify comparisson
+
+    expected_set = set((k,v) for k,v in expected.items())
+    it = iter(actual[2:])
+    actual_set = set(zip(it, it))
+    assert expected_set == actual_set
 
 
 @pytest.fixture
