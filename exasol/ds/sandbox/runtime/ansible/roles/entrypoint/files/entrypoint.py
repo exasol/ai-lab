@@ -217,11 +217,16 @@ class User:
         return self
 
     def switch_to(self):
-        uid = self.uid
-        os.setresuid(uid, uid, uid)
+        os.setgroups([self.docker_group.id])
         gid = self.group.id
         os.setresgid(gid, gid, gid)
-        os.setgroups([self.docker_group.id])
+        uid = self.uid
+        os.setresuid(uid, uid, uid)
+        _logger.debug(
+            f"uid = {os.getresuid()}"
+            f" gid = {os.getresgid()}"
+            f" extra groups = {os.getgroups()}"
+        )
         return self
 
 
