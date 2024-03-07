@@ -1,5 +1,5 @@
 import re
-from typing import Union
+from typing import Union, Iterator, Generator
 
 import docker
 from docker.models.containers import Container
@@ -12,7 +12,8 @@ def sanitize_test_name(test_name: str):
     return test_name
 
 
-def container(request, base_name: str, image: Union[Image, str], start: bool = True, **kwargs) -> Container:
+def container(request, base_name: str, image: Union[Image, str], start: bool = True, **kwargs) \
+        -> Generator[Container, None, None]:
     """
     Create a Docker container based on the specified Docker image.
     """

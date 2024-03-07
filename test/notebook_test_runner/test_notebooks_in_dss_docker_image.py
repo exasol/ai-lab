@@ -48,14 +48,20 @@ def notebook_test_image(request, notebook_test_build_context):
 
 @pytest.fixture()
 def notebook_test_container(request, notebook_test_image):
-    container_obj = container(request, base_name="notebook_test_container", image=notebook_test_image,
-                              volumes={'/var/run/docker.sock': {
-                                  'bind': '/var/run/docker.sock',
-                                  'mode': 'rw', }, }, )
-    time.sleep(2) # wait that the entrypoint changed the permissions of the docker socket
+    yield from container(
+        request, base_name="notebook_test_container", image=notebook_test_image,
+        volumes={'/var/run/docker.sock': {
+            'bind': '/var/run/docker.sock',
+            'mode': 'rw', }, }, )
+
+
+@pytest.fixture()
+def notebook_test_container_with_log(notebook_test_container):
+    time.sleep(2)  # wait that the entrypoint changed the permissions of the docker socket
+    print()
     print("Container Logs:")
-    print(container_obj.logs().decode("utf-8"), flush=True)
-    yield from container_obj
+    print(notebook_test_container.logs().decode("utf-8"), flush=True)
+    yield notebook_test_container
 
 
 def ignored_warnings():
@@ -81,8 +87,8 @@ def ignored_warnings():
         if python_file.is_file()
     ]
 )
-def test_notebook(notebook_test_container, notebook_test_file):
-    container = notebook_test_container
+def test_notebook(notebook_test_container_with_log, notebook_test_file):
+    container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = (
