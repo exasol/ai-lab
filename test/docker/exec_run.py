@@ -49,7 +49,7 @@ def handle_output(output: Union[bytes, Iterator[bytes]], print_output: bool):
     output_string = None
     if print_output and isinstance(output, Iterator):
         for chunk in output:
-            print(decode_bytes(chunk))
+            print(decode_bytes(chunk), flush=True)
     else:
         output_string = decode_bytes(output)
     return output_string

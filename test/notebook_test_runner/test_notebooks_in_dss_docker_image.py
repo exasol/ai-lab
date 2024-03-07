@@ -1,5 +1,6 @@
 import io
 import os
+import time
 from inspect import cleandoc
 from pathlib import Path
 
@@ -19,12 +20,11 @@ def notebook_test_dockerfile_content(dss_docker_image) -> str:
         f"""
         FROM {dss_docker_image.image_name}
         COPY notebooks/* /tmp/notebooks/
-        USER ubuntu
         RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_FOLDER_INITIAL" && sudo rmdir /tmp/notebooks/
-        RUN sudo chown -R jupyter "$NOTEBOOK_FOLDER_INITIAL"
-        USER jupyter
+        RUN sudo chown -R jupyter:jupyter "$NOTEBOOK_FOLDER_INITIAL"
         WORKDIR $NOTEBOOK_FOLDER_INITIAL
-        RUN "$VIRTUAL_ENV/bin/python3" -m pip install -r test_dependencies.txt
+        RUN sudo "$VIRTUAL_ENV/bin/python3" -m pip install -r test_dependencies.txt
+        RUN sudo chown -R jupyter:jupyter "$VIRTUAL_ENV"
         """
     )
 
@@ -48,17 +48,14 @@ def notebook_test_image(request, notebook_test_build_context):
 
 @pytest.fixture()
 def notebook_test_container(request, notebook_test_image):
-    yield from container(
-        request,
-        base_name="notebook_test_container",
-        image=notebook_test_image,
-        volumes={
-            '/var/run/docker.sock': {
-                'bind': '/var/run/docker.sock',
-                'mode': 'rw',
-            },
-        },
-    )
+    container_obj = container(request, base_name="notebook_test_container", image=notebook_test_image,
+                              volumes={'/var/run/docker.sock': {
+                                  'bind': '/var/run/docker.sock',
+                                  'mode': 'rw', }, }, )
+    time.sleep(2) # wait that the entrypoint changed the permissions of the docker socket
+    print("Container Logs:")
+    print(container_obj.logs().decode("utf-8"), flush=True)
+    yield from container_obj
 
 
 def ignored_warnings():
@@ -70,7 +67,7 @@ def ignored_warnings():
         ]
     }
     args = ""
-    for category,messages in warnings.items():
+    for category, messages in warnings.items():
         for m in messages:
             args += f' -W "ignore:{m}:{category}"'
     return args
@@ -96,4 +93,4 @@ def test_notebook(notebook_test_container, notebook_test_file):
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
     nbtest_environ = {key: value for key, value in environ.items() if key.startswith("NBTEST_")}
-    exec_command(command_run_test, container, print_output=True, environment=nbtest_environ)
+    exec_command(command_run_test, container, print_output=True, environment=nbtest_environ, user="jupyter")
