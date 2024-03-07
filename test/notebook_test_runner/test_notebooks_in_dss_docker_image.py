@@ -58,6 +58,10 @@ def notebook_test_container(request, notebook_test_image):
 @pytest.fixture()
 def notebook_test_container_with_log(notebook_test_container):
     time.sleep(10)  # wait that the entrypoint changed the permissions of the docker socket
+    print("Docker socket")
+    socket = Path("/var/run/docker.sock")
+    print(socket)
+    print(socket.stat())
     print()
     print("Container Logs:")
     print(notebook_test_container.logs().decode("utf-8"), flush=True)
