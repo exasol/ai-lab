@@ -22,7 +22,7 @@ def notebook_test_dockerfile_content(dss_docker_image) -> str:
         USER ubuntu
         RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_FOLDER_INITIAL" && sudo rmdir /tmp/notebooks/
         RUN sudo chown -R jupyter "$NOTEBOOK_FOLDER_INITIAL"
-        RUN sudo --login --user jupyter
+        RUN su jupyter
         WORKDIR $NOTEBOOK_FOLDER_INITIAL
         RUN "$VIRTUAL_ENV/bin/python3" -m pip install -r test_dependencies.txt
         """
