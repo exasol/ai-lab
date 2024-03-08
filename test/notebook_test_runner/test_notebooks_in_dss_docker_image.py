@@ -63,8 +63,8 @@ def notebook_test_container_with_log(notebook_test_container):
     print(socket)
     print(socket.stat())
     print()
-    print("Container Logs:")
-    print(notebook_test_container.logs().decode("utf-8"), flush=True)
+    logs = notebook_test_container.logs().decode("utf-8").strip()
+    print("Container Logs: {logs or '(empty)'}", flush=True)
     yield notebook_test_container
 
 

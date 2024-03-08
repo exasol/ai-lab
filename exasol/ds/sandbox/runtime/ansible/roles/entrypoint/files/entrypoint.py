@@ -212,7 +212,7 @@ class FileInspector:
         return self.stat.st_gid
 
     def is_group_accessible(self) -> bool:
-        if not os.path.isfile(self.path):
+        if not os.path.exists(self.path):
             _logger.debug(f"No file {self.path}")
             return False
         permissions = stat.filemode(self.stat.st_mode)
