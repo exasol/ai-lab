@@ -92,7 +92,6 @@ def start_jupyter_server(
             _logger.error(
                 f"Jupyter Server terminated with error code {rc},"
                 f" Logfile {logfile} contains:\n{log_messages}",
-                flush=True,
             )
             sys.exit(rc)
 
@@ -132,7 +131,7 @@ def start_jupyter_server(
             time.sleep(poll_sleep)
             line = f.readline()
             if re.search(regexp, line):
-                print(success_message, flush=True)
+                _logger.info(success_message)
                 break
             exit_on_error(p.poll())
         exit_on_error(p.wait())

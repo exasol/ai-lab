@@ -28,7 +28,7 @@ def test_user_arg(mocker):
     ])
     user = create_autospec(entrypoint.User)
     mocker.patch(entrypoint_method("User"), return_value=user)
-    user.own.return_value = user
+    user.enable_group_access.return_value = user
     mocker.patch(entrypoint_method("sleep_infinity"))
     entrypoint.main()
     assert entrypoint.User.called
@@ -37,8 +37,8 @@ def test_user_arg(mocker):
         entrypoint.Group("users"),
         entrypoint.Group("docker"),
     )
-    assert user.own.called
-    assert user.own.call_args == mocker.call("/var/run/docker.sock")
+    assert user.enable_group_access.called
+    assert user.enable_group_access.call_args == mocker.call("/var/run/docker.sock")
     assert user.switch_to.called
 
 

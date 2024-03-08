@@ -45,25 +45,22 @@ class Testee:
         return self
 
 
-def test_success(tmp_path, capsys):
+def test_success(tmp_path, caplog):
     testee = Testee(tmp_path).create_script().run()
-    captured = capsys.readouterr()
-    assert "Server for Jupyter has been started successfully." in captured.out
+    assert "Server for Jupyter has been started successfully." in caplog.text
 
 
-def test_early_error(tmp_path, capsys):
+def test_early_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
         testee = Testee(tmp_path).create_script(before="exit 22").run()
     assert ex.value.code == 22
-    captured = capsys.readouterr()
-    assert "Server for Jupyter has been started successfully." not in captured.out
-    assert "Jupyter Server terminated with error code 22" in captured.out
+    assert "Server for Jupyter has been started successfully." not in caplog.text
+    assert "Jupyter Server terminated with error code 22" in caplog.text
 
 
-def test_late_error(tmp_path, capsys):
+def test_late_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
         testee = Testee(tmp_path).create_script(after="exit 23").run()
     assert ex.value.code == 23
-    captured = capsys.readouterr()
-    assert "Server for Jupyter has been started successfully." in captured.out
-    assert "Jupyter Server terminated with error code 23" in captured.out
+    assert "Server for Jupyter has been started successfully." in caplog.text
+    assert "Jupyter Server terminated with error code 23" in caplog.text
