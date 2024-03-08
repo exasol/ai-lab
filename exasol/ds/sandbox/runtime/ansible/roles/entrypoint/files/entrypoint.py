@@ -7,6 +7,7 @@ import re
 import resource
 import shutil
 import subprocess
+import stat
 import sys
 import time
 
@@ -16,6 +17,8 @@ from typing import List, TextIO
 
 
 _logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
+logging.basicConfig(format="%(levelname)s %(filename)s: %(message)s")
 
 
 def arg_parser():
@@ -86,7 +89,7 @@ def start_jupyter_server(
     def exit_on_error(rc):
         if rc is not None and rc != 0:
             log_messages = logfile.read_text()
-            print(
+            _logger.error(
                 f"Jupyter Server terminated with error code {rc},"
                 f" Logfile {logfile} contains:\n{log_messages}",
                 flush=True,
@@ -178,9 +181,9 @@ def sleep_infinity():
 
 
 class Group:
-    def __init__(self, name: str):
+    def __init__(self, name: str, id: int = None):
         self.name = name
-        self._id = None
+        self._id = id
 
     @property
     def id(self):
@@ -192,6 +195,65 @@ class Group:
         if not isinstance(other, Group):
             return False
         return other.name == self.name
+
+
+class FileInspector:
+    def __init__(self, path: str):
+        self.path = path
+        self._stat = None
+
+    @property
+    def stat(self):
+        if self._stat is None:
+            self._stat = os.stat(self.path)
+        return self._stat
+
+    @property
+    def group_id(self) -> int:
+        return self.stat.st_gid
+
+    def is_group_accessible(self) -> bool:
+        if not os.path.isfile(self.path):
+            _logger.debug(f"No file {self.path}")
+            return False
+        permissions = stat.filemode(self.stat.st_mode)
+        if permissions[4:6] == "rw":
+            return True
+        _logger.error(
+            "No rw permissions for group in"
+            f" {permissions} {self.path}.")
+        return False
+
+
+class GroupAccess:
+    """
+    If there is already a group with group-ID `gid`, then add the user to
+    this group, otherwise set the specified other group's ID to `gid`.  The
+    other group is expected to exist already and user to be added to it.
+    """
+    def __init__(self, user: str, group: Group):
+        self.user = user
+        self.group = group
+
+    def _find_group(self, id: int) -> str:
+        try:
+            return grp.getgrgid(id).gr_name
+        except KeyError:
+            return None
+
+    def _run(self, command: str) -> int:
+        _logger.debug(f"executing {command}")
+        return subprocess.run(command.split()).returncode
+
+    def enable(self) -> Group:
+        gid = self.group.id
+        existing = self._find_group(gid)
+        if existing:
+            self._run(f"sudo usermod --append --groups {existing} {self.user}")
+            return Group(existing, gid)
+        else:
+            self._run(f"sudo groupmod -g {gid} {self.group.name}")
+            return self.group
 
 
 class User:
@@ -215,16 +277,20 @@ class User:
             self._id = pwd.getpwnam(self.name).pw_uid
         return self._id
 
-    def own(self, path: str):
-        if Path(path).exists():
-            unchanged_uid = -1
-            os.chown(path, unchanged_uid, self.docker_group.id)
+    def enable_group_access(self, path: str):
+        file = FileInspector(path)
+        if file.is_group_accessible():
+            group = GroupAccess(
+                self.name,
+                Group(self.docker_group.name, file.group_id),
+            ).enable()
+            os.setgroups([group.id])
+            self.docker_group = group
         return self
 
     def switch_to(self):
         gid = self.group.id
         uid = self.id
-        os.setgroups([self.docker_group.id])
         os.setresgid(gid, gid, gid)
         os.setresuid(uid, uid, uid)
         _logger.debug(
@@ -239,7 +305,7 @@ def main():
     args = arg_parser().parse_args()
     user = User(args.user, Group(args.group), Group(args.docker_group))
     if user.is_specified:
-        user.own("/var/run/docker.sock").switch_to()
+        user.enable_group_access("/var/run/docker.sock").switch_to()
     if args.notebook_defaults and args.notebooks:
         copy_rec(
             args.notebook_defaults,
