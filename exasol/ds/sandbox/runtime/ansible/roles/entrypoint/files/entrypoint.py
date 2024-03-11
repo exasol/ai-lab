@@ -195,6 +195,9 @@ class Group:
             return False
         return other.name == self.name
 
+    def __repr__(self):
+        return f"Group(name='{self.name}', id={self._id})"
+
 
 class FileInspector:
     def __init__(self, path: str):
@@ -248,10 +251,10 @@ class GroupAccess:
         gid = self.group.id
         existing = self._find_group(gid)
         if existing:
-            self._run(f"sudo usermod --append --groups {existing} {self.user}")
+            self._run(f"usermod --append --groups {existing} {self.user}")
             return Group(existing, gid)
         else:
-            self._run(f"sudo groupmod -g {gid} {self.group.name}")
+            self._run(f"groupmod -g {gid} {self.group.name}")
             return self.group
 
 
