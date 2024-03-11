@@ -2,23 +2,19 @@ import grp
 import os
 import pwd
 import pytest
+import unittest
 
 from unittest.mock import MagicMock, create_autospec
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
-
-
-def group(name: str, id: int):
-    group = entrypoint.Group(name)
-    group._id = id
-    return group
+from test.unit.entrypoint.entrypoint_mock import entrypoint_method
 
 
 @pytest.fixture
 def user():
     return entrypoint.User(
         "jennifer",
-        group("users", 901),
-        group("docker", 902),
+        entrypoint.Group("users", 901),
+        entrypoint.Group("docker", 902),
     )
 
 
@@ -58,23 +54,57 @@ def test_uid(mocker, user):
     assert pwd.getpwnam.call_args == mocker.call("jennifer")
 
 
-def test_chown_file_absent(mocker, user):
-    mocker.patch("os.setgroups")
+def test_enable_file_absent(mocker, user):
+    mocker.patch(entrypoint_method("GroupAccess"))
     user.enable_group_access("/non/existing/path")
-    assert not os.setgroups.called
+    assert not entrypoint.GroupAccess.called
 
 
-# def test_chown_file_exists(mocker, tmp_path, user_with_id):
-#     mocker.patch("os.setgroups")
-#     user_with_id.enable_group_access(tmp_path)
-#     assert os.setgroups.called
-#     assert os.setgroups.call_args == mocker.call(tmp_path, -1, 902)
+def test_enable_non_accessible_file(mocker, user, non_accessible_file):
+    mocker.patch(entrypoint_method("GroupAccess"))
+    user.enable_group_access(non_accessible_file)
+    assert not entrypoint.GroupAccess.called
+
+
+def group_access(group: entrypoint.Group, find_result: str) -> entrypoint.GroupAccess:
+    group_access = entrypoint.GroupAccess("user_name", group)
+    group_access._run = lambda x: 0
+    group_access._find_group = lambda x: find_result
+    return group_access
+
+
+def test_enable_existing_group(mocker, user, accessible_file):
+    gid = entrypoint.FileInspector(accessible_file).group_id
+    group = entrypoint.Group(user.docker_group.name, gid)
+    mocker.patch(
+        entrypoint_method("GroupAccess"),
+        return_value=group_access(group, group.name),
+    )
+    mocker.patch("os.setgroups")
+    user.enable_group_access(accessible_file)
+    assert os.setgroups.called and \
+        os.setgroups.call_args == mocker.call([user.docker_group.id]) and \
+        user.docker_group == group
+
+
+def test_enable_unknown_group(mocker, user, accessible_file):
+    group_name = user.docker_group.name
+    gid = entrypoint.FileInspector(accessible_file).group_id
+    group = entrypoint.Group(group_name, gid)
+    mocker.patch(
+        entrypoint_method("GroupAccess"),
+        return_value=group_access(group, None),
+    )
+    mocker.patch("os.setgroups")
+    user.enable_group_access(accessible_file)
+    assert os.setgroups.called and \
+        os.setgroups.call_args == mocker.call([user.docker_group.id]) and \
+        user.docker_group == entrypoint.Group(group_name, gid)
 
 
 def test_switch_to(mocker, user_with_id):
     mocker.patch("os.setresuid")
     mocker.patch("os.setresgid")
-    # mocker.patch("os.setgroups")
     user_with_id.switch_to()
     assert os.setresuid.called
     uid = user_with_id.id
@@ -82,6 +112,3 @@ def test_switch_to(mocker, user_with_id):
     assert os.setresgid.called
     gid = user_with_id.group.id
     assert os.setresgid.call_args == mocker.call(gid, gid, gid)
-    # assert os.setgroups.called
-    # groups = [ user_with_id.docker_group.id ]
-    # assert os.setgroups.call_args == mocker.call(groups)
