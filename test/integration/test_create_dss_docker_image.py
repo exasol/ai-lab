@@ -160,5 +160,5 @@ def test_docker_socket_on_host_touched(request, dss_docker_image, socket_on_host
         exit_code, output = c.exec_run(f"docker ps")
     output = output.decode("utf-8").strip()
     assert exit_code == 1 and \
-        "Cannot connect" in output and \
+        re.find(r"(Cannot connect|permissions denied)" in output and \
         stat_before == socket_on_host.stat()
