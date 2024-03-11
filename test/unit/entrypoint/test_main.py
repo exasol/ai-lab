@@ -4,12 +4,7 @@ from unittest.mock import MagicMock, create_autospec
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 from pathlib import Path
 
-
-def entrypoint_method(name: str) -> str:
-    return (
-        "exasol.ds.sandbox.runtime.ansible.roles"
-        f".entrypoint.files.entrypoint.{name}"
-    )
+from test.unit.entrypoint.entrypoint_mock import entrypoint_method
 
 
 def test_no_args(mocker):
