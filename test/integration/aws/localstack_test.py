@@ -1,13 +1,19 @@
 import botocore
 import pytest
 
-from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
-    CloudformationStackContextManager
+from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
+    CloudformationStack,
+    CloudformationStackContextManager,
+)
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_lifecycle_for_ec2
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
 
 
-def test_ec2_lifecycle_with_local_stack(local_stack_aws_access, default_asset_id, test_dummy_ami_id):
+def test_ec2_lifecycle_with_local_stack(
+        local_stack_aws_access,
+        default_asset_id,
+        test_dummy_ami_id,
+):
     """
     This test uses localstack to simulate lifecycle of an EC-2 instance
     """
@@ -36,7 +42,11 @@ def test_ec2_manage_keypair_with_local_stack(local_stack_aws_access, default_ass
     aws.delete_ec2_key_pair("test")
 
 
-def test_cloudformation_with_localstack(default_asset_id, local_stack_aws_access, ec2_cloudformation_yml):
+def test_cloudformation_with_localstack(
+        default_asset_id,
+        local_stack_aws_access,
+        ec2_cloudformation_yml,
+):
     aws = local_stack_aws_access
     aws.upload_cloudformation_stack(
         ec2_cloudformation_yml, stack_name="test_stack",
@@ -99,7 +109,11 @@ Resources:
         local_stack_aws_access.validate_cloudformation_template(wrong_cloudformation_template)
 
 
-def test_cloudformation_access_with_local_stack(local_stack_aws_access, default_asset_id, test_dummy_ami_id):
+def test_cloudformation_access_with_local_stack(
+        local_stack_aws_access,
+        default_asset_id,
+        test_dummy_ami_id,
+):
     aws = local_stack_aws_access
     with CloudformationStackContextManager(
             CloudformationStack(
