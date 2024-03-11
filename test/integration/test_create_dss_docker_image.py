@@ -1,5 +1,6 @@
 import docker
 import io
+import os
 import pytest
 import re
 import requests
@@ -9,13 +10,19 @@ import time
 import typing
 
 from tenacity.retry import retry_if_exception_type
+from contextlib import contextmanager
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
-from typing import Set
+from typing import Set, Tuple
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
+from test.docker.container import container
+
+
+DOCKER_SOCKET_HOST = "/var/run/docker.sock"
+DOCKER_SOCKET_CONTAINER = "/var/run/docker.sock"
 
 
 @pytest.fixture
@@ -27,9 +34,15 @@ def dss_docker_container(dss_docker_image, jupyter_port):
         name=dss_docker_image.container_name,
         detach=True,
         ports=mapped_ports,
+        volumes={DOCKER_SOCKET_HOST: {
+        # volumes={ '/home/chku/tmp/a': {
+            'bind': DOCKER_SOCKET_CONTAINER,
+            'mode': 'rw', }, },
     )
+    print('\nstarting container ...')
     container.start()
     try:
+        print('yielding container ...')
         yield container
     finally:
         container.stop()
@@ -90,3 +103,62 @@ def test_install_notebooks(dss_docker_container):
         sagemaker/
     """)
     assert actual.issuperset(expected)
+
+
+class RetryException(Exception):
+    pass
+
+
+def test_docker_socket_access(dss_docker_container):
+    """
+    Verify that when mounting the docker socket from the host's file
+    system into the container, the code inside the container can use the
+    docker CLI.
+    """
+    @retry(RetryException, timedelta(seconds=5))
+    def docker_exec_with_retry(*args, **kwargs) -> Tuple[int, str]:
+        exit_code, output = dss_docker_container.exec_run(*args, **kwargs)
+        if exit_code != 0:
+            raise RetryException()
+        return exit_code, output.decode("utf-8").strip()
+
+    exit_code, output = docker_exec_with_retry("docker ps", user="jupyter")
+    assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
+
+
+@pytest.fixture
+def socket_on_host(tmp_path):
+    socket = tmp_path / "socket.txt"
+    socket.touch()
+    socket.chmod(0o660)
+    return socket
+
+
+def test_docker_socket_on_host_touched(request, dss_docker_image, socket_on_host):
+    """
+    Verify that when mounting the docker socket from the host's file
+    system into the container, the permissions and owner of the original
+    socket in the host's file system remain unchanged.
+
+    The test uses a temp file to increase the chance of potential changes.
+    """
+    @contextmanager
+    def my_container(docker_socket_host):
+        yield from container(
+            request,
+            base_name="C",
+            image=dss_docker_image.image_name,
+            volumes={docker_socket_host: {
+                'bind': DOCKER_SOCKET_CONTAINER,
+                'mode': 'rw', }, },
+        )
+
+    stat_before = socket_on_host.stat()
+    with my_container(socket_on_host) as c:
+        # wait for potential modification of socket by entrypoint
+        time.sleep(1)
+        exit_code, output = c.exec_run(f"docker ps")
+    output = output.decode("utf-8").strip()
+    assert exit_code == 1 and \
+        "Cannot connect" in output and \
+        stat_before == socket_on_host.stat()
