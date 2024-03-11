@@ -35,14 +35,14 @@ def dss_docker_container(dss_docker_image, jupyter_port):
         detach=True,
         ports=mapped_ports,
         volumes={DOCKER_SOCKET_HOST: {
-        # volumes={ '/home/chku/tmp/a': {
             'bind': DOCKER_SOCKET_CONTAINER,
             'mode': 'rw', }, },
     )
-    print('\nstarting container ...')
     container.start()
+    # wait for entrypoint to be finished and
+    # for potential modification of socket by entrypoint
+    time.sleep(1)
     try:
-        print('yielding container ...')
         yield container
     finally:
         container.stop()
@@ -155,8 +155,6 @@ def test_docker_socket_on_host_touched(request, dss_docker_image, socket_on_host
 
     stat_before = socket_on_host.stat()
     with my_container(socket_on_host) as c:
-        # wait for potential modification of socket by entrypoint
-        time.sleep(1)
         exit_code, output = c.exec_run(f"docker ps")
     output = output.decode("utf-8").strip()
     assert exit_code == 1 and \
