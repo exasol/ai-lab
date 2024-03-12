@@ -7,23 +7,6 @@ import stat
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 from unittest.mock import MagicMock
 
-# def stat_result(
-#         st_mode=0,
-#         st_ino=0,
-#         st_dev=0,
-#         st_nlink=0,
-#         st_uid=0,
-#         st_gid=0,
-#         st_size=0,
-#         st_atime=0,
-#         st_mtime=0,
-#         st_ctime=0,
-# ):
-#     return os.stat_result((
-#         st_mode, st_ino, st_dev, st_nlink, st_uid, st_gid, st_size,
-#         st_atime, st_mtime, st_ctime,
-#     ))
-
 
 def test_file_inspector_non_existing_file(mocker):
     mocker.patch("os.stat")
