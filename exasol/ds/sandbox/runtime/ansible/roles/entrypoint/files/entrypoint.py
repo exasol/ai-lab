@@ -18,7 +18,10 @@ from typing import List, TextIO
 
 _logger = logging.getLogger(__name__)
 _logger.setLevel(logging.DEBUG)
-logging.basicConfig(format="%(levelname)s %(filename)s: %(message)s")
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-7s %(filename)s: %(message)s",
+    datefmt="%Y-%m-%d %X",
+)
 
 
 def arg_parser():
@@ -172,6 +175,7 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
 
 def disable_core_dumps():
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    _logger.info("Disabled coredumps")
 
 
 def sleep_infinity():
@@ -244,7 +248,7 @@ class GroupAccess:
             return None
 
     def _run(self, command: str) -> int:
-        _logger.debug(f"executing {command}")
+        _logger.debug(f"Executing {command}")
         return subprocess.run(command.split()).returncode
 
     def enable(self) -> Group:
@@ -288,6 +292,7 @@ class User:
             ).enable()
             os.setgroups([group.id])
             self.docker_group = group
+            _logger.info(f"Enabled access to {path}")
         return self
 
     def switch_to(self):
@@ -300,6 +305,7 @@ class User:
             f" gid = {os.getresgid()}"
             f" extra groups = {os.getgroups()}"
         )
+        _logger.info(f"Switched uid/gid to {self.name}/{self.group.name}")
         return self
 
 
@@ -314,6 +320,9 @@ def main():
             args.notebooks,
             args.warning_as_error,
         )
+        _logger.info(
+            "Copied notebooks from"
+            f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
     if (args.jupyter_server
         and args.notebooks

@@ -9,11 +9,16 @@ import tenacity
 import time
 import typing
 
-from tenacity.retry import retry_if_exception_type
+from tenacity.retry import (
+    retry_if_exception_type,
+    retry_if_not_result,
+)
+from tenacity import Retrying
+from re import Pattern
 from contextlib import contextmanager
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
-from typing import Set, Tuple
+from typing import Set, Tuple, Union
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -39,14 +44,41 @@ def dss_docker_container(dss_docker_image, jupyter_port):
             'mode': 'rw', }, },
     )
     container.start()
-    # wait for entrypoint to be finished and
-    # for potential modification of socket by entrypoint
-    time.sleep(1)
     try:
         yield container
     finally:
         container.stop()
         container.remove()
+
+
+def wait_for(
+        container,
+        log_message: Union[str, Pattern],
+        timeout: timedelta = timedelta(seconds=5),
+):
+    """
+    Wait until container log contains the specified string or regular
+    expression.
+    """
+    for attempt in Retrying(
+            wait=wait_fixed(timeout/10),
+            stop=stop_after_delay(timeout),
+    ):
+        with attempt:
+            logs = container.logs().decode("utf-8").strip()
+            if isinstance(log_message, Pattern):
+                matches = log_message.search(logs)
+            else:
+                matches = log_message in logs
+            if not matches:
+                raise Exception()
+
+
+def wait_for_socket_access(container):
+    wait_for(
+        container,
+        f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
+    )
 
 
 def retry(exception: typing.Type[BaseException], timeout: timedelta):
@@ -79,7 +111,8 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
 
 def test_install_notebook_connector(dss_docker_container):
     container = dss_docker_container
-    command = '/home/jupyter/jupyterenv/bin/python -c "import exasol.nb_connector.secret_store"'
+    command = ('/home/jupyter/jupyterenv/bin/python'
+               ' -c "import exasol.nb_connector.secret_store"')
     exit_code, output = container.exec_run(command)
     output = output.decode('utf-8').strip()
     assert exit_code == 0, f'Got output "{output}".'
@@ -89,6 +122,7 @@ def test_install_notebooks(dss_docker_container):
     def filename_set(string: str) -> Set[str]:
         return set(re.split(r'\s+', string.strip()))
 
+    wait_for(dss_docker_container, "entrypoint.py: Copied notebooks")
     exit_code, output = dss_docker_container.exec_run(
         "ls --indicator-style=slash /home/jupyter/notebooks"
     )
@@ -105,24 +139,10 @@ def test_install_notebooks(dss_docker_container):
     assert actual.issuperset(expected)
 
 
-class RetryException(Exception):
-    pass
-
-
 def test_docker_socket_access(dss_docker_container):
-    """
-    Verify that when mounting the docker socket from the host's file
-    system into the container, the code inside the container can use the
-    docker CLI.
-    """
-    @retry(RetryException, timedelta(seconds=5))
-    def docker_exec_with_retry(*args, **kwargs) -> Tuple[int, str]:
-        exit_code, output = dss_docker_container.exec_run(*args, **kwargs)
-        if exit_code != 0:
-            raise RetryException()
-        return exit_code, output.decode("utf-8").strip()
-
-    exit_code, output = docker_exec_with_retry("docker ps", user="jupyter")
+    wait_for_socket_access(dss_docker_container)
+    exit_code, output = dss_docker_container.exec_run("docker ps", user="jupyter")
+    output = output.decode("utf-8").strip()
     assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
@@ -155,6 +175,7 @@ def test_docker_socket_on_host_touched(request, dss_docker_image, socket_on_host
 
     stat_before = socket_on_host.stat()
     with my_container(socket_on_host) as c:
+        wait_for_socket_access(c)
         exit_code, output = c.exec_run(f"docker ps")
     output = output.decode("utf-8").strip()
     assert exit_code == 1 and \
