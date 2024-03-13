@@ -9,7 +9,7 @@ import pytest
 from test.docker.exec_run import exec_command
 from test.docker.image import image
 from test.docker.in_memory_build_context import InMemoryBuildContext
-from test.docker.container import container
+from test.docker.container import container, wait_for_socket_access, wait_for
 
 TEST_RESOURCE_PATH = Path(__file__).parent.parent / "notebooks"
 
@@ -57,12 +57,8 @@ def notebook_test_container(request, notebook_test_image):
 
 @pytest.fixture()
 def notebook_test_container_with_log(notebook_test_container):
-    time.sleep(10)  # wait that the entrypoint changed the permissions of the docker socket
-    print("Docker socket")
-    socket = Path("/var/run/docker.sock")
-    print(socket)
-    print(socket.stat())
-    print()
+    wait_for_socket_access(notebook_test_container)
+    # wait_for(notebook_test_container, "entrypoint.py: Copied notebooks")
     logs = notebook_test_container.logs().decode("utf-8").strip()
     print(f"Container Logs: {logs or '(empty)'}", flush=True)
     yield notebook_test_container

@@ -31,7 +31,7 @@ def test_file_inspector_not_group_accessible(non_accessible_file, caplog):
 
 def test_group_access_unknown_group_id():
     testee = entrypoint.GroupAccess(None, None)
-    assert testee._find_group(9999999) is None
+    assert testee._find_group_name(9999999) is None
 
 
 def test_group_access_enable_existing_group(mocker, capsys):

@@ -18,16 +18,20 @@ from re import Pattern
 from contextlib import contextmanager
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
-from typing import Set, Tuple, Union
+from typing import Set, Tuple
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
-from test.docker.container import container
+from test.docker.container import (
+    container,
+    DOCKER_SOCKET_CONTAINER,
+    wait_for,
+    wait_for_socket_access,
+)
 
 
 DOCKER_SOCKET_HOST = "/var/run/docker.sock"
-DOCKER_SOCKET_CONTAINER = "/var/run/docker.sock"
 
 
 @pytest.fixture
@@ -49,36 +53,6 @@ def dss_docker_container(dss_docker_image, jupyter_port):
     finally:
         container.stop()
         container.remove()
-
-
-def wait_for(
-        container,
-        log_message: Union[str, Pattern],
-        timeout: timedelta = timedelta(seconds=5),
-):
-    """
-    Wait until container log contains the specified string or regular
-    expression.
-    """
-    for attempt in Retrying(
-            wait=wait_fixed(timeout/10),
-            stop=stop_after_delay(timeout),
-    ):
-        with attempt:
-            logs = container.logs().decode("utf-8").strip()
-            if isinstance(log_message, Pattern):
-                matches = log_message.search(logs)
-            else:
-                matches = log_message in logs
-            if not matches:
-                raise Exception()
-
-
-def wait_for_socket_access(container):
-    wait_for(
-        container,
-        f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
-    )
 
 
 def retry(exception: typing.Type[BaseException], timeout: timedelta):
@@ -146,15 +120,7 @@ def test_docker_socket_access(dss_docker_container):
     assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
-@pytest.fixture
-def fake_docker_socket_on_host(tmp_path):
-    socket = tmp_path / "socket.txt"
-    socket.touch()
-    socket.chmod(0o660)
-    return socket
-
-
-def test_docker_socket_on_host_touched(request, dss_docker_image, socket_on_host):
+def test_docker_socket_on_host_touched(request, dss_docker_image, fake_docker_socket_on_host):
     """
     Verify that when mounting the docker socket from the host's file
     system into the container, the permissions and owner of the original
@@ -173,11 +139,12 @@ def test_docker_socket_on_host_touched(request, dss_docker_image, socket_on_host
                 'mode': 'rw', }, },
         )
 
-    stat_before = socket_on_host.stat()
-    with my_container(socket_on_host) as c:
+    socket = fake_docker_socket_on_host
+    stat_before = socket.stat()
+    with my_container(socket) as c:
         wait_for_socket_access(c)
         exit_code, output = c.exec_run(f"docker ps")
     output = output.decode("utf-8").strip()
     assert exit_code == 1 and \
         re.match(r"(Cannot connect|permission denied)", output) and \
-        stat_before == socket_on_host.stat()
+        stat_before == socket.stat()

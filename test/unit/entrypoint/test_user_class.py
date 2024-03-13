@@ -69,7 +69,7 @@ def test_enable_non_accessible_file(mocker, user, non_accessible_file):
 def group_access(group: entrypoint.Group, find_result: str) -> entrypoint.GroupAccess:
     group_access = entrypoint.GroupAccess("user_name", group)
     group_access._run = lambda x: 0
-    group_access._find_group = lambda x: find_result
+    group_access._find_group_name = lambda x: find_result
     return group_access
 
 

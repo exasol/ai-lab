@@ -211,7 +211,7 @@ class FileInspector:
     @property
     def stat(self):
         if self._stat is None:
-            self._stat = os.stat(self.path)
+            self._stat = os.stat(self._path)
         return self._stat
 
     @property
@@ -219,15 +219,15 @@ class FileInspector:
         return self.stat.st_gid
 
     def is_group_accessible(self) -> bool:
-        if not os.path.exists(self.path):
-            _logger.debug(f"File not found {self.path}")
+        if not os.path.exists(self._path):
+            _logger.debug(f"File not found {self._path}")
             return False
         permissions = stat.filemode(self.stat.st_mode)
         if permissions[4:6] == "rw":
             return True
         _logger.error(
             "No rw permissions for group in"
-            f" {permissions} {self.path}.")
+            f" {permissions} {self._path}.")
         return False
 
 
@@ -253,14 +253,14 @@ class GroupAccess:
         return subprocess.run(command.split()).returncode
 
     def enable(self) -> Group:
-        gid = self.group.id
-        existing = self._find_group(gid)
+        gid = self._group.id
+        existing = self._find_group_name(gid)
         if existing:
-            self._run(f"usermod --append --groups {existing} {self.user}")
+            self._run(f"usermod --append --groups {existing} {self._user}")
             return Group(existing, gid)
         else:
-            self._run(f"groupmod -g {gid} {self.group.name}")
-            return self.group
+            self._run(f"groupmod -g {gid} {self._group.name}")
+            return self._group
 
 
 class User:
