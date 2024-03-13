@@ -109,7 +109,7 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
     assert response.status_code == 200
 
 
-def test_install_notebook_connector(dss_docker_container):
+def test_import_notebook_connector(dss_docker_container):
     container = dss_docker_container
     command = ('/home/jupyter/jupyterenv/bin/python'
                ' -c "import exasol.nb_connector.secret_store"')
@@ -147,7 +147,7 @@ def test_docker_socket_access(dss_docker_container):
 
 
 @pytest.fixture
-def socket_on_host(tmp_path):
+def fake_docker_socket_on_host(tmp_path):
     socket = tmp_path / "socket.txt"
     socket.touch()
     socket.chmod(0o660)

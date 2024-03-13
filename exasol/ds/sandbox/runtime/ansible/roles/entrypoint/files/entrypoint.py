@@ -204,8 +204,8 @@ class Group:
 
 
 class FileInspector:
-    def __init__(self, path: str):
-        self.path = path
+    def __init__(self, path: Path):
+        self._path = path
         self._stat = None
 
     @property
@@ -220,7 +220,7 @@ class FileInspector:
 
     def is_group_accessible(self) -> bool:
         if not os.path.exists(self.path):
-            _logger.debug(f"No file {self.path}")
+            _logger.debug(f"File not found {self.path}")
             return False
         permissions = stat.filemode(self.stat.st_mode)
         if permissions[4:6] == "rw":
@@ -238,10 +238,10 @@ class GroupAccess:
     other group is expected to exist already and user to be added to it.
     """
     def __init__(self, user: str, group: Group):
-        self.user = user
-        self.group = group
+        self._user = user
+        self._group = group
 
-    def _find_group(self, id: int) -> str:
+    def _find_group_name(self, id: int) -> str:
         try:
             return grp.getgrgid(id).gr_name
         except KeyError:
