@@ -4,6 +4,7 @@ import pwd
 import pytest
 import unittest
 
+from pathlib import Path
 from unittest.mock import MagicMock, create_autospec
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 from test.unit.entrypoint.entrypoint_mock import entrypoint_method
@@ -56,7 +57,7 @@ def test_uid(mocker, user):
 
 def test_enable_file_absent(mocker, user):
     mocker.patch(entrypoint_method("GroupAccess"))
-    user.enable_group_access("/non/existing/path")
+    user.enable_group_access(Path("/non/existing/path"))
     assert not entrypoint.GroupAccess.called
 
 

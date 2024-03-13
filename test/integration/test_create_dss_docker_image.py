@@ -120,6 +120,13 @@ def test_docker_socket_access(dss_docker_container):
     assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
+# add tests for
+# - error for insufficient group permissions on docker.sock
+# - docker socket gid matches another group inside container
+# - docker socket gid matches no group inside container
+# tests require to inspect available groups inside docker container
+# docker run -v /home/chku/tmp/a:/aa ubuntu chgrp 1200 /aa
+
 def test_docker_socket_on_host_touched(request, dss_docker_image, fake_docker_socket_on_host):
     """
     Verify that when mounting the docker socket from the host's file
@@ -143,8 +150,5 @@ def test_docker_socket_on_host_touched(request, dss_docker_image, fake_docker_so
     stat_before = socket.stat()
     with my_container(socket) as c:
         wait_for_socket_access(c)
-        exit_code, output = c.exec_run(f"docker ps")
-    output = output.decode("utf-8").strip()
-    assert exit_code == 1 and \
-        re.match(r"(Cannot connect|permission denied)", output) and \
-        stat_before == socket.stat()
+
+    assert stat_before == socket.stat()

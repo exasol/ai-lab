@@ -206,29 +206,25 @@ class Group:
 class FileInspector:
     def __init__(self, path: Path):
         self._path = path
-        self._stat = None
-
-    @property
-    def stat(self):
-        if self._stat is None:
-            self._stat = os.stat(self._path)
-        return self._stat
+        self._stat = path.stat() if path.exists() else None
 
     @property
     def group_id(self) -> int:
-        return self.stat.st_gid
+        if self._stat is None:
+            raise FileNotFoundError(self._path)
+        return self._stat.st_gid
 
     def is_group_accessible(self) -> bool:
-        if not os.path.exists(self._path):
+        if self._stat is None:
             _logger.debug(f"File not found {self._path}")
             return False
-        permissions = stat.filemode(self.stat.st_mode)
+        permissions = stat.filemode(self._stat.st_mode)
         if permissions[4:6] == "rw":
             return True
-        _logger.error(
+        raise PermissionError(
             "No rw permissions for group in"
-            f" {permissions} {self._path}.")
-        return False
+            f" {permissions} {self._path}."
+        )
 
 
 class GroupAccess:
@@ -284,7 +280,7 @@ class User:
             self._id = pwd.getpwnam(self.name).pw_uid
         return self._id
 
-    def enable_group_access(self, path: str):
+    def enable_group_access(self, path: Path):
         file = FileInspector(path)
         if file.is_group_accessible():
             group = GroupAccess(

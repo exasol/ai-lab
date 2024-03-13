@@ -58,7 +58,6 @@ def notebook_test_container(request, notebook_test_image):
 @pytest.fixture()
 def notebook_test_container_with_log(notebook_test_container):
     wait_for_socket_access(notebook_test_container)
-    # wait_for(notebook_test_container, "entrypoint.py: Copied notebooks")
     logs = notebook_test_container.logs().decode("utf-8").strip()
     print(f"Container Logs: {logs or '(empty)'}", flush=True)
     yield notebook_test_container
