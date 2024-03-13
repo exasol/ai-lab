@@ -1,7 +1,7 @@
 # AI-Lab System Requirements
 
 The editions of the AI-Lab have common requirements to be available on your system:
-* CPU Architecture: x86
+* CPU Architecture: x86_64 (64bit)
 * CPU cores: minimum 1, recommended 2 cores
 * Main memory (RAM): minimum 2 GiB, recommended 8 GiB
 * Free disk space: minimum 2 GiB
