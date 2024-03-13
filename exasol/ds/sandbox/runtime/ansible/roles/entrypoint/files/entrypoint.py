@@ -234,8 +234,9 @@ class FileInspector:
 class GroupAccess:
     """
     If there is already a group with group-ID `gid`, then add the user to
-    this group, otherwise change group ID to `gid` for  the specified group name.  The
-    other group is expected to exist already and user to be added to it.
+    this group, otherwise change group ID to `gid` for the specified group
+    name.  The other group is expected to exist already and user to be added
+    to it.
     """
     def __init__(self, user: str, group: Group):
         self._user = user
