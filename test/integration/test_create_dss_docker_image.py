@@ -14,6 +14,8 @@ from tenacity.retry import (
     retry_if_not_result,
 )
 from tenacity import Retrying
+from docker.models.containers import Container
+from pathlib import Path
 from re import Pattern
 from contextlib import contextmanager
 from tenacity.wait import wait_fixed
@@ -120,23 +122,10 @@ def test_docker_socket_access(dss_docker_container):
     assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
-# add tests for
-# - error for insufficient group permissions on docker.sock
-# - docker socket gid matches another group inside container
-# - docker socket gid matches no group inside container
-# tests require to inspect available groups inside docker container
-# docker run -v /home/chku/tmp/a:/aa ubuntu chgrp 1200 /aa
-
-def test_docker_socket_on_host_touched(request, dss_docker_image, fake_docker_socket_on_host):
-    """
-    Verify that when mounting the docker socket from the host's file
-    system into the container, the permissions and owner of the original
-    socket in the host's file system remain unchanged.
-
-    The test uses a temp file to increase the chance of potential changes.
-    """
+@pytest.fixture
+def dss_container_context(request, dss_docker_image):
     @contextmanager
-    def my_container(docker_socket_host):
+    def context(docker_socket_host: Path):
         yield from container(
             request,
             base_name="C",
@@ -145,10 +134,36 @@ def test_docker_socket_on_host_touched(request, dss_docker_image, fake_docker_so
                 'bind': DOCKER_SOCKET_CONTAINER,
                 'mode': 'rw', }, },
         )
+    return context
 
+
+def test_insufficient_group_permissions_on_docker_socket(dss_container_context, non_accessible_file):
+    """
+    This test cannot wait for a specifc log message but only for the
+    container's entrypoint _trying_ to access the Docker socket.
+
+    The test expects the trial to fail and verifies the failure based on
+    the exception added to the Docker log.
+    """
+    socket = non_accessible_file
+    with dss_container_context(socket) as container:
+        time.sleep(1)
+        expected = "PermissionError: No rw permissions for group in -rw------- /var/run/docker.sock."
+        assert expected in container.logs().decode("utf-8")
+
+
+def test_docker_socket_on_host_touched(dss_container_context, fake_docker_socket_on_host):
+    """
+    Verify that when mounting the docker socket from the host's file
+    system into the container, the permissions and owner of the original
+    socket in the host's file system remain unchanged.
+
+    The test uses a fake_docker_socket_on_host to maximize the chance of
+    potential changes.
+    """
     socket = fake_docker_socket_on_host
     stat_before = socket.stat()
-    with my_container(socket) as c:
-        wait_for_socket_access(c)
+    with dss_container_context(socket) as container:
+        wait_for_socket_access(container)
 
     assert stat_before == socket.stat()
