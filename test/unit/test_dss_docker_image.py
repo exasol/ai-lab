@@ -5,7 +5,7 @@ from datetime import datetime
 from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
 from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
 from exasol.ds.sandbox.lib.dss_docker.create_image import DssDockerImage
-
+from typing import Dict, List
 
 @pytest.fixture
 def sample_repo():
@@ -75,39 +75,47 @@ def test_entrypoint_default(facts):
 
 
 def test_entrypoint_with_copy_args():
-    jupyter = "/home/jupyter/jupyterenv/bin/jupyter-lab"
-    port = "port"
-    entrypoint = "/path/to/entrypoint.py"
-    initial = "/path/to/initial"
-    final = "/path/to/final"
-    user = "jupyter-user-name"
-    password = "jupyter-default-password"
-    logfile = "/path/to/jupyter-server.log"
     facts = {
         "dss_facts": {
+            "docker_group": "docker-group-name",
             "jupyter": {
-                "command": jupyter,
-                "port": port,
-                "user": user,
-                "password": password,
-                "logfile": logfile,
+                "command": "/home/jupyter/jupyterenv/bin/jupyter-lab",
+                "port": "port",
+                "user": "jupyter-user-name",
+                "group": "jupyter-group-name",
+                "home": "/home/user",
+                "password": "jupyter-default-password",
+                "logfile": "/path/to/jupyter-server.log",
             },
-            "entrypoint": entrypoint,
+            "entrypoint": "/path/to/entrypoint.py",
             "notebook_folder": {
-                "initial": initial,
-                "final": final,
+                "initial": "/path/to/initial",
+                "final": "/path/to/final",
             }}}
-    assert create_image.entrypoint(facts) == [
-        "python3",
-        entrypoint,
-        "--notebook-defaults", initial,
-        "--notebooks", final,
-        "--jupyter-server", jupyter,
-        "--port", port,
-        "--user", user,
-        "--password", password,
-        "--jupyter-logfile", logfile,
-    ]
+
+    def fact(*args):
+        return create_image.get_fact(facts, *args)
+
+    expected = {
+        "--docker-group": fact("docker_group"),
+        "--notebook-defaults": fact("notebook_folder", "initial"),
+        "--notebooks": fact("notebook_folder", "final"),
+        "--home": fact("jupyter", "home"),
+        "--jupyter-server": fact("jupyter", "command"),
+        "--port": fact("jupyter", "port"),
+        "--user": fact("jupyter", "user"),
+        "--group": fact("jupyter", "group"),
+        "--password": fact("jupyter", "password"),
+        "--jupyter-logfile": fact("jupyter", "logfile"),
+    }
+    actual = create_image.entrypoint(facts)
+
+    def as_dict(lst: List[str]) -> Dict[str, str]:
+        return { lst[i]: lst[i + 1] for i in range(0, len(lst), 2) }
+
+    assert [ "sudo", "python3", fact("entrypoint") ] == actual[:3] \
+        and expected == as_dict(actual[3:])
+
 
 @pytest.fixture
 def mocked_docker_image():
