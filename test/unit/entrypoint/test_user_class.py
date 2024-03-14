@@ -49,10 +49,11 @@ def test_user_specified(user, group, docker, expected):
 
 
 def test_uid(mocker, user):
-    mocker.patch("pwd.getpwnam")
-    user.id
-    assert pwd.getpwnam.called
-    assert pwd.getpwnam.call_args == mocker.call("jennifer")
+    passwd_struct = MagicMock(pw_uid=444)
+    mocker.patch("pwd.getpwnam", return_value=passwd_struct)
+    assert 444 == user.id \
+        and pwd.getpwnam.called \
+        and pwd.getpwnam.call_args == mocker.call("jennifer")
 
 
 def test_enable_file_absent(mocker, user):

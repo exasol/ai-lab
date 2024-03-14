@@ -30,11 +30,10 @@ def test_file_inspector_group_accessible(accessible_file):
     assert testee.is_group_accessible()
 
 
-def test_file_inspector_not_group_accessible(non_accessible_file):
+def test_file_inspector_insufficient_group_permissions(non_accessible_file):
     testee = entrypoint.FileInspector(non_accessible_file)
-    with pytest.raises(PermissionError) as err:
+    with pytest.raises(PermissionError, match="No rw permissions for group") as err:
         testee.is_group_accessible()
-    assert re.match(r"No rw permissions for group", str(err.value))
 
 
 def test_group_access_enable_existing_group(mocker, capsys):
