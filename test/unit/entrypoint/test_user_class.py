@@ -63,7 +63,8 @@ def test_enable_file_absent(mocker, user):
 
 def test_enable_non_accessible_file(mocker, user, non_accessible_file):
     mocker.patch(entrypoint_method("GroupAccess"))
-    user.enable_group_access(non_accessible_file)
+    with pytest.raises(PermissionError):
+        user.enable_group_access(non_accessible_file)
     assert not entrypoint.GroupAccess.called
 
 

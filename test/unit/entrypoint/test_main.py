@@ -33,7 +33,7 @@ def test_user_arg(mocker):
         entrypoint.Group("docker"),
     )
     assert user.enable_group_access.called
-    assert user.enable_group_access.call_args == mocker.call("/var/run/docker.sock")
+    assert user.enable_group_access.call_args == mocker.call(Path("/var/run/docker.sock"))
     assert user.switch_to.called
 
 
