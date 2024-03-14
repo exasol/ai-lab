@@ -69,10 +69,14 @@ def test_enable_non_accessible_file(mocker, user, non_accessible_file):
     assert not entrypoint.GroupAccess.called
 
 
-def group_access(group: entrypoint.Group, find_result: str) -> entrypoint.GroupAccess:
+def group_access(mocker, group: entrypoint.Group, find_result: str) -> entrypoint.GroupAccess:
+    mocker.patch("subprocess.run")
+    if find_result is None:
+        mocker.patch("grp.getgrgid", side_effect=KeyError)
+    else:
+        grp_struct = MagicMock(gr_name=find_result)
+        mocker.patch("grp.getgrgid", return_value=grp_struct)
     group_access = entrypoint.GroupAccess("user_name", group)
-    group_access._run = lambda x: 0
-    group_access._find_group_name = lambda x: find_result
     return group_access
 
 
@@ -81,7 +85,7 @@ def test_enable_existing_group(mocker, user, accessible_file):
     group = entrypoint.Group(user.docker_group.name, gid)
     mocker.patch(
         entrypoint_method("GroupAccess"),
-        return_value=group_access(group, group.name),
+        return_value=group_access(mocker, group, group.name),
     )
     mocker.patch("os.setgroups")
     user.enable_group_access(accessible_file)
@@ -96,7 +100,7 @@ def test_enable_unknown_group(mocker, user, accessible_file):
     group = entrypoint.Group(group_name, gid)
     mocker.patch(
         entrypoint_method("GroupAccess"),
-        return_value=group_access(group, None),
+        return_value=group_access(mocker, group, None),
     )
     mocker.patch("os.setgroups")
     user.enable_group_access(accessible_file)
