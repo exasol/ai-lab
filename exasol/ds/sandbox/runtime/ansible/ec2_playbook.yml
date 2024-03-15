@@ -4,6 +4,7 @@
       ansible_python_interpreter: /usr/bin/python3
       user_name: jupyter
       user_home: /home/jupyter
+      docker_group: docker
       user_group: jupyter
       initial_notebook_folder: "{{ user_home }}/notebooks"
       need_sudo: yes

@@ -1,5 +1,7 @@
 import docker
+import os
 import pytest
+import stat
 
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 
@@ -52,3 +54,27 @@ def dss_docker_image(request):
     finally:
         if not keep_image:
             docker.from_env().images.remove(testee.image_name, force=True)
+
+
+@pytest.fixture
+def fake_docker_socket_on_host(tmp_path):
+    socket = tmp_path / "socket.txt"
+    socket.touch()
+    os.chmod(socket, 0o660)
+    return socket
+
+
+@pytest.fixture
+def accessible_file(fake_docker_socket_on_host):
+    socket = fake_docker_socket_on_host
+    mode = os.stat(socket).st_mode | stat.S_IRGRP | stat.S_IWGRP
+    os.chmod(socket, mode)
+    return socket
+
+
+@pytest.fixture
+def non_accessible_file(fake_docker_socket_on_host):
+    socket = fake_docker_socket_on_host
+    mode = stat.S_IRUSR | stat.S_IWUSR
+    os.chmod(socket, mode)
+    return socket

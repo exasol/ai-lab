@@ -22,7 +22,7 @@ n/a
 
 ## Bug Fixes
 
-n/a
+* #241: Fixed non-root-user access
 
 ## Documentation
 

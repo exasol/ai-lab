@@ -40,14 +40,20 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         command = get_fact(facts, "jupyter", "command")
         if command is None:
             return []
+        docker_group = get_fact(facts, "docker_group")
         port = get_fact(facts, "jupyter", "port")
         user_name = get_fact(facts, "jupyter", "user")
+        group = get_fact(facts, "jupyter", "group")
+        user_home = get_fact(facts, "jupyter", "home")
         password = get_fact(facts, "jupyter", "password")
         logfile = get_fact(facts, "jupyter", "logfile")
         return [
+            "--home", user_home,
             "--jupyter-server", command,
             "--port", port,
             "--user", user_name,
+            "--group", group,
+            "--docker-group", docker_group,
             "--password", password,
             "--jupyter-logfile", logfile,
         ]
@@ -55,7 +61,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
     entrypoint = get_fact(facts, "entrypoint")
     if entrypoint is None:
         return ["sleep", "infinity"]
-    entry_cmd = ["python3", entrypoint]
+    entry_cmd = ["sudo", "python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
     if not folder:
         return entry_cmd + jupyter()
@@ -162,10 +168,10 @@ class DssDockerImage:
         notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
         conf = {
             "Entrypoint": entrypoint(facts),
-            "User": get_fact(facts, "jupyter", "user"),
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},
+            "User": get_fact(facts, "docker_user"),
             "Env": [
                 f"VIRTUAL_ENV={virtualenv}",
                 f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",

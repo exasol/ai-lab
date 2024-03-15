@@ -4,11 +4,15 @@
   ansible.builtin.set_fact:
     dss_facts:
       entrypoint: "{{user_home}}/entrypoint.py"
+      docker_user: "{{ ansible_user }}"
+      docker_group: "{{ docker_group }}"
       jupyter:
         virtualenv: "{{ jupyter_virtualenv }}"
         command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
         port: "49494"
         user: "{{ user_name }}"
+        group: "{{ user_group }}"
+        home: "{{ user_home }}"
         password: "{{ lookup('ansible.builtin.env', 'JUPYTER_LAB_PASSWORD', default='ailab') }}"
         logfile: "{{ user_home }}/jupyter-server.log"
       notebook_folder:
@@ -40,7 +44,7 @@
     owner: "{{ user_name }}"
     group: "{{ user_group }}"
     recurse: true
-  become: "{{ need_sudo }}"
+  become: "{{need_sudo}}"
 - name: Clear pip Cache
   ansible.builtin.file:
     path: /root/.cache/pip
