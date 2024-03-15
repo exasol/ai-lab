@@ -31,9 +31,10 @@
   gather_facts: true
   vars:
     ansible_python_interpreter: python3
-    user_name: "jupyter"
-    user_group: "jupyter"
-    user_home: "/home/jupyter"
+    user_name: jupyter
+    user_group: jupyter
+    docker_group: docker
+    user_home: /home/jupyter
     initial_notebook_folder: "{{ user_home }}/notebook-defaults"
     need_sudo: yes
     docker_integration_test: true

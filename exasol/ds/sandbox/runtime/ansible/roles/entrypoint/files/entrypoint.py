@@ -1,18 +1,27 @@
 import argparse
 import logging
+import grp
 import os
+import pwd
 import re
 import resource
 import shutil
 import subprocess
+import stat
 import sys
 import time
 
 from inspect import cleandoc
 from pathlib import Path
+from typing import List, TextIO
 
 
 _logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-7s %(filename)s: %(message)s",
+    datefmt="%Y-%m-%d %X",
+)
 
 
 def arg_parser():
@@ -40,6 +49,18 @@ def arg_parser():
         help="user name for running jupyter server",
     )
     parser.add_argument(
+        "--group", type=str,
+        help="user group for running jupyter server",
+    )
+    parser.add_argument(
+        "--docker-group", type=str,
+        help="user group for accessing Docker socket",
+    )
+    parser.add_argument(
+        "--home", type=str,
+        help="home directory of user running jupyter server",
+    )
+    parser.add_argument(
         "--password", type=str,
         help="initial default password for Jupyter server",
     )
@@ -55,6 +76,7 @@ def arg_parser():
 
 
 def start_jupyter_server(
+        home_directory: str,
         binary_path: str,
         port: int,
         notebook_dir: str,
@@ -70,10 +92,9 @@ def start_jupyter_server(
     def exit_on_error(rc):
         if rc is not None and rc != 0:
             log_messages = logfile.read_text()
-            print(
+            _logger.error(
                 f"Jupyter Server terminated with error code {rc},"
                 f" Logfile {logfile} contains:\n{log_messages}",
-                flush=True,
             )
             sys.exit(rc)
 
@@ -83,8 +104,11 @@ def start_jupyter_server(
         "--no-browser",
         "--allow-root",
     ]
+
+    env = os.environ.copy()
+    env["HOME"] = home_directory
     with open(logfile, "w") as f:
-        p = subprocess.Popen(command_line, stdout=f, stderr=f)
+        p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
     url = "http://<host>:<port>"
     localhost_url = url.replace("<host>", "localhost").replace("<port>", str(port))
@@ -110,7 +134,7 @@ def start_jupyter_server(
             time.sleep(poll_sleep)
             line = f.readline()
             if re.search(regexp, line):
-                print(success_message, flush=True)
+                _logger.info(success_message)
                 break
             exit_on_error(p.poll())
         exit_on_error(p.wait())
@@ -151,29 +175,161 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
 
 def disable_core_dumps():
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+    _logger.info("Disabled coredumps")
 
 
-def sleep_inifinity():
+def sleep_infinity():
     while True:
         time.sleep(1)
 
 
+class Group:
+    def __init__(self, name: str, id: int = None):
+        self.name = name
+        self._id = id
+
+    @property
+    def id(self):
+        if self._id is None:
+            self._id = grp.getgrnam(self.name).gr_gid
+        return self._id
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Group):
+            return False
+        return other.name == self.name
+
+    def __repr__(self):
+        return f"Group(name='{self.name}', id={self._id})"
+
+
+class FileInspector:
+    def __init__(self, path: Path):
+        self._path = path
+        self._stat = path.stat() if path.exists() else None
+
+    @property
+    def group_id(self) -> int:
+        if self._stat is None:
+            raise FileNotFoundError(self._path)
+        return self._stat.st_gid
+
+    def is_group_accessible(self) -> bool:
+        if self._stat is None:
+            _logger.debug(f"File not found {self._path}")
+            return False
+        permissions = stat.filemode(self._stat.st_mode)
+        if permissions[4:6] == "rw":
+            return True
+        raise PermissionError(
+            "No rw permissions for group in"
+            f" {permissions} {self._path}."
+        )
+
+
+class GroupAccess:
+    """
+    If there is already a group with group-ID `gid`, then add the user to
+    this group, otherwise change the group ID to `gid` for the specified group
+    name.  The other group is expected to exist already and user to be added
+    to it.
+    """
+    def __init__(self, user: str, group: Group):
+        self._user = user
+        self._group = group
+
+    def _find_group_name(self, id: int) -> str:
+        try:
+            return grp.getgrgid(id).gr_name
+        except KeyError:
+            return None
+
+    def _run(self, command: str) -> int:
+        _logger.debug(f"Executing {command}")
+        return subprocess.run(command.split()).returncode
+
+    def enable(self) -> Group:
+        gid = self._group.id
+        existing = self._find_group_name(gid)
+        if existing:
+            self._run(f"usermod --append --groups {existing} {self._user}")
+            return Group(existing, gid)
+        else:
+            self._run(f"groupmod -g {gid} {self._group.name}")
+            return self._group
+
+
+class User:
+    def __init__(self, user_name: str, group: Group, docker_group: Group):
+        self.name = user_name
+        self._id = None
+        self.group = group
+        self.docker_group = docker_group
+
+    @property
+    def is_specified(self) -> bool:
+        return bool(
+            self.name
+            and self.group.name
+            and self.docker_group.name
+        )
+
+    @property
+    def id(self):
+        if self._id is None:
+            self._id = pwd.getpwnam(self.name).pw_uid
+        return self._id
+
+    def enable_group_access(self, path: Path):
+        file = FileInspector(path)
+        if file.is_group_accessible():
+            group = GroupAccess(
+                self.name,
+                Group(self.docker_group.name, file.group_id),
+            ).enable()
+            os.setgroups([group.id])
+            self.docker_group = group
+            _logger.info(f"Enabled access to {path}")
+        return self
+
+    def switch_to(self):
+        gid = self.group.id
+        uid = self.id
+        os.setresgid(gid, gid, gid)
+        os.setresuid(uid, uid, uid)
+        _logger.debug(
+            f"uid = {os.getresuid()}"
+            f" gid = {os.getresgid()}"
+            f" extra groups = {os.getgroups()}"
+        )
+        _logger.info(f"Switched uid/gid to {self.name}/{self.group.name}")
+        return self
+
+
 def main():
     args = arg_parser().parse_args()
+    user = User(args.user, Group(args.group), Group(args.docker_group))
+    if user.is_specified:
+        user.enable_group_access(Path("/var/run/docker.sock")).switch_to()
     if args.notebook_defaults and args.notebooks:
         copy_rec(
             args.notebook_defaults,
             args.notebooks,
             args.warning_as_error,
         )
+        _logger.info(
+            "Copied notebooks from"
+            f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
     if (args.jupyter_server
         and args.notebooks
         and args.jupyter_logfile
         and args.user
+        and args.home
         and args.password
         ):
         start_jupyter_server(
+            args.home,
             args.jupyter_server,
             args.port,
             args.notebooks,
@@ -182,7 +338,7 @@ def main():
             args.password,
         )
     else:
-        sleep_inifinity()
+        sleep_infinity()
 
 
 if __name__ == "__main__":
