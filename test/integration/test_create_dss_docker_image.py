@@ -21,7 +21,7 @@ from re import Pattern
 from contextlib import contextmanager
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
-from typing import Optional, Set, Tuple
+from typing import Set, Tuple
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -126,7 +126,7 @@ def test_docker_socket_access(dss_docker_container):
 @pytest.fixture
 def dss_container_context(request, dss_docker_image):
     @contextmanager
-    def context(docker_socket_host: Optional[Path] = None):
+    def context(docker_socket_host: Path):
         volumes = None
         if docker_socket_host is not None:
             volumes = { docker_socket_host: {
