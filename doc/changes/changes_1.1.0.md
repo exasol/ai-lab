@@ -12,9 +12,9 @@ Version: 1.1.0
 
 ## Features
 
-* 223: Added support to add docker image tag "latest"
-* 204: Updated developer guide
-* 177: Disabled core dumps
+* #223: Added support to add docker image tag "latest"
+* #204: Updated developer guide
+* #177: Disabled core dumps
 
 ## Security
 
@@ -26,7 +26,7 @@ n/a
 
 ## Documentation
 
-* 204: Updated developer guide
+* #204: Updated developer guide
 * #219: Described Virtual Box setup in user guide
 
 ## Refactoring
@@ -36,3 +36,4 @@ n/a
 * #221: Changed wording in the main configuration notebook, as suggested by PM.
 * #66: Used a non-root user to run Jupyter in the Docker Image ai-lab
 * #149: Split AWS tests
+* #252: Added tests for access to Docker socket

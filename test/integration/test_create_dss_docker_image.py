@@ -9,6 +9,7 @@ import tenacity
 import time
 import typing
 
+from datetime import datetime
 from tenacity.retry import (
     retry_if_exception_type,
     retry_if_not_result,
@@ -20,7 +21,7 @@ from re import Pattern
 from contextlib import contextmanager
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
-from typing import Set, Tuple
+from typing import Optional, Set, Tuple
 from datetime import datetime, timedelta
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -125,14 +126,17 @@ def test_docker_socket_access(dss_docker_container):
 @pytest.fixture
 def dss_container_context(request, dss_docker_image):
     @contextmanager
-    def context(docker_socket_host: Path):
+    def context(docker_socket_host: Optional[Path] = None):
+        volumes = None
+        if docker_socket_host is not None:
+            volumes = { docker_socket_host: {
+                'bind': DOCKER_SOCKET_CONTAINER,
+                'mode': 'rw', }, }
         yield from container(
             request,
             base_name="C",
             image=dss_docker_image.image_name,
-            volumes={docker_socket_host: {
-                'bind': DOCKER_SOCKET_CONTAINER,
-                'mode': 'rw', }, },
+            volumes=volumes,
         )
     return context
 
@@ -167,3 +171,83 @@ def test_docker_socket_on_host_touched(dss_container_context, fake_docker_socket
         wait_for_socket_access(container)
 
     assert stat_before == socket.stat()
+
+
+class SocketManipulator:
+    def __init__(self, context_provider, socket_on_host: Path):
+        self._context_provider = context_provider
+        self._socket_on_host = socket_on_host
+        self._container = None
+
+    @contextmanager
+    def context(self):
+        with self._context_provider(self._socket_on_host) as container:
+            self._container = container
+            yield self
+            self._container = None
+
+    def run(self, command: str, **kwargs) -> str:
+        """
+        Execute command in container and verify success.
+        """
+        exit_code, output = self._container.exec_run(command, **kwargs)
+        output = output.decode("utf-8").strip()
+        assert exit_code == 0, output
+        return output
+
+    def numeric_gid(self, group_entry: str) -> int:
+        """group_entry is "ubuntu:x:971:", for example"""
+        return int(group_entry.split(':')[2])
+
+    def get_gid(self, group_name: str) -> int:
+        output = self.run(f"getent group {group_name}")
+        return self.numeric_gid(output)
+
+    def get_unassigned_gid(self) -> int:
+        """
+        Return a new gid, that is not used for any other group, yet.
+        """
+        gid = 0
+        for line in self.run("cat /etc/group").splitlines():
+            if not line.startswith(f"nogroup:"):
+                gid = max(gid, self.numeric_gid(line))
+        return gid + 1
+
+    def chgrp_of_docker_socket_on_host(self, gid: str):
+        self.run(f"chgrp {gid} {DOCKER_SOCKET_CONTAINER}", user="root")
+
+    def assert_jupyter_member_of(self, group_name: str):
+        output = self.run(f"getent group {group_name}")
+        members = output.split(":")[3].split(",")
+        assert "jupyter" in members
+
+    def assert_write_to_socket(self):
+        signal = f"Is there anybody out there {datetime.now()}?"
+        self.run(f'bash -c "echo {signal} > {DOCKER_SOCKET_CONTAINER}"')
+        assert signal == self._socket_on_host.read_text().strip()
+
+
+@pytest.fixture
+def socket_manipulator(dss_container_context, accessible_file):
+    yield SocketManipulator(dss_container_context, accessible_file)
+
+
+def test_write_socket_known_gid(socket_manipulator):
+    with socket_manipulator.context() as testee:
+        gid = testee.get_gid("ubuntu")
+        testee.chgrp_of_docker_socket_on_host(gid)
+
+    with socket_manipulator.context() as testee:
+        testee.assert_jupyter_member_of("ubuntu")
+        testee.assert_write_to_socket()
+
+
+def test_write_socket_unknown_gid(socket_manipulator):
+    with socket_manipulator.context() as testee:
+        gid = testee.get_unassigned_gid()
+        testee.chgrp_of_docker_socket_on_host(gid)
+
+    with socket_manipulator.context() as testee:
+        assert gid == testee.get_gid("docker")
+        testee.assert_jupyter_member_of("docker")
+        testee.assert_write_to_socket()
