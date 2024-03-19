@@ -220,7 +220,9 @@ class SocketManipulator:
 
     def assert_write_to_socket(self):
         signal = f"Is there anybody out there {datetime.now()}?"
-        self.run(f'bash -c "echo {signal} > {DOCKER_SOCKET_CONTAINER}"')
+        self.run(
+            f'bash -c "echo {signal} > {DOCKER_SOCKET_CONTAINER}"',
+            user="jupyter")
         assert signal == self._socket_on_host.read_text().strip()
 
 
