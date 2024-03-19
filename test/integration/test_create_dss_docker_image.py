@@ -127,16 +127,13 @@ def test_docker_socket_access(dss_docker_container):
 def dss_container_context(request, dss_docker_image):
     @contextmanager
     def context(docker_socket_host: Path):
-        volumes = None
-        if docker_socket_host is not None:
-            volumes = { docker_socket_host: {
-                'bind': DOCKER_SOCKET_CONTAINER,
-                'mode': 'rw', }, }
         yield from container(
             request,
             base_name="C",
             image=dss_docker_image.image_name,
-            volumes=volumes,
+            volumes={ docker_socket_host: {
+                'bind': DOCKER_SOCKET_CONTAINER,
+                'mode': 'rw', }, },
         )
     return context
 
