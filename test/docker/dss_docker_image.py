@@ -3,7 +3,11 @@ import os
 import pytest
 import stat
 
-from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
+from exasol.ds.sandbox.lib.dss_docker import (
+    DssDockerImage,
+    USER_ENV,
+    PASSWORD_ENV,
+)
 
 
 def pytest_addoption(parser):
@@ -27,6 +31,18 @@ def pytest_addoption(parser):
         "--docker-registry", default=None, metavar="HOST:PORT",
         help="Docker registry for pushing Docker images to",
     )
+
+
+@pytest.fixture(scope="session")
+def docker_auth():
+    username = os.environ.get(USER_ENV, None)
+    password = os.environ.get(PASSWORD_ENV, None)
+    if not (username and password):
+        return None
+    return {
+        "username": username,
+        "password": password,
+    }
 
 
 @pytest.fixture(scope="session")

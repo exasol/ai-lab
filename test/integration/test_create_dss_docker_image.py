@@ -1,10 +1,9 @@
 import docker
-import io
+import logging
 import os
 import pytest
 import re
 import requests
-import sys
 import tenacity
 import time
 import typing
@@ -23,18 +22,27 @@ from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
 from typing import Set, Tuple
 from datetime import datetime, timedelta
-from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
+
 from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
+from test.docker.image import (
+    DockerImageSpec,
+    pull as pull_docker_image,
+)
 from test.docker.container import (
     container,
+    container_context,
     DOCKER_SOCKET_CONTAINER,
+    sanitize_container_name,
     wait_for,
     wait_for_socket_access,
 )
 
 
 DOCKER_SOCKET_HOST = "/var/run/docker.sock"
+
+_logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
 
 
 @pytest.fixture
@@ -56,6 +64,36 @@ def dss_docker_container(dss_docker_image, jupyter_port):
     finally:
         container.stop()
         container.remove()
+
+
+@pytest.fixture
+def dss_container_context(request, dss_docker_image):
+    def context(docker_socket_host: Path):
+        return container_context(
+            image_name=dss_docker_image.image_name,
+            suffix=request.node.name,
+            volumes={ docker_socket_host: {
+                'bind': DOCKER_SOCKET_CONTAINER,
+                'mode': 'rw', }, },
+        )
+
+    return context
+
+
+@pytest.fixture
+def ubuntu_container_context(request, docker_auth):
+    spec = DockerImageSpec("ubuntu", "20.04")
+    pull_docker_image(spec, docker_auth)
+    def context(path_on_host: Path, path_in_container: str):
+        return container_context(
+                image_name=spec.name,
+                suffix=request.node.name,
+                command="sleep infinity",
+                volumes={ path_on_host: {
+                    'bind': path_in_container,
+                    'mode': 'rw', }, },
+        )
+    return context
 
 
 def retry(exception: typing.Type[BaseException], timeout: timedelta):
@@ -82,7 +120,6 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
 
     start = datetime.now()
     response = request_with_retry(url)
-    print(f'{url} responded after {pretty_print.elapsed(start)}.')
     assert response.status_code == 200
 
 
@@ -123,21 +160,6 @@ def test_docker_socket_access(dss_docker_container):
     assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
-@pytest.fixture
-def dss_container_context(request, dss_docker_image):
-    @contextmanager
-    def context(docker_socket_host: Path):
-        yield from container(
-            request,
-            base_name="C",
-            image=dss_docker_image.image_name,
-            volumes={ docker_socket_host: {
-                'bind': DOCKER_SOCKET_CONTAINER,
-                'mode': 'rw', }, },
-        )
-    return context
-
-
 def test_insufficient_group_permissions_on_docker_socket(dss_container_context, non_accessible_file):
     """
     This test cannot wait for a specifc log message but only for the
@@ -170,27 +192,32 @@ def test_docker_socket_on_host_touched(dss_container_context, fake_docker_socket
     assert stat_before == socket.stat()
 
 
-class SocketManipulator:
+def assert_exec_run(container: Container, command: str, **kwargs) -> str:
+    """
+    Execute command in container and verify success.
+    """
+    exit_code, output = container.exec_run(command, **kwargs)
+    output = output.decode("utf-8").strip()
+    assert exit_code == 0, output
+    return output
+
+
+class SocketInspector:
     def __init__(self, context_provider, socket_on_host: Path):
         self._context_provider = context_provider
-        self._socket_on_host = socket_on_host
+        self.socket_on_host = socket_on_host
         self._container = None
 
     @contextmanager
     def context(self):
-        with self._context_provider(self._socket_on_host) as container:
+        with self._context_provider(self.socket_on_host) as container:
+            wait_for_socket_access(container)
             self._container = container
             yield self
             self._container = None
 
     def run(self, command: str, **kwargs) -> str:
-        """
-        Execute command in container and verify success.
-        """
-        exit_code, output = self._container.exec_run(command, **kwargs)
-        output = output.decode("utf-8").strip()
-        assert exit_code == 0, output
-        return output
+        return assert_exec_run(self._container, command, **kwargs)
 
     def numeric_gid(self, group_entry: str) -> int:
         """group_entry is "ubuntu:x:971:", for example"""
@@ -210,9 +237,6 @@ class SocketManipulator:
                 gid = max(gid, self.numeric_gid(line))
         return gid + 1
 
-    def chgrp_of_docker_socket_on_host(self, gid: str):
-        self.run(f"chgrp {gid} {DOCKER_SOCKET_CONTAINER}", user="root")
-
     def assert_jupyter_member_of(self, group_name: str):
         output = self.run(f"getent group {group_name}")
         members = output.split(":")[3].split(",")
@@ -223,30 +247,47 @@ class SocketManipulator:
         self.run(
             f'bash -c "echo {signal} > {DOCKER_SOCKET_CONTAINER}"',
             user="jupyter")
-        assert signal == self._socket_on_host.read_text().strip()
+        assert signal == self.socket_on_host.read_text().strip()
 
 
 @pytest.fixture
-def socket_manipulator(dss_container_context, accessible_file):
-    yield SocketManipulator(dss_container_context, accessible_file)
+def socket_inspector(dss_container_context, accessible_file):
+    yield SocketInspector(dss_container_context, accessible_file)
 
 
-def test_write_socket_known_gid(socket_manipulator):
-    with socket_manipulator.context() as testee:
-        gid = testee.get_gid("ubuntu")
-        testee.chgrp_of_docker_socket_on_host(gid)
+class GroupChanger:
+    def __init__(self, context_provider):
+        self._context_provider = context_provider
 
-    with socket_manipulator.context() as testee:
-        testee.assert_jupyter_member_of("ubuntu")
-        testee.assert_write_to_socket()
+    def chgrp(self, gid: int, path_on_host: Path):
+        path_in_container = "/mounted"
+        with self._context_provider(path_on_host, path_in_container) as container:
+            assert_exec_run(container, f"chgrp {gid} {path_in_container}")
 
 
-def test_write_socket_unknown_gid(socket_manipulator):
-    with socket_manipulator.context() as testee:
-        gid = testee.get_unassigned_gid()
-        testee.chgrp_of_docker_socket_on_host(gid)
+@pytest.fixture
+def group_changer(ubuntu_container_context):
+    return GroupChanger(ubuntu_container_context)
 
-    with socket_manipulator.context() as testee:
-        assert gid == testee.get_gid("docker")
-        testee.assert_jupyter_member_of("docker")
-        testee.assert_write_to_socket()
+
+def test_write_socket_known_gid(socket_inspector, group_changer):
+    with socket_inspector.context() as inspector:
+        gid = inspector.get_gid("ubuntu")
+
+    group_changer.chgrp(gid, socket_inspector.socket_on_host)
+
+    with socket_inspector.context() as inspector:
+        inspector.assert_jupyter_member_of("ubuntu")
+        inspector.assert_write_to_socket()
+
+
+def test_write_socket_unknown_gid(socket_inspector, group_changer):
+    with socket_inspector.context() as inspector:
+        gid = inspector.get_unassigned_gid()
+
+    group_changer.chgrp(gid, socket_inspector.socket_on_host)
+
+    with socket_inspector.context() as inspector:
+        assert gid == inspector.get_gid("docker")
+        inspector.assert_jupyter_member_of("docker")
+        inspector.assert_write_to_socket()

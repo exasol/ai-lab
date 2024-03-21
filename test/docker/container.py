@@ -1,8 +1,9 @@
 import re
 
 import docker
-from datetime import timedelta
+from datetime import datetime, timedelta
 
+from contextlib import contextmanager
 from re import Pattern
 from tenacity import Retrying
 from tenacity.wait import wait_fixed
@@ -12,8 +13,8 @@ from docker.models.containers import Container
 from docker.models.images import Image
 
 
-def sanitize_test_name(test_name: str):
-    test_name = re.sub('[^0-9a-zA-Z]+', '_', test_name)
+def sanitize_container_name(test_name: str):
+    test_name = re.sub('[^0-9a-zA-Z-]+', '_', test_name)
     test_name = re.sub('_+', '_', test_name)
     return test_name
 
@@ -24,11 +25,33 @@ def container(request, base_name: str, image: Union[Image, str], start: bool = T
     Create a Docker container based on the specified Docker image.
     """
     client = docker.from_env()
-    base_container_name = base_name.replace("-", "_")
-    test_name = sanitize_test_name(str(request.node.name))
-    container_name = f"{base_container_name}_{test_name}"
+    container_name = sanitize_container_name(f"{base_name}_{request.node.name}")
     try:
         image_name = image.id if hasattr(image, "id") else image
+        container = client.containers.create(
+            image=image_name,
+            name=container_name,
+            detach=True,
+            **kwargs
+        )
+        if start:
+            container.start()
+        yield container
+    finally:
+        # int(f"\nRemoving container {container_name}")
+        client.containers.get(container_name).remove(force=True)
+        client.close()
+
+
+def timestamp() -> str:
+    return f'{datetime.now().timestamp():.0f}'
+
+
+@contextmanager
+def container_context(image_name: str, suffix: str = None, start: bool = True, **kwargs):
+    container_name = sanitize_container_name(f"{image_name}_{suffix or timestamp()}")
+    client = docker.from_env()
+    try:
         container = client.containers.create(
             image=image_name,
             name=container_name,

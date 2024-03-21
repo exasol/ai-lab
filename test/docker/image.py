@@ -1,11 +1,24 @@
 import json
+import logging
 import re
+
 from datetime import datetime
 from typing import List, Dict, Any, Tuple, Optional
+from dataclasses import dataclass
 
 import docker
 from docker.errors import BuildError
 from docker.models.images import Image
+
+
+@dataclass
+class DockerImageSpec:
+    repository: str
+    tag: str
+
+    @property
+    def name(self) -> str:
+        return f"{self.repository}:{self.tag}"
 
 
 def format_build_log(build_log: List[Dict[str, Any]]):
@@ -24,11 +37,25 @@ class BuildErrorWithLog(BuildError):
         super().__init__(f"{reason}\n\n{format_build_log(build_log)}", build_log)
 
 
+def pull(
+    spec: DockerImageSpec,
+    auth_config: Optional[Dict[str, str]] = None,
+):
+    client = docker.from_env()
+    if not client.images.list(spec.name):
+        _logger.debug(f"Pulling Docker image {spec.name}")
+        client.images.pull(
+            spec.repository,
+            spec.tag,
+            auth_config=auth_config,
+        )
+
+
 def image(request, name: str, print_log=False, **kwargs) -> Image:
     """
     Create a Docker image.
     The function supports a pair of pytest cli options with a suffix derived from parameter ``name``:
-    Option `--docker-image-(suffix)` specifies the name of an existing image to be used 
+    Option `--docker-image-(suffix)` specifies the name of an existing image to be used
     instead of creating a new one.
     Option `--keep-docker-image-(suffix)` skips removing the image after test execution.
     """
