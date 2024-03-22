@@ -67,7 +67,8 @@ def image(request, name: str, print_log=False, **kwargs) -> Image:
     keep_image = request.config.getoption(f"--keep-docker-image-{base_command_line}")
     client = docker.from_env()
     if image_tag:
-        return client.images.get(image_tag)
+        yield client.images.get(image_tag)
+        return
     timestamp = f'{datetime.now().timestamp():.0f}'
     image_name = name.replace("-", "_")
     image_tag = f"{image_name}:{timestamp}"

@@ -19,36 +19,15 @@ def sanitize_container_name(test_name: str):
     return test_name
 
 
-def container(request, base_name: str, image: Union[Image, str], start: bool = True, **kwargs) \
-        -> Generator[Container, None, None]:
-    """
-    Create a Docker container based on the specified Docker image.
-    """
-    client = docker.from_env()
-    container_name = sanitize_container_name(f"{base_name}_{request.node.name}")
-    try:
-        image_name = image.id if hasattr(image, "id") else image
-        container = client.containers.create(
-            image=image_name,
-            name=container_name,
-            detach=True,
-            **kwargs
-        )
-        if start:
-            container.start()
-        yield container
-    finally:
-        # int(f"\nRemoving container {container_name}")
-        client.containers.get(container_name).remove(force=True)
-        client.close()
-
-
 def timestamp() -> str:
     return f'{datetime.now().timestamp():.0f}'
 
 
 @contextmanager
 def container_context(image_name: str, suffix: str = None, start: bool = True, **kwargs):
+    """
+    Create a Docker container based on the specified Docker image.
+    """
     container_name = sanitize_container_name(f"{image_name}_{suffix or timestamp()}")
     client = docker.from_env()
     try:

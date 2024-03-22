@@ -30,7 +30,6 @@ from test.docker.image import (
     pull as pull_docker_image,
 )
 from test.docker.container import (
-    container,
     container_context,
     DOCKER_SOCKET_CONTAINER,
     sanitize_container_name,
@@ -47,23 +46,15 @@ _logger.setLevel(logging.DEBUG)
 
 @pytest.fixture
 def dss_docker_container(dss_docker_image, jupyter_port):
-    client = docker.from_env()
     mapped_ports = { f'{jupyter_port}/tcp': jupyter_port }
-    container = client.containers.create(
-        image=dss_docker_image.image_name,
-        name=dss_docker_image.container_name,
-        detach=True,
-        ports=mapped_ports,
-        volumes={DOCKER_SOCKET_HOST: {
-            'bind': DOCKER_SOCKET_CONTAINER,
-            'mode': 'rw', }, },
-    )
-    container.start()
-    try:
+    with container_context(
+            image_name=dss_docker_image.image_name,
+            ports=mapped_ports,
+            volumes={DOCKER_SOCKET_HOST: {
+                'bind': DOCKER_SOCKET_CONTAINER,
+                'mode': 'rw', }, },
+    ) as container:
         yield container
-    finally:
-        container.stop()
-        container.remove()
 
 
 @pytest.fixture
@@ -124,12 +115,9 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
 
 
 def test_import_notebook_connector(dss_docker_container):
-    container = dss_docker_container
     command = ('/home/jupyter/jupyterenv/bin/python'
                ' -c "import exasol.nb_connector.secret_store"')
-    exit_code, output = container.exec_run(command)
-    output = output.decode('utf-8').strip()
-    assert exit_code == 0, f'Got output "{output}".'
+    assert_exec_run(dss_docker_container, command)
 
 
 def test_install_notebooks(dss_docker_container):
@@ -137,11 +125,10 @@ def test_install_notebooks(dss_docker_container):
         return set(re.split(r'\s+', string.strip()))
 
     wait_for(dss_docker_container, "entrypoint.py: Copied notebooks")
-    exit_code, output = dss_docker_container.exec_run(
-        "ls --indicator-style=slash /home/jupyter/notebooks"
+    output = assert_exec_run(
+        dss_docker_container,
+        "ls --indicator-style=slash /home/jupyter/notebooks",
     )
-    output = output.decode('utf-8').strip()
-    assert exit_code == 0, f'Got output "{output}".'
 
     actual = filename_set(output)
     expected = filename_set("""
@@ -155,9 +142,10 @@ def test_install_notebooks(dss_docker_container):
 
 def test_docker_socket_access(dss_docker_container):
     wait_for_socket_access(dss_docker_container)
-    exit_code, output = dss_docker_container.exec_run("docker ps", user="jupyter")
-    output = output.decode("utf-8").strip()
-    assert exit_code == 0 and re.match(r"^CONTAINER ID +IMAGE .*", output)
+    output = assert_exec_run(
+        dss_docker_container,
+        "docker ps", user="jupyter")
+    assert re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
 def test_insufficient_group_permissions_on_docker_socket(dss_container_context, non_accessible_file):
