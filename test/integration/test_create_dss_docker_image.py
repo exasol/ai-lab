@@ -195,14 +195,17 @@ class SocketInspector:
         self._context_provider = context_provider
         self.socket_on_host = socket_on_host
         self._container = None
+        self._context = None
 
-    @contextmanager
-    def context(self):
-        with self._context_provider(self.socket_on_host) as container:
-            wait_for_socket_access(container)
-            self._container = container
-            yield self
-            self._container = None
+    def __enter__(self):
+        self._context = self._context_provider(self.socket_on_host)
+        self._container = self._context.__enter__()
+        wait_for_socket_access(self._container)
+        return self
+
+    def __exit__(self, exc_type, exc, exc_tb):
+        self._container = None
+        self._context.__exit__(exc_type, exc, exc_tb)
 
     def run(self, command: str, **kwargs) -> str:
         return assert_exec_run(self._container, command, **kwargs)
@@ -259,23 +262,23 @@ def group_changer(ubuntu_container_context):
 
 
 def test_write_socket_known_gid(socket_inspector, group_changer):
-    with socket_inspector.context() as inspector:
+    with socket_inspector as inspector:
         gid = inspector.get_gid("ubuntu")
 
     group_changer.chgrp(gid, socket_inspector.socket_on_host)
 
-    with socket_inspector.context() as inspector:
+    with socket_inspector as inspector:
         inspector.assert_jupyter_member_of("ubuntu")
         inspector.assert_write_to_socket()
 
 
 def test_write_socket_unknown_gid(socket_inspector, group_changer):
-    with socket_inspector.context() as inspector:
+    with socket_inspector as inspector:
         gid = inspector.get_unassigned_gid()
 
     group_changer.chgrp(gid, socket_inspector.socket_on_host)
 
-    with socket_inspector.context() as inspector:
+    with socket_inspector as inspector:
         assert gid == inspector.get_gid("docker")
         inspector.assert_jupyter_member_of("docker")
         inspector.assert_write_to_socket()
