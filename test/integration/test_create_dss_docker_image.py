@@ -22,11 +22,14 @@ from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
 from typing import Set, Tuple
 from datetime import datetime, timedelta
+from inspect import cleandoc
 
 from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib import pretty_print
+from test.docker.in_memory_build_context import InMemoryBuildContext
 from test.docker.image import (
     DockerImageSpec,
+    image,
     pull as pull_docker_image,
 )
 from test.docker.container import (
@@ -92,6 +95,87 @@ def retry(exception: typing.Type[BaseException], timeout: timedelta):
         wait=wait_fixed(timeout/10),
         stop=stop_after_delay(timeout),
     )
+
+
+def assert_exec_run(container: Container, command: str, **kwargs) -> str:
+    """
+    Execute command in container and verify success.
+    """
+    exit_code, output = container.exec_run(command, **kwargs)
+    output = output.decode("utf-8").strip()
+    assert exit_code == 0, output
+    return output
+
+
+class SocketInspector:
+    def __init__(self, context_provider, socket_on_host: Path):
+        self._context_provider = context_provider
+        self.socket_on_host = socket_on_host
+        self._container = None
+        self._context = None
+
+    def __enter__(self):
+        self._context = self._context_provider(self.socket_on_host)
+        self._container = self._context.__enter__()
+        wait_for_socket_access(self._container)
+        return self
+
+    def __exit__(self, exc_type, exc, exc_tb):
+        self._container = None
+        self._context.__exit__(exc_type, exc, exc_tb)
+
+    def run(self, command: str, **kwargs) -> str:
+        return assert_exec_run(self._container, command, **kwargs)
+
+    def numeric_gid(self, group_entry: str) -> int:
+        """group_entry is "ubuntu:x:971:", for example"""
+        return int(group_entry.split(':')[2])
+
+    def get_gid(self, group_name: str) -> int:
+        output = self.run(f"getent group {group_name}")
+        return self.numeric_gid(output)
+
+    def get_unassigned_gid(self) -> int:
+        """
+        Return a new gid, that is not used for any other group, yet.
+        """
+        gid = 0
+        for line in self.run("cat /etc/group").splitlines():
+            if not line.startswith(f"nogroup:"):
+                gid = max(gid, self.numeric_gid(line))
+        return gid + 1
+
+    def assert_jupyter_member_of(self, group_name: str):
+        output = self.run(f"getent group {group_name}")
+        members = output.split(":")[3].split(",")
+        assert "jupyter" in members
+
+    def assert_write_to_socket(self):
+        signal = f"Is there anybody out there {datetime.now()}?"
+        self.run(
+            f'bash -c "echo {signal} > {DOCKER_SOCKET_CONTAINER}"',
+            user="jupyter")
+        assert signal == self.socket_on_host.read_text().strip()
+
+
+@pytest.fixture
+def socket_inspector(dss_container_context, accessible_file):
+    yield SocketInspector(dss_container_context, accessible_file)
+
+
+class GroupChanger:
+    def __init__(self, context_provider):
+        self._context_provider = context_provider
+
+    def chgrp(self, gid: int, path_on_host: Path):
+        path_in_container = "/mounted"
+        with self._context_provider(path_on_host, path_in_container) as container:
+            assert_exec_run(container, f"chgrp {gid} {path_in_container}")
+
+
+@pytest.fixture
+def group_changer(ubuntu_container_context):
+    return GroupChanger(ubuntu_container_context)
 
 
 def test_jupyterlab(dss_docker_container, jupyter_port):
@@ -179,94 +263,61 @@ def test_docker_socket_on_host_touched(dss_container_context, fake_docker_socket
     assert stat_before == socket.stat()
 
 
-def assert_exec_run(container: Container, command: str, **kwargs) -> str:
-    """
-    Execute command in container and verify success.
-    """
-    exit_code, output = container.exec_run(command, **kwargs)
-    output = output.decode("utf-8").strip()
-    assert exit_code == 0, output
-    return output
+# def test_write_socket_known_gid(socket_inspector, group_changer):
+#     with socket_inspector as inspector:
+#         gid = inspector.get_gid("ubuntu")
+#     group_changer.chgrp(gid, socket_inspector.socket_on_host)
+#     with socket_inspector as inspector:
+#         inspector.assert_jupyter_member_of("ubuntu")
+#         inspector.assert_write_to_socket()
 
 
-class SocketInspector:
-    def __init__(self, context_provider, socket_on_host: Path):
-        self._context_provider = context_provider
-        self.socket_on_host = socket_on_host
-        self._container = None
-        self._context = None
-
-    def __enter__(self):
-        self._context = self._context_provider(self.socket_on_host)
-        self._container = self._context.__enter__()
-        wait_for_socket_access(self._container)
-        return self
-
-    def __exit__(self, exc_type, exc, exc_tb):
-        self._container = None
-        self._context.__exit__(exc_type, exc, exc_tb)
-
-    def run(self, command: str, **kwargs) -> str:
-        return assert_exec_run(self._container, command, **kwargs)
-
-    def numeric_gid(self, group_entry: str) -> int:
-        """group_entry is "ubuntu:x:971:", for example"""
-        return int(group_entry.split(':')[2])
-
-    def get_gid(self, group_name: str) -> int:
-        output = self.run(f"getent group {group_name}")
-        return self.numeric_gid(output)
-
-    def get_unassigned_gid(self) -> int:
+@contextmanager
+def added_group(request, base_image, gid, group_name):
+    # dss_docker_image.image_name
+    dockerfile_content = cleandoc(
+        f"""
+        FROM {base_image}
+        RUN sudo groupadd --gid {gid} {group_name}
         """
-        Return a new gid, that is not used for any other group, yet.
-        """
-        gid = 0
-        for line in self.run("cat /etc/group").splitlines():
-            if not line.startswith(f"nogroup:"):
-                gid = max(gid, self.numeric_gid(line))
-        return gid + 1
-
-    def assert_jupyter_member_of(self, group_name: str):
-        output = self.run(f"getent group {group_name}")
-        members = output.split(":")[3].split(",")
-        assert "jupyter" in members
-
-    def assert_write_to_socket(self):
-        signal = f"Is there anybody out there {datetime.now()}?"
-        self.run(
-            f'bash -c "echo {signal} > {DOCKER_SOCKET_CONTAINER}"',
-            user="jupyter")
-        assert signal == self.socket_on_host.read_text().strip()
+    )
+    with InMemoryBuildContext() as context:
+        context.add_string_to_file(name="Dockerfile", string=dockerfile_content)
+    yield from image(request,
+                     name=f"ai_lab_with_additional_group",
+                     fileobj=context.fileobj,
+                     custom_context=True,
+                     print_log=True)
 
 
-@pytest.fixture
-def socket_inspector(dss_container_context, accessible_file):
-    yield SocketInspector(dss_container_context, accessible_file)
+def altered_inspector(request, image_name: str, socket_on_host: Path):
+    def context_provider(socket_on_host):
+        return container_context(
+            request,
+            image_name=image_name,
+            volumes={ socket_on_host: {
+                'bind': DOCKER_SOCKET_CONTAINER,
+                'mode': 'rw', }, },
+        )
+    return SocketInspector(context_provider, socket_on_host)
 
 
-class GroupChanger:
-    def __init__(self, context_provider):
-        self._context_provider = context_provider
+def test_write_socket_known_gid(request, dss_docker_image, socket_inspector, group_changer):
+    initial_inspector = socket_inspector
+    with initial_inspector as inspector:
+        gid = inspector.get_unassigned_gid()
 
-    def chgrp(self, gid: int, path_on_host: Path):
-        path_in_container = "/mounted"
-        with self._context_provider(path_on_host, path_in_container) as container:
-            assert_exec_run(container, f"chgrp {gid} {path_in_container}")
+    socket_on_host = initial_inspector.socket_on_host
+    group_changer.chgrp(gid, socket_on_host)
 
-
-@pytest.fixture
-def group_changer(ubuntu_container_context):
-    return GroupChanger(ubuntu_container_context)
-
-
-def test_write_socket_known_gid(socket_inspector, group_changer):
-    with socket_inspector as inspector:
-        gid = inspector.get_gid("ubuntu")
-    group_changer.chgrp(gid, socket_inspector.socket_on_host)
-    with socket_inspector as inspector:
-        inspector.assert_jupyter_member_of("ubuntu")
-        inspector.assert_write_to_socket()
+    # create new image based on dss_docker_image but with an additional
+    # group with gid set to the one inquired before
+    base_image = dss_docker_image.image_name
+    group_name = "artifical_group"
+    with added_group(request, base_image, gid, group_name) as image:
+        with altered_inspector(request, image.id, socket_on_host) as inspector:
+            inspector.assert_jupyter_member_of(group_name)
+            inspector.assert_write_to_socket()
 
 
 def test_write_socket_unknown_gid(socket_inspector, group_changer):
