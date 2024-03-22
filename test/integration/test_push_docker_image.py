@@ -12,7 +12,7 @@ from test.ports import find_free_port
 from test.integration.local_docker_registry import LocalDockerRegistry
 from test.docker.image import (
     DockerImageSpec,
-    pull,
+    pull as pull_docker_image,
 )
 
 _logger = logging.getLogger(__name__)
