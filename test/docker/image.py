@@ -11,6 +11,9 @@ from docker.errors import BuildError
 from docker.models.images import Image
 
 
+_logger = logging.getLogger(__name__)
+
+
 @dataclass
 class DockerImageSpec:
     repository: str
