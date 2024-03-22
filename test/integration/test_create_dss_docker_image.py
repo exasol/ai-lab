@@ -30,6 +30,7 @@ from test.docker.image import (
     pull as pull_docker_image,
 )
 from test.docker.container import (
+    container,
     container_context,
     DOCKER_SOCKET_CONTAINER,
     sanitize_container_name,
@@ -41,28 +42,26 @@ from test.docker.container import (
 DOCKER_SOCKET_HOST = "/var/run/docker.sock"
 
 _logger = logging.getLogger(__name__)
-_logger.setLevel(logging.DEBUG)
 
 
 @pytest.fixture
-def dss_docker_container(dss_docker_image, jupyter_port):
+def dss_docker_container(request, dss_docker_image, jupyter_port):
     mapped_ports = { f'{jupyter_port}/tcp': jupyter_port }
-    with container_context(
-            image_name=dss_docker_image.image_name,
-            ports=mapped_ports,
-            volumes={DOCKER_SOCKET_HOST: {
-                'bind': DOCKER_SOCKET_CONTAINER,
-                'mode': 'rw', }, },
-    ) as container:
-        yield container
-
+    yield from container(
+        request,
+        image=dss_docker_image.image_name,
+        ports=mapped_ports,
+        volumes={DOCKER_SOCKET_HOST: {
+            'bind': DOCKER_SOCKET_CONTAINER,
+            'mode': 'rw', }, },
+    )
 
 @pytest.fixture
 def dss_container_context(request, dss_docker_image):
     def context(docker_socket_host: Path):
         return container_context(
+            request,
             image_name=dss_docker_image.image_name,
-            suffix=request.node.name,
             volumes={ docker_socket_host: {
                 'bind': DOCKER_SOCKET_CONTAINER,
                 'mode': 'rw', }, },
@@ -77,12 +76,12 @@ def ubuntu_container_context(request, docker_auth):
     pull_docker_image(spec, docker_auth)
     def context(path_on_host: Path, path_in_container: str):
         return container_context(
-                image_name=spec.name,
-                suffix=request.node.name,
-                command="sleep infinity",
-                volumes={ path_on_host: {
-                    'bind': path_in_container,
-                    'mode': 'rw', }, },
+            request,
+            image_name=spec.name,
+            command="sleep infinity",
+            volumes={ path_on_host: {
+                'bind': path_in_container,
+                'mode': 'rw', }, },
         )
     return context
 
@@ -264,9 +263,7 @@ def group_changer(ubuntu_container_context):
 def test_write_socket_known_gid(socket_inspector, group_changer):
     with socket_inspector as inspector:
         gid = inspector.get_gid("ubuntu")
-
     group_changer.chgrp(gid, socket_inspector.socket_on_host)
-
     with socket_inspector as inspector:
         inspector.assert_jupyter_member_of("ubuntu")
         inspector.assert_write_to_socket()
@@ -275,9 +272,7 @@ def test_write_socket_known_gid(socket_inspector, group_changer):
 def test_write_socket_unknown_gid(socket_inspector, group_changer):
     with socket_inspector as inspector:
         gid = inspector.get_unassigned_gid()
-
     group_changer.chgrp(gid, socket_inspector.socket_on_host)
-
     with socket_inspector as inspector:
         assert gid == inspector.get_gid("docker")
         inspector.assert_jupyter_member_of("docker")

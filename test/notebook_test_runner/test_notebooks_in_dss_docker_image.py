@@ -11,7 +11,7 @@ from test.docker.exec_run import exec_command
 from test.docker.image import image
 from test.docker.in_memory_build_context import InMemoryBuildContext
 from test.docker.container import (
-    container_context,
+    container,
     wait_for_socket_access,
     wait_for,
 )
@@ -55,14 +55,13 @@ def notebook_test_image(request, notebook_test_build_context):
 @pytest.fixture()
 def notebook_test_container(request, notebook_test_image):
     _logger.debug(f'Starting container context for docker image {notebook_test_image.id}')
-    with container_context(
-            image_name=notebook_test_image.id,
-            suffix=request.node.name,
-            volumes={'/var/run/docker.sock': {
+    yield from container(
+        request,
+        notebook_test_image,
+        volumes={'/var/run/docker.sock': {
                 'bind': '/var/run/docker.sock',
                 'mode': 'rw', }, },
-    ) as container:
-        yield container
+    )
 
 
 @pytest.fixture()

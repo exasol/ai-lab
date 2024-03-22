@@ -23,12 +23,20 @@ def timestamp() -> str:
     return f'{datetime.now().timestamp():.0f}'
 
 
-@contextmanager
-def container_context(image_name: str, suffix: str = None, start: bool = True, **kwargs):
+def container(
+        request,
+        image: Union[Image, str],
+        suffix: str = None,
+        start: bool = True,
+        **kwargs,
+) -> Generator[Container, None, None]:
     """
     Create a Docker container based on the specified Docker image.
     """
-    container_name = sanitize_container_name(f"{image_name}_{suffix or timestamp()}")
+    if suffix is not None:
+        suffix = f"_{suffix}"
+    image_name = image.id if hasattr(image, "id") else image
+    container_name = sanitize_container_name(f"{image_name}_{request.node.name}{suffix}")
     client = docker.from_env()
     try:
         container = client.containers.create(
@@ -43,6 +51,11 @@ def container_context(image_name: str, suffix: str = None, start: bool = True, *
     finally:
         client.containers.get(container_name).remove(force=True)
         client.close()
+
+
+@contextmanager
+def container_context(request, image_name: str, **kwargs):
+    yield from container(request, image_name, **kwargs)
 
 
 def wait_for(
