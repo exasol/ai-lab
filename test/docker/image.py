@@ -73,7 +73,8 @@ def image(request, name: str, print_log=False, **kwargs) -> Image:
     image_name = name.replace("-", "_")
     image_tag = f"{image_name}:{timestamp}"
     try:
-        log_generator = client.api.build(tag=image_tag, **kwargs)
+        # rm=True removes intermediate containers after building
+        log_generator = client.api.build(tag=image_tag, rm=True, **kwargs)
         image_id, log, error = analyze_build_log(log_generator)
         if image_id is None:
             raise BuildErrorWithLog(error, log)

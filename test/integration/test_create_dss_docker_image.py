@@ -283,11 +283,12 @@ def added_group(request, base_image, gid, group_name):
     )
     with InMemoryBuildContext() as context:
         context.add_string_to_file(name="Dockerfile", string=dockerfile_content)
-    yield from image(request,
-                     name=f"ai_lab_with_additional_group",
-                     fileobj=context.fileobj,
-                     custom_context=True,
-                     print_log=True)
+    yield from image(
+        request,
+        name=f"ai_lab_with_additional_group",
+        fileobj=context.fileobj,
+        custom_context=True,
+    )
 
 
 def altered_inspector(request, image_name: str, socket_on_host: Path):
