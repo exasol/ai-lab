@@ -263,18 +263,8 @@ def test_docker_socket_on_host_touched(dss_container_context, fake_docker_socket
     assert stat_before == socket.stat()
 
 
-# def test_write_socket_known_gid(socket_inspector, group_changer):
-#     with socket_inspector as inspector:
-#         gid = inspector.get_gid("ubuntu")
-#     group_changer.chgrp(gid, socket_inspector.socket_on_host)
-#     with socket_inspector as inspector:
-#         inspector.assert_jupyter_member_of("ubuntu")
-#         inspector.assert_write_to_socket()
-
-
 @contextmanager
-def added_group(request, base_image, gid, group_name):
-    # dss_docker_image.image_name
+def dss_image_with_added_group(request, base_image, gid, group_name):
     dockerfile_content = cleandoc(
         f"""
         FROM {base_image}
@@ -315,7 +305,7 @@ def test_write_socket_known_gid(request, dss_docker_image, socket_inspector, gro
     # group with gid set to the one inquired before
     base_image = dss_docker_image.image_name
     group_name = "artifical_group"
-    with added_group(request, base_image, gid, group_name) as image:
+    with dss_image_with_added_group(request, base_image, gid, group_name) as image:
         with altered_inspector(request, image.id, socket_on_host) as inspector:
             inspector.assert_jupyter_member_of(group_name)
             inspector.assert_write_to_socket()

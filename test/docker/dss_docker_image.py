@@ -12,7 +12,6 @@ from exasol.ds.sandbox.lib.dss_docker import (
 
 def pytest_addoption(parser):
     def add_options_for_docker_image(base_name: str, test_group: str = None):
-        "Notebook testing"
         if test_group is None:
             test_group = f"tests with {base_name}"
         parser.addoption(
