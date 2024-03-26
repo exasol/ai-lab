@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import time
 from inspect import cleandoc
@@ -9,9 +10,14 @@ import pytest
 from test.docker.exec_run import exec_command
 from test.docker.image import image
 from test.docker.in_memory_build_context import InMemoryBuildContext
-from test.docker.container import container, wait_for_socket_access, wait_for
+from test.docker.container import (
+    container,
+    wait_for_socket_access,
+    wait_for,
+)
 
 TEST_RESOURCE_PATH = Path(__file__).parent.parent / "notebooks"
+_logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
@@ -39,20 +45,23 @@ def notebook_test_build_context(notebook_test_dockerfile_content) -> io.BytesIO:
 
 @pytest.fixture(scope="session")
 def notebook_test_image(request, notebook_test_build_context):
+    _logger.debug('building docker image "notebook_test"')
     yield from image(request,
                      name="notebook_test",
                      fileobj=notebook_test_build_context,
                      custom_context=True,
                      print_log=True)
 
-
 @pytest.fixture()
 def notebook_test_container(request, notebook_test_image):
+    _logger.debug(f'Starting container context for docker image {notebook_test_image.id}')
     yield from container(
-        request, base_name="notebook_test_container", image=notebook_test_image,
+        request,
+        notebook_test_image,
         volumes={'/var/run/docker.sock': {
-            'bind': '/var/run/docker.sock',
-            'mode': 'rw', }, }, )
+                'bind': '/var/run/docker.sock',
+                'mode': 'rw', }, },
+    )
 
 
 @pytest.fixture()

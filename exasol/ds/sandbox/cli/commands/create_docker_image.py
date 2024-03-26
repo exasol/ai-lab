@@ -8,13 +8,11 @@ from exasol.ds.sandbox.lib.dss_docker import (
     DEFAULT_ORG_AND_REPOSITORY,
     DssDockerImage,
     DockerRegistry,
+    USER_ENV,
+    PASSWORD_ENV,
 )
 from exasol.ds.sandbox.lib.logging import SUPPORTED_LOG_LEVELS
 from exasol.ds.sandbox.lib.logging import set_log_level
-
-
-USER_ENV = "DOCKER_REGISTRY_USER"
-PASSWORD_ENV = "DOCKER_REGISTRY_PASSWORD"
 
 
 @cli.command()

@@ -1,11 +1,27 @@
 import json
+import logging
 import re
+
 from datetime import datetime
 from typing import List, Dict, Any, Tuple, Optional
+from dataclasses import dataclass
 
 import docker
 from docker.errors import BuildError
 from docker.models.images import Image
+
+
+_logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DockerImageSpec:
+    repository: str
+    tag: str
+
+    @property
+    def name(self) -> str:
+        return f"{self.repository}:{self.tag}"
 
 
 def format_build_log(build_log: List[Dict[str, Any]]):
@@ -24,11 +40,25 @@ class BuildErrorWithLog(BuildError):
         super().__init__(f"{reason}\n\n{format_build_log(build_log)}", build_log)
 
 
+def pull(
+    spec: DockerImageSpec,
+    auth_config: Optional[Dict[str, str]] = None,
+):
+    client = docker.from_env()
+    if not client.images.list(spec.name):
+        _logger.debug(f"Pulling Docker image {spec.name}")
+        client.images.pull(
+            spec.repository,
+            spec.tag,
+            auth_config=auth_config,
+        )
+
+
 def image(request, name: str, print_log=False, **kwargs) -> Image:
     """
     Create a Docker image.
     The function supports a pair of pytest cli options with a suffix derived from parameter ``name``:
-    Option `--docker-image-(suffix)` specifies the name of an existing image to be used 
+    Option `--docker-image-(suffix)` specifies the name of an existing image to be used
     instead of creating a new one.
     Option `--keep-docker-image-(suffix)` skips removing the image after test execution.
     """
@@ -37,12 +67,14 @@ def image(request, name: str, print_log=False, **kwargs) -> Image:
     keep_image = request.config.getoption(f"--keep-docker-image-{base_command_line}")
     client = docker.from_env()
     if image_tag:
-        return client.images.get(image_tag)
+        yield client.images.get(image_tag)
+        return
     timestamp = f'{datetime.now().timestamp():.0f}'
     image_name = name.replace("-", "_")
     image_tag = f"{image_name}:{timestamp}"
     try:
-        log_generator = client.api.build(tag=image_tag, **kwargs)
+        # rm=True removes intermediate containers after building
+        log_generator = client.api.build(tag=image_tag, rm=True, **kwargs)
         image_id, log, error = analyze_build_log(log_generator)
         if image_id is None:
             raise BuildErrorWithLog(error, log)

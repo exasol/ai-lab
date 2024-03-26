@@ -1,8 +1,9 @@
 import re
 
 import docker
-from datetime import timedelta
+from datetime import datetime, timedelta
 
+from contextlib import contextmanager
 from re import Pattern
 from tenacity import Retrying
 from tenacity.wait import wait_fixed
@@ -12,23 +13,32 @@ from docker.models.containers import Container
 from docker.models.images import Image
 
 
-def sanitize_test_name(test_name: str):
-    test_name = re.sub('[^0-9a-zA-Z]+', '_', test_name)
+def sanitize_container_name(test_name: str):
+    test_name = re.sub('[^0-9a-zA-Z-]+', '_', test_name)
     test_name = re.sub('_+', '_', test_name)
     return test_name
 
 
-def container(request, base_name: str, image: Union[Image, str], start: bool = True, **kwargs) \
-        -> Generator[Container, None, None]:
+def timestamp() -> str:
+    return f'{datetime.now().timestamp():.0f}'
+
+
+def container(
+        request,
+        image: Union[Image, str],
+        suffix: str = None,
+        start: bool = True,
+        **kwargs,
+) -> Generator[Container, None, None]:
     """
     Create a Docker container based on the specified Docker image.
     """
+    if suffix is not None:
+        suffix = f"_{suffix}"
+    image_name = image.id if hasattr(image, "id") else image
+    container_name = sanitize_container_name(f"{image_name}_{request.node.name}{suffix}")
     client = docker.from_env()
-    base_container_name = base_name.replace("-", "_")
-    test_name = sanitize_test_name(str(request.node.name))
-    container_name = f"{base_container_name}_{test_name}"
     try:
-        image_name = image.id if hasattr(image, "id") else image
         container = client.containers.create(
             image=image_name,
             name=container_name,
@@ -41,6 +51,11 @@ def container(request, base_name: str, image: Union[Image, str], start: bool = T
     finally:
         client.containers.get(container_name).remove(force=True)
         client.close()
+
+
+@contextmanager
+def container_context(request, image_name: str, **kwargs):
+    yield from container(request, image_name, **kwargs)
 
 
 def wait_for(
@@ -72,3 +87,13 @@ def wait_for_socket_access(container: Container):
         container,
         f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
     )
+
+
+def assert_exec_run(container: Container, command: str, **kwargs) -> str:
+    """
+    Execute command in container and verify success.
+    """
+    exit_code, output = container.exec_run(command, **kwargs)
+    output = output.decode("utf-8").strip()
+    assert exit_code == 0, output
+    return output

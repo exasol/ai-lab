@@ -9,10 +9,10 @@ import time
 
 from exasol.ds.sandbox.lib.dss_docker import DssDockerImage
 from test.ports import find_free_port
-from dataclasses import dataclass
-
-from test.integration.local_docker_registry import (
-    LocalDockerRegistry,
+from test.integration.local_docker_registry import LocalDockerRegistry
+from test.docker.image import (
+    DockerImageSpec,
+    pull as pull_docker_image,
 )
 
 _logger = logging.getLogger(__name__)
@@ -24,23 +24,13 @@ def normalize_request_name(name: str):
     return re.sub(r"^_+|_+$", "", name)
 
 
-@dataclass
-class DockerImageSpec:
-    repository: str
-    tag: str
-
-    @property
-    def name(self) -> str:
-        return f"{self.repository}:{self.tag}"
-
-
 @pytest.fixture(scope="session")
-def registry_image():
+def registry_image(docker_auth):
     spec = DockerImageSpec("registry", "2")
     client = docker.from_env()
     if not client.images.list(spec.name):
         _logger.debug("Pulling Docker image with Docker registry")
-        client.images.pull(spec.repository, spec.tag)
+        pull_docker_image(spec, docker_auth)
     return spec
 
 
