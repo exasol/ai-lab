@@ -87,3 +87,13 @@ def wait_for_socket_access(container: Container):
         container,
         f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
     )
+
+
+def assert_exec_run(container: Container, command: str, **kwargs) -> str:
+    """
+    Execute command in container and verify success.
+    """
+    exit_code, output = container.exec_run(command, **kwargs)
+    output = output.decode("utf-8").strip()
+    assert exit_code == 0, output
+    return output
