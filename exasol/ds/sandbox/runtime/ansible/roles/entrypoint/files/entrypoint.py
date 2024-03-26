@@ -280,6 +280,17 @@ class User:
             self._id = pwd.getpwnam(self.name).pw_uid
         return self._id
 
+    def chown_rec(self, path: Path):
+        uid = self.id
+        gid = self.group.id
+        os.chown(path, uid, gid)
+        for root, dirs, files in os.walk(path):
+            root = Path(root)
+            for name in files:
+                os.chown(root / name, uid, gid)
+            for name in dirs:
+                os.chown(root / name, uid, gid)
+
     def enable_group_access(self, path: Path):
         file = FileInspector(path)
         if file.is_group_accessible():
@@ -310,6 +321,8 @@ def main():
     args = arg_parser().parse_args()
     user = User(args.user, Group(args.group), Group(args.docker_group))
     if user.is_specified:
+        if args.notebooks:
+            user.chown_rec(args.notebooks)
         user.enable_group_access(Path("/var/run/docker.sock")).switch_to()
     if args.notebook_defaults and args.notebooks:
         copy_rec(

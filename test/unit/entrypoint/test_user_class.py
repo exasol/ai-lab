@@ -56,6 +56,23 @@ def test_uid(mocker, user):
         and pwd.getpwnam.call_args == mocker.call("jennifer")
 
 
+def test_chown_rec(mocker, user, tmp_path):
+    child = tmp_path / "child"
+    sub = tmp_path / "sub"
+    grand_child = sub / "grand_child"
+    child.touch()
+    sub.mkdir()
+    grand_child.touch()
+    mocker.patch("os.chown")
+    passwd_struct = MagicMock(pw_uid=444)
+    mocker.patch("pwd.getpwnam", return_value=passwd_struct)
+    user.chown_rec(tmp_path)
+    expected = [ mocker.call(f, user.id, user.group.id) for f in (
+        tmp_path, child, sub, grand_child,
+    )]
+    assert expected == os.chown.call_args_list
+
+
 def test_enable_file_absent(mocker, user):
     mocker.patch(entrypoint_method("GroupAccess"))
     user.enable_group_access(Path("/non/existing/path"))
