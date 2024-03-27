@@ -93,6 +93,7 @@ def wait_for_socket_access(
     wait_for(
         container,
         f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
+        timeout,
     )
 
 
