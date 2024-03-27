@@ -7,7 +7,7 @@ Code name: TBD
 tbd
 
 This release changes the mount-point for Jupyter notebook files and the [Secure Configuration Storage](../user_guide/docker/secure-configuration-storage.md) from `/root/notebooks` to `/home/jupyter/notebooks`.
-So in case you are mounting a volume containing your private notebook files into the AI-Lab's Docker container, then please change your scripts to use the new mounting point as described in the [User Guide](../user_guide/docker/docker-usage.md#creating-a-docker-container-for-the-ai--lab-from-the-ai-lab-docker-image).
+So in case you are mounting a volume containing your private notebook files into the AI-Lab's Docker container, then please change your commands to use the new mount point as described in the [User Guide](../user_guide/docker/docker-usage.md#creating-a-docker-container-for-the-ai--lab-from-the-ai-lab-docker-image).
 
 Please note that the libraries and dependencies of the AI-Lab have changed since release 1.0.0 which can break some of the cells in old notebooks. So in case of problems, please do **not mount** notebook files created by an older version of the AI-Lab but create a new empty volume.
 
