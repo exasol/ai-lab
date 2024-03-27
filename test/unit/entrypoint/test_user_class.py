@@ -66,7 +66,7 @@ def test_chown_recursive(mocker, user, tmp_path):
     mocker.patch("os.chown")
     passwd_struct = MagicMock(pw_uid=444)
     mocker.patch("pwd.getpwnam", return_value=passwd_struct)
-    user.chown_rec(tmp_path)
+    user.chown_recursive(tmp_path)
     expected = [ mocker.call(f, user.id, user.group.id) for f in (
         tmp_path, child, sub, grand_child,
     )]

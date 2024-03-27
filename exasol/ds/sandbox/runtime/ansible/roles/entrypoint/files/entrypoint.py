@@ -323,7 +323,7 @@ def main():
     user = User(args.user, Group(args.group), Group(args.docker_group))
     if user.is_specified:
         if args.notebooks:
-            user.chown_rec(args.notebooks)
+            user.chown_recursive(args.notebooks)
         user.enable_group_access(Path("/var/run/docker.sock")).switch_to()
     if args.notebook_defaults and args.notebooks:
         copy_rec(

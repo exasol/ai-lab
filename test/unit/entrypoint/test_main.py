@@ -17,7 +17,7 @@ def test_no_args(mocker):
     entrypoint.main()
     assert entrypoint.sleep_infinity.called
     assert not user.enable_group_access.called
-    assert not user.chown_rec.called
+    assert not user.chown_recursive.called
     assert not entrypoint.copy_rec.called
     assert not entrypoint.start_jupyter_server.called
 
@@ -45,7 +45,7 @@ def test_user_arg(mocker):
     assert user.switch_to.called
 
 
-def test_chown_rec_args(mocker):
+def test_chown_recursive_args(mocker):
     dir = "/path/to/final/notebooks"
     mocker.patch("sys.argv", [
         "app",
@@ -58,8 +58,8 @@ def test_chown_rec_args(mocker):
     mocker.patch(entrypoint_method("User"), return_value=user)
     mocker.patch(entrypoint_method("sleep_infinity"))
     entrypoint.main()
-    assert user.chown_rec.called
-    assert user.chown_rec.call_args == mocker.call(Path(dir))
+    assert user.chown_recursive.called
+    assert user.chown_recursive.call_args == mocker.call(Path(dir))
 
 
 @pytest.mark.parametrize("warning_as_error", [True, False])
