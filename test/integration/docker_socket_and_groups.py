@@ -70,6 +70,18 @@ class GroupChanger:
         with self._context_provider(path_on_host, path_in_container) as container:
             assert_exec_run(container, f"chgrp {gid} {path_in_container}")
 
+    def chown_chmod_rec(
+            self,
+            owner: str,
+            permissions: str,
+            path_on_host: Path,
+    ):
+        """`owner` may be specifed as user or user:group"""
+        path_in_container = "/mounted"
+        with self._context_provider(path_on_host, path_in_container) as container:
+            assert_exec_run(container, f"chown -R {owner} {path_in_container}")
+            assert_exec_run(container, f"chmod -R {permissions} {path_in_container}")
+
 
 @contextmanager
 def dss_image_with_added_group(request, base_image, gid, group_name):

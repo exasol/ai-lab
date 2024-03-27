@@ -290,6 +290,7 @@ class User:
                 os.chown(root / name, uid, gid)
             for name in dirs:
                 os.chown(root / name, uid, gid)
+        _logger.info(f"Did chown -R {self.name}:{self.group.name} {path}")
 
     def enable_group_access(self, path: Path):
         file = FileInspector(path)

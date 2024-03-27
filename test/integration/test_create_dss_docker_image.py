@@ -18,7 +18,7 @@ from pathlib import Path
 from re import Pattern
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
-from typing import Set, Tuple
+from typing import List, Set, Tuple
 from datetime import datetime, timedelta
 
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -255,3 +255,46 @@ def test_write_socket_known_gid(
         with SocketInspector(request, image.id, socket_on_host) as inspector:
             inspector.assert_jupyter_member_of(group_name)
             inspector.assert_write_to_socket()
+
+
+def test_chown_notebooks(request, tmp_path, group_changer, dss_docker_image):
+    def user_and_group(ls_line: str) -> str:
+        columns = ls_line.split()
+        return f"{columns[2]}:{columns[3]}"
+
+    # def ls_command0(path: str, children: List[Path]) -> str:
+    #     args = (f"{path}/{c}" for c in children)
+    #     return "ls -ld " + " ".join(args)
+    #
+    # def ls_command1(old_path: Path, new_path: str, args: List[Path]) -> str:
+    #     args = (
+    #         f"{new_path}/{p.relative_to(old_path)}"
+    #         for p in args
+    #     )
+    #     return "ls -ld " + " ".join(args)
+
+    def ls_command(old_path: str, new_path: Path, args: List[Path]) -> str:
+        args = (str(p).replace(old_path, new_path) for p in args)
+        return "ls -ld " + " ".join(args)
+
+    child = tmp_path / "child"
+    sub = tmp_path / "sub"
+    grand_child = sub / "grand_child"
+    child.touch()
+    sub.mkdir()
+    grand_child.touch()
+    group_changer.chown_chmod_rec("root:root", "777", tmp_path)
+
+    notebooks_folder = "/home/jupyter/notebooks"
+    with container_context(
+            request,
+            image_name=dss_docker_image.image_name,
+            volumes={ tmp_path: {
+                'bind': notebooks_folder,
+                'mode': 'rw', }, },
+    ) as container:
+        testees = [tmp_path, child, sub, grand_child]
+        command = ls_command(str(tmp_path), notebooks_folder, testees)
+        output = assert_exec_run(container, command)
+        for line in output.splitlines():
+            assert "jupyter:jupyter" == user_and_group(line)
