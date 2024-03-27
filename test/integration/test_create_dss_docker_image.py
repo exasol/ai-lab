@@ -283,7 +283,7 @@ def test_chown_notebooks(request, tmp_path, group_changer, dss_docker_image):
     child.touch()
     sub.mkdir()
     grand_child.touch()
-    group_changer.chown_chmod_rec("root:root", "777", tmp_path)
+    group_changer.chown_chmod_recursive("root:root", "777", tmp_path)
 
     notebooks_folder = "/home/jupyter/notebooks"
     with container_context(
