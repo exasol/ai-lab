@@ -86,7 +86,10 @@ def wait_for(
 
 DOCKER_SOCKET_CONTAINER = "/var/run/docker.sock"
 
-def wait_for_socket_access(container: Container):
+def wait_for_socket_access(
+        container: Container,
+        timeout: timedelta = timedelta(seconds=5),
+):
     wait_for(
         container,
         f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
