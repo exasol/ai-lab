@@ -1,4 +1,4 @@
-# AI-Lab 1.1.0 released tbd
+# AI-Lab 2.0.0 released 2024-03-28
 
 Code name: Use non-privileged user for running JupyterLab
 
@@ -17,7 +17,7 @@ In case you are using the AI-Lab's Docker Edition with mounted volume, then plea
 
 ## AI-Lab-Release
 
-Version: 1.1.0
+Version: 2.0.0
 
 ## Features
 
