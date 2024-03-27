@@ -4,6 +4,7 @@ import os
 import time
 from inspect import cleandoc
 from pathlib import Path
+from datetime import timedelta
 
 import pytest
 

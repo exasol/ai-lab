@@ -10,8 +10,16 @@ from test.unit.entrypoint.entrypoint_mock import entrypoint_method
 def test_no_args(mocker):
     mocker.patch("sys.argv", ["app"])
     mocker.patch(entrypoint_method("sleep_infinity"))
+    mocker.patch(entrypoint_method("start_jupyter_server"))
+    mocker.patch(entrypoint_method("copy_rec"))
+    user = create_autospec(entrypoint.User, is_specified=False)
+    mocker.patch(entrypoint_method("User"), return_value=user)
     entrypoint.main()
     assert entrypoint.sleep_infinity.called
+    assert not user.enable_group_access.called
+    assert not user.chown_recursive.called
+    assert not entrypoint.copy_rec.called
+    assert not entrypoint.start_jupyter_server.called
 
 
 def test_user_arg(mocker):
@@ -35,6 +43,23 @@ def test_user_arg(mocker):
     assert user.enable_group_access.called
     assert user.enable_group_access.call_args == mocker.call(Path("/var/run/docker.sock"))
     assert user.switch_to.called
+
+
+def test_chown_recursive_args(mocker):
+    dir = "/path/to/final/notebooks"
+    mocker.patch("sys.argv", [
+        "app",
+        "--user", "jennifer",
+        "--group", "users",
+        "--docker-group", "docker",
+        "--notebooks", dir,
+    ])
+    user = create_autospec(entrypoint.User)
+    mocker.patch(entrypoint_method("User"), return_value=user)
+    mocker.patch(entrypoint_method("sleep_infinity"))
+    entrypoint.main()
+    assert user.chown_recursive.called
+    assert user.chown_recursive.call_args == mocker.call(Path(dir))
 
 
 @pytest.mark.parametrize("warning_as_error", [True, False])

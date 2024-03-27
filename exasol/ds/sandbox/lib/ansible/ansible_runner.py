@@ -48,7 +48,7 @@ class AnsibleRunner:
         if not "event_data" in event:
             return True
         duration = event["event_data"].get("duration", 0)
-        if duration > 0.5:
+        if duration > 1.5:
             self._duration_logger.debug(f"duration: {round(duration)} seconds")
         return True
 
