@@ -1,17 +1,19 @@
 # AI-Lab 1.1.0 released tbd
 
-Code name: TBD
+Code name: Second Release
 
 ## Summary
 
-tbd
+The following changes are especially important if you are using the AI-Lab's Docker Edition and are [mounting a volume](../user_guide/docker/managing-user-data.md) containing your private notebook files and the  [Secure Configuration Storage](../user_guide/docker/secure-configuration-storage.md)  (SCS) into the AI-Lab's Docker container.
 
-This release changes the mount-point for Jupyter notebook files and the [Secure Configuration Storage](../user_guide/docker/secure-configuration-storage.md) from `/root/notebooks` to `/home/jupyter/notebooks`.
-So in case you are mounting a volume containing your private notebook files into the AI-Lab's Docker container, then please change your commands to use the new mount point as described in the [User Guide](../user_guide/docker/docker-usage.md#creating-a-docker-container-for-the-ai--lab-from-the-ai-lab-docker-image).
+Major changes
 
-Please note that the libraries and dependencies of the AI-Lab have changed since release 1.0.0 which can break some of the cells in old notebooks. So in case of problems, please do **not mount** notebook files created by an older version of the AI-Lab but create a new empty volume.
+1. The mount-point for Jupyter notebook files and the SCS has moved from `/root/notebooks` to `/home/jupyter/notebooks`.
+2. Some of the notebooks have been updated, especially the Cloud storage notebook.
 
-See also [Managing User Data](../user_guide/docker/managing-user-data.md).
+In case you are using the AI-Lab's Docker Edition with mounted volume, then please
+1. Change your commands to use the new mount point as described in the [User Guide](../user_guide/docker/docker-usage.md#creating-a-docker-container-for-the-ai--lab-from-the-ai-lab-docker-image) and
+2. Find the updated notebooks in folder `/home/jupyter/notebook-defaults` as the AI-Lab does not overwrite existing files, to avoid losing manual changes.
 
 ## AI-Lab-Release
 
