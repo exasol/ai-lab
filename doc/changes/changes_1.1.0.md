@@ -1,6 +1,6 @@
 # AI-Lab 1.1.0 released tbd
 
-Code name: Second Release
+Code name: Use non-privileged user for running JupyterLab
 
 ## Summary
 
@@ -9,7 +9,7 @@ The following changes are especially important if you are using the AI-Lab's Doc
 Major changes
 
 1. The mount-point for Jupyter notebook files and the SCS has moved from `/root/notebooks` to `/home/jupyter/notebooks`.
-2. Some of the notebooks have been updated, especially the Cloud storage notebook.
+2. Some of the notebooks have been updated, especially the Cloud Storage Extension notebook.
 
 In case you are using the AI-Lab's Docker Edition with mounted volume, then please
 1. Change your commands to use the new mount point as described in the [User Guide](../user_guide/docker/docker-usage.md#creating-a-docker-container-for-the-ai--lab-from-the-ai-lab-docker-image) and
