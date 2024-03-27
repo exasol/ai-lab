@@ -280,7 +280,7 @@ class User:
             self._id = pwd.getpwnam(self.name).pw_uid
         return self._id
 
-    def chown_rec(self, path: Path):
+    def chown_recursive(self, path: Path):
         uid = self.id
         gid = self.group.id
         os.chown(path, uid, gid)

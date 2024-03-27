@@ -70,7 +70,7 @@ class GroupChanger:
         with self._context_provider(path_on_host, path_in_container) as container:
             assert_exec_run(container, f"chgrp {gid} {path_in_container}")
 
-    def chown_chmod_rec(
+    def chown_chmod_recursive(
             self,
             owner: str,
             permissions: str,

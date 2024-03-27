@@ -56,7 +56,7 @@ def test_uid(mocker, user):
         and pwd.getpwnam.call_args == mocker.call("jennifer")
 
 
-def test_chown_rec(mocker, user, tmp_path):
+def test_chown_recursive(mocker, user, tmp_path):
     child = tmp_path / "child"
     sub = tmp_path / "sub"
     grand_child = sub / "grand_child"
