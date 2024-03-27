@@ -258,24 +258,13 @@ def test_write_socket_known_gid(
 
 
 def test_chown_notebooks(request, tmp_path, group_changer, dss_docker_image):
-    def user_and_group(ls_line: str) -> str:
-        columns = ls_line.split()
-        return f"{columns[2]}:{columns[3]}"
-
-    # def ls_command0(path: str, children: List[Path]) -> str:
-    #     args = (f"{path}/{c}" for c in children)
-    #     return "ls -ld " + " ".join(args)
-    #
-    # def ls_command1(old_path: Path, new_path: str, args: List[Path]) -> str:
-    #     args = (
-    #         f"{new_path}/{p.relative_to(old_path)}"
-    #         for p in args
-    #     )
-    #     return "ls -ld " + " ".join(args)
-
     def ls_command(old_path: str, new_path: Path, args: List[Path]) -> str:
         args = (str(p).replace(old_path, new_path) for p in args)
         return "ls -ld " + " ".join(args)
+
+    def user_and_group(ls_line: str) -> str:
+        columns = ls_line.split()
+        return f"{columns[2]}:{columns[3]}"
 
     child = tmp_path / "child"
     sub = tmp_path / "sub"
