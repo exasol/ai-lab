@@ -1,3 +1,4 @@
+import logging
 import re
 
 import docker
@@ -11,6 +12,9 @@ from tenacity.stop import stop_after_delay
 from typing import Generator, Union
 from docker.models.containers import Container
 from docker.models.images import Image
+
+
+_logger = logging.getLogger(__name__)
 
 
 def sanitize_container_name(test_name: str):
@@ -82,17 +86,23 @@ def wait_for(
 
 DOCKER_SOCKET_CONTAINER = "/var/run/docker.sock"
 
-def wait_for_socket_access(container: Container):
+def wait_for_socket_access(
+        container: Container,
+        timeout: timedelta = timedelta(seconds=5),
+):
     wait_for(
         container,
         f"entrypoint.py: Enabled access to {DOCKER_SOCKET_CONTAINER}",
+        timeout,
     )
 
 
 def assert_exec_run(container: Container, command: str, **kwargs) -> str:
     """
-    Execute command in container and verify success.
+    Execute command in container, verify its success, and return
+    utf-8-decoded ouput.
     """
+    _logger.debug(f'Running command in Docker container: {command}')
     exit_code, output = container.exec_run(command, **kwargs)
     output = output.decode("utf-8").strip()
     assert exit_code == 0, output
