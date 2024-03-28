@@ -20,7 +20,7 @@ class CodeBuildWaiter:
         for _ in range(int(seconds / interval)):
             yield interval
 
-    def wait(self, timeout_in_seconds: int = 60*60*2, interval_in_seconds: int = 30):
+    def wait(self, timeout_in_seconds: int = 60*60*4, interval_in_seconds: int = 30):
         """
         Waits until the build finishes or runs into the timeout given by parameter "timeout_in_minutes".
         If the build finishes with an error or ran into the timeout, it throws an exception;
