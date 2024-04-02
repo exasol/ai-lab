@@ -29,22 +29,22 @@ def codebuild_client(build_duration: timedelta, finish_status: str):
 @pytest.mark.parametrize("interval", list(range(1, 5)))
 def test_code_build_waiter_success(interval):
     codebuild_mock = codebuild_client(
-        build_duration=ms(200),
+        build_duration=ms(50),
         finish_status="SUCCEEDED",
     )
     waiter = CodeBuildWaiter(codebuild_mock, BUILD_ID)
-    waiter.wait(timeout=ms(300), interval=ms(interval*50))
+    waiter.wait(timeout=ms(100), interval=ms(interval*30))
 
 
 @pytest.mark.parametrize("interval", list(range(1, 3)))
 def test_code_build_waiter_timeout(interval):
     codebuild_mock = codebuild_client(
-        build_duration=ms(200),
+        build_duration=ms(100),
         finish_status="SUCCEEDED",
     )
     waiter = CodeBuildWaiter(codebuild_mock, BUILD_ID)
     with pytest.raises(TimeoutError, match=f"Build {BUILD_ID} ran into timeout."):
-        waiter.wait(timeout=ms(150), interval=ms(interval*40))
+        waiter.wait(timeout=ms(80), interval=ms(interval*20))
 
 
 @pytest.mark.parametrize("error_status", ['FAILED', 'FAULT', 'STOPPED', 'TIMED_OUT'])
