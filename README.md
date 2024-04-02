@@ -11,7 +11,7 @@ Key Features:
 
 Feel free to explore the Exasol AI-Lab and unleash your data science potential!
 
-The AI-Lab is available in multiple [Editions](doc/user_guide/editions.md) involving different technology stacks, see also common [System Requirements](doc/user_guide/system-requirements.md).
+The AI-Lab is available in multiple [Editions](blob/2.0.0/doc/user_guide/editions.md) involving different technology stacks, see also common [System Requirements](doc/user_guide/system-requirements.md).
 
 After downloading the required files and having started the AI-Lab you can connect to AI-Lab's [Jupyter Service](doc/user_guide/jupyter.md).
 
