@@ -15,7 +15,7 @@ def ms(value: int) -> timedelta:
     return timedelta(milliseconds=value)
 
 
-def codebuild_client(build_duration: timedelta, finish_status: str):
+def codebuild_client(build_duration: timedelta, finish_status: str) -> MagicMock:
     end_time = datetime.now() + build_duration
     def batch_get_builds(ids: List[int]):
         if len(ids) == 1 and ids[0] == BUILD_ID:
