@@ -6,9 +6,29 @@ on:
       - "main"
 
 jobs:
+  run_unit_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+     - uses: actions/checkout@v3
+       with:
+         fetch-depth: 0
+
+     - name: Setup Python & Poetry Environment
+       uses: ./.github/actions/prepare_poetry_env
+
+     - name: Run Unit Tests
+       run: >
+         poetry run pytest
+         --capture=no
+         --override-ini=log_cli=true
+         --override-ini=log_cli_level=INFO
+         test/unit
+
   run_build_ai_lab_tests:
     environment: AWS_CI_TESTS
     runs-on: ubuntu-latest
+    needs: run_unit_tests
 
     steps:
      - uses: actions/checkout@v3
@@ -36,14 +56,6 @@ jobs:
      - name: Setup Python & Poetry Environment
        uses: ./.github/actions/prepare_poetry_env
 
-     - name: Run Unit Tests
-       run: >
-         poetry run pytest
-         --capture=no
-         --override-ini=log_cli=true
-         --override-ini=log_cli_level=INFO
-         test/unit
-       
      - name: Run Integration Tests
        run: >
          poetry run pytest
@@ -60,6 +72,7 @@ jobs:
     if: "contains(github.event.head_commit.message, '[run-notebook-tests]')"
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-latest
+    needs: run_unit_tests
 
     steps:
      - uses: actions/checkout@v3
@@ -86,14 +99,6 @@ jobs:
 
      - name: Setup Python & Poetry Environment
        uses: ./.github/actions/prepare_poetry_env
-
-     - name: Run Unit Tests
-       run: >
-         poetry run pytest
-         --capture=no
-         --override-ini=log_cli=true
-         --override-ini=log_cli_level=INFO
-         test/unit
 
      - name: Run notebook tests
        run: >
