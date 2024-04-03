@@ -1,4 +1,4 @@
-name: Run Tests for CI Build
+name: CI Build
 
 on:
   push:
@@ -25,7 +25,8 @@ jobs:
          --override-ini=log_cli_level=INFO
          test/unit
 
-  run_build_ai_lab_tests:
+  run_integration_tests:
+    name: Integration Tests
     environment: AWS_CI_TESTS
     runs-on: ubuntu-latest
     needs: run_unit_tests
@@ -69,6 +70,7 @@ jobs:
          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
   run_notebook_tests:
+    name: Jupyter Notebook Tests
     if: "contains(github.event.head_commit.message, '[run-notebook-tests]')"
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-latest
