@@ -11,7 +11,7 @@ docker image in the tests in `integration/test_create_dss_docker_image.py`
 simply add CLI option `--dss-docker-image` when calling `pytest`:
 
 ```shell
-poetry run pytest --dss-docker-image exasol/ai-lab:2.0.0
+poetry run pytest --dss-docker-image exasol/ai-lab:2.1.0
 ```
 
 #### Executing tests involving AWS resources

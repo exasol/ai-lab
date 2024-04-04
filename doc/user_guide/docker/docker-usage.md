@@ -20,7 +20,7 @@ The Unix shell commands in the following sections will use some environment vari
 Here is an example:
 
 ```shell
-VERSION=2.0.0
+VERSION=2.1.0
 LISTEN_IP=0.0.0.0
 VOLUME=my-vol
 CONTAINER_NAME=ai-lab
