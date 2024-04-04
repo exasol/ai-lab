@@ -28,8 +28,6 @@ Always
 Ship the Actual Release
 * [ ] Run release droid `java -jar ~/java/jar/release-droid-*.jar -n ai-lab --goal release`
 * [ ] Edit the Release on GitHub making the draft final
-* [ ] Fill out Release Checklist in company wiki
-* [ ] Announce Release in company chat channel "global product news"
 
 Post-Release Actions
 * [ ] Update links in file `README.md` to point to the tag on GitHub
