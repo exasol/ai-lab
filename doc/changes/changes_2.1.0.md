@@ -24,7 +24,7 @@ n/a
 
 ## Documentation
 
-n/a
+* #249: Mitigate or document died kernel for transformers/te_init.ipynb. Started the troubleshooting section in the user guide.
 
 ## Refactoring
 
