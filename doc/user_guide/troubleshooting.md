@@ -5,7 +5,7 @@
 ### Problem
 
 Running the Transformers Extension Initialization in the transformers/te_init.ipynb notebook results
-in a popped up error message similar to this: "Kernel Restarting. The kernel for transformers/te_init.ipynb
+in a pop-up error message similar to this: "Kernel Restarting. The kernel for transformers/te_init.ipynb
 appears to have died. It will restart automatically."
 
 ### Cause
