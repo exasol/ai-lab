@@ -16,7 +16,7 @@ n/a
 
 ## Security
 
-n/a
+* #207 Fixed vulnerability CVE-2024-23342 by updating dependency ecdsa
 
 ## Bug Fixes
 
