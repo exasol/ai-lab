@@ -17,4 +17,5 @@ After downloading the required files and having started the AI-Lab you can conne
 
 ## Additional Links
 
+* [Troubleshooting](doc/user_guide/troubleshooting.md)
 * [Developer Guide](https://github.com/exasol/ai-lab/blob/2.0.0/doc/developer_guide/developer_guide.md)
