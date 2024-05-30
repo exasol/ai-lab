@@ -12,7 +12,8 @@ Version: 2.1.0
 
 ## Features
 
-n/a
+* 277 Added configuration for a SaaS Database. 
+      Added SaaS as the third option in the database selection UI.
 
 ## Security
 
@@ -29,3 +30,4 @@ n/a
 ## Refactoring
 
 * #267: Switched CodeBuildWaiter to use tenacity
+* #276: Started using the new ITDE Manager interface in the notebook-connector 0.2.9
