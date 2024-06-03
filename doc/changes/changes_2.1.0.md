@@ -12,8 +12,7 @@ Version: 2.1.0
 
 ## Features
 
-* 277 Added configuration for a SaaS Database. 
-      Added SaaS as the third option in the database selection UI.
+* 277 Added the SaaS database parameters to the configuration page. 
 
 ## Security
 
