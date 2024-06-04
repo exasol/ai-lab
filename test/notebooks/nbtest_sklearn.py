@@ -1,8 +1,11 @@
 import os
+import pytest
 
+from exasol.nb_connector.ai_lab_config import StorageBackend
 from notebook_test_utils import (access_to_temp_secret_store, notebook_runner)
 
 
+@pytest.mark.parametrize('notebook_runner', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_regression(notebook_runner) -> None:
 
     current_dir = os.getcwd()
@@ -18,6 +21,7 @@ def test_regression(notebook_runner) -> None:
         os.chdir(current_dir)
 
 
+@pytest.mark.parametrize('notebook_runner', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_classification(notebook_runner) -> None:
 
     current_dir = os.getcwd()
