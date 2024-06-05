@@ -161,8 +161,7 @@ def access_to_temp_saas_secret_store(tmp_path_factory) -> Tuple[Path, str]:
     with ExitStack() as stack:
         client = stack.enter_context(create_saas_client(
             secrets.get(CKey.saas_url), CKey.saas_token))
-        api_access = stack.enter_context(OpenApiAccess(
-            client, secrets.get(CKey.saas_account_id)))
+        api_access = OpenApiAccess(client, secrets.get(CKey.saas_account_id))
         stack.enter_context(api_access.allowed_ip())
         db = stack.enter_context(api_access.database(
             secrets.get(CKey.saas_database_name)))
