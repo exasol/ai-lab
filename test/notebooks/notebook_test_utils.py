@@ -200,14 +200,14 @@ def notebook_runner(request,
     if request.param == StorageBackend.onprem:
         with access_to_temp_onprem_secret_store(tmp_path) as onprem_store:
             store_path, store_password = onprem_store
-            return partial(run_notebook,
-                           store_file=str(store_path),
-                           store_password=store_password)
+            yield partial(run_notebook,
+                          store_file=str(store_path),
+                          store_password=store_password)
     elif request.param == StorageBackend.saas:
         store_path, store_password = access_to_temp_saas_secret_store
-        return partial(run_notebook,
-                       store_file=str(store_path),
-                       store_password=store_password)
+        yield partial(run_notebook,
+                      store_file=str(store_path),
+                      store_password=store_password)
     else:
         raise ValueError(('Unrecognised testing backend in the notebook_runner. '
                           'Should be either "onprem" or "saas"'))
