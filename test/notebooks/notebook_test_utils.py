@@ -28,6 +28,7 @@ from exasol.nb_connector.itde_manager import (
 #     database_name,
 #     operational_saas_database_id
 # )
+import os
 from exasol.saas.client import openapi
 from exasol.saas.client.api_access import (
     OpenApiAccess,
