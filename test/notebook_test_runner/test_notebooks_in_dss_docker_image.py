@@ -107,5 +107,6 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file):
     )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
-    nbtest_environ = {key: value for key, value in environ.items() if key.startswith("NBTEST_")}
+    nbtest_environ = {key: value for key, value in environ.items() if (
+        key.startswith("NBTEST_") or key.startswith("SAAS_"))}
     exec_command(command_run_test, container, print_output=True, environment=nbtest_environ, user="jupyter")
