@@ -147,7 +147,7 @@ def access_to_temp_saas_secret_store(tmp_path_factory,
     store_password = generate_password(12)
     secrets = Secrets(store_path, master_password=store_password)
 
-    secrets.save(CKey.backend, StorageBackend.saas.name)
+    secrets.save(CKey.storage_backend, StorageBackend.saas.name)
     secrets.save(CKey.saas_url, saas_host)
     secrets.save(CKey.saas_token, saas_pat)
     secrets.save(CKey.saas_account_id, saas_account_id)
