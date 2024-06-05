@@ -3,4 +3,6 @@ nbformat
 pytest
 testbook
 pytest-check-links
-pytest-exasol-saas
+pytest-exasol-saas @ git+https://github.com/exasol/pytest-plugins.git@main
+exasol-saas-api @ git+https://github.com/exasol/saas-api-python.git@main
+
