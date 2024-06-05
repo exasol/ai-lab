@@ -181,9 +181,9 @@ def access_to_temp_secret_store(request,
     """
     if request.param == StorageBackend.onprem:
         with access_to_temp_onprem_secret_store(tmp_path) as onprem_store:
-            return onprem_store
+            yield onprem_store
     elif request.param == StorageBackend.saas:
-        return access_to_temp_saas_secret_store
+        yield access_to_temp_saas_secret_store
     else:
         raise ValueError(('Unrecognised testing backend in the access_to_temp_secret_store. '
                           'Should be either "onprem" or "saas"'))
