@@ -17,7 +17,7 @@ from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
 )
-from exasol.pytest_saas import (
+from temp_copy_pytest_saas import (
     saas_host,
     saas_pat,
     saas_account_id,
