@@ -4,7 +4,8 @@ from functools import partial
 import random
 import string
 import textwrap
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
+import os
 
 import pytest
 import nbformat
@@ -17,19 +18,6 @@ from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
 )
-
-# ------------------------------------------------------------------------------------
-#     The code below should be replaced with an import from the exasol.pytest-saas
-# ------------------------------------------------------------------------------------
-# from exasol.pytest-saas import (
-#     saas_host,
-#     saas_pat,
-#     saas_account_id,
-#     database_name,
-#     operational_saas_database_id
-# )
-import os
-from exasol.saas.client import openapi
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     create_saas_client,
@@ -42,59 +30,6 @@ def _env(var: str) -> str:
     if result:
         return result
     raise RuntimeError(f"Environment variable {var} is empty.")
-
-
-@pytest.fixture(scope="session")
-def saas_host() -> str:
-    return _env("SAAS_HOST")
-
-
-@pytest.fixture(scope="session")
-def saas_pat() -> str:
-    return _env("SAAS_PAT")
-
-
-@pytest.fixture(scope="session")
-def saas_account_id() -> str:
-    return _env("SAAS_ACCOUNT_ID")
-
-
-@pytest.fixture(scope="session")
-def database_name():
-    return timestamp_name('NBTEST')
-
-
-@pytest.fixture(scope="session")
-def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
-    with create_saas_client(saas_host, saas_pat) as client:
-        yield OpenApiAccess(client, saas_account_id)
-
-
-@pytest.fixture(scope="session")
-def saas_database(
-    request, api_access, database_name
-) -> openapi.models.database.Database:
-    """
-    Note: The SaaS instance database returned by this fixture initially
-    will not be operational. The startup takes about 20 minutes.
-    """
-    db_id = request.config.getoption("--saas-database-id")
-    keep = request.config.getoption("--keep-saas-database")
-    if db_id:
-        yield api_access.get_database(db_id)
-        return
-    with api_access.database(database_name, keep) as db:
-        yield db
-
-
-@pytest.fixture(scope="session")
-def operational_saas_database_id(api_access, saas_database) -> str:
-    db = saas_database
-    with api_access.allowed_ip():
-        api_access.wait_until_running(db.id)
-        yield db.id
-
-# ------------------------------------------------------------------------------------
 
 
 def generate_password(pwd_length):
@@ -115,6 +50,15 @@ def _init_onprem_secret_store(secrets: Secrets) -> None:
     secrets.save(CKey.mem_size, '4')
     secrets.save(CKey.disk_size, '4')
     secrets.save(CKey.db_schema, 'NOTEBOOK_TESTS')
+
+
+def _init_saas_secret_store(secrets: Secrets) -> None:
+    secrets.save(CKey.storage_backend, StorageBackend.saas.name)
+    secrets.save(CKey.saas_url, _env("SAAS_HOST"))
+    secrets.save(CKey.saas_token, _env("SAAS_PAT"))
+    secrets.save(CKey.saas_account_id, _env("SAAS_ACCOUNT_ID"))
+    secrets.save(CKey.saas_database_name, timestamp_name('NBTEST'))
+    secrets.save(CKey.db_schema, 'NOTEBOOK_TESTS_SAAS')
 
 
 def _insert_hacks(nb: nbformat.NotebookNode, hacks: List[Tuple[str, str]]):
@@ -198,14 +142,8 @@ def access_to_temp_onprem_secret_store(tmp_path: Path) -> Tuple[Path, str]:
         take_itde_down(secrets)
 
 
-@pytest.fixture(scope="session")
-def access_to_temp_saas_secret_store(tmp_path_factory,
-                                     saas_host,
-                                     saas_pat,
-                                     saas_account_id,
-                                     database_name,
-                                     operational_saas_database_id
-                                     ) -> Tuple[Path, str]:
+@pytest.fixture(scope='session')
+def access_to_temp_saas_secret_store(tmp_path_factory) -> Tuple[Path, str]:
     """
     Creates a temporary configuration store.
     Initiates the creation of a temporary SaaS database and waits till this database
@@ -218,14 +156,18 @@ def access_to_temp_saas_secret_store(tmp_path_factory,
     store_password = generate_password(12)
     secrets = Secrets(store_path, master_password=store_password)
 
-    secrets.save(CKey.storage_backend, StorageBackend.saas.name)
-    secrets.save(CKey.saas_url, saas_host)
-    secrets.save(CKey.saas_token, saas_pat)
-    secrets.save(CKey.saas_account_id, saas_account_id)
-    secrets.save(CKey.saas_database_name, database_name)
-    secrets.save(CKey.db_schema, 'NOTEBOOK_TESTS_SAAS')
+    _init_saas_secret_store(secrets)
 
-    return store_path, store_password
+    with ExitStack() as stack:
+        client = stack.enter_context(create_saas_client(
+            secrets.get(CKey.saas_url), CKey.saas_token))
+        api_access = stack.enter_context(OpenApiAccess(
+            client, secrets.get(CKey.saas_account_id)))
+        stack.enter_context(api_access.allowed_ip())
+        db = stack.enter_context(api_access.database(
+            secrets.get(CKey.saas_database_name)))
+        api_access.wait_until_running(db.id)
+        yield store_path, store_password
 
 
 @pytest.fixture
