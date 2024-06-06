@@ -5,6 +5,7 @@ import random
 import string
 import textwrap
 from contextlib import contextmanager, ExitStack
+from datetime import timedelta
 import os
 
 import pytest
@@ -160,11 +161,15 @@ def access_to_temp_saas_secret_store(tmp_path_factory) -> Tuple[Path, str]:
 
     with ExitStack() as stack:
         client = stack.enter_context(create_saas_client(
-            secrets.get(CKey.saas_url), secrets.get(CKey.saas_token)))
-        api_access = OpenApiAccess(client, secrets.get(CKey.saas_account_id))
+            host=secrets.get(CKey.saas_url),
+            pat=secrets.get(CKey.saas_token)))
+        api_access = OpenApiAccess(
+            client=client,
+            account_id=secrets.get(CKey.saas_account_id))
         stack.enter_context(api_access.allowed_ip())
         db = stack.enter_context(api_access.database(
-            secrets.get(CKey.saas_database_name)))
+            name=secrets.get(CKey.saas_database_name),
+            idle_time=timedelta(hours=12)))
         api_access.wait_until_running(db.id)
         yield store_path, store_password
 
