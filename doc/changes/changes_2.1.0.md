@@ -13,6 +13,7 @@ Version: 2.1.0
 ## Features
 
 * 277 Added the SaaS database parameters to the configuration page. 
+* 279 Made the notebooks tests running in SaaS as well as in the Docker-DB.
 
 ## Security
 

@@ -2,7 +2,10 @@ import os
 import textwrap
 import pytest
 
-from notebook_test_utils import (access_to_temp_secret_store, notebook_runner, uploading_hack)
+from notebook_test_utils import (access_to_temp_secret_store,
+                                 access_to_temp_saas_secret_store,
+                                 notebook_runner,
+                                 uploading_hack)
 
 
 @pytest.mark.parametrize(
@@ -17,6 +20,7 @@ from notebook_test_utils import (access_to_temp_secret_store, notebook_runner, u
         'zero_shot_classification.ipynb'
     ]
 )
+@pytest.mark.skip(reason="The expected functionality is not yet implemented in the Transformers Extension")
 def test_transformers(notebook_runner, uploading_hack, notebook_file) -> None:
 
     running_hack = (

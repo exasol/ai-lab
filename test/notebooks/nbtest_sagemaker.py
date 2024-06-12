@@ -7,9 +7,12 @@ import textwrap
 
 import pytest
 from exasol.nb_connector.secret_store import Secrets
-from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
+from exasol.nb_connector.ai_lab_config import AILabConfig as CKey, StorageBackend
 
-from notebook_test_utils import (access_to_temp_secret_store, run_notebook, uploading_hack)
+from notebook_test_utils import (access_to_temp_secret_store,
+                                 access_to_temp_saas_secret_store,
+                                 run_notebook,
+                                 uploading_hack)
 
 
 def _create_aws_s3_bucket() -> str:
@@ -173,6 +176,7 @@ def get_job_polling_hack() -> Tuple[str, str]:
     )
 
 
+@pytest.mark.parametrize('access_to_temp_secret_store', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_sagemaker(access_to_temp_secret_store, uploading_hack):
 
     store_path, store_password = access_to_temp_secret_store
