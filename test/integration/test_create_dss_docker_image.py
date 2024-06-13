@@ -77,7 +77,7 @@ def dss_container_context(request, dss_docker_image):
 
 @pytest.fixture
 def ubuntu_container_context(request, docker_auth):
-    spec = DockerImageSpec("ubuntu", "20.04")
+    spec = DockerImageSpec("ubuntu", "22.04")
     pull_docker_image(spec, docker_auth)
     def context(path_on_host: Path, path_in_container: str):
         return container_context(

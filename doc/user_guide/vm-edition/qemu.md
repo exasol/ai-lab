@@ -3,7 +3,7 @@
 ### Overview
 
 1. Open the `VMDK` image
-2. Select Ubuntu 20.04 LTS as template
+2. Select Ubuntu 22.04 LTS as template
 3. [Configure RAM](../system-requirements.md)
 4. Start the VM
 
@@ -15,7 +15,7 @@
 4. Choose: "Create virtual machine from file"<br />
 ![image info](./img/tutorial-screenshot-create-img.png)
 5. Select the downloaded "VMDK" file from step 1
-6. Select "Ubuntu 20.04 LTS" as Template, and click "Next"
+6. Select "Ubuntu 22.04 LTS" as Template, and click "Next"
 ![image info](./img/tutorial-screenshot-select-template.png)
 7. Select memory size (see section Hardware Requirements), then click "Create"
 ![image info](./img/tutorial-screenshot-select-resources.png)
