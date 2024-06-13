@@ -11,6 +11,7 @@ AI-Lab also offers a [short introduction](intro.md) to Docker Images and Contain
 The Unix shell commands in the following sections will use some environment variables. By this you can adapt the commands to your specific preferences while still being able to execute them literally:
 * Variable `VERSION` refers to the version of Exasol AI-Lab Docker Edition you want to use, alternatively you can use `latest`.
 * Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing-user-data.md).
+  * The related Command line option `--volume` is optional and enables keeping your changes to notebook files or the configuration parameters across separate sessions with the AI-Lab Docker Edition.
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
   * `0.0.0.0` means all IP-addresses are allowed.
   * For local setups, we recommend `127.0.0.1`.
@@ -40,6 +41,7 @@ The following command will
 * Download the Docker image for the specified version `$VERSION` of the AI-Lab if the image of the specified version is not yet available in your Docker service
 * Run a Docker container using this image
 * Mount the volume `$VOLUME` to the directory `/home/jupyter/notebooks` inside the container
+  * Option `--volume` is optional and enables keeping your changes to notebook files or the configuration parameters across separate sessions with the AI-Lab Docker Edition, see [Managing User Data](managing-user-data.md).
   * If the volume does not exist yet, then it will be created automatically.
 * Forward port `49494` on the [daemon machine](prerequisites.md) to allow connections from all IP addresses matched by `$LISTEN_IP`
 

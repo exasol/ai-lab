@@ -4,7 +4,7 @@ Code name: TBD
 
 ## Summary
 
-TBD
+This release adds support for parameters for SaaS instances of Exasol database to the configuration page, improves documentation and fixes vulnerability `CVE-2024-23342` by updating dependencies.
 
 ## AI-Lab-Release
 
@@ -12,8 +12,7 @@ Version: 2.1.0
 
 ## Features
 
-* 277 Added the SaaS database parameters to the configuration page. 
-* 279 Made the notebooks tests running in SaaS as well as in the Docker-DB.
+* #277: Added the SaaS database parameters to the configuration page.
 
 ## Security
 
@@ -26,8 +25,10 @@ n/a
 ## Documentation
 
 * #249: Added a troubleshooting section to the user guide documenting died kernel for transformers/te_init.ipynb.
+* #284: Improved User Guide regarding Docker volumes
 
 ## Refactoring
 
 * #267: Switched CodeBuildWaiter to use tenacity
 * #276: Started using the new ITDE Manager interface in the notebook-connector 0.2.9
+* #279: Made the notebooks tests running in SaaS as well as in the Docker-DB.
