@@ -7,4 +7,4 @@ jupysql==0.10.10
 sqlalchemy_exasol==4.6.3
 stopwatch.py==2.0.1
 boto3==1.26.163
-exasol-notebook-connector @ git+https://github.com/exasol/notebook-connector.git@bug/tmp_fix_deps
+exasol-notebook-connector @ git+https://github.com/exasol/notebook-connector.git@main
