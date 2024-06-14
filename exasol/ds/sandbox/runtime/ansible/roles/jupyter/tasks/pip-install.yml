@@ -12,7 +12,7 @@
     requirements: "{{ copy_req_file.dest }}"
     state: latest
     virtualenv: "{{jupyterlab_virtualenv}}"
-    virtualenv_python: python3.8
+    virtualenv_python: python3.10
   become: "{{need_sudo}}"
 
 - name: Remove requirements file {{ requirements_file }}

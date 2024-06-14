@@ -46,6 +46,8 @@ from test.integration.docker_socket_and_groups import (
 
 DOCKER_SOCKET_HOST = "/var/run/docker.sock"
 
+JUPYTER_USER = "jupyter"
+
 _logger = logging.getLogger(__name__)
 
 
@@ -77,7 +79,7 @@ def dss_container_context(request, dss_docker_image):
 
 @pytest.fixture
 def ubuntu_container_context(request, docker_auth):
-    spec = DockerImageSpec("ubuntu", "20.04")
+    spec = DockerImageSpec("ubuntu", "22.04")
     pull_docker_image(spec, docker_auth)
     def context(path_on_host: Path, path_in_container: str):
         return container_context(
@@ -126,7 +128,7 @@ def test_jupyterlab(dss_docker_container, jupyter_port):
 def test_import_notebook_connector(dss_docker_container):
     command = ('/home/jupyter/jupyterenv/bin/python'
                ' -c "import exasol.nb_connector.secret_store"')
-    assert_exec_run(dss_docker_container, command)
+    assert_exec_run(dss_docker_container, command, user=JUPYTER_USER)
 
 
 def test_install_notebooks(dss_docker_container):
@@ -137,6 +139,7 @@ def test_install_notebooks(dss_docker_container):
     output = assert_exec_run(
         dss_docker_container,
         "ls --indicator-style=slash /home/jupyter/notebooks",
+        user=JUPYTER_USER,
     )
 
     actual = filename_set(output)
@@ -153,7 +156,7 @@ def test_docker_socket_access(dss_docker_container):
     wait_for_socket_access(dss_docker_container)
     output = assert_exec_run(
         dss_docker_container,
-        "docker ps", user="jupyter")
+        "docker ps", user=JUPYTER_USER)
     assert re.match(r"^CONTAINER ID +IMAGE .*", output)
 
 
@@ -298,6 +301,6 @@ def test_chown_notebooks(request, tmp_path, group_changer, dss_docker_image):
     ) as container:
         testees = [tmp_path, child, sub, grand_child]
         command = ls_command(str(tmp_path), notebooks_folder, testees)
-        output = assert_exec_run(container, command)
+        output = assert_exec_run(container, command, user=JUPYTER_USER)
         for line in output.splitlines():
             assert "jupyter:jupyter" == user_and_group(line)
