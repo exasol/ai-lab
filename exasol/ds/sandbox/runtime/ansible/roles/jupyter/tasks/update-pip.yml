@@ -5,6 +5,6 @@
     name: pip
     state: latest
     virtualenv: "{{jupyterlab_virtualenv}}"
-    virtualenv_python: python3.8
+    virtualenv_python: python3.10
     extra_args: "--upgrade"
   become: "{{need_sudo}}"

@@ -1,10 +1,12 @@
 # AI-Lab 2.1.0 released TBD
 
-Code name: TBD
+Code name: Exasol SaaS and Python 3.10
 
 ## Summary
 
-This release adds support for parameters for SaaS instances of Exasol database to the configuration page, improves documentation and fixes vulnerability `CVE-2024-23342` by updating dependencies.
+This release adds support for parameters for SaaS instances of Exasol database to the configuration page and fixes vulnerability `CVE-2024-23342` by updating dependencies.
+
+Additionally the release updates the operating system from ubuntu 20.04 to 22.04 and Python version to 3.10 in the published images for Docker, AMI, and virtual machines.
 
 ## AI-Lab-Release
 
@@ -12,7 +14,8 @@ Version: 2.1.0
 
 ## Features
 
-* #277: Added the SaaS database parameters to the configuration page.
+* 277 Added the SaaS database parameters to the configuration page.
+* 279 Made the notebooks tests running in SaaS as well as in the Docker-DB.
 
 ## Security
 
@@ -31,4 +34,4 @@ n/a
 
 * #267: Switched CodeBuildWaiter to use tenacity
 * #276: Started using the new ITDE Manager interface in the notebook-connector 0.2.9
-* #279: Made the notebooks tests running in SaaS as well as in the Docker-DB.
+* #282: Updated python version to Python 3.10
