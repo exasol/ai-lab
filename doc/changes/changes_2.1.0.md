@@ -28,6 +28,7 @@ Version: 2.1.0
 ## Documentation
 
 * #249: Added a troubleshooting section to the user guide documenting died kernel for transformers/te_init.ipynb.
+* #284: Improved User Guide regarding Docker volumes
 
 ## Refactoring
 
