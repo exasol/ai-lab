@@ -23,7 +23,7 @@ Version: 2.1.0
 
 ## Bug Fixes
 
-n/a
+* #289 Fixed UI in notebooks
 
 ## Documentation
 
