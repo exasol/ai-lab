@@ -1,4 +1,4 @@
-name: Referential Integrity
+name: Check Hyperlinks
 
 on:
   pull_request:
