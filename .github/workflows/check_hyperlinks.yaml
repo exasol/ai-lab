@@ -4,13 +4,15 @@ on:
   pull_request:
 
 jobs:
-  check_notebook_links:
+  check-links:
     runs-on: ubuntu-latest
 
     steps:
+
      - uses: actions/checkout@v4
        with:
          fetch-depth: 0
+
      - name: Setup Python & Poetry Environment
        uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
        with:
@@ -27,4 +29,3 @@ jobs:
      - name: Check Hyperlinks in Jupyter Notebooks
        run: >
          poetry run pytest --check-links exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
-
