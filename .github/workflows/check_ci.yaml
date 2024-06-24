@@ -1,12 +1,10 @@
 name: CI Build
 
 on:
-  push:
-    branches-ignore:
-      - "main"
+  pull_request:
 
 jobs:
-  run_unit_tests:
+  run-unit-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +16,7 @@ jobs:
        uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
        with:
          python-version: "3.10"
-         poetry-version: '1.8.2'
+         poetry-version: "1.8.2"
 
      - name: Run Unit Tests
        run: >
@@ -28,14 +26,14 @@ jobs:
          --override-ini=log_cli_level=INFO
          test/unit
 
-  run_integration_tests:
+  run-integration-tests:
     name: Integration Tests
     environment: AWS_CI_TESTS
     runs-on: ubuntu-latest
-    needs: run_unit_tests
+    needs: run-unit-tests
 
     steps:
-     - uses: actions/checkout@v3
+     - uses: actions/checkout@v4
        with:
          fetch-depth: 0
 
@@ -61,8 +59,7 @@ jobs:
        uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
        with:
          python-version: "3.10"
-         poetry-version: '1.8.2'
-
+         poetry-version: "1.8.2"
 
      - name: Run Integration Tests
        run: >
@@ -76,15 +73,23 @@ jobs:
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
-  run_notebook_tests:
+  approval-for-notebook-tests:
+    name: Run Jupyter Notebook Tests?
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect Running Notebook Tests
+        run: true
+    environment:
+      approve-test-execution
+
+  run-notebook-tests:
     name: Jupyter Notebook Tests
-    if: "contains(github.event.head_commit.message, '[run-notebook-tests]')"
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-latest
-    needs: run_unit_tests
+    needs: approval-for-notebook-tests
 
     steps:
-     - uses: actions/checkout@v3
+     - uses: actions/checkout@v4
        with:
          fetch-depth: 0
 
@@ -110,8 +115,7 @@ jobs:
        uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
        with:
          python-version: "3.10"
-         poetry-version: '1.8.2'
-
+         poetry-version: "1.8.2"
 
      - name: Run notebook tests
        run: >
@@ -127,3 +131,11 @@ jobs:
          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
+
+  gate-2:
+    name: Gate 2 - Allow Merge
+    runs-on: ubuntu-latest
+    needs: [ run-unit-tests, run-integration-tests, run-notebook-tests ]
+    steps:
+      - name: Branch Protection
+        run: true
