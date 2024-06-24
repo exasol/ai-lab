@@ -1,12 +1,12 @@
-name: Check Hyperlinks
+name: Referential Integrity
 
 on:
   pull_request:
 
 jobs:
   check-links:
+    name: Find Broken Links in Documentation and Jupyter Notebooks
     runs-on: ubuntu-latest
-
     steps:
 
      - uses: actions/checkout@v4
