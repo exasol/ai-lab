@@ -11,6 +11,7 @@ import pytest
 from test.docker.exec_run import exec_command
 from test.docker.image import image
 from test.docker.in_memory_build_context import InMemoryBuildContext
+# from test.docker.docker_container_copy import copy_script_to_container
 from test.docker.container import (
     container,
     wait_for_socket_access,
@@ -65,24 +66,37 @@ def notebook_test_container(request, notebook_test_image):
     )
 
 
+WARNINGS = {
+    "DeprecationWarning": [
+        "Jupyter is migrating its paths to use standard platformdirs",
+        "pkg_resources is deprecated as an API",
+        "Deprecated call to \\`pkg_resources.declare_namespace",
+    ]
+}
+
+
+def pytest_ini_ignoring_warnings():
+    content = "[pytest]\nfilterwarnings = \n"
+    for category,messages in WARNINGS.items():
+        for m in messages:
+            content += f'    ignore:{m}:{category}\n'
+    return content
+
+
 @pytest.fixture()
 def notebook_test_container_with_log(notebook_test_container):
-    wait_for_socket_access(notebook_test_container)
-    logs = notebook_test_container.logs().decode("utf-8").strip()
+    container = notebook_test_container
+    wait_for_socket_access(container)
+    logs = container.logs().decode("utf-8").strip()
     print(f"Container Logs: {logs or '(empty)'}", flush=True)
-    yield notebook_test_container
+    # options = pytest_ini_ignoring_warnings()
+    # copy_script_to_container(options, "pytest.ini", container)
+    yield container
 
 
 def ignored_warnings():
-    warnings = {
-        "DeprecationWarning": [
-            "Jupyter is migrating its paths to use standard platformdirs",
-            "pkg_resources is deprecated as an API",
-            "Deprecated call to \\`pkg_resources.declare_namespace",
-        ]
-    }
     args = ""
-    for category, messages in warnings.items():
+    for category, messages in WARNINGS.items():
         for m in messages:
             args += f' -W "ignore:{m}:{category}"'
     return args
@@ -92,11 +106,12 @@ def ignored_warnings():
     "notebook_test_file",
     [
         python_file.name
-        for python_file in TEST_RESOURCE_PATH.glob("nbtest_*.py")
+        for python_file in sorted(TEST_RESOURCE_PATH.glob("nbtest_*.py"))
         if python_file.is_file()
     ]
 )
 def test_notebook(notebook_test_container_with_log, notebook_test_file):
+    _logger.info(f"Running notebook tests for {notebook_test_file}")
     container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
@@ -109,4 +124,10 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file):
     environ["NBTEST_ACTIVE"] = "TRUE"
     nbtest_environ = {key: value for key, value in environ.items() if (
         key.startswith("NBTEST_") or key.startswith("SAAS_"))}
-    exec_command(command_run_test, container, print_output=True, environment=nbtest_environ, user="jupyter")
+    exec_command(
+        command_run_test,
+        container,
+        print_output=True,
+        environment=nbtest_environ,
+        user="jupyter",
+    )
