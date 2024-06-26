@@ -4,7 +4,9 @@ from exasol.nb_connector.itde_manager import (
     take_itde_down
 )
 from exasol.nb_connector.connections import open_pyexasol_connection
+from notebook_test_utils import set_log_level_for_libraries
 
+set_log_level_for_libraries()
 
 def test_itde(tmp_path):
     store_path = tmp_path / 'tmp_config.sqlite'

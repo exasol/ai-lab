@@ -6,6 +6,7 @@ import string
 import textwrap
 from contextlib import contextmanager, ExitStack
 from datetime import timedelta
+import logging
 import os
 
 import pytest
@@ -25,6 +26,7 @@ from exasol.saas.client.api_access import (
     timestamp_name,
 )
 
+LOG = logging.getLogger(__name__)
 
 def _env(var: str) -> str:
     result = os.environ.get(var)
@@ -111,6 +113,28 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
     # Execute the notebook object, expecting to get no exceptions.
     nb_client = NotebookClient(nb, timeout=timeout, kernel_name='python3')
     nb_client.execute()
+
+
+
+# ~/git/ai-lab/test/notebooks/notebook_test_utils.py
+def set_log_level_for_libraries(level=logging.WARNING):
+    modules = cleandoc(
+        """
+        trailets
+        luigi-interface
+        luigi-interface.PrepareDockerNetworkForTestEnvironment
+        luigi-interface.SpawnTestDockerDatabase
+        luigi-interface.SpawnTestEnvironmentWithDockerDB
+        luigi-interface.WaitForTestDockerDatabase
+        """
+    ).split()
+    LOG.info(
+        f"Setting log level to '%s' for modules\n  - %s",
+        logging.getLevelName(level),
+        "\n  - ".join(modules),
+    )
+    for m in modules:
+        logging.getLogger(m).setLevel(level)
 
 
 @contextmanager
@@ -232,7 +256,7 @@ def uploading_hack() -> Tuple[str, str]:
         def pause_notebook_execution():
             import time
             time.sleep(20)
-            
+
         pause_notebook_execution()
         """)
     )
