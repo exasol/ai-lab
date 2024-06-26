@@ -121,7 +121,7 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
 def set_log_level_for_libraries(level=logging.WARNING):
     modules = cleandoc(
         """
-        trailets
+        traitlets
         luigi-interface
         luigi-interface.PrepareDockerNetworkForTestEnvironment
         luigi-interface.SpawnTestDockerDatabase
