@@ -118,7 +118,7 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file):
     command_run_test = (
         f"{virtual_env}/bin/python"
         f" -m pytest --setup-show -s {notebook_test_file}"
-        f"{ignored_warnings()}"
+        # f"{ignored_warnings()}"
     )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
