@@ -66,40 +66,13 @@ def notebook_test_container(request, notebook_test_image):
     )
 
 
-WARNINGS = {
-    "DeprecationWarning": [
-        "Jupyter is migrating its paths to use standard platformdirs",
-        "pkg_resources is deprecated as an API",
-        "Deprecated call to \\`pkg_resources.declare_namespace",
-    ]
-}
-
-
-def pytest_ini_ignoring_warnings():
-    content = "[pytest]\nfilterwarnings = \n"
-    for category,messages in WARNINGS.items():
-        for m in messages:
-            content += f'    ignore:{m}:{category}\n'
-    return content
-
-
 @pytest.fixture()
 def notebook_test_container_with_log(notebook_test_container):
     container = notebook_test_container
     wait_for_socket_access(container)
     logs = container.logs().decode("utf-8").strip()
     print(f"Container Logs: {logs or '(empty)'}", flush=True)
-    # options = pytest_ini_ignoring_warnings()
-    # copy_script_to_container(options, "pytest.ini", container)
     yield container
-
-
-def ignored_warnings():
-    args = ""
-    for category, messages in WARNINGS.items():
-        for m in messages:
-            args += f' -W "ignore:{m}:{category}"'
-    return args
 
 
 @pytest.mark.parametrize(
@@ -118,7 +91,6 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file):
     command_run_test = (
         f"{virtual_env}/bin/python"
         f" -m pytest --setup-show -s {notebook_test_file}"
-        # f"{ignored_warnings()}"
     )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
