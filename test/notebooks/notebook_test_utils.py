@@ -127,6 +127,7 @@ def set_log_level_for_libraries(level=logging.WARNING):
         luigi-interface.SpawnTestDockerDatabase
         luigi-interface.SpawnTestEnvironmentWithDockerDB
         luigi-interface.WaitForTestDockerDatabase
+        httpx
         """
     ).split()
     LOG.info(

@@ -2,10 +2,16 @@ import os
 import textwrap
 import pytest
 
-from notebook_test_utils import (access_to_temp_secret_store,
-                                 access_to_temp_saas_secret_store,
-                                 notebook_runner,
-                                 uploading_hack)
+from notebook_test_utils import (
+    access_to_temp_secret_store,
+    access_to_temp_saas_secret_store,
+    notebook_runner,
+    uploading_hack,
+    set_log_level_for_libraries,
+)
+
+
+set_log_level_for_libraries()
 
 
 @pytest.mark.parametrize(

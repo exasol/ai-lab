@@ -9,10 +9,16 @@ import pytest
 from exasol.nb_connector.secret_store import Secrets
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey, StorageBackend
 
-from notebook_test_utils import (access_to_temp_secret_store,
-                                 access_to_temp_saas_secret_store,
-                                 run_notebook,
-                                 uploading_hack)
+from notebook_test_utils import (
+    access_to_temp_secret_store,
+    access_to_temp_saas_secret_store,
+    run_notebook,
+    uploading_hack,
+    set_log_level_for_libraries,
+)
+
+
+set_log_level_for_libraries()
 
 
 def _create_aws_s3_bucket() -> str:
@@ -170,7 +176,7 @@ def get_job_polling_hack() -> Tuple[str, str]:
                     time.sleep(30)
                     query_result = conn.execute(sql)
                     job_status = query_result.fetchall()[0][0]
-        
+
         continuous_job_polling()
         """)
     )
@@ -186,7 +192,7 @@ def test_sagemaker(access_to_temp_secret_store, uploading_hack):
     bucket_name = _create_aws_s3_bucket()
     role_name = _create_sagemaker_role_with_policy()
     _store_aws_credentials(store_path, store_password, bucket_name, role_name)
-    
+
     current_dir = os.getcwd()
     try:
         run_notebook('main_config.ipynb', store_file, store_password)
