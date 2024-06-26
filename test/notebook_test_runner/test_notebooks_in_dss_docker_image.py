@@ -11,7 +11,6 @@ import pytest
 from test.docker.exec_run import exec_command
 from test.docker.image import image
 from test.docker.in_memory_build_context import InMemoryBuildContext
-# from test.docker.docker_container_copy import copy_script_to_container
 from test.docker.container import (
     container,
     wait_for_socket_access,
