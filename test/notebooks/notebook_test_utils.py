@@ -8,6 +8,7 @@ from contextlib import contextmanager, ExitStack
 from datetime import timedelta
 import logging
 import os
+from inspect import cleandoc
 
 import pytest
 import nbformat
