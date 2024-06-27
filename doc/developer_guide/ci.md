@@ -3,20 +3,16 @@
 The project has two types of CI tests:
 * Unit tests and integration tests which run in a Github workflow
 * Special integration tests verifying the content of the Jupyter notebook files
-* A system test which runs on a AWS Codebuild
+* A system test which runs in a AWS Codebuild
 
 All these tests need to pass before the approval of a Github PR.
 The Github workflow will run on each push to a branch in the Github repository.
 
-However, the notebook tests and the AWS Codebuild will only run after you push a commit containing a special string in the commit message, see the following sections.
+However, the notebook tests and the AWS Codebuild will only run under specific conditions, e.g. manual approval or push a commit containing a special string in the commit message, see the following sections.
 
-### Executing Notebook Tests
+### Executing Jupyter Notebook Tests
 
-Use the following git commands to execute the notebook tests:
-
-```shell
-git commit -m "[run-notebook-tests]" --allow-empty && git push
-```
+The regular CI build will ask for confirmation (aka. "review") before executing these tests, see [ETAJ developer guide](https://github.com/exasol/exasol-test-setup-abstraction-java/blob/main/doc/developer_guide/developer_guide.md#ci-build) for details.
 
 ### Executing AWS CodeBuild
 

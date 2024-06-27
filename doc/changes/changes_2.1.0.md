@@ -23,7 +23,7 @@ Version: 2.1.0
 
 ## Bug Fixes
 
-* #289 Fixed UI in notebooks
+n/a
 
 ## Documentation
 
@@ -35,3 +35,6 @@ Version: 2.1.0
 * #267: Switched CodeBuildWaiter to use tenacity
 * #276: Started using the new ITDE Manager interface in the notebook-connector 0.2.9
 * #282: Updated python version to Python 3.10
+* #295: Made notebook-tests mandatory for merge
+* #193: Ignored warnings in notebook tests
+* #297: Reduced log level for transitive libraries in notebook tests

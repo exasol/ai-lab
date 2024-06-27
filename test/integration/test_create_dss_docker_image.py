@@ -299,6 +299,7 @@ def test_chown_notebooks(request, tmp_path, group_changer, dss_docker_image):
                 'bind': notebooks_folder,
                 'mode': 'rw', }, },
     ) as container:
+        wait_for(container, "entrypoint.py: Did chown -R")
         testees = [tmp_path, child, sub, grand_child]
         command = ls_command(str(tmp_path), notebooks_folder, testees)
         output = assert_exec_run(container, command, user=JUPYTER_USER)

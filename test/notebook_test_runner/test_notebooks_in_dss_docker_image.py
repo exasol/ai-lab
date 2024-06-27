@@ -67,46 +67,38 @@ def notebook_test_container(request, notebook_test_image):
 
 @pytest.fixture()
 def notebook_test_container_with_log(notebook_test_container):
-    wait_for_socket_access(notebook_test_container)
-    logs = notebook_test_container.logs().decode("utf-8").strip()
+    container = notebook_test_container
+    wait_for_socket_access(container)
+    logs = container.logs().decode("utf-8").strip()
     print(f"Container Logs: {logs or '(empty)'}", flush=True)
-    yield notebook_test_container
-
-
-def ignored_warnings():
-    warnings = {
-        "DeprecationWarning": [
-            "Jupyter is migrating its paths to use standard platformdirs",
-            "pkg_resources is deprecated as an API",
-            "Deprecated call to \\`pkg_resources.declare_namespace",
-        ]
-    }
-    args = ""
-    for category, messages in warnings.items():
-        for m in messages:
-            args += f' -W "ignore:{m}:{category}"'
-    return args
+    yield container
 
 
 @pytest.mark.parametrize(
     "notebook_test_file",
     [
         python_file.name
-        for python_file in TEST_RESOURCE_PATH.glob("nbtest_*.py")
+        for python_file in sorted(TEST_RESOURCE_PATH.glob("nbtest_*.py"))
         if python_file.is_file()
     ]
 )
 def test_notebook(notebook_test_container_with_log, notebook_test_file):
+    _logger.info(f"Running notebook tests for {notebook_test_file}")
     container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = (
         f"{virtual_env}/bin/python"
         f" -m pytest --setup-show -s {notebook_test_file}"
-        f"{ignored_warnings()}"
     )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
     nbtest_environ = {key: value for key, value in environ.items() if (
         key.startswith("NBTEST_") or key.startswith("SAAS_"))}
-    exec_command(command_run_test, container, print_output=True, environment=nbtest_environ, user="jupyter")
+    exec_command(
+        command_run_test,
+        container,
+        print_output=True,
+        environment=nbtest_environ,
+        user="jupyter",
+    )

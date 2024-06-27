@@ -1,25 +1,31 @@
-name: Check Notebook Links
+name: Check Hyperlinks
 
 on:
-  push:
-    branches-ignore:
-      - "main"
+  pull_request:
 
 jobs:
-  check_notebook_links:
+  check-links:
+    name: Find Broken Links in Documentation and Jupyter Notebooks
     runs-on: ubuntu-latest
-
     steps:
+
      - uses: actions/checkout@v4
        with:
          fetch-depth: 0
+
      - name: Setup Python & Poetry Environment
        uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
        with:
          python-version: "3.10"
          poetry-version: '1.8.2'
 
-     - name: Run build ai-lab tests
+     - name: Check Hyperlinks in Documentation
+       id: lychee
+       uses: lycheeverse/lychee-action@v1.9.0
+       with:
+         fail: true
+         args: --verbose --no-progress 'doc/**/*.md' 'README.md'
+
+     - name: Check Hyperlinks in Jupyter Notebooks
        run: >
          poetry run pytest --check-links exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
-
