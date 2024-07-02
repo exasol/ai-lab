@@ -40,6 +40,7 @@ humanfriendly = "^10.0"
 tenacity = "^8.2.3"
 pygithub = "^2.2.0"
 importlib-metadata = "^7.0.1"
+numpy = "<2.0.0" # limit dependencies of cfn-lint
 
 [tool.poetry.group.dev.dependencies]
 pytest-check-links = "^0.10.1" # was "^0.9.0"
