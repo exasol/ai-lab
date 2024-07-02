@@ -13,23 +13,6 @@ from test.aws.templates import (
 )
 
 
-def validate_using_cfn_lint(tmp_path, cloudformation_yml):
-    """
-    This test uses cfn-lint to validate the Cloudformation template.
-    (See https://github.com/aws-cloudformation/cfn-lint)
-    """
-    out_file = tmp_path / "cloudformation.yaml"
-    with open(out_file, "w") as f:
-        f.write(cloudformation_yml)
-
-    completed_process = subprocess.run(["cfn-lint", str(out_file.absolute())], capture_output=True)
-    try:
-        completed_process.check_returncode()
-    except subprocess.CalledProcessError as e:
-        print(e.stdout)
-        raise e
-
-
 TEMPLATES = {
     "ci-codebuild": ci_codebuild_template(),
     "release-codebuild": release_codebuild_template(),
@@ -39,6 +22,24 @@ TEMPLATES = {
 }
 
 
+def validate_using_cfn_lint(tmp_path, template_key):
+    """
+    This test uses cfn-lint to validate the Cloudformation template.
+    (See https://github.com/aws-cloudformation/cfn-lint)
+    """
+    yaml = TEMPLATES[template_key]
+    out_file = tmp_path / f"{template_key}.yaml"
+    with open(out_file, "w") as f:
+        f.write(yaml)
+
+    p = subprocess.run(["cfn-lint", str(out_file.absolute())], capture_output=True)
+    try:
+        p.check_returncode()
+    except subprocess.CalledProcessError as e:
+        print(f'Template "{template_key}": {p.stdout.decode("utf-8")}')
+        raise Exception(f"Failed to validate Cloudformation template {template_key}", e)
+
+
 @pytest.mark.parametrize("template_key", TEMPLATES)
 def test_lint_cloudformation_templates(tmp_path, template_key):
-    validate_using_cfn_lint(tmp_path, TEMPLATES[template_key])
+    validate_using_cfn_lint(tmp_path, template_key)

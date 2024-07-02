@@ -9,7 +9,7 @@ from exasol.ds.sandbox.lib.vm_bucket import (
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 TEST_IP = "1.1.1.1"
 TEST_ACL_ARN = "TEST-DOWNLOAD-ACL"
-TEST_DUMMY_AMI_ID = "ami-123"
+TEST_DUMMY_AMI_ID = "ami-00000000000000000"
 
 
 def ci_codebuild_template():
@@ -19,12 +19,14 @@ def ci_codebuild_template():
     )
 
 
+# pattern for valid ARNs:
+# (^arn:(aws|aws-cn|aws-us-gov):[^:]+:[^:]*(:(?:\\d{12}|\\*|aws)?:.+|)|\\*)$
 def release_codebuild_template():
     return render_template(
         "release_code_build.jinja.yaml",
         vm_bucket="test-bucket-123",
         path_in_bucket=AssetId.BUCKET_PREFIX,
-        dockerhub_secret_arn="secret_arn",
+        dockerhub_secret_arn="arn:aws:_:_",
     )
 
 
