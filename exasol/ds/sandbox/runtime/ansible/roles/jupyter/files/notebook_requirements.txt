@@ -1,11 +1,11 @@
 uncertainties==3.1.7
-numpy==1.23.1
-pandas==1.4.3
-scikit-learn==1.0.2
-matplotlib==3.7.4
+numpy==1.26.4
+pandas==1.5.3
+scikit-learn==1.5.0
+matplotlib==3.9.0
 jupysql==0.10.10
-sqlalchemy_exasol==4.6.3
+sqlalchemy_exasol==5.0.0
 stopwatch.py==2.0.1
-boto3==1.26.163
+boto3==1.34.137
 exasol-notebook-connector @ git+https://github.com/exasol/notebook-connector.git@main
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
