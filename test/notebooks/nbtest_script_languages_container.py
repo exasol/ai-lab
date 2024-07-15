@@ -42,8 +42,11 @@ def test_script_languages_container_cloning_slc_repo(access_to_temp_secret_store
         run_notebook('main_config.ipynb', store_file, store_password)
         os.chdir('./script_languages_container')
         _store_slc_config(store_path, store_password, True)
-        run_notebook('configure_slc_flavor.ipynb', store_file, store_password)
-        run_notebook('using_a_script_languages_container.ipynb', store_file, store_password)
+        run_notebook('configure_slc_repository.ipynb', store_file, store_password)
+        run_notebook('export_as_is.ipynb', store_file, store_password)
+        run_notebook('customize.ipynb', store_file, store_password)
+        run_notebook('test_slc.ipynb', store_file, store_password)
+        run_notebook('using_the_script_languages_container_tool.ipynb', store_file, store_password)
     finally:
         os.chdir(current_dir)
 
@@ -67,7 +70,10 @@ def test_script_languages_container_with_existing_slc_repo(access_to_temp_secret
         assert not slc_repo_path.is_dir()
         _clone_slc_repo()
         _store_slc_config(store_path, store_password, False)
-        run_notebook('configure_slc_flavor.ipynb', store_file, store_password)
-        run_notebook('using_a_script_languages_container.ipynb', store_file, store_password)
+        run_notebook('configure_slc_repository.ipynb', store_file, store_password)
+        run_notebook('export_as_is.ipynb', store_file, store_password)
+        run_notebook('customize.ipynb', store_file, store_password)
+        run_notebook('test_slc.ipynb', store_file, store_password)
+        run_notebook('using_the_script_languages_container_tool.ipynb', store_file, store_password)
     finally:
         os.chdir(current_dir)
