@@ -17,7 +17,7 @@ def _slc_repo_dir() -> Path:
 
 def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool):
 
-    slc_source = "Clone script languages release repository" if clone_repo else "Use existing repository"
+    slc_source = "Clone script languages release repository" if clone_repo else "Use the existing clone"
     conf = Secrets(store_path, store_password)
     conf.connection()
     conf.save(CKey.slc_source, slc_source)
