@@ -40,6 +40,7 @@ def ec2_template():
 
 
 def vm_bucket_template():
+    # S3Bucket()
     return vm_dss_bucket.create_vm_bucket_cf_template(TEST_ACL_ARN)
 
 
