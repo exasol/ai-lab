@@ -27,8 +27,7 @@ def run_reset_password(ansible_access: AnsibleAccess, default_password: str,
     The parameter ansible_access is used to interact with Ansible (dependency injection).
     """
     hash = crypt.crypt(default_password, salt=crypt.METHOD_SHA512)
-    new_extra_vars = { "default_vm_password": hash }
-
+    new_extra_vars = { "default_vm_password_hash": hash }
     if ansible_run_context.extra_vars is not None:
         new_extra_vars.update(ansible_run_context.extra_vars)
     new_ansible_run_context = AnsibleRunContext(ansible_run_context.playbook, new_extra_vars)
