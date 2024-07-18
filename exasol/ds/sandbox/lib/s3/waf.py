@@ -7,8 +7,7 @@ from exasol.ds.sandbox.lib.render_template import render_template
 VM_BUCKET_WAF_STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-Bucket-WAF"
 OUTPUT_KEY_VM_DOWNLOAD_ACL_ARN = "VMDownloadACLArn"
 
-# TODO: rename to a more general term, e.g. S3_BUCKETS
-LOG = get_status_logger(LogType.VM_BUCKET)
+LOG = get_status_logger(LogType.S3_BUCKETS)
 
 class Waf:
     def __init__(

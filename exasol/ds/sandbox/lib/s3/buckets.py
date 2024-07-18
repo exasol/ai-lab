@@ -9,8 +9,7 @@ from exasol.ds.sandbox.lib.asset_id import AssetId
 
 VM_BUCKET_STACK = "DATA-SCIENCE-SANDBOX-VM-Bucket"
 
-# TODO: rename to a more general term, e.g. S3_BUCKETS
-LOG = get_status_logger(LogType.VM_BUCKET)
+LOG = get_status_logger(LogType.S3_BUCKETS)
 
 
 # TODO: rename to a more general term, e.g. S3_BUCKETS
