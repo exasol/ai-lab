@@ -35,7 +35,7 @@ ansible-runner = "^2.2.1"
 ansible = "^9.2.0"
 importlib_resources = ">=5.4.0"
 rich = "^12.5.1"
-pandas = "^2.2.2"
+pandas = "^1.5.3"
 numpy = "^1.26.4" # avoid version >= 2
 humanfriendly = "^10.0"
 tenacity = "^8.2.3"
