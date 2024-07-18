@@ -1,5 +1,5 @@
 uncertainties==3.1.7
-numpy==1.23.1
+numpy==1.26.4
 pandas==1.4.3
 scikit-learn==1.0.2
 matplotlib==3.7.4
