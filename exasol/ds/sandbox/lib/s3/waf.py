@@ -4,10 +4,10 @@ from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.render_template import render_template
 
 VM_BUCKET_WAF_STACK_NAME = "DATA-SCIENCE-SANDBOX-VM-Bucket-WAF"
-
-LOG = get_status_logger(LogType.VM_BUCKET)
-
 OUTPUT_KEY_VM_DOWNLOAD_ACL_ARN = "VMDownloadACLArn"
+
+# TODO: rename to a more general term, e.g. S3_BUCKETS
+LOG = get_status_logger(LogType.VM_BUCKET)
 
 
 class Waf:

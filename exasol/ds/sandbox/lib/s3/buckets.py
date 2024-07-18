@@ -8,11 +8,10 @@ from exasol.ds.sandbox.lib.render_template import render_template
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import find_acl_arn
 from exasol.ds.sandbox.lib.asset_id import AssetId
 
+VM_BUCKET_STACK = "DATA-SCIENCE-SANDBOX-VM-Bucket"
 
 # TODO: rename to a more general term, e.g. S3_BUCKETS
 LOG = get_status_logger(LogType.VM_BUCKET)
-
-VM_BUCKET_STACK = "DATA-SCIENCE-SANDBOX-VM-Bucket"
 
 
 # TODO: rename to a more general term, e.g. S3_BUCKETS
