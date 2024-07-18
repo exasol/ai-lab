@@ -1,6 +1,5 @@
 import pytest
 
-from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import create_vm_bucket_cf_template
 from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import get_cloudformation_template
 from test.aws.templates import (
     ec2_template,

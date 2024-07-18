@@ -1,10 +1,8 @@
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.render_template import render_template
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol.ds.sandbox.lib.vm_bucket import (
-    vm_dss_bucket,
-    vm_dss_bucket_waf,
-)
+from exasol.ds.sandbox.lib.s3.buckets import S3Bucket
+from exasol.ds.sandbox.lib.vm_bucket import vm_dss_bucket_waf
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 TEST_IP = "1.1.1.1"
@@ -40,10 +38,8 @@ def ec2_template():
 
 
 def vm_bucket_template():
-    # S3Bucket()
-    return vm_dss_bucket.create_vm_bucket_cf_template(TEST_ACL_ARN)
+    return S3Bucket.vm(aws_access=None).cloudformation_template(TEST_ACL_ARN)
 
 
 def waf_template():
     return vm_dss_bucket_waf.get_cloudformation_template(TEST_IP)
-

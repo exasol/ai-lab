@@ -22,7 +22,7 @@ from enum import Enum
 
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket, find_url_for_bucket
+from exasol.ds.sandbox.lib.s3.buckets import S3Bucket
 from exasol.ds.sandbox.lib.dss_docker import DEFAULT_ORG_AND_REPOSITORY
 
 
@@ -148,9 +148,7 @@ def print_export_image_tasks(aws_access: AwsAccess, filter_value: str, printing_
 
 
 def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printing_factory: PrintingFactory):
-    vm_bucket = find_vm_bucket(aws_access)
-    url_for_bucket = find_url_for_bucket(aws_access)
-
+    vm_s3_bucket = S3Bucket.vm(aws_access)
     if asset_id is not None:
         prefix = asset_id.bucket_prefix
     else:
@@ -174,19 +172,19 @@ def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printin
     #    works correctly.
     # => Assume that a filter is given  "5.0.0". Variable prefix would be "ai_lab/5.0.0".
 
-    s3_objects = aws_access.list_s3_objects(bucket=vm_bucket, prefix=AssetId.BUCKET_PREFIX)
+    s3_objects = aws_access.list_s3_objects(bucket=vm_s3_bucket.id, prefix=AssetId.BUCKET_PREFIX)
 
     if s3_objects is not None and len(prefix) > 0:
         if prefix[-1] != "*":
             prefix = f"{prefix}*"
-        s3_objects = [s3_object for s3_object in s3_objects if fnmatch.fnmatch(s3_object.key, prefix)]
-    https_bucket_url = "https://{url_for_bucket}/{{object}}".format(url_for_bucket=url_for_bucket)
+        s3_objects = [o for o in s3_objects if fnmatch.fnmatch(o.key, prefix)]
+    url_template = f"https://{vm_s3_bucket.url}/{{object}}"
 
     if s3_objects is not None:
         for s3_object in s3_objects:
             obj_size = humanfriendly.format_size(s3_object.size)
             key = s3_object.key
-            https_url = https_bucket_url.format(object=urllib.parse.quote(key))
+            https_url = url_template.format(object=urllib.parse.quote(key))
             table_printer.add_row(key, obj_size, https_url)
 
     table_printer.finish()
