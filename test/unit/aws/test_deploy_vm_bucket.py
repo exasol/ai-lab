@@ -4,6 +4,7 @@ from unittest.mock import Mock, create_autospec
 import pytest
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.s3.waf import Waf
 from exasol.ds.sandbox.lib.s3.buckets import (
     S3Bucket,
     VM_BUCKET_STACK,
@@ -26,7 +27,7 @@ def test_find_bucket_success(test_config):
         get_waf_cloudformation_mock_data()
     mock_cast(aws.instantiate_for_region).return_value = aws
     testee = S3Bucket.vm(aws)
-    testee.setup(test_config)
+    testee.setup(Waf.vm_bucket(aws, test_config).acl_arn)
     mock_cast(aws.upload_cloudformation_stack).assert_called_once()
     assert TEST_BUCKET_ID == testee.id
 

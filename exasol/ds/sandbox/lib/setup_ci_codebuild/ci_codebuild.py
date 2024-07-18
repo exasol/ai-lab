@@ -9,7 +9,7 @@ LOG = get_status_logger(LogType.SETUP_CI_CODEBUILD)
 
 
 def run_setup_ci_codebuild(aws_access: AwsAccess) -> None:
-    vm_bucket = S3Bucket(aws_access).id
+    vm_bucket = S3Bucket.vm(aws_access).id
     yml = render_template("ci_code_build.jinja.yaml", vm_bucket=vm_bucket)
     aws_access.upload_cloudformation_stack(yml, STACK_NAME)
     LOG.info(f"Deployed cloudformation stack {STACK_NAME}")

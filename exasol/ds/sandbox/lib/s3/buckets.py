@@ -5,7 +5,6 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.render_template import render_template
-from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import find_acl_arn
 from exasol.ds.sandbox.lib.asset_id import AssetId
 
 VM_BUCKET_STACK = "DATA-SCIENCE-SANDBOX-VM-Bucket"
@@ -23,10 +22,16 @@ class OutputKey(Enum):
 
 
 class S3Bucket:
-    def __init__(self, aws_access: Optional[AwsAccess], stack_name: str, template: str):
+    def __init__(
+            self,
+            aws_access: Optional[AwsAccess],
+            stack_name: str,
+            template: str,
+    ):
         self.aws = aws_access
         self.stack_name = stack_name
         self.template = template
+
         # All output keys (class OutputKey) are parameters in the template.
         # Simply map the output key enums values to themselves and pass them
         # to jinja.  Thus, we ensure that the AWS output keys in the
@@ -35,13 +40,18 @@ class S3Bucket:
 
     @classmethod
     def vm(cls, aws_access: Optional[AwsAccess]) -> "S3Bucket":
-        return S3Bucket(aws_access, VM_BUCKET_STACK, "vm_bucket_cloudformation.jinja.yaml")
+        return S3Bucket(
+            aws_access,
+            VM_BUCKET_STACK,
+            "vm_bucket_cloudformation.jinja.yaml",
+        )
 
     # create_vm_bucket_cf_template
-    def cloudformation_template(self, waf_webacl_arn: str) -> str:
+    # def cloudformation_template(self, waf_webacl_arn: str) -> str:
+    def cloudformation_template(self, waf_acl_arn: str) -> str:
         return render_template(
-            self.template, # "vm_bucket_cloudformation.jinja.yaml",
-            acl_arn=waf_webacl_arn,
+            self.template,
+            acl_arn=waf_acl_arn,
             path_in_bucket=AssetId.BUCKET_PREFIX,
             **self._output_keys_dict,
         )
@@ -57,10 +67,8 @@ class S3Bucket:
         return output[0].output_value
 
     # run_setup_vm_bucket
-    def setup(self, config: ConfigObject) -> None:
-        acl_arn = find_acl_arn(self.aws, config)
-        yml = self.cloudformation_template(acl_arn)
-        self.aws.upload_cloudformation_stack(yml, self.stack_name)
+    def setup(self, waf_acl_arn: str) -> None:
+        self.aws.upload_cloudformation_stack(self.cloudformation_template(waf_acl_arn), self.stack_name)
         LOG.info(f"Deployed cloudformation stack {self.stack_name}")
 
     # find_vm_bucket

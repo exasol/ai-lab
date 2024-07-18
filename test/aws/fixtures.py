@@ -1,6 +1,7 @@
 import pytest
 
-from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket_waf import get_cloudformation_template
+from exasol.ds.sandbox.lib.s3.waf import Waf
+
 from test.aws.templates import (
     ec2_template,
     vm_bucket_template,
@@ -31,4 +32,4 @@ def ec2_cloudformation_yml():
 
 @pytest.fixture
 def waf_cloudformation_yml():
-    return waf_template()
+    return Waf.vm_bucket(aws_access=None, config=None).cloudformation_template
