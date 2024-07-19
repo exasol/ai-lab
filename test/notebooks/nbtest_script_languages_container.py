@@ -22,8 +22,6 @@ def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool):
     conf.connection()
     conf.save(CKey.slc_source, slc_source)
     conf.save(CKey.slc_target_dir, str(_slc_repo_dir()))
-    conf.save(CKey.slc_alias, "ai_lab_test")
-
 
 @pytest.fixture()
 def cleanup_slc_repo_dir():
