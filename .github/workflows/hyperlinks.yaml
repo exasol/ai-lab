@@ -28,4 +28,4 @@ jobs:
 
      - name: Check Hyperlinks in Jupyter Notebooks
        run: >
-         poetry run pytest --check-links exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
+         poetry run pytest --check-links --check-links-ignore "https://www.transtats.bts.gov/.*" exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
