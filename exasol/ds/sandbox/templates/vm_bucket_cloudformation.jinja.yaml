@@ -119,7 +119,7 @@ Resources:
 Outputs:
   {{VMBucketId}}:
     Value: !Ref VMBucket
-    Description: Id of th S3 bucket
+    Description: Id of the S3 bucket
   {{VMExportRoleId}}:
     Value: !Ref VMExportRole
     Description: Id of the VMExportRole
