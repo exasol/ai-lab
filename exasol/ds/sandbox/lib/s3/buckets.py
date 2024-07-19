@@ -12,7 +12,7 @@ VM_BUCKET_STACK = "DATA-SCIENCE-SANDBOX-VM-Bucket"
 LOG = get_status_logger(LogType.S3_BUCKETS)
 
 
-# TODO: rename to a more general term, e.g. S3_BUCKETS
+# TODO: rename entries to more general terms, e.g. BucketId, ExportRoleId
 class OutputKey(Enum):
     VMBucketId = "VMBucketId"
     VMExportRoleId = "VMExportRoleId"
@@ -45,8 +45,6 @@ class S3Bucket:
             "vm_bucket_cloudformation.jinja.yaml",
         )
 
-    # create_vm_bucket_cf_template
-    # def cloudformation_template(self, waf_webacl_arn: str) -> str:
     def cloudformation_template(self, waf_acl_arn: str) -> str:
         return render_template(
             self.template,
@@ -55,7 +53,6 @@ class S3Bucket:
             **self._output_keys_dict,
         )
 
-    # _find_vm_bucket_stack_output
     def _stack_output(self, output_key: OutputKey):
         stack = [stack for stack in self.aws.describe_stacks() if stack.name == self.stack_name]
         if len(stack) != 1:
@@ -65,22 +62,18 @@ class S3Bucket:
             raise RuntimeError(f"Output key '{output_key}' in output for stack {self.stack_name} not found")
         return output[0].output_value
 
-    # run_setup_vm_bucket
     def setup(self, waf_acl_arn: str) -> None:
         self.aws.upload_cloudformation_stack(self.cloudformation_template(waf_acl_arn), self.stack_name)
         LOG.info(f"Deployed cloudformation stack {self.stack_name}")
 
-    # find_vm_bucket
     @property
     def id(self) -> str:
         return self._stack_output(OutputKey.VMBucketId)
 
-    # find_url_for_bucket
     @property
     def url(self) -> str:
         return self._stack_output(OutputKey.CfDistributionDomainName)
 
-    # find_vm_import_role
     @property
     def import_role(self) -> str:
         return self._stack_output(OutputKey.VMExportRoleId)

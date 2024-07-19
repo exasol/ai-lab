@@ -49,7 +49,6 @@ class Waf:
     def _region_aws(self) -> AwsAccess:
         return self.aws.instantiate_for_region(region=self.config.waf_region)
 
-    # run_setup_vm_bucket_waf
     def setup(self, allowed_ip: str) -> None:
         """
         Deploys the WAF Cloudformation stack.  It automatically deploys to
@@ -59,7 +58,6 @@ class Waf:
         self._region_aws.upload_cloudformation_stack(yml, self.stack_name)
         LOG.info(f"Deployed cloudformation stack '{self.stack_name}' in region '{self.config.waf_region}'")
 
-    # _find_vm_bucket_stack_output
     def _stack_output(self, output_key: str):
         stack = [stack for stack in self._region_aws.describe_stacks() if stack.name == self.stack_name]
         if len(stack) != 1:
@@ -69,7 +67,6 @@ class Waf:
             raise RuntimeError(f"Output key '{output_key}' in output for stack {self.stack_name} not found")
         return output[0].output_value
 
-    # find_acl_arn
     @property
     def acl_arn(self) -> str:
         """
@@ -77,5 +74,4 @@ class Waf:
         Cloudfront distribution of the VM Bucket.  Assumes, that the WAF
         Cloudformation stack is correctly deployed.
         """
-        # _find_vm_bucket_stack_output(
         return self._stack_output(self.download_acl_arn)
