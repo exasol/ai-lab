@@ -8,6 +8,7 @@ from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext,
     reset_password_ansible_run_context
 
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
+import crypt
 
 
 def run_reset_password(ansible_access: AnsibleAccess, default_password: str,
@@ -25,7 +26,8 @@ def run_reset_password(ansible_access: AnsibleAccess, default_password: str,
     set a 'expired', thus the user is required to set a new password during the first login.
     The parameter ansible_access is used to interact with Ansible (dependency injection).
     """
-    new_extra_vars = {"default_vm_password": default_password}
+    hash = crypt.crypt(default_password, salt=crypt.METHOD_SHA512)
+    new_extra_vars = { "default_vm_password_hash": hash }
     if ansible_run_context.extra_vars is not None:
         new_extra_vars.update(ansible_run_context.extra_vars)
     new_ansible_run_context = AnsibleRunContext(ansible_run_context.playbook, new_extra_vars)
