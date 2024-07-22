@@ -38,8 +38,11 @@ def ec2_template():
 
 
 def vm_bucket_template():
-    return S3Bucket.vm(aws_access=None).cloudformation_template(TEST_ACL_ARN)
+    return S3Bucket.vm(aws_access=None).cloudformation_template(
+        acl_arn=TEST_ACL_ARN,
+        path_in_bucket=AssetId.BUCKET_PREFIX,
+    )
 
 
 def waf_template():
-    return Waf.vm_bucket(aws_access=None, config=None).cloudformation_template(allowed_ip=TEST_IP)
+    return Waf.vm_bucket_for_linter().cloudformation_template(allowed_ip=TEST_IP)

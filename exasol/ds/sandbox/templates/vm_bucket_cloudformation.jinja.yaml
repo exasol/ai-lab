@@ -117,10 +117,10 @@ Resources:
           SigningProtocol: sigv4
 
 Outputs:
-  {{VMBucketId}}:
+  {{BucketId}}:
     Value: !Ref VMBucket
     Description: Id of the S3 bucket
-  {{VMExportRoleId}}:
+  {{ExportRoleId}}:
     Value: !Ref VMExportRole
     Description: Id of the VMExportRole
   {{CfDistributionId}}:

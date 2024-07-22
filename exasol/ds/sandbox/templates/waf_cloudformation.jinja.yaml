@@ -48,6 +48,6 @@ Resources:
         - {{allowed_ip}}/32
 
 Outputs:
-  {{VMDownloadACLArn}}:
+  {{DownloadACLArn}}:
     Value: !GetAtt VMDownloadACL.Arn
     Description: "Arn of the VM Download ACL"
