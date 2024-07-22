@@ -1,6 +1,4 @@
 uncertainties==3.1.7
-numpy==1.26.4
-pandas==1.5.3
 scikit-learn==1.0.2
 matplotlib==3.7.4
 jupysql==0.10.10
