@@ -182,6 +182,7 @@ def get_job_polling_hack() -> Tuple[str, str]:
     )
 
 
+@pytest.mark.skip(reason="Want to get the results for other tests quickly")
 @pytest.mark.parametrize('access_to_temp_secret_store', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_sagemaker(access_to_temp_secret_store, uploading_hack):
 

@@ -21,6 +21,11 @@ Version: 2.1.0
 ## Security
 
 * #207: Fixed vulnerability CVE-2024-23342 by updating dependency ecdsa
+* #207: Fixed vulnerability CVE-2024-23342 by updating dependency ecdsa
+
+## Bug Fixes
+
+* #303: Fixed AWS Codebuild
 
 ## Documentation
 
