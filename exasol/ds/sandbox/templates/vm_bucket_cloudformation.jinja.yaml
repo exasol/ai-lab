@@ -110,7 +110,7 @@ Resources:
     Type: 'AWS::CloudFront::OriginAccessControl'
     Properties:
       OriginAccessControlConfig:
-          Description: Origin Access Control config for the VM S3 Bucket
+          Description: Origin Access Control config for the S3 Bucket
           Name: DssVMBucketOAC
           OriginAccessControlOriginType: s3
           SigningBehavior: always
@@ -119,13 +119,13 @@ Resources:
 Outputs:
   {{BucketId}}:
     Value: !Ref VMBucket
-    Description: Id of the S3 bucket
+    Description: ID of the S3 bucket.
   {{ExportRoleId}}:
     Value: !Ref VMExportRole
-    Description: Id of the VMExportRole
+    Description: ID of the Role needed to access the bucket.
   {{CfDistributionId}}:
-    Description: 'Id for our cloudfront distribution'
     Value: !Ref CfDistribution
+    Description: ID of the related cloudfront distribution.
   {{CfDistributionDomainName}}:
-    Description: 'Domain name for our cloudfront distribution'
     Value: !GetAtt CfDistribution.DomainName
+    Description: Domain name of the related cloudfront distribution.
