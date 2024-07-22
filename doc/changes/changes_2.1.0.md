@@ -23,7 +23,7 @@ Version: 2.1.0
 
 ## Bug Fixes
 
-n/a
+* #303: Fixed AWS Codebuild
 
 ## Documentation
 
