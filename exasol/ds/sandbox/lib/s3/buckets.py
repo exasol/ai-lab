@@ -1,6 +1,4 @@
-from enum import Enum, auto
-from typing import Dict, Optional
-from dataclasses import dataclass
+from typing import Optional
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import ConfigObject
