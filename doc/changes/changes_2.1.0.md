@@ -16,6 +16,7 @@ Version: 2.1.0
 
 * 277 Added the SaaS database parameters to the configuration page.
 * 279 Made the notebooks tests running in SaaS as well as in the Docker-DB.
+* 19 Added SLC notebook
 
 ## Security
 

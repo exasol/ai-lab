@@ -7,3 +7,4 @@ stopwatch.py==2.0.1
 boto3==1.26.163
 exasol-notebook-connector @ git+https://github.com/exasol/notebook-connector.git@main
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
+ipyfilechooser==0.6.0
