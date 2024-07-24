@@ -11,7 +11,7 @@ from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import find_ec2_instance_in_cf_stack
 from exasol.ds.sandbox.lib.asset_printing.print_assets import print_assets
 from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
-from exasol.ds.sandbox.lib.s3.buckets import S3Bucket
+from exasol.ds.sandbox.lib.cloudformation.s3_buckets import VmBucket
 
 LOG = get_status_logger(LogType.EXPORT)
 
@@ -115,7 +115,7 @@ def export_vm(aws_access: AwsAccess,
               vm_image_formats: Tuple[str, ...],
               asset_id: AssetId,
               configuration: ConfigObject) -> None:
-    vm_s3_bucket = S3Bucket.vm(aws_access)
+    vm_s3_bucket = VmBucket.s3_bucket(aws_access)
     vm_bucket = vm_s3_bucket.id
     vmimport_role = vm_s3_bucket.import_role
     tag_value = asset_id.tag_value

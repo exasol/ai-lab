@@ -6,7 +6,7 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import (
     AwsAccess,
     Progress,
 )
-from exasol.ds.sandbox.lib.s3.buckets import S3Bucket
+from exasol.ds.sandbox.lib.cloudformation.s3_buckets import VmBucket
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def sample_file(tmp_path, sample_size_kb):
                     reason="CI test need to be activated by env variable DSS_RUN_CI_TEST")
 def test_s3_transfer_multipart(sample_file):
     aws = AwsAccess(None)
-    bucket = S3Bucket.vm(aws).id
+    bucket = VmBucket.s3_bucket(aws).id
     s3_key = f"{AssetId.BUCKET_PREFIX}-itest-sample-file"
     s3_key2 = f"{s3_key}-copy"
     progress = Progress("4 MB")

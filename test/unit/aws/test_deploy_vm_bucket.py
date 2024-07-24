@@ -4,11 +4,7 @@ from unittest.mock import Mock, create_autospec
 import pytest
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.s3.waf import Waf
-from exasol.ds.sandbox.lib.s3.buckets import (
-    S3Bucket,
-    VM_BUCKET,
-)
+from exasol.ds.sandbox.lib.cloudformation.s3_buckets import VmBucket
 from test.aws.mock_data import (
     TEST_BUCKET_ID,
     get_waf_cloudformation_mock_data,
@@ -26,8 +22,8 @@ def test_find_bucket_success(test_config):
         get_s3_cloudformation_mock_data() + \
         get_waf_cloudformation_mock_data()
     mock_cast(aws.instantiate_for_region).return_value = aws
-    testee = S3Bucket.vm(aws)
-    testee.setup(Waf.vm_bucket(aws, test_config).acl_arn)
+    testee = VmBucket.s3_bucket(aws)
+    testee.setup(VmBucket.waf(aws, test_config).acl_arn)
     mock_cast(aws.upload_cloudformation_stack).assert_called_once()
     assert TEST_BUCKET_ID == testee.id
 
@@ -41,8 +37,9 @@ def test_vm_bucket_not_deployed(test_config):
     mock_cast(aws.describe_stacks).return_value = get_waf_cloudformation_mock_data()
     mock_cast(aws.instantiate_for_region).return_value = aws
 
-    with pytest.raises(RuntimeError, match=f"Stack {VM_BUCKET.cf_stack_name} not found"):
-        S3Bucket.vm(aws).id
+    name = VmBucket.S3_BUCKET.cf_stack_name
+    with pytest.raises(RuntimeError, match=f"Stack {name} not found"):
+        VmBucket.s3_bucket(aws).id
 
 
 def test_waf_not_deployed(test_config):
@@ -53,5 +50,6 @@ def test_waf_not_deployed(test_config):
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
     mock_cast(aws.describe_stacks).return_value = list()
 
-    with pytest.raises(RuntimeError, match=f"Stack {VM_BUCKET.cf_stack_name} not found"):
-        S3Bucket.vm(aws).id
+    name = VmBucket.S3_BUCKET.cf_stack_name
+    with pytest.raises(RuntimeError, match=f"Stack {name} not found"):
+        VmBucket.s3_bucket(aws).id

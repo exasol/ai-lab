@@ -6,14 +6,14 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 
 
 @dataclass(frozen=True)
-class CfStackSpec:
+class CfTemplateSpec:
     cf_stack_name: str
     template: str
     outputs: Dict[str, str]
 
 
 class CfTemplate:
-    def __init__(self, aws_access: Optional[AwsAccess], spec: CfStackSpec):
+    def __init__(self, aws_access: Optional[AwsAccess], spec: CfTemplateSpec):
         self._aws = aws_access
         self.spec = spec
 
