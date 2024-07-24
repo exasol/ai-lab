@@ -115,8 +115,6 @@ def export_vm(aws_access: AwsAccess,
               vm_image_formats: Tuple[str, ...],
               asset_id: AssetId,
               configuration: ConfigObject) -> None:
-    # vm_bucket = find_vm_bucket(aws_access)
-    # vmimport_role = find_vm_import_role(aws_access)
     vm_s3_bucket = S3Bucket.vm(aws_access)
     vm_bucket = vm_s3_bucket.id
     vmimport_role = vm_s3_bucket.import_role
