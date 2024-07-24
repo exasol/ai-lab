@@ -2,7 +2,10 @@ from typing import Optional
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-from exasol.ds.sandbox.lib.aws_access.cloudformation_template import CfTemplateSpec, CfTemplate
+from exasol.ds.sandbox.lib.cloudformation_templates.cf_template import (
+    CfTemplateSpec,
+    CfTemplate,
+)
 
 LOG = get_status_logger(LogType.S3_BUCKETS)
 

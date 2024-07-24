@@ -22,7 +22,7 @@ from enum import Enum
 
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol.ds.sandbox.lib.cloudformation.s3_buckets import VmBucket
+from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 from exasol.ds.sandbox.lib.dss_docker import DEFAULT_ORG_AND_REPOSITORY
 
 
@@ -148,7 +148,7 @@ def print_export_image_tasks(aws_access: AwsAccess, filter_value: str, printing_
 
 
 def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printing_factory: PrintingFactory):
-    vm_s3_bucket = VmBucket.s3_bucket(aws_access)
+    vm_s3_bucket = VmBucketCfTemplate(aws_access)
     if asset_id is not None:
         prefix = asset_id.bucket_prefix
     else:

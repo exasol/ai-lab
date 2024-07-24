@@ -5,7 +5,7 @@ from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.logging import set_log_level
-from exasol.ds.sandbox.lib.cloudformation.s3_buckets import VmBucket
+from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 
 
 @cli.command()
@@ -16,6 +16,4 @@ def setup_vm_bucket(aws_profile: str, log_level: str):
     Command to deploy the VM S3-Bucket
     """
     set_log_level(log_level)
-    aws = AwsAccess(aws_profile)
-    waf_acl_arn = VmBucket.waf(aws, default_config_object).acl_arn
-    VmBucket.s3_bucket(aws).setup(waf_acl_arn)
+    VmBucketCfTemplate(AwsAccess(aws_profile)).setup(default_config_object)
