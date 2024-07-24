@@ -1,6 +1,7 @@
 # The tests in this file validate the various cloudformation templates by
 # using the cloudformation linter "cfn-lint".
 
+import importlib
 import pytest
 import subprocess
 
@@ -43,3 +44,15 @@ TEMPLATES = {
 @pytest.mark.parametrize("template_key", TEMPLATES)
 def test_lint_cloudformation_templates(tmp_path, template_key):
     validate_using_cfn_lint(tmp_path, TEMPLATES[template_key])
+
+
+@pytest.mark.parametrize("key", ("vm-bucket", "waf"))
+def test_template_rendering(key):
+    e = (
+        importlib.resources
+        .files("test.unit.aws")
+        .joinpath("rendered-cf-templates")
+        .joinpath(f"{key}.yml")
+        .read_text()
+    )
+    assert TEMPLATES[key] == e

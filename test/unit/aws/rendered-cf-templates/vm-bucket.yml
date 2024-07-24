@@ -1,0 +1,131 @@
+Resources:
+  VMBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: 'Private'
+    Metadata:
+      Comment: 'Bucket to store AI-Lab VM images'
+    DeletionPolicy: Retain
+    UpdateReplacePolicy : Retain
+  VMExportRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Principal:
+                  Service:
+                    - vmie.amazonaws.com
+              Action:
+                - sts:AssumeRole
+      Description: "IAM Role to run VM image exports on the S3-Bucket"
+      Path: '/'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetBucketAcl
+                Resource:
+                  - !Sub "arn:aws:s3:::${ VMBucket }/*"
+                  - !Sub "arn:aws:s3:::${ VMBucket }"
+              - Effect: Allow
+                Action:
+                  - ec2:ModifySnapshotAttribute
+                  - ec2:CopySnapshot
+                  - ec2:RegisterImage
+                  - ec2:Describe*
+                Resource:
+                  - "*"
+  S3CDNBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref VMBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Principal:
+              Service: "cloudfront.amazonaws.com"
+            Resource:
+              - !Sub "arn:aws:s3:::${ VMBucket }/ai_lab/*"
+            Condition:
+              StringEquals:
+                'AWS:SourceArn': !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CfDistribution}"
+
+  CfDistribution:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Comment: 'A simple distribution with an S3 origin'
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - 'HEAD'
+            - 'GET'
+          CachedMethods:
+            - 'HEAD'
+            - 'GET'
+          Compress: false
+          DefaultTTL: 86400
+          ForwardedValues:
+            Cookies:
+              Forward: 'none'
+            Headers:
+              - 'Origin'
+            QueryString: false
+          MaxTTL: 31536000
+          MinTTL: 86400
+          TargetOriginId: !Sub 's3-origin-${ VMBucket }'
+          ViewerProtocolPolicy: 'redirect-to-https'
+        DefaultRootObject: 'index.html'
+        Enabled: true
+        HttpVersion: 'http1.1'
+        IPV6Enabled: true
+        WebACLId: TEST-DOWNLOAD-ACL
+        Origins:
+          - DomainName: !GetAtt VMBucket.DomainName
+            Id: !Sub 's3-origin-${ VMBucket }'
+            OriginPath: ''
+            OriginAccessControlId: !Ref OAC
+            # Despite the fact that we use OAC, and not the deprecated OAI, we need to add this field.
+            # Otherwise, AWS complains during the deployment of the stack.
+            # According to the documentation an empty string in OriginAccessIdentity means:
+            # "If you want viewers to be able to access objects using either the CloudFront URL or the Amazon S3 URL, specify an empty OriginAccessIdentity element."
+            # However, as we set the Bucket Access Control to private, the images can be accessed only
+            # via the Cloudfront URL, and not the Amazon S3 URL.
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        PriceClass: 'PriceClass_All'
+
+  OAC:
+    Type: 'AWS::CloudFront::OriginAccessControl'
+    Properties:
+      OriginAccessControlConfig:
+          Description: Origin Access Control config for the S3 Bucket
+          Name: DssVMBucketOAC
+          OriginAccessControlOriginType: s3
+          SigningBehavior: always
+          SigningProtocol: sigv4
+
+Outputs:
+  VMBucketId:
+    Value: !Ref VMBucket
+    Description: ID of the S3 bucket containing the AI-Lab VM Images.
+  VMExportRoleId:
+    Value: !Ref VMExportRole
+    Description: ID of the Role needed to access the VMBucket.
+  CfDistributionId:
+    Value: !Ref CfDistribution
+    Description: ID of the cloudfront distribution for the VMBucket.
+  CfDistributionDomainName:
+    Value: !GetAtt CfDistribution.DomainName
+    Description: Domain name of the cloudfront distribution for the VMBucket.
