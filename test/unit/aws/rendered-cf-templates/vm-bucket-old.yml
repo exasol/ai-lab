@@ -110,7 +110,7 @@ Resources:
     Type: 'AWS::CloudFront::OriginAccessControl'
     Properties:
       OriginAccessControlConfig:
-          Description: Origin Access Control config for the VM S3 Bucket
+          Description: Origin Access Control config for the S3 Bucket
           Name: DssVMBucketOAC
           OriginAccessControlOriginType: s3
           SigningBehavior: always
@@ -129,3 +129,4 @@ Outputs:
   CfDistributionDomainName:
     Description: 'Domain name for our cloudfront distribution'
     Value: !GetAtt CfDistribution.DomainName
+    Description: Domain name of the cloudfront distribution for the VMBucket.
