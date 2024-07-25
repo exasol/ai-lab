@@ -11,7 +11,7 @@ from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import find_ec2_instance_in_cf_stack
 from exasol.ds.sandbox.lib.asset_printing.print_assets import print_assets
 from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
-from exasol.ds.sandbox.lib.vm_bucket.vm_dss_bucket import find_vm_bucket, find_vm_import_role
+from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 
 LOG = get_status_logger(LogType.EXPORT)
 
@@ -115,8 +115,9 @@ def export_vm(aws_access: AwsAccess,
               vm_image_formats: Tuple[str, ...],
               asset_id: AssetId,
               configuration: ConfigObject) -> None:
-    vm_bucket = find_vm_bucket(aws_access)
-    vmimport_role = find_vm_import_role(aws_access)
+    vm_s3_bucket = VmBucketCfTemplate(aws_access)
+    vm_bucket = vm_s3_bucket.id
+    vmimport_role = vm_s3_bucket.import_role
     tag_value = asset_id.tag_value
     try:
         ami_id = create_ami(aws_access, asset_id.ami_name, tag_value, instance_id, configuration)

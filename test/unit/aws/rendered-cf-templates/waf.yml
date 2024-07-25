@@ -45,9 +45,9 @@ Resources:
       Scope: CLOUDFRONT
       IPAddressVersion: IPV4
       Addresses:
-        - {{allowed_ip}}/32
+        - 1.1.1.1/32
 
 Outputs:
-  {{DownloadACLArn}}:
+  VMDownloadACLArn:
     Value: !GetAtt VMDownloadACL.Arn
     Description: Arn of the VM Download ACL

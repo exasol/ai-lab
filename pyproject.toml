@@ -71,6 +71,10 @@ testpaths = [
     "test"
 ]
 
+markers = [
+    "cf_lint: marks tests as cf_lint (deselect with '-m \"not cf_lint\"')",
+]
+
 filterwarnings = [
     # ignore warnings caused by docker lib
     "ignore:the imp module is deprecated:DeprecationWarning",

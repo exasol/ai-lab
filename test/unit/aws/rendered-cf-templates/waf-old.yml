@@ -4,7 +4,7 @@ Resources:
     Properties:
       Name: DssVMDownloadLimitationWebACL
       Scope: CLOUDFRONT
-      Description: This Web ACL controls access to the VM Bucket cloudfront distribution.
+      Description: This Web ACL contains rule to control access to the VM Bucket cloudfront distribution.
       DefaultAction:
         Allow: {}
       VisibilityConfig:
@@ -45,9 +45,9 @@ Resources:
       Scope: CLOUDFRONT
       IPAddressVersion: IPV4
       Addresses:
-        - {{allowed_ip}}/32
+        - 1.1.1.1/32
 
 Outputs:
-  {{DownloadACLArn}}:
+  VMDownloadACLArn:
     Value: !GetAtt VMDownloadACL.Arn
-    Description: Arn of the VM Download ACL
+    Description: "Arn of the VM Download ACL"

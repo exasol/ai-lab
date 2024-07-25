@@ -9,7 +9,7 @@ SUPPORTED_LOG_LEVELS = {"normal": logging.WARNING, "info": logging.INFO, "debug"
 class LogType(Enum):
     SETUP = "setup"
     EXPORT = "export"
-    VM_BUCKET = "vm_bucket"
+    S3_BUCKETS = "s3_buckets"
     SETUP_CI_CODEBUILD = "setup_ci_codebuild"
     AWS_ACCESS = "aws_access"
     ANSIBLE = "ansible"
