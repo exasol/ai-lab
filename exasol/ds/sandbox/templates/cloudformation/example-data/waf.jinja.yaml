@@ -1,0 +1,43 @@
+Resources:
+  AiLabExamplesAcl:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: AiLabExamplesWebAcl
+      Scope: CLOUDFRONT
+      Description: This Web ACL controls access to the AI-Lab Example Data.
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: AiLabExamplesMetric
+      Rules:
+        - Name: AiLabExamplesRateLimit
+          Priority: 0
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AiLabExamplesMetricRateLimit
+          Statement:
+            RateBasedStatement:
+              AggregateKeyType: IP
+              Limit: 100
+  # Question: Could we maybe remove the allowed IP addresses?
+  # The VMBucket WAF did only exclude these IP addresses from the captcha rule,
+  # while the Example Data WAF does not configure any captcha.
+  AllowedIpSet:
+    Type: 'AWS::WAFv2::IPSet'
+    Properties:
+      Name: AiLabExamplesAllowedIp
+      Description: Allowed IP addresses
+      Scope: CLOUDFRONT
+      IPAddressVersion: IPV4
+      Addresses:
+        - {{allowed_ip}}/32
+
+Outputs:
+  {{DownloadACLArn}}:
+    Value: !GetAtt AiLabExamplesAcl.Arn
+    Description: ARN of the Download ACL For AI-Lab Example Data.
