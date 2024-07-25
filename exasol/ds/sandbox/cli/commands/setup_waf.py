@@ -15,10 +15,25 @@ from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 @add_options(logging_options)
 @click.option('--allowed-ip', type=str,
               help="The allowed IP address for which CAPTCHA will not be applied.")
-def setup_waf(aws_profile: str, allowed_ip: str, log_level: str):
+@click.option(
+    '--purpose', required=True,
+    type=click.Choice(['vm', 'example-data'], case_sensitive=False, ),
+    help="""Purpose of the S3 bucket behind the WAF: vm = AI-Lab virtual
+    machine images, example-data = AI-Lab example data.""")
+def setup_waf(aws_profile: str, allowed_ip: str, log_level: str, purpose: str):
     """
-    Command to deploy the VM S3-Bucket Web Application Firewall. Needs to
-    run before deploying the VM Bucket itself.
+    Command to deploy one of the AI-Lab Web Application Firewalls (WAFs)
+    for S3 buckets. Needs to run before deploying the S3 bucket itself.
+    PURPOSE:\n
+    * vm: WAF for S3 bucket for virtual machine images\n
+    * example-data: WAF for S3 bucket for Example-Data
     """
     set_log_level(log_level)
-    VmBucketCfTemplate.waf(AwsAccess(aws_profile), default_config_object).setup(allowed_ip)
+    aws_access = AwsAccess(aws_profile)
+    config = default_config_object
+    if purpose == "vm":
+        VmBucketCfTemplate.waf(aws_access, config) # .setup(allowed_ip)
+    elif purpose == "example-data":
+        # when removing allowed_ip from the cf template then
+        # this option can also be removed here.
+        pass
