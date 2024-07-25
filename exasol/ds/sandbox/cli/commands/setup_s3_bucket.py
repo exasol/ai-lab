@@ -1,3 +1,4 @@
+import click
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.aws_options import aws_options
@@ -11,9 +12,22 @@ from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 @cli.command()
 @add_options(aws_options)
 @add_options(logging_options)
-def setup_s3_bucket(aws_profile: str, log_level: str):
+@click.option(
+    '--purpose', required=True,
+    type=click.Choice(['vm', 'example-data'], case_sensitive=False),
+    help="""Purpose of the S3 bucket: vm = AI-Lab virtual machine images,
+    example-data = AI-Lab example data.""")
+def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
     """
+    Command to deploy one of the AI-Lab S3-Buckets for the specified
+    PURPOSE:\n
+    * vm: S3 bucket for virtual machine images\n
+    * example-data: S3 bucket for Example-Data
     Command to deploy the VM S3-Bucket
     """
     set_log_level(log_level)
-    VmBucketCfTemplate(AwsAccess(aws_profile)).setup(default_config_object)
+    print(f'purpose {purpose}')
+    if purpose == "vm":
+        VmBucketCfTemplate(AwsAccess(aws_profile)) # .setup(default_config_object)
+    elif purpose == "example-data":
+        pass
