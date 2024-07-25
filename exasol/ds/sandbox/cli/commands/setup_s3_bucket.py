@@ -6,7 +6,10 @@ from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.logging import set_log_level
-from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
+from exasol.ds.sandbox.lib.cloudformation_templates import (
+    VmBucketCfTemplate,
+    ExampleDataCfTemplate,
+)
 
 
 @cli.command()
@@ -26,8 +29,9 @@ def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
     Command to deploy the VM S3-Bucket
     """
     set_log_level(log_level)
-    print(f'purpose {purpose}')
+    aws = AwsAccess(aws_profile)
+    confi = default_config_object
     if purpose == "vm":
-        VmBucketCfTemplate(AwsAccess(aws_profile)) # .setup(default_config_object)
+        VmBucketCfTemplate(aws) # .setup(config)
     elif purpose == "example-data":
-        pass
+        ExampleDataCfTemplate(aws) # .setup(config)

@@ -7,7 +7,10 @@ from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.logging import set_log_level
-from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
+from exasol.ds.sandbox.lib.cloudformation_templates import (
+    VmBucketCfTemplate,
+    ExampleDataCfTemplate,
+)
 
 
 @cli.command()
@@ -32,8 +35,8 @@ def setup_waf(aws_profile: str, allowed_ip: str, log_level: str, purpose: str):
     aws_access = AwsAccess(aws_profile)
     config = default_config_object
     if purpose == "vm":
-        VmBucketCfTemplate.waf(aws_access, config) # .setup(allowed_ip)
+        VmBucketCfTemplate(aws_access).waf(config) # .setup(allowed_ip)
     elif purpose == "example-data":
         # when removing allowed_ip from the cf template then
         # this option can also be removed here.
-        pass
+        ExampleDataCfTemplate(aws_access).waf(config) # .setup(allowed_ip)

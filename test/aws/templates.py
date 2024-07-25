@@ -44,8 +44,9 @@ def vm_bucket_template():
     )
 
 
-def waf_template():
-    return VmBucketCfTemplate.waf(
-        aws_access=None,
-        config=default_config_object
-    ).cloudformation_template(allowed_ip=TEST_IP)
+def vm_bucket_waf_template():
+    return (
+        VmBucketCfTemplate(aws_access=None)
+        .waf(config=default_config_object)
+        .cloudformation_template(allowed_ip=TEST_IP)
+    )

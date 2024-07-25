@@ -7,6 +7,7 @@ from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.cloudformation_templates import (
     CfTemplateSpec,
     CfTemplate,
+    WafCfTemplate,
 )
 
 
@@ -20,12 +21,16 @@ class S3BucketCfTemplate(CfTemplate):
     def __init__(self, aws_access: Optional[AwsAccess], spec: CfTemplateSpec):
         super().__init__(aws_access, spec)
 
-    def setup(self, waf_acl_arn: str) -> None:
+    def setup(self, config: ConfigObject) -> None:
+        waf_acl_arn = self.waf(config).acl_arn
         super().setup(
             acl_arn=waf_acl_arn,
             path_in_bucket=AssetId.BUCKET_PREFIX,
         )
         LOG.info(f"Deployed cloudformation stack {self.stack_name}")
+
+    def waf(self, spec: CfTemplateSpec, region: str) -> WafCfTemplate:
+        return WafCfTemplate(self._aws, spec, region)
 
     @property
     def id(self) -> str:

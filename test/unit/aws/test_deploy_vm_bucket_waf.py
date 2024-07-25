@@ -16,7 +16,7 @@ def test_find_acl_arn(test_config):
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
     mock_cast(aws.describe_stacks).return_value = get_waf_cloudformation_mock_data()
     mock_cast(aws.instantiate_for_region).return_value = aws
-    testee = VmBucketCfTemplate.waf(aws, config=test_config)
+    testee = VmBucketCfTemplate(aws).waf(config=test_config)
     testee.setup(TEST_IP)
     mock_cast(aws.upload_cloudformation_stack).assert_called_once()
     assert TEST_ACL_ARN == testee.acl_arn
