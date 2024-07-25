@@ -8,6 +8,7 @@ from test.aws.mock_data import get_waf_cloudformation_mock_data
 from test.mock_cast import mock_cast
 
 
+# TODO: These tests should be generalized and applied to Example Data S3 Bucket, too
 def test_find_acl_arn(test_config):
     """
     This test uses a mock to validate the correct finding of the ACL Arn
