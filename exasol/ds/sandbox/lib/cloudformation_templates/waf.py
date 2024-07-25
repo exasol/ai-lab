@@ -28,7 +28,7 @@ class WafCfTemplate(CfTemplate):
         super().__init__(aws, spec)
         self.region = region
 
-    def setup(self, allowed_ip: str) -> None:
+    def setup(self, allowed_ip: str = "127.0.0.1") -> None:
         super().setup(allowed_ip=allowed_ip)
         LOG.info(f"Deployed cloudformation stack {self.stack_name}")
 
