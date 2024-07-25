@@ -41,8 +41,6 @@ Script `start-test-release-build` requires environment variable `GH_TOKEN` to co
 
 ## Deployment commands
 
-<!-- TODO: Describe commands for deploying WAF and Bucket for Example Data S3 buckets, too -->
-
 The following commands can be used to deploy the infrastructure onto a given AWS account:
 * `setup-ci-codebuild`: Deploy the AWS Codebuild cloudformation stack which will run the ci-test.
 * `setup-release-codebuild`: Deploy the AWS Codebuild cloudformation stack which will be used for the release-build.
@@ -51,7 +49,7 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 * `setup-vm-bucket-waf`: Deploy the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket.
 -->
 * `setup-s3-bucket`: Deploy an AWS cloudformation stack with an S3 bucket, requires option `--purpose` (see below).
-* `setup-s3-bucket-waf`: Deploy an AWS cloudformation stack with a Web Application Firefall (WAF ACL) configuration for the Cloudfront distribution of an S3 bucket, requires option `--purpose` (see below).
+* `setup-waf`: Deploy an AWS cloudformation stack with a Web Application Firefall (WAF ACL) configuration for the Cloudfront distribution of an S3 bucket, requires option `--purpose` (see below).
 
 Option `--purpose` is required for both commands `setup-s3-bucket` and `setup-s3-bucket-waf` to select the purpose of the s3 bucket. Supported values are
 * `vm` for virtual machine images of the AI-Lab
