@@ -1,5 +1,3 @@
-import click
-
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.aws_options import aws_options
@@ -13,11 +11,9 @@ from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 @cli.command()
 @add_options(aws_options)
 @add_options(logging_options)
-@click.option('--allowed-ip', type=str,
-              help="The allowed IP address for which CAPTCHA will not be applied.")
-def setup_vm_bucket_waf(aws_profile: str, allowed_ip: str, log_level: str):
+def setup_s3_bucket(aws_profile: str, log_level: str):
     """
-    Command to deploy the VM S3-Bucket Web Application Firewall. Needs to run before deploying the VM Bucket itself.
+    Command to deploy the VM S3-Bucket
     """
     set_log_level(log_level)
-    VmBucketCfTemplate.waf(AwsAccess(aws_profile), default_config_object).setup(allowed_ip)
+    VmBucketCfTemplate(AwsAccess(aws_profile)).setup(default_config_object)
