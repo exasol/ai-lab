@@ -19,7 +19,7 @@ class VmBucketCfTemplate(S3BucketCfTemplate):
     """
     S3_BUCKET = CfTemplateSpec(
         cf_stack_name="DATA-SCIENCE-SANDBOX-VM-Bucket",
-        template="vm_bucket_cloudformation.jinja.yaml",
+        template="cloudformation/vm-images/s3-bucket.jinja.yaml",
         outputs={
             "BucketId": "VMBucketId",
             "ExportRoleId": "VMExportRoleId",
@@ -29,7 +29,7 @@ class VmBucketCfTemplate(S3BucketCfTemplate):
     )
     WAF = CfTemplateSpec(
         cf_stack_name="DATA-SCIENCE-SANDBOX-VM-Bucket-WAF",
-        template="waf_cloudformation.jinja.yaml",
+        template="cloudformation/vm-images/waf.jinja.yaml",
         outputs={
             "DownloadACLArn": "VMDownloadACLArn",
         },
