@@ -1,0 +1,49 @@
+name: Notebook Tests
+
+on:
+  workflow_call:
+
+jobs:
+  sklearn:
+    name: Running nbtest_sklearn.py
+    environment: AWS_SAGEMAKER
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare Test Environment
+        uses: ./.github/actions/prepare_test_env.yml
+
+      - name: Run notebook tests
+        run: >
+         poetry run pytest
+          --capture=no
+          --override-ini=log_cli=true
+          --override-ini=log_cli_level=INFO
+          --nb_test_file=nbtest_sklearn.py
+          test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+        env:
+          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
+
+  ibis:
+    name: Running nbtest_ibis.py
+    environment: AWS_SAGEMAKER
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare Test Environment
+        uses: ./.github/actions/prepare_test_env.yml
+
+      - name: Run notebook tests
+        run: >
+         poetry run pytest
+          --capture=no
+          --override-ini=log_cli=true
+          --override-ini=log_cli_level=INFO
+          --nb_test_file=nbtest_ibis.py
+          test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+        env:
+          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
