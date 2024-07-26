@@ -26,16 +26,6 @@ class CliRunner():
             )
         return self
 
-    # @property
-    # def output(self):
-    #     r = self.result
-    #     return None if r is None else r.output
-    #
-    # @property
-    # def exit_code(self):
-    #     r = self.result
-    #     return None if r is None else r.exit_code
-
     def failed(self, output: str = None):
         """
         Return True, if CLI execution failed, i.e. exit_code is != 0.  If
