@@ -30,7 +30,9 @@ class WafCfTemplate(CfTemplate):
 
     def setup(self, allowed_ip: str = "127.0.0.1") -> None:
         super().setup(allowed_ip=allowed_ip)
-        LOG.info(f"Deployed cloudformation stack '{self.stack_name}' in region '{self.region}'")
+        LOG.info(
+            f"Deployed cloudformation stack '{self.stack_name}'"
+            " in region '{self.region}'")
 
     @property
     def acl_arn(self) -> str:
