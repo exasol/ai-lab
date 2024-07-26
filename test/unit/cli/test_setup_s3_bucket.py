@@ -14,18 +14,16 @@ def cli():
 
 
 def test_no_purpose(cli):
-    assert cli.run().failed("Missing option '--purpose'")
+    assert cli.run().failed and "Missing option '--purpose'" in cli.output
 
 
 def test_vm_bucket(cli):
     with patch.object(VmBucketCfTemplate, 'setup') as setup:
         cli.run("--purpose", "vm")
-    assert cli.succeeded()
-    setup.assert_called_once()
+    assert cli.succeeded and setup.call_count == 1
 
 
 def test_example_data_bucket(cli):
     with patch.object(ExampleDataCfTemplate, 'setup') as setup:
         cli.run("--purpose", "example-data")
-    assert cli.succeeded()
-    setup.assert_called_once()
+    assert cli.succeeded and setup.call_count == 1

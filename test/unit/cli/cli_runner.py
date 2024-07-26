@@ -26,22 +26,14 @@ class CliRunner():
             )
         return self
 
-    def failed(self, output: str = None):
-        """
-        Return True, if CLI execution failed, i.e. exit_code is != 0.  If
-        output is specified, then the specified string must be contained in
-        the output created while running the CLI.
-        """
-        matches = output is None or output in self.result.output
-        return self.result.exit_code != 0 and matches
+    @property
+    def output(self):
+        return self.result.output
 
-    def succeeded(self, output: str = None):
-        """
-        Return True, if CLI execution was successful, i.e. exit_code is 0.
-        If output is specified, then the specified string must be contained in
-        the output created while running the CLI.
-        """
-        matches = output is None or output in self.result.output
-        return self.result.exit_code == 0 and matches
+    @property
+    def failed(self):
+        return self.result.exit_code != 0
 
-
+    @property
+    def succeeded(self):
+        return self.result.exit_code == 0

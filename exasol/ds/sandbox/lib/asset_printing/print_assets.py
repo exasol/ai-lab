@@ -147,7 +147,6 @@ def print_export_image_tasks(aws_access: AwsAccess, filter_value: str, printing_
     text_print.print(tuple())
 
 
-# TODO: Clarify if objects in Example Data S3 buckets should be printed, too
 def print_s3_objects(aws_access: AwsAccess, asset_id: Optional[AssetId], printing_factory: PrintingFactory):
     vm_s3_bucket = VmBucketCfTemplate(aws_access)
     if asset_id is not None:
