@@ -18,12 +18,12 @@ jobs:
 
       - name: Run notebook tests
         run: >
-         poetry run pytest
-          --capture=no
-          --override-ini=log_cli=true
-          --override-ini=log_cli_level=INFO
-          --nb_test_file=nbtest_sklearn.py
-          test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+          poetry run pytest
+            --capture=no
+            --override-ini=log_cli=true
+            --override-ini=log_cli_level=INFO
+            --nb-test-file=nbtest_sklearn.py
+            test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
@@ -43,12 +43,12 @@ jobs:
 
       - name: Run notebook tests
         run: >
-         poetry run pytest
-          --capture=no
-          --override-ini=log_cli=true
-          --override-ini=log_cli_level=INFO
-          --nb_test_file=nbtest_ibis.py
-          test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+          poetry run pytest
+            --capture=no
+            --override-ini=log_cli=true
+            --override-ini=log_cli_level=INFO
+            --nb-test-file=nbtest_ibis.py
+            test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
