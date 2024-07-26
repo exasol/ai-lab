@@ -18,9 +18,11 @@ runs:
        sudo rm -rf /usr/local/share/chromium
        sudo rm -rf /usr/local/lib/node_modules
        sudo rm -rf /opt/ghc
+     shell: bash
 
    - name: Show available disk space
      run: df -h
+     shell: bash
 
    - name: Setup Python & Poetry Environment
      uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
