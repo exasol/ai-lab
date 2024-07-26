@@ -32,6 +32,6 @@ def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
     aws = AwsAccess(aws_profile)
     config = default_config_object
     if purpose == "vm":
-        VmBucketCfTemplate(aws) # .setup(config)
+        VmBucketCfTemplate(aws).setup(config)
     elif purpose == "example-data":
-        ExampleDataCfTemplate(aws) # .setup(config)
+        ExampleDataCfTemplate(aws).setup(config)

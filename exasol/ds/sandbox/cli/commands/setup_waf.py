@@ -16,8 +16,9 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 @cli.command()
 @add_options(aws_options)
 @add_options(logging_options)
-@click.option('--allowed-ip', type=str,
-              help="The allowed IP address for which CAPTCHA will not be applied.")
+@click.option(
+    '--allowed-ip', type=str,
+    help="The allowed IP address for which CAPTCHA will not be applied.")
 @click.option(
     '--purpose', required=True,
     type=click.Choice(['vm', 'example-data'], case_sensitive=False, ),
@@ -32,11 +33,11 @@ def setup_waf(aws_profile: str, allowed_ip: str, log_level: str, purpose: str):
     * example-data: WAF for S3 bucket for Example-Data
     """
     set_log_level(log_level)
-    aws_access = AwsAccess(aws_profile)
+    aws = AwsAccess(aws_profile)
     config = default_config_object
     if purpose == "vm":
-        VmBucketCfTemplate(aws_access).waf(config) # .setup(allowed_ip)
+        VmBucketCfTemplate(aws).waf(config).setup(allowed_ip)
     elif purpose == "example-data":
         # when removing allowed_ip from the cf template then
         # this option can also be removed here.
-        ExampleDataCfTemplate(aws_access).waf(config) # .setup(allowed_ip)
+        ExampleDataCfTemplate(aws).waf(config).setup(allowed_ip)
