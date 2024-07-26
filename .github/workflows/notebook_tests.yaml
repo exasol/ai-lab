@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Prepare Test Environment
         uses: ./.github/actions/prepare_test_env.yml
 
@@ -32,6 +36,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Prepare Test Environment
         uses: ./.github/actions/prepare_test_env.yml
 

@@ -4,10 +4,6 @@ description: 'A custom action performing common steps required for running tests
 runs:
   using: 'composite'
   steps:
-   - uses: actions/checkout@v4
-     with:
-       fetch-depth: 0
-
    - name: Free disk space with jlumbroso
      uses: jlumbroso/free-disk-space@main
      with:
