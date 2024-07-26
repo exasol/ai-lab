@@ -33,8 +33,8 @@ class CfTemplate:
 
     def setup(self, **kwargs) -> None:
         rendered = self.cloudformation_template(**kwargs)
-        LOG.warning(f'upload disabled to prevent accidentally creating AWS resources')
-        return
+        # LOG.warning(f'upload disabled to prevent accidentally creating AWS resources')
+        # return
         self._aws.upload_cloudformation_stack(rendered, self.stack_name)
 
     def stack_output(self, index: str):
