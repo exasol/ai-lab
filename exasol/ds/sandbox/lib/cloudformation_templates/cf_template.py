@@ -4,9 +4,6 @@ from typing import Dict, Optional
 from exasol.ds.sandbox.lib.render_template import render_template
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-LOG = get_status_logger(LogType.S3_BUCKETS)
-
 
 @dataclass(frozen=True)
 class CfTemplateSpec:
@@ -33,8 +30,6 @@ class CfTemplate:
 
     def setup(self, **kwargs) -> None:
         rendered = self.cloudformation_template(**kwargs)
-        # LOG.warning(f'upload disabled to prevent accidentally creating AWS resources')
-        # return
         self._aws.upload_cloudformation_stack(rendered, self.stack_name)
 
     def stack_output(self, index: str):
