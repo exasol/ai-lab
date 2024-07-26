@@ -14,8 +14,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare Test Environment
-        uses: ./.github/actions/prepare_test_env.yml
+      - uses: ./.github/actions/prepare_test_env/
 
       - name: Run notebook tests
         run: >
@@ -40,8 +39,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare Test Environment
-        uses: ./.github/actions/prepare_test_env.yml
+      - uses: ./.github/actions/prepare_test_env/
 
       - name: Run notebook tests
         run: >
