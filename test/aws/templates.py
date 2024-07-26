@@ -1,8 +1,11 @@
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.render_template import render_template
 from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
 from exasol.ds.sandbox.lib.config import default_config_object
+from exasol.ds.sandbox.lib.cloudformation_templates import (
+    VmBucketCfTemplate,
+    ExampleDataCfTemplate,
+)
 
 DEFAULT_ASSET_ID = AssetId("test", stack_prefix="test-stack", ami_prefix="test-ami")
 TEST_IP = "1.1.1.1"
@@ -47,6 +50,21 @@ def vm_bucket_template():
 def vm_bucket_waf_template():
     return (
         VmBucketCfTemplate(aws_access=None)
+        .waf(config=default_config_object)
+        .cloudformation_template(allowed_ip=TEST_IP)
+    )
+
+
+def example_data_bucket_template():
+    return ExampleDataCfTemplate(aws_access=None).cloudformation_template(
+        acl_arn=TEST_ACL_ARN,
+        path_in_bucket=AssetId.BUCKET_PREFIX,
+    )
+
+
+def example_data_bucket_waf_template():
+    return (
+        ExampleDataCfTemplate(aws_access=None)
         .waf(config=default_config_object)
         .cloudformation_template(allowed_ip=TEST_IP)
     )

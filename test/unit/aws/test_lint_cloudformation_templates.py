@@ -11,12 +11,9 @@ from test.aws.templates import (
     release_codebuild_template,
     vm_bucket_template,
     vm_bucket_waf_template,
+    example_data_bucket_template,
+    example_data_bucket_waf_template,
 )
-from exasol.ds.sandbox.lib.cloudformation_templates import (
-    VmBucketCfTemplate,
-    ExampleDataCfTemplate,
-)
-from exasol.ds.sandbox.lib.config import default_config_object
 
 def validate_using_cfn_lint(tmp_path, cloudformation_yml):
     """
@@ -41,6 +38,8 @@ TEMPLATES = {
     "ec2": ec2_template(),
     "vm-bucket": vm_bucket_template(),
     "vm-bucket-waf": vm_bucket_waf_template(),
+    "example-data-bucket": example_data_bucket_template(),
+    "example-data-bucket-waf": example_data_bucket_waf_template(),
 }
 
 
