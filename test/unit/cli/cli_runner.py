@@ -3,10 +3,6 @@ import os
 from unittest import mock
 from click.testing import CliRunner as ClickCli
 
-# import logging
-# LOG = logging.getLogger(__name__)
-# LOG.setLevel(logging.INFO)
-
 class CliRunner():
     def __init__(self, command: click.Command, debug: bool = False, env = {}):
         self._command = command
