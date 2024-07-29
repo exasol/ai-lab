@@ -18,11 +18,11 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
     example-data.
     """
     S3_BUCKET = CfTemplateSpec(
-        cf_stack_name="DATA-SCIENCE-SANDBOX-VM-Bucket",
+        cf_stack_name="Ai-Lab-Example-Data-Bucket",
         template="cloudformation/example-data/s3-bucket.jinja.yaml",
         outputs={
-            "BucketId": "VMBucketId",
-            "ExportRoleId": "VMExportRoleId",
+            "BucketId": "ExampleDataBucketId",
+            "ExportRoleId": "n/a",
             "CfDistributionId": "CfDistributionId",
             "CfDistributionDomainName": "CfDistributionDomainName",
         },
@@ -36,7 +36,4 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
     )
 
     def __init__(self, aws_access: Optional[AwsAccess]):
-        super().__init__(aws_access, self.S3_BUCKET)
-
-    def waf(self, config: ConfigObject) -> WafCfTemplate:
-        return super().waf(self.WAF, config.waf_region)
+        super().__init__(aws_access, self.S3_BUCKET, self.WAF)

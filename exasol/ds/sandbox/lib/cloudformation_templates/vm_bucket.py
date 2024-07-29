@@ -36,7 +36,4 @@ class VmBucketCfTemplate(S3BucketCfTemplate):
     )
 
     def __init__(self, aws_access: Optional[AwsAccess]):
-        super().__init__(aws_access, self.S3_BUCKET)
-
-    def waf(self, config: ConfigObject) -> WafCfTemplate:
-        return super().waf(self.WAF, config.waf_region)
+        super().__init__(aws_access, self.S3_BUCKET, self.WAF)

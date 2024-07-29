@@ -18,8 +18,13 @@ class S3BucketCfTemplate(CfTemplate):
     """
     Template for a Cloudformation stack for an AWS S3 bucket.
     """
-    def __init__(self, aws_access: Optional[AwsAccess], spec: CfTemplateSpec):
-        super().__init__(aws_access, spec)
+    def __init__(
+            self,
+            aws_access: Optional[AwsAccess],
+            bucket_spec: CfTemplateSpec,
+            waf_spec: CfTemplateSpec):
+        super().__init__(aws_access, bucket_spec)
+        self.waf_spec = waf_spec
 
     def setup(self, config: ConfigObject) -> None:
         waf_acl_arn = self.waf(config).acl_arn
@@ -29,8 +34,8 @@ class S3BucketCfTemplate(CfTemplate):
         )
         LOG.info(f"Deployed cloudformation stack {self.stack_name}")
 
-    def waf(self, spec: CfTemplateSpec, region: str) -> WafCfTemplate:
-        return WafCfTemplate(self._aws, spec, region)
+    def waf(self, config: ConfigObject) -> WafCfTemplate:
+        return WafCfTemplate(self._aws, self.waf_spec, config.waf_region)
 
     @property
     def id(self) -> str:
