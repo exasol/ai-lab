@@ -6,5 +6,5 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def nb_test_file(request):
+def notebook_test_file(request):
     return request.config.getoption("--nb-test-file")
