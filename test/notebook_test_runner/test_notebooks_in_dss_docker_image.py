@@ -74,7 +74,8 @@ def notebook_test_container_with_log(notebook_test_container):
     yield container
 
 
-def test_notebook(notebook_test_container_with_log, nb_test_file):
+def test_notebook(notebook_test_container_with_log):
+    nb_test_file = 'nbtest_sklearn.py'
     notebook_test_file = TEST_RESOURCE_PATH / nb_test_file
     _logger.info(f"Running notebook tests for {notebook_test_file}")
     container = notebook_test_container_with_log

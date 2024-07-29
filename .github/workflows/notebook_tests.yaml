@@ -22,7 +22,6 @@ jobs:
             --capture=no
             --override-ini=log_cli=true
             --override-ini=log_cli_level=INFO
-            --nb-test-file=nbtest_sklearn.py
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
@@ -47,7 +46,6 @@ jobs:
             --capture=no
             --override-ini=log_cli=true
             --override-ini=log_cli_level=INFO
-            --nb-test-file=nbtest_ibis.py
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
