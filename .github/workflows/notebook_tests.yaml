@@ -17,11 +17,11 @@ jobs:
       - uses: ./.github/actions/prepare_test_env/
 
       - name: Run notebook tests
-        run: >
-          poetry run pytest
-            --capture=no
-            --override-ini=log_cli=true
-            --override-ini=log_cli_level=INFO
+        run: |
+          poetry run pytest \
+            --capture=no \
+            --override-ini=log_cli=true \
+            --override-ini=log_cli_level=INFO \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
@@ -41,11 +41,11 @@ jobs:
       - uses: ./.github/actions/prepare_test_env/
 
       - name: Run notebook tests
-        run: >
-          poetry run pytest
-            --capture=no
-            --override-ini=log_cli=true
-            --override-ini=log_cli_level=INFO
+        run: |
+          poetry run pytest \
+            --capture=no \
+            --override-ini=log_cli=true \
+            --override-ini=log_cli_level=INFO \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
