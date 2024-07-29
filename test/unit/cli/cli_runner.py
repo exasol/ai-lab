@@ -1,4 +1,6 @@
 import click
+import os
+from unittest import mock
 from click.testing import CliRunner as ClickCli
 
 # import logging
@@ -6,17 +8,19 @@ from click.testing import CliRunner as ClickCli
 # LOG.setLevel(logging.INFO)
 
 class CliRunner():
-    def __init__(self, command: click.Command, debug: bool = False):
+    def __init__(self, command: click.Command, debug: bool = False, env = {}):
         self._command = command
         self.debug = debug
         self.result = None
+        self.env = env
 
     def run(self, *args):
         def command_line():
             yield self._command.name
             yield from args
 
-        self.result = ClickCli().invoke(self._command, args)
+        with mock.patch.dict(os.environ, self.env):
+            self.result = ClickCli().invoke(self._command, args)
         if self.debug:
             cstr = " ".join(command_line())
             print(
