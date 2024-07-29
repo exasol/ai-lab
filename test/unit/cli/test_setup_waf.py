@@ -11,7 +11,11 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 
 @pytest.fixture
 def cli():
-    return CliRunner(setup_waf)
+    """
+    To prevent accidentally creating actual AWS resources, the fixture
+    tells the CliRunner to use an invalid AWS profile.
+    """
+    return CliRunner(setup_waf, env={"AWS_PROFILE": "invalid-profile"})
 
 
 def test_no_purpose(cli):
