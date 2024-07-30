@@ -4,7 +4,10 @@ from unittest.mock import Mock, create_autospec
 import pytest
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
+from exasol.ds.sandbox.lib.cloudformation_templates import (
+    VmBucketCfTemplate,
+    ExampleDataCfTemplate,
+)
 from test.aws.mock_data import (
     TEST_BUCKET_ID,
     get_waf_cloudformation_mock_data,
@@ -13,7 +16,13 @@ from test.aws.mock_data import (
 from test.mock_cast import mock_cast
 
 
-# TODO: Do we need to generalize these tests apply them to Example Data S3 Bucket, too?
+# To enable running this test case for ExampleDataCfTemplate
+# would require to create modified copies of
+# - get_s3_cloudformation_mock_data
+# - get_waf_cloudformation_mock_data
+# - TEST_BUCKET_ID
+#
+# Is this worth the effort and/or code duplication?
 def test_find_bucket_success(test_config):
     """
     This test uses a mock to validate the correct finding of the bucket in the stack.
@@ -29,7 +38,7 @@ def test_find_bucket_success(test_config):
     assert TEST_BUCKET_ID == testee.id
 
 
-def test_vm_bucket_not_deployed(test_config):
+def test_vm_bucket_not_deployed(cf_template_testee):
     """
     This test uses a mock to validate the raising of a RuntimeError
     exception if the VM bucket was not deployed.
@@ -38,12 +47,12 @@ def test_vm_bucket_not_deployed(test_config):
     mock_cast(aws.describe_stacks).return_value = get_waf_cloudformation_mock_data()
     mock_cast(aws.instantiate_for_region).return_value = aws
 
-    testee = VmBucketCfTemplate(aws)
+    testee = cf_template_testee(aws)
     with pytest.raises(RuntimeError, match=f"Stack {testee.stack_name} not found"):
         testee.id
 
 
-def test_waf_not_deployed(test_config):
+def test_waf_not_deployed(cf_template_testee):
     """
     This test uses a mock to validate the raising of a RuntimeError
     exception if the WAF and VM bucket were not deployed.
@@ -51,6 +60,6 @@ def test_waf_not_deployed(test_config):
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
     mock_cast(aws.describe_stacks).return_value = list()
 
-    testee = VmBucketCfTemplate(aws)
+    testee = cf_template_testee(aws)
     with pytest.raises(RuntimeError, match=f"Stack {testee.stack_name} not found"):
         testee.id
