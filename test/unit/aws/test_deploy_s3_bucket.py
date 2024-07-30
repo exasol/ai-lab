@@ -9,9 +9,10 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
     ExampleDataCfTemplate,
 )
 from test.aws.mock_data import (
-    TEST_BUCKET_ID,
     get_waf_cloudformation_mock_data,
-    get_s3_cloudformation_mock_data,
+    cf_stack_mock,
+    cf_stack_outputs,
+    TEST_BUCKET_ID,
 )
 from test.mock_cast import mock_cast
 
@@ -21,23 +22,25 @@ def cf_template_testee(request):
     return request.param
 
 
-# To enable running this test case for ExampleDataCfTemplate
-# would require to create modified copies of
-# - get_s3_cloudformation_mock_data
-# - get_waf_cloudformation_mock_data
-# - TEST_BUCKET_ID
-#
-# Is this worth the effort and/or code duplication?
-def test_find_bucket_success(test_config):
+
+def test_find_bucket_success(test_config, cf_template_testee):
     """
     This test uses a mock to validate the correct finding of the bucket in the stack.
     """
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
-    mock_cast(aws.describe_stacks).return_value = \
-        get_s3_cloudformation_mock_data() + \
-        get_waf_cloudformation_mock_data()
+    testee = cf_template_testee(aws)
+
+    bucket = cf_stack_mock(
+        testee.stack_name,
+        cf_stack_outputs(cf_template_testee.__name__, "s3")
+    )
+    waf = cf_stack_mock(
+        testee.waf(test_config).stack_name,
+        cf_stack_outputs(cf_template_testee.__name__, "waf"),
+    )
+
+    mock_cast(aws.describe_stacks).return_value = bucket + waf
     mock_cast(aws.instantiate_for_region).return_value = aws
-    testee = VmBucketCfTemplate(aws)
     testee.setup(test_config)
     mock_cast(aws.upload_cloudformation_stack).assert_called_once()
     assert TEST_BUCKET_ID == testee.id

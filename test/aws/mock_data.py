@@ -20,6 +20,34 @@ TEST_AMI_ID = "AMI-IMAGE-12345"
 TEST_CLOUDFRONT_ID = "test-cloudfrontet-TEST"
 TEST_CLOUDFRONT_DOMAIN_NAME = "test-s3.cloudfront.net"
 INSTANCE_ID = "test-instance"
+VM_BUCKET_OUTPUTS = {
+    "VMBucketId": TEST_BUCKET_ID,
+    "VMExportRoleId": TEST_ROLE_ID,
+    "CfDistributionId": TEST_CLOUDFRONT_ID,
+    "CfDistributionDomainName": TEST_CLOUDFRONT_DOMAIN_NAME,
+}
+EXAMPLE_DATA_BUCKET_OUTPUTS = {
+    "ExampleDataBucketId": TEST_BUCKET_ID,
+    "ExportRoleId": TEST_ROLE_ID,
+    "CfDistributionId": TEST_CLOUDFRONT_ID,
+    "CfDistributionDomainName": TEST_CLOUDFRONT_DOMAIN_NAME,
+}
+VM_BUCKET_WAF_OUTPUTS = { 'VMDownloadACLArn': TEST_ACL_ARN }
+EXAMPLE_DATA_WAF_OUTPUTS = { 'AiLabExampleDataDownloadACLArn': TEST_ACL_ARN }
+
+
+def cf_stack_outputs(class_name: str, category: str) -> Dict[str, any]:
+    outputs = {
+        "VmBucketCfTemplate": {
+            "s3": VM_BUCKET_OUTPUTS,
+            "waf": VM_BUCKET_WAF_OUTPUTS,
+        },
+        "ExampleDataCfTemplate": {
+            "s3": EXAMPLE_DATA_BUCKET_OUTPUTS,
+            "waf": EXAMPLE_DATA_WAF_OUTPUTS,
+        },
+    }
+    return outputs[class_name][category]
 
 
 def default_tags() -> List[Dict[str, str]]:
@@ -147,45 +175,46 @@ def get_ec2_key_pair_mock_data():
     })
 
 
-def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
-    return [CloudformationStack({
-        'StackId': 'test-s3-stack-id',
-        'StackName': "DATA-SCIENCE-SANDBOX-VM-Bucket",
-        'ChangeSetId': 'test-stack-changeset-id-2',
-        'CreationTime': datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc()),
-        'LastUpdatedTime': datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc()),
+def mock_outputs(output_values: Dict[str, str]):
+    def transform(k, v):
+        return {
+            "OutputKey": k,
+            "OutputValue": v,
+            "Description": "n/a",
+        }
+    return [ transform(k, v) for k, v in output_values.items() ]
+
+
+def cf_stack_mock_data(stack_name: str, outputs: Dict[str, str]) -> Dict[str, any]:
+    created = datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc())
+    last_update = datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc())
+    return {
+        'StackId': 'test-stack-id',
+        'StackName': stack_name,
+        'ChangeSetId': 'test-stack-changeset-id',
+        'CreationTime': created,
+        'LastUpdatedTime': last_update,
         'RollbackConfiguration': {},
         'StackStatus': 'CREATE_COMPLETE',
         'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': ['CAPABILITY_IAM'],
         'Tags': default_tags(),
         'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'},
-        'Outputs': [{'OutputKey': 'VMBucketId',
-                     'OutputValue': TEST_BUCKET_ID, 'Description': ''},
-                    {'OutputKey': 'VMExportRoleId',
-                     'OutputValue': TEST_ROLE_ID, 'Description': ''},
-                    {'OutputKey': 'CfDistributionId',
-                     'OutputValue': TEST_CLOUDFRONT_ID, 'Description': ''},
-                    {'OutputKey': 'CfDistributionDomainName',
-                     'OutputValue': TEST_CLOUDFRONT_DOMAIN_NAME, 'Description': ''}
-                    ]
-        })
+        'Outputs': mock_outputs(outputs)
+    }
+
+
+def cf_stack_mock(stack_name: str, outputs: Dict[str, str]) -> List[CloudformationStack]:
+    return [
+        CloudformationStack(cf_stack_mock_data(stack_name, outputs))
     ]
+
+
+def get_s3_cloudformation_mock_data() -> List[CloudformationStack]:
+    return cf_stack_mock("DATA-SCIENCE-SANDBOX-VM-Bucket", VM_BUCKET_OUTPUTS)
 
 
 def get_waf_cloudformation_mock_data() -> List[CloudformationStack]:
-    return [CloudformationStack({
-        'StackId': 'test-waf-stack-id',
-        'StackName': "DATA-SCIENCE-SANDBOX-VM-Bucket-WAF",
-        'ChangeSetId': 'test-stack-changeset-id-3',
-        'CreationTime': datetime.datetime(2022, 8, 16, 14, 30, 45, 559000, tzinfo=tzutc()),
-        'LastUpdatedTime': datetime.datetime(2022, 8, 16, 14, 30, 51, 667000, tzinfo=tzutc()),
-        'RollbackConfiguration': {},
-        'StackStatus': 'CREATE_COMPLETE',
-        'DisableRollback': False, 'NotificationARNs': [], 'Capabilities': [],
-        'Tags': default_tags(),
-        'DriftInformation': {'StackDriftStatus': 'NOT_CHECKED'},
-        'Outputs': [{'OutputKey': 'VMDownloadACLArn',
-                     'OutputValue': TEST_ACL_ARN, 'Description': ''}
-                    ]
-        })
-    ]
+    return cf_stack_mock(
+        "DATA-SCIENCE-SANDBOX-VM-Bucket-WAF",
+        VM_BUCKET_WAF_OUTPUTS,
+    )
