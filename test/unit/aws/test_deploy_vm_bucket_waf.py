@@ -8,7 +8,13 @@ from test.aws.mock_data import get_waf_cloudformation_mock_data
 from test.mock_cast import mock_cast
 
 
-# TODO: Do we need to generalize these tests apply them to Example Data S3 Bucket, too?
+# To enable running this test case for ExampleDataCfTemplate
+# would require to create modified copies of
+# - get_s3_cloudformation_mock_data
+# - get_waf_cloudformation_mock_data
+# - TEST_BUCKET_ID
+#
+# Is this worth the effort and/or code duplication?
 def test_find_acl_arn(test_config):
     """
     This test uses a mock to validate the correct finding of the ACL Arn
