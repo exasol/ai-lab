@@ -16,6 +16,11 @@ from test.aws.mock_data import (
 from test.mock_cast import mock_cast
 
 
+@pytest.fixture(params=(VmBucketCfTemplate, ExampleDataCfTemplate))
+def cf_template_testee(request):
+    return request.param
+
+
 # To enable running this test case for ExampleDataCfTemplate
 # would require to create modified copies of
 # - get_s3_cloudformation_mock_data
