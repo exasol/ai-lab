@@ -40,3 +40,5 @@ Version: 2.1.0
 * #295: Made notebook-tests mandatory for merge
 * #193: Ignored warnings in notebook tests
 * #297: Reduced log level for transitive libraries in notebook tests
+* #307: Made the notebook tests running in parallel;
+        moved common steps from test jobs to a composite action 
