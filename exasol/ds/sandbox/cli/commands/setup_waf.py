@@ -38,6 +38,4 @@ def setup_waf(aws_profile: str, allowed_ip: str, log_level: str, purpose: str):
     if purpose == "vm":
         VmBucketCfTemplate(aws).waf(config).setup(allowed_ip)
     elif purpose == "example-data":
-        # when removing allowed_ip from the cf template then
-        # this option can also be removed here.
-        ExampleDataCfTemplate(aws).waf(config).setup(allowed_ip)
+        ExampleDataCfTemplate(aws).waf(config).setup()

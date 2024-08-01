@@ -38,5 +38,6 @@ def test_example_data_bucket(cli):
 @pytest.mark.parametrize("purpose", ("vm", "example-data"))
 def test_waf_setup(cli, purpose):
     with patch.object(WafCfTemplate, "setup") as setup:
-        cli.run("--purpose", purpose)
+        cli.run("--purpose", purpose, "--allowed-ip", "1.2.3.4")
     assert cli.succeeded and setup.call_count == 1
+    assert setup.call_args == call("1.2.3.4") if purpose == "vm" else call()

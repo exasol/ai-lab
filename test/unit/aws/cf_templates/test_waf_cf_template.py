@@ -17,7 +17,7 @@ def test_region(aws_mock, cf_template_spec):
 
 def test_setup(waf_cf_template):
     with patch.object(CfTemplate, "setup") as mock:
-        waf_cf_template.setup(allowed_ip=None)
+        waf_cf_template.setup()
     assert mock.call_args == call(allowed_ip='127.0.0.1')
 
 

@@ -28,7 +28,7 @@ class WafCfTemplate(CfTemplate):
         super().__init__(aws, spec)
         self.region = region
 
-    def setup(self, allowed_ip: str|None) -> None:
+    def setup(self, allowed_ip: str|None = None) -> None:
         if not allowed_ip:
             allowed_ip = "127.0.0.1"
         super().setup(allowed_ip=allowed_ip)
