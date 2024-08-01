@@ -1,0 +1,31 @@
+name: 'Prepare Test Environment'
+description: 'A custom action performing common steps required for running tests'
+
+runs:
+  using: 'composite'
+  steps:
+   - name: Free disk space with jlumbroso
+     uses: jlumbroso/free-disk-space@main
+     with:
+       tool-cache: true
+       large-packages: false
+
+   - name: Free disk space by removing large directories
+     run: |
+       sudo rm -rf /usr/local/graalvm/
+       sudo rm -rf /usr/local/.ghcup/
+       sudo rm -rf /usr/local/share/powershell
+       sudo rm -rf /usr/local/share/chromium
+       sudo rm -rf /usr/local/lib/node_modules
+       sudo rm -rf /opt/ghc
+     shell: bash
+
+   - name: Show available disk space
+     run: df -h
+     shell: bash
+
+   - name: Setup Python & Poetry Environment
+     uses: exasol/python-toolbox/.github/actions/python-environment@0.13.0
+     with:
+       python-version: "3.10"
+       poetry-version: "1.8.2"

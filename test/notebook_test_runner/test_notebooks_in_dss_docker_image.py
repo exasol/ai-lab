@@ -74,14 +74,6 @@ def notebook_test_container_with_log(notebook_test_container):
     yield container
 
 
-@pytest.mark.parametrize(
-    "notebook_test_file",
-    [
-        python_file.name
-        for python_file in sorted(TEST_RESOURCE_PATH.glob("nbtest_*.py"))
-        if python_file.is_file()
-    ]
-)
 def test_notebook(notebook_test_container_with_log, notebook_test_file):
     _logger.info(f"Running notebook tests for {notebook_test_file}")
     container = notebook_test_container_with_log
