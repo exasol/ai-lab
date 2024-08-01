@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, Optional
 
-from exasol.ds.sandbox.lib.render_template import render_template
+from exasol.ds.sandbox.lib.render_template import TemplateRenderer
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 
 
@@ -16,13 +16,14 @@ class CfTemplate:
     def __init__(self, aws_access: Optional[AwsAccess], spec: CfTemplateSpec):
         self._aws = aws_access
         self.spec = spec
+        self._template_renderer = TemplateRenderer()
 
     @property
     def stack_name(self) -> str:
         return self.spec.cf_stack_name
 
     def cloudformation_template(self, **kwargs) -> str:
-        return render_template(
+        return self._template_renderer.render(
             self.spec.template,
             **self.spec.outputs,
             **kwargs,
@@ -32,7 +33,17 @@ class CfTemplate:
         rendered = self.cloudformation_template(**kwargs)
         self._aws.upload_cloudformation_stack(rendered, self.stack_name)
 
-    def stack_output(self, index: str):
+    def stack_output(self, mnemonic: str):
+        """
+        For the specified mnemonic look up the output key in the spec of the
+        current CfTemplate. Then search on AWS for a stack with the name of
+        the current CfTemplate and if found for an output with the key as
+        retrieved before.
+
+        Raise a RuntimeError in case either there is no stack with the current
+        name or if the stack does not contain an output with the retrieved
+        key.
+        """
         try:
             stack = next(
                 s for s in self._aws.describe_stacks()
@@ -40,7 +51,7 @@ class CfTemplate:
             )
         except StopIteration:
             raise RuntimeError(f"Stack {self.stack_name} not found")
-        key = self.spec.outputs[index]
+        key = self.spec.outputs[mnemonic]
         outputs = [o for o in stack.outputs if o.output_key == key]
         if len(outputs) != 1:
             raise RuntimeError(

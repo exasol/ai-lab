@@ -1,5 +1,6 @@
 import datetime
-from typing import Dict, List
+from typing import Dict, List, Tuple
+from unittest.mock import Mock
 
 from dateutil.tz import tzutc
 
@@ -218,3 +219,12 @@ def get_waf_cloudformation_mock_data() -> List[CloudformationStack]:
         "DATA-SCIENCE-SANDBOX-VM-Bucket-WAF",
         VM_BUCKET_WAF_OUTPUTS,
     )
+
+
+def mock_stack(name: str, outputs: List[Tuple[str, str]]):
+    stack = Mock(outputs=[
+        Mock(output_key=k, output_value=v)
+        for k,v in outputs
+    ])
+    stack.configure_mock(name=name)
+    return stack
