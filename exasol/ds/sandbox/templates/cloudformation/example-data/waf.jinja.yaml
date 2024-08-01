@@ -24,18 +24,6 @@ Resources:
             RateBasedStatement:
               AggregateKeyType: IP
               Limit: 100
-  # Question: Could we maybe remove the allowed IP addresses?
-  # The VMBucket WAF did only exclude these IP addresses from the captcha rule,
-  # while the Example Data WAF does not configure any captcha.
-  AllowedIpSet:
-    Type: 'AWS::WAFv2::IPSet'
-    Properties:
-      Name: AiLabExamplesAllowedIp
-      Description: Allowed IP addresses
-      Scope: CLOUDFRONT
-      IPAddressVersion: IPV4
-      Addresses:
-        - {{allowed_ip}}/32
 
 Outputs:
   {{DownloadACLArn}}:
