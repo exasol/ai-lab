@@ -33,3 +33,4 @@ def test_setup(test_config, aws_mock, cf_template_spec, waf_cf_template_spec):
     with patch.object(CfTemplate, "setup") as mock:
         testee.setup(test_config)
     assert mock.call_args == call(acl_arn='vv', path_in_bucket='ai_lab')
+    assert aws_mock.instantiate_for_region.call_args == call("us-east-1")
