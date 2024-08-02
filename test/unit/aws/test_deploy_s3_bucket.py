@@ -11,8 +11,11 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 from test.aws.mock_data import (
     get_waf_cloudformation_mock_data,
     cf_stack_mock,
-    cf_stack_outputs,
     TEST_BUCKET_ID,
+    VM_BUCKET_OUTPUTS,
+    VM_BUCKET_WAF_OUTPUTS,
+    EXAMPLE_DATA_WAF_OUTPUTS,
+    EXAMPLE_DATA_BUCKET_OUTPUTS,
 )
 from test.mock_cast import mock_cast
 
@@ -23,21 +26,22 @@ def cf_template_testee(request):
 
 
 
-def test_find_bucket_success(test_config, cf_template_testee):
+@pytest.mark.parametrize(
+    "cf_template_testee, s3_outputs, waf_outputs",
+     [
+         (VmBucketCfTemplate, VM_BUCKET_OUTPUTS, VM_BUCKET_WAF_OUTPUTS),
+         (ExampleDataCfTemplate, EXAMPLE_DATA_BUCKET_OUTPUTS, EXAMPLE_DATA_WAF_OUTPUTS),
+     ]
+)
+def test_find_bucket_success(test_config, cf_template_testee, s3_outputs, waf_outputs):
     """
     This test uses a mock to validate the correct finding of the bucket in the stack.
     """
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
     testee = cf_template_testee(aws)
 
-    bucket = cf_stack_mock(
-        testee.stack_name,
-        cf_stack_outputs(cf_template_testee.__name__, "s3")
-    )
-    waf = cf_stack_mock(
-        testee.waf(test_config).stack_name,
-        cf_stack_outputs(cf_template_testee.__name__, "waf"),
-    )
+    bucket = cf_stack_mock(testee.stack_name, s3_outputs)
+    waf = cf_stack_mock(testee.waf(test_config).stack_name, waf_outputs)
 
     mock_cast(aws.describe_stacks).return_value = bucket + waf
     mock_cast(aws.instantiate_for_region).return_value = aws

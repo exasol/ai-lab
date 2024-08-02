@@ -26,7 +26,6 @@ def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
     PURPOSE:\n
     * vm: S3 bucket for virtual machine images\n
     * example-data: S3 bucket for Example-Data
-    Command to deploy the VM S3-Bucket
     """
     set_log_level(log_level)
     aws = AwsAccess(aws_profile)

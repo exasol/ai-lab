@@ -44,10 +44,6 @@ Script `start-test-release-build` requires environment variable `GH_TOKEN` to co
 The following commands can be used to deploy the infrastructure onto a given AWS account:
 * `setup-ci-codebuild`: Deploy the AWS Codebuild cloudformation stack which will run the ci-test.
 * `setup-release-codebuild`: Deploy the AWS Codebuild cloudformation stack which will be used for the release-build.
-<!--
-* `setup-vm-bucket`: Deploy the AWS Bucket cloudformation stack which will be used to deploy the VM images.
-* `setup-vm-bucket-waf`: Deploy the AWS Codebuild cloudformation stack which contains the WAF Acl configuration for the Cloudfront distribution of the VM Bucket.
--->
 * `setup-s3-bucket`: Deploy an AWS cloudformation stack with an S3 bucket, requires option `--purpose` (see below).
 * `setup-waf`: Deploy an AWS cloudformation stack with a Web Application Firefall (WAF ACL) configuration for the Cloudfront distribution of an S3 bucket, requires option `--purpose` (see below).
 

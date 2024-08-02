@@ -37,20 +37,6 @@ VM_BUCKET_WAF_OUTPUTS = { 'VMDownloadACLArn': TEST_ACL_ARN }
 EXAMPLE_DATA_WAF_OUTPUTS = { 'AiLabExampleDataDownloadACLArn': TEST_ACL_ARN }
 
 
-def cf_stack_outputs(class_name: str, category: str) -> Dict[str, any]:
-    outputs = {
-        "VmBucketCfTemplate": {
-            "s3": VM_BUCKET_OUTPUTS,
-            "waf": VM_BUCKET_WAF_OUTPUTS,
-        },
-        "ExampleDataCfTemplate": {
-            "s3": EXAMPLE_DATA_BUCKET_OUTPUTS,
-            "waf": EXAMPLE_DATA_WAF_OUTPUTS,
-        },
-    }
-    return outputs[class_name][category]
-
-
 def default_tags() -> List[Dict[str, str]]:
     return create_default_asset_tag(DEFAULT_ASSET_ID.tag_value)
 
