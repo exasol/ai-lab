@@ -517,7 +517,7 @@ class AwsAccess(object):
 
     def _get_aws_client(self, service_name: str) -> Any:
         if self._aws_profile is None:
-            return boto3.client(service_name)
+            return boto3.client(service_name, region_name=self._region)
         aws_session = boto3.session.Session(profile_name=self._aws_profile, region_name=self._region)
         return aws_session.client(service_name)
 
