@@ -155,6 +155,12 @@ class DssDockerImage:
             ansible_repositories=ansible_repository.default_repositories,
         )
 
+    def _path(self, container: DockerContainer, dir: str) -> str:
+        env_list = container.attrs["Config"]["Env"]
+        env_dict = dict(e.split("=", 1) for e in env_list)
+        path = env_dict.get("PATH")
+        return f"{path}:{dir}" if path else dir
+
     def _commit_container(
             self,
             container: DockerContainer,
@@ -166,6 +172,8 @@ class DssDockerImage:
         port = get_fact(facts, "jupyter", "port")
         notebook_folder_final = get_fact(facts, "notebook_folder", "final")
         notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
+
+        path = self._path(container, f"{virtualenv}/bin")
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
@@ -176,7 +184,7 @@ class DssDockerImage:
                 f"VIRTUAL_ENV={virtualenv}",
                 f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
                 f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}",
-                f"PATH=$PATH:{virtualenv}/bin",
+                f"PATH={path}",
             ],
         }
         img = container.commit(repository=self.image_name, conf=conf)
