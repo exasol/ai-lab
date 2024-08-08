@@ -176,7 +176,7 @@ class DssDockerImage:
                 f"VIRTUAL_ENV={virtualenv}",
                 f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
                 f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}",
-                f'PATH="$PATH:{virtualenv}/bin"',
+                f"PATH=$PATH:{virtualenv}/bin",
             ],
         }
         img = container.commit(repository=self.image_name, conf=conf)
