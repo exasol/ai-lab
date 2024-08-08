@@ -18,7 +18,7 @@ Version: 2.1.0
 * #279: Made the notebooks tests running in SaaS as well as in the Docker-DB.
 * #19: Added SLC notebook
 * #301: Added CloudFront distribution for example data S3 bucket
-* #273: Added `jupyterenv/bin` to evironment variable `PATH` inside the DockerContainer
+* #273: Added `jupyterenv/bin` to environment variable `PATH` inside the DockerContainer
 
 ## Security
 
@@ -42,4 +42,4 @@ Version: 2.1.0
 * #193: Ignored warnings in notebook tests
 * #297: Reduced log level for transitive libraries in notebook tests
 * #307: Made the notebook tests running in parallel;
-        moved common steps from test jobs to a composite action 
+        moved common steps from test jobs to a composite action
