@@ -11,27 +11,27 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 )
 
 
-class VmBucketCfTemplate(S3BucketCfTemplate):
+class ExampleDataCfTemplate(S3BucketCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
     bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
-    virtual machine images (VM).
+    example-data.
     """
     S3_BUCKET = CfTemplateSpec(
-        cf_stack_name="DATA-SCIENCE-SANDBOX-VM-Bucket",
-        template="cloudformation/vm-images/s3-bucket.jinja.yaml",
+        cf_stack_name="Ai-Lab-Example-Data-Bucket",
+        template="cloudformation/example-data/s3-bucket.jinja.yaml",
         outputs={
-            "BucketId": "VMBucketId",
-            "ExportRoleId": "VMExportRoleId",
+            "BucketId": "ExampleDataBucketId",
+            "ExportRoleId": "n/a",
             "CfDistributionId": "CfDistributionId",
             "CfDistributionDomainName": "CfDistributionDomainName",
         },
     )
     WAF = CfTemplateSpec(
-        cf_stack_name="DATA-SCIENCE-SANDBOX-VM-Bucket-WAF",
-        template="cloudformation/vm-images/waf.jinja.yaml",
+        cf_stack_name="AI-Lab-Example-Data-Bucket-WAF",
+        template="cloudformation/example-data/waf.jinja.yaml",
         outputs={
-            "DownloadACLArn": "VMDownloadACLArn",
+            "DownloadACLArn": "AiLabExampleDataDownloadACLArn",
         },
     )
 

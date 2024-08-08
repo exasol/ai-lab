@@ -1,0 +1,31 @@
+Resources:
+  AiLabExamplesAcl:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: AiLabExamplesWebAcl
+      Scope: CLOUDFRONT
+      Description: This Web ACL controls access to the AI-Lab Example Data.
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: AiLabExamplesMetric
+      Rules:
+        - Name: AiLabExamplesRateLimit
+          Priority: 0
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: AiLabExamplesMetricRateLimit
+          Statement:
+            RateBasedStatement:
+              AggregateKeyType: IP
+              Limit: 100
+
+Outputs:
+  {{DownloadACLArn}}:
+    Value: !GetAtt AiLabExamplesAcl.Arn
+    Description: ARN of the Download ACL For AI-Lab Example Data.

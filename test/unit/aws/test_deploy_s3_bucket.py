@@ -4,31 +4,53 @@ from unittest.mock import Mock, create_autospec
 import pytest
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.cloudformation_templates import VmBucketCfTemplate
+from exasol.ds.sandbox.lib.cloudformation_templates import (
+    VmBucketCfTemplate,
+    ExampleDataCfTemplate,
+)
 from test.aws.mock_data import (
-    TEST_BUCKET_ID,
     get_waf_cloudformation_mock_data,
-    get_s3_cloudformation_mock_data,
+    cf_stack_mock,
+    TEST_BUCKET_ID,
+    VM_BUCKET_OUTPUTS,
+    VM_BUCKET_WAF_OUTPUTS,
+    EXAMPLE_DATA_WAF_OUTPUTS,
+    EXAMPLE_DATA_BUCKET_OUTPUTS,
 )
 from test.mock_cast import mock_cast
 
 
-def test_find_bucket_success(test_config):
+@pytest.fixture(params=(VmBucketCfTemplate, ExampleDataCfTemplate))
+def cf_template_testee(request):
+    return request.param
+
+
+
+@pytest.mark.parametrize(
+    "cf_template_testee, s3_outputs, waf_outputs",
+     [
+         (VmBucketCfTemplate, VM_BUCKET_OUTPUTS, VM_BUCKET_WAF_OUTPUTS),
+         (ExampleDataCfTemplate, EXAMPLE_DATA_BUCKET_OUTPUTS, EXAMPLE_DATA_WAF_OUTPUTS),
+     ]
+)
+def test_find_bucket_success(test_config, cf_template_testee, s3_outputs, waf_outputs):
     """
     This test uses a mock to validate the correct finding of the bucket in the stack.
     """
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
-    mock_cast(aws.describe_stacks).return_value = \
-        get_s3_cloudformation_mock_data() + \
-        get_waf_cloudformation_mock_data()
+    testee = cf_template_testee(aws)
+
+    bucket = cf_stack_mock(testee.stack_name, s3_outputs)
+    waf = cf_stack_mock(testee.waf(test_config).stack_name, waf_outputs)
+
+    mock_cast(aws.describe_stacks).return_value = bucket + waf
     mock_cast(aws.instantiate_for_region).return_value = aws
-    testee = VmBucketCfTemplate(aws)
     testee.setup(test_config)
     mock_cast(aws.upload_cloudformation_stack).assert_called_once()
     assert TEST_BUCKET_ID == testee.id
 
 
-def test_vm_bucket_not_deployed(test_config):
+def test_vm_bucket_not_deployed(cf_template_testee):
     """
     This test uses a mock to validate the raising of a RuntimeError
     exception if the VM bucket was not deployed.
@@ -37,12 +59,12 @@ def test_vm_bucket_not_deployed(test_config):
     mock_cast(aws.describe_stacks).return_value = get_waf_cloudformation_mock_data()
     mock_cast(aws.instantiate_for_region).return_value = aws
 
-    testee = VmBucketCfTemplate(aws)
+    testee = cf_template_testee(aws)
     with pytest.raises(RuntimeError, match=f"Stack {testee.stack_name} not found"):
         testee.id
 
 
-def test_waf_not_deployed(test_config):
+def test_waf_not_deployed(cf_template_testee):
     """
     This test uses a mock to validate the raising of a RuntimeError
     exception if the WAF and VM bucket were not deployed.
@@ -50,6 +72,6 @@ def test_waf_not_deployed(test_config):
     aws: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
     mock_cast(aws.describe_stacks).return_value = list()
 
-    testee = VmBucketCfTemplate(aws)
+    testee = cf_template_testee(aws)
     with pytest.raises(RuntimeError, match=f"Stack {testee.stack_name} not found"):
         testee.id

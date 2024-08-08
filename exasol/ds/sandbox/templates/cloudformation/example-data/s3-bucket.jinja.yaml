@@ -1,53 +1,16 @@
 Resources:
-  VMBucket:
+  AiLabExampleDataBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
       AccessControl: 'Private'
     Metadata:
-      Comment: 'Bucket to store AI-Lab VM images'
+      Comment: 'Bucket to store example data for the AI-Lab'
     DeletionPolicy: Retain
     UpdateReplacePolicy : Retain
-  VMExportRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-            - Effect: Allow
-              Principal:
-                  Service:
-                    - vmie.amazonaws.com
-              Action:
-                - sts:AssumeRole
-      Description: "IAM Role to run VM image exports on the S3-Bucket"
-      Path: '/'
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetBucketLocation
-                  - s3:PutObject
-                  - s3:GetObject
-                  - s3:ListBucket
-                  - s3:GetBucketAcl
-                Resource:
-                  - !Sub "arn:aws:s3:::${ VMBucket }/*"
-                  - !Sub "arn:aws:s3:::${ VMBucket }"
-              - Effect: Allow
-                Action:
-                  - ec2:ModifySnapshotAttribute
-                  - ec2:CopySnapshot
-                  - ec2:RegisterImage
-                  - ec2:Describe*
-                Resource:
-                  - "*"
   S3CDNBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
-      Bucket: !Ref VMBucket
+      Bucket: !Ref AiLabExampleDataBucket
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -57,7 +20,7 @@ Resources:
             Principal:
               Service: "cloudfront.amazonaws.com"
             Resource:
-              - !Sub "arn:aws:s3:::${ VMBucket }/ai_lab/*"
+              - !Sub "arn:aws:s3:::${ AiLabExampleDataBucket }/{{path_in_bucket}}/*"
             Condition:
               StringEquals:
                 'AWS:SourceArn': !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CfDistribution}"
@@ -84,16 +47,16 @@ Resources:
             QueryString: false
           MaxTTL: 31536000
           MinTTL: 86400
-          TargetOriginId: !Sub 's3-origin-${ VMBucket }'
+          TargetOriginId: !Sub 's3-origin-${ AiLabExampleDataBucket }'
           ViewerProtocolPolicy: 'redirect-to-https'
         DefaultRootObject: 'index.html'
         Enabled: true
         HttpVersion: 'http1.1'
         IPV6Enabled: true
-        WebACLId: TEST-DOWNLOAD-ACL
+        WebACLId: {{acl_arn}}
         Origins:
-          - DomainName: !GetAtt VMBucket.DomainName
-            Id: !Sub 's3-origin-${ VMBucket }'
+          - DomainName: !GetAtt AiLabExampleDataBucket.DomainName
+            Id: !Sub 's3-origin-${ AiLabExampleDataBucket }'
             OriginPath: ''
             OriginAccessControlId: !Ref OAC
             # Despite the fact that we use OAC, and not the deprecated OAI, we need to add this field.
@@ -110,23 +73,19 @@ Resources:
     Type: 'AWS::CloudFront::OriginAccessControl'
     Properties:
       OriginAccessControlConfig:
-          Description: Origin Access Control config for the S3 Bucket
-          Name: DssVMBucketOAC
+          Description: Origin Access Control configuration for the AI-Lab ExampleData S3 Bucket
+          Name: AiLabExampleDataBucketOAC
           OriginAccessControlOriginType: s3
           SigningBehavior: always
           SigningProtocol: sigv4
 
 Outputs:
-  VMBucketId:
-    Value: !Ref VMBucket
-    Description: Id of th S3 bucket
-  VMExportRoleId:
-    Value: !Ref VMExportRole
-    Description: Id of the VMExportRole
-  CfDistributionId:
-    Description: 'Id for our cloudfront distribution'
+  {{BucketId}}:
+    Value: !Ref AiLabExampleDataBucket
+    Description: ID of the S3 bucket containing the AI-Lab Example Data.
+  {{CfDistributionId}}:
     Value: !Ref CfDistribution
-  CfDistributionDomainName:
-    Description: 'Domain name for our cloudfront distribution'
+    Description: ID of the cloudfront distribution for the Example Data.
+  {{CfDistributionDomainName}}:
     Value: !GetAtt CfDistribution.DomainName
-    Description: Domain name of the cloudfront distribution for the VMBucket.
+    Description: Domain name of the cloudfront distribution for the Example Data.

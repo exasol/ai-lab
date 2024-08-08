@@ -8,3 +8,8 @@ def render_template(template: str, **kwargs):
                              undefined=StrictUndefined)
     t = env.get_template(template)
     return t.render(**kwargs)
+
+
+class TemplateRenderer:
+    def render(self, template: str, **kwargs):
+        return render_template(template, **kwargs)

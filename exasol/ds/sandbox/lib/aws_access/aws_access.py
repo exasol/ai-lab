@@ -106,7 +106,11 @@ class AwsAccess(object):
                            and all actions required for creating elements of the specific stack
                            (e.g. ec2:CreateSecurityGroup, ec2:RunInstances,...)
         """
-        cloud_client = self._get_aws_client("cloudformation")
+        try:
+            cloud_client = self._get_aws_client("cloudformation")
+        except Exception as e:
+            LOG.error(f"Error getting cloud_client: {e}")
+            raise e
         try:
             cfn_deployer = Deployer(cloudformation_client=cloud_client)
             result = cfn_deployer.create_and_wait_for_changeset(stack_name=stack_name, cfn_template=yml,
@@ -513,7 +517,7 @@ class AwsAccess(object):
 
     def _get_aws_client(self, service_name: str) -> Any:
         if self._aws_profile is None:
-            return boto3.client(service_name)
+            return boto3.client(service_name, region_name=self._region)
         aws_session = boto3.session.Session(profile_name=self._aws_profile, region_name=self._region)
         return aws_session.client(service_name)
 
