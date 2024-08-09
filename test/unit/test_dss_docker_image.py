@@ -139,3 +139,15 @@ def test_push_called(mocker, mocked_docker_image):
         mocker.call(testee.repository, "latest"),
     ]
     assert testee.registry.push.call_args_list == expected
+
+
+@pytest.mark.parametrize(
+    "env, expected", (
+        ( ["A=1"], "jupyterenv/bin"),
+        ( ["A=1", "PATH=a:b:c"], "a:b:c:jupyterenv/bin"),
+    )
+)
+def test_path(sample_repo, env, expected):
+    testee = DssDockerImage(sample_repo)
+    container = Mock(attrs={"Config": {"Env": env}})
+    assert expected == testee._path(container, "jupyterenv/bin")
