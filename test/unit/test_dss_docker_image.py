@@ -144,7 +144,7 @@ def test_push_called(mocker, mocked_docker_image):
 @pytest.mark.parametrize(
     "env, expected", (
         ( ["A=1"], "jupyterenv/bin"),
-        ( ["A=1", "PATH=a:b:c"], "a:b:c:jupyterenv/bin"),
+        ( ["A=1", "PATH=a:b:c"], "jupyterenv/bin:a:b:c"),
     )
 )
 def test_path(sample_repo, env, expected):

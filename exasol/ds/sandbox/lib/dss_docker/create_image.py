@@ -158,7 +158,7 @@ class DssDockerImage:
     def _path(self, container: DockerContainer, dir: str) -> str:
         for v in container.attrs["Config"]["Env"]:
             if v.startswith("PATH="):
-                return f"{v[5:]}:{dir}"
+                return f"{dir}:{v[5:]}"
         return dir
 
     def _commit_container(
