@@ -40,6 +40,7 @@ class Testee:
             self.logfile,
             "user",
             "password",
+            None,
             poll_sleep = 0.1,
         )
         return self

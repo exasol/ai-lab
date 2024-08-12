@@ -37,6 +37,10 @@ def arg_parser():
         help="destination location for notebook files to copy",
     )
     parser.add_argument(
+        "--venv", type=Path, metavar="<PATH-TO-ACTIVATE-SCRIPT>",
+        help="Source this script to activate a virtual environment before starting Jupyter server",
+    )
+    parser.add_argument(
         "--jupyter-server", metavar="<PATH-TO-JUPYTER-BINARY>",
         help="start server for Jupyter notebooks",
     )
@@ -75,6 +79,11 @@ def arg_parser():
     return parser
 
 
+def command_with_venv(venv_activate: Path, command: List[str]) -> List[str]:
+    bash_cmd = [ "source", str(venv_activate), ";" ] + command
+    return [ "bash", "-c", " ".join(bash_cmd) ]
+
+
 def start_jupyter_server(
         home_directory: str,
         binary_path: str,
@@ -83,6 +92,7 @@ def start_jupyter_server(
         logfile: Path,
         user: str,
         password: str,
+        venv: Path,
         poll_sleep: float = 1,
 ):
     """
@@ -107,6 +117,13 @@ def start_jupyter_server(
 
     env = os.environ.copy()
     env["HOME"] = home_directory
+    if venv:
+        command_line = command_with_venv(venv, command_line)
+        # command_line = command_with_venv(venv, ["echo", "$PS1"])
+    # else:
+    #     command_line = ["bash", "-c", "echo", "$PS1"]
+
+    print(f'{command_line}')
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
@@ -336,11 +353,11 @@ def main():
             f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
     if (args.jupyter_server
-        and args.notebooks
-        and args.jupyter_logfile
-        and args.user
-        and args.home
-        and args.password
+        # and args.notebooks
+        # and args.jupyter_logfile
+        # and args.user
+        # and args.home
+        # and args.password
         ):
         start_jupyter_server(
             args.home,
@@ -350,6 +367,7 @@ def main():
             args.jupyter_logfile,
             args.user,
             args.password,
+            args.venv,
         )
     else:
         sleep_infinity()
