@@ -83,7 +83,7 @@ def test_jupyter(mocker):
     port = "1234"
     notebook_folder = Path("/root/notebooks")
     logfile = Path("/root/jupyter-server.log")
-    venv = Path("/root/jupyterenv/bin/activate")
+    venv = Path("/root/jupyterenv")
     mocker.patch("sys.argv", [
         "app",
         "--home", "home-directory",

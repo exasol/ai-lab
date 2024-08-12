@@ -79,6 +79,7 @@ def test_entrypoint_with_copy_args():
         "dss_facts": {
             "docker_group": "docker-group-name",
             "jupyter": {
+                "virtualenv": "/home/jupyter/jupyterenv",
                 "command": "/home/jupyter/jupyterenv/bin/jupyter-lab",
                 "port": "port",
                 "user": "jupyter-user-name",
@@ -101,6 +102,7 @@ def test_entrypoint_with_copy_args():
         "--notebook-defaults": fact("notebook_folder", "initial"),
         "--notebooks": fact("notebook_folder", "final"),
         "--home": fact("jupyter", "home"),
+        "--venv": fact("jupyter", "virtualenv"),
         "--jupyter-server": fact("jupyter", "command"),
         "--port": fact("jupyter", "port"),
         "--user": fact("jupyter", "user"),
@@ -139,15 +141,3 @@ def test_push_called(mocker, mocked_docker_image):
         mocker.call(testee.repository, "latest"),
     ]
     assert testee.registry.push.call_args_list == expected
-
-
-# @pytest.mark.parametrize(
-#     "env, expected", (
-#         ( ["A=1"], "jupyterenv/bin"),
-#         ( ["A=1", "PATH=a:b:c"], "jupyterenv/bin:a:b:c"),
-#     )
-# )
-# def test_path(sample_repo, env, expected):
-#     testee = DssDockerImage(sample_repo)
-#     container = Mock(attrs={"Config": {"Env": env}})
-#     assert expected == testee._path(container, "jupyterenv/bin")

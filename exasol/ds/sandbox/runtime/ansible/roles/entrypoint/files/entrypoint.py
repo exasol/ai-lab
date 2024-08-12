@@ -37,8 +37,8 @@ def arg_parser():
         help="destination location for notebook files to copy",
     )
     parser.add_argument(
-        "--venv", type=Path, metavar="<PATH-TO-ACTIVATE-SCRIPT>",
-        help="Source this script to activate a virtual environment before starting Jupyter server",
+        "--venv", type=Path, metavar="<PATH-TO-VIRTUAL-ENVIRONMENT>",
+        help="Prepend subdirectory bin to environment variable PATH before starting Jupyter server",
     )
     parser.add_argument(
         "--jupyter-server", metavar="<PATH-TO-JUPYTER-BINARY>",
@@ -117,15 +117,11 @@ def start_jupyter_server(
 
     env = os.environ.copy()
     env["HOME"] = home_directory
-    # path = env.get("PATH")
-    # enf["PATH"] = f"{dir}:{path}" if path else dir
-#     if venv:
-#         command_line = command_with_venv(venv, command_line)
-#         # command_line = command_with_venv(venv, ["echo", "$PS1"])
-#     # else:
-#     #     command_line = ["bash", "-c", "echo", "$PS1"]
-# 
-#     print(f'{command_line}')
+    if venv:
+        venv_bin = str(venv / "bin")
+        path = env.get("PATH")
+        env["PATH"] = f"{venv_bin}:{path}" if path else venv_bin
+        _logger.info(f'Changed environment variable PATH to {env["PATH"]}')
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
@@ -355,11 +351,11 @@ def main():
             f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
     if (args.jupyter_server
-        # and args.notebooks
-        # and args.jupyter_logfile
-        # and args.user
-        # and args.home
-        # and args.password
+        and args.notebooks
+        and args.jupyter_logfile
+        and args.user
+        and args.home
+        and args.password
         ):
         start_jupyter_server(
             args.home,
