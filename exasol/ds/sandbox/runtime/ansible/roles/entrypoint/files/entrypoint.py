@@ -79,11 +79,6 @@ def arg_parser():
     return parser
 
 
-def command_with_venv(venv_activate: Path, command: List[str]) -> List[str]:
-    bash_cmd = [ "source", str(venv_activate), ";" ] + command
-    return [ "bash", "-c", " ".join(bash_cmd) ]
-
-
 def start_jupyter_server(
         home_directory: str,
         binary_path: str,
