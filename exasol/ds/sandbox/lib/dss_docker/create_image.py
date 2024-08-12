@@ -47,6 +47,8 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         user_home = get_fact(facts, "jupyter", "home")
         password = get_fact(facts, "jupyter", "password")
         logfile = get_fact(facts, "jupyter", "logfile")
+        virtualenv = get_fact(facts, "jupyter", "virtualenv")
+        venv_activate = f"{virtualenv}/bin/activate"
         return [
             "--home", user_home,
             "--jupyter-server", command,
@@ -56,6 +58,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
             "--docker-group", docker_group,
             "--password", password,
             "--jupyter-logfile", logfile,
+            "--venv", venv_activate,
         ]
 
     entrypoint = get_fact(facts, "entrypoint")

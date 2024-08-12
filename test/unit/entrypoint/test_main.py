@@ -83,10 +83,12 @@ def test_jupyter(mocker):
     port = "1234"
     notebook_folder = Path("/root/notebooks")
     logfile = Path("/root/jupyter-server.log")
+    venv = Path("/root/jupyterenv/bin/activate")
     mocker.patch("sys.argv", [
         "app",
         "--home", "home-directory",
         "--notebooks", str(notebook_folder),
+        "--venv", str(venv),
         "--jupyter-server", jupyter,
         "--port", port,
         "--user", "usr",
@@ -106,6 +108,7 @@ def test_jupyter(mocker):
         logfile,
         "usr",
         "pwd",
+        venv,
     )
     assert entrypoint.start_jupyter_server.call_args == expected
     assert not entrypoint.sleep_infinity.called
