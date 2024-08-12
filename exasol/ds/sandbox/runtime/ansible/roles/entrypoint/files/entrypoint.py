@@ -107,6 +107,8 @@ def start_jupyter_server(
 
     env = os.environ.copy()
     env["HOME"] = home_directory
+    # path = env.get("PATH")
+    # enf["PATH"] = f"{dir}:{path}" if path else dir
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
