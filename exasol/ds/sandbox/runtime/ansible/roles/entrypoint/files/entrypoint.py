@@ -37,6 +37,10 @@ def arg_parser():
         help="destination location for notebook files to copy",
     )
     parser.add_argument(
+        "--venv", type=Path, metavar="<PATH-TO-VIRTUAL-ENVIRONMENT>",
+        help="Prepend subdirectory bin to environment variable PATH before starting Jupyter server",
+    )
+    parser.add_argument(
         "--jupyter-server", metavar="<PATH-TO-JUPYTER-BINARY>",
         help="start server for Jupyter notebooks",
     )
@@ -83,6 +87,7 @@ def start_jupyter_server(
         logfile: Path,
         user: str,
         password: str,
+        venv: Path,
         poll_sleep: float = 1,
 ):
     """
@@ -107,6 +112,11 @@ def start_jupyter_server(
 
     env = os.environ.copy()
     env["HOME"] = home_directory
+    if venv:
+        venv_bin = str(venv / "bin")
+        path = env.get("PATH")
+        env["PATH"] = f"{venv_bin}:{path}" if path else venv_bin
+        _logger.info(f'Changed environment variable PATH to {env["PATH"]}')
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
@@ -350,6 +360,7 @@ def main():
             args.jupyter_logfile,
             args.user,
             args.password,
+            args.venv,
         )
     else:
         sleep_infinity()

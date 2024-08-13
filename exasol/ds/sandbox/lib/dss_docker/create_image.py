@@ -47,6 +47,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         user_home = get_fact(facts, "jupyter", "home")
         password = get_fact(facts, "jupyter", "password")
         logfile = get_fact(facts, "jupyter", "logfile")
+        virtualenv = get_fact(facts, "jupyter", "virtualenv")
         return [
             "--home", user_home,
             "--jupyter-server", command,
@@ -56,6 +57,7 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
             "--docker-group", docker_group,
             "--password", password,
             "--jupyter-logfile", logfile,
+            "--venv", virtualenv,
         ]
 
     entrypoint = get_fact(facts, "entrypoint")
@@ -166,6 +168,7 @@ class DssDockerImage:
         port = get_fact(facts, "jupyter", "port")
         notebook_folder_final = get_fact(facts, "notebook_folder", "final")
         notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
+
         conf = {
             "Entrypoint": entrypoint(facts),
             "Cmd": [],
@@ -175,7 +178,7 @@ class DssDockerImage:
             "Env": [
                 f"VIRTUAL_ENV={virtualenv}",
                 f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
-                f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}"
+                f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}",
             ],
         }
         img = container.commit(repository=self.image_name, conf=conf)

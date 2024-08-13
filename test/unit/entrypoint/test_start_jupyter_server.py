@@ -40,6 +40,7 @@ class Testee:
             self.logfile,
             "user",
             "password",
+            Path("venv"),
             poll_sleep = 0.1,
         )
         return self
@@ -62,5 +63,6 @@ def test_late_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
         testee = Testee(tmp_path).create_script(after="exit 23").run()
     assert ex.value.code == 23
+    assert "Changed environment variable PATH to venv/bin:" in caplog.text
     assert "Server for Jupyter has been started successfully." in caplog.text
     assert "Jupyter Server terminated with error code 23" in caplog.text

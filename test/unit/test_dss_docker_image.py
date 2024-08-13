@@ -79,6 +79,7 @@ def test_entrypoint_with_copy_args():
         "dss_facts": {
             "docker_group": "docker-group-name",
             "jupyter": {
+                "virtualenv": "/home/jupyter/jupyterenv",
                 "command": "/home/jupyter/jupyterenv/bin/jupyter-lab",
                 "port": "port",
                 "user": "jupyter-user-name",
@@ -101,6 +102,7 @@ def test_entrypoint_with_copy_args():
         "--notebook-defaults": fact("notebook_folder", "initial"),
         "--notebooks": fact("notebook_folder", "final"),
         "--home": fact("jupyter", "home"),
+        "--venv": fact("jupyter", "virtualenv"),
         "--jupyter-server": fact("jupyter", "command"),
         "--port": fact("jupyter", "port"),
         "--user": fact("jupyter", "user"),
