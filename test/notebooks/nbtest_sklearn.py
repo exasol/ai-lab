@@ -22,7 +22,7 @@ def test_regression(notebook_runner) -> None:
         os.chdir('./data')
         notebook_runner('data_abalone.ipynb')
         os.chdir('../sklearn')
-        notebook_runner('sklearn_fix_version.ipynb')
+        notebook_runner('sklearn_fix_version.ipynb') 
         notebook_runner('sklearn_predict_udf.ipynb')
         notebook_runner('sklearn_train_abalone.ipynb')
         notebook_runner('sklearn_predict_abalone.ipynb')
