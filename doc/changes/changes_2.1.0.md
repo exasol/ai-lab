@@ -27,7 +27,7 @@ Version: 2.1.0
 ## Bug Fixes
 
 * #303: Fixed AWS Codebuild
-* #313: Enabled fixing differing versions of dependency scikit-learn
+* #313: Fixed differing versions of dependency `scikit-learn`
 
 ## Documentation
 
