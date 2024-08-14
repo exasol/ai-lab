@@ -39,7 +39,7 @@ This is only possible when using
 * MacOSX Docker Desktop
 * MacOSX Docker Desktop with a remote Docker daemon
 
-In all scenarios the daemon machine must allow running the Exasol Docker-DB with option [`--privileged`](https://docs.docker.com/engine/containers/run/#runtime-privilege-and-linux-capabilities).
+In all scenarios the daemon machine must allow running the Exasol Docker-DB with option [`--privileged`](https://docs.docker.com/reference/cli/docker/container/run/#privileged).
 
 Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular, code running inside the AI-Lab could create privileged containers, mount the file system of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
 
