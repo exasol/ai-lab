@@ -120,6 +120,7 @@ def run_notebook(
 
     # Execute the notebook object, expecting to get no exceptions.
     nb_client = NotebookClient(nb, timeout=timeout, kernel_name='python3')
+    # see https://nbclient.readthedocs.io/en/latest/reference/nbclient.html#nbclient.client.NotebookClient.execute
     nb_client.execute(reset_kc=reset_kernel_client)
 
 
