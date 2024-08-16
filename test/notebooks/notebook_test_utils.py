@@ -81,14 +81,8 @@ def _insert_hacks(nb: nbformat.NotebookNode, hacks: List[Tuple[str, str]]):
             nb.cells.insert(cell_no + 1, hack_cell)
 
 
-def run_notebook(
-        notebook_file: str,
-        store_file: str,
-        store_password: str,
-        timeout: int = -1,
-        hacks: Optional[List[Tuple[str, str]]] = None,
-        reset_kernel_client: bool =False,
-) -> None:
+def run_notebook(notebook_file: str, store_file: str, store_password: str,
+                 timeout: int = -1, hacks: Optional[List[Tuple[str, str]]] = None, ) -> None:
     """
     Executes notebook with added access to the configuration store.
 
@@ -99,7 +93,6 @@ def run_notebook(
         timeout:        Optional timeout in seconds.
         hacks:          Optional hacks to be inserted into the notebook
                         before running it.
-        reset_kernel_client: If True, then restart the kernel before running it.
     """
 
     nb = nbformat.read(notebook_file, as_version=4)
@@ -120,8 +113,7 @@ def run_notebook(
 
     # Execute the notebook object, expecting to get no exceptions.
     nb_client = NotebookClient(nb, timeout=timeout, kernel_name='python3')
-    # see https://nbclient.readthedocs.io/en/latest/reference/nbclient.html#nbclient.client.NotebookClient.execute
-    nb_client.execute(reset_kc=reset_kernel_client)
+    nb_client.execute()
 
 
 
