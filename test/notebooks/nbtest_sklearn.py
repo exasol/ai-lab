@@ -18,15 +18,17 @@ def test_regression(notebook_runner) -> None:
 
     current_dir = os.getcwd()
     try:
-        notebook_runner('main_config.ipynb')
-        os.chdir('./sklearn')
-        notebook_runner('sklearn_fix_version.ipynb')
-        os.chdir('..')
+        # notebook_runner('main_config.ipynb')
+        # os.chdir('./sklearn')
+        # notebook_runner('sklearn_fix_version.ipynb')
+        # os.chdir('..')
         #
-        notebook_runner('main_config.ipynb', reset_kernel_client=True)
+        # notebook_runner('main_config.ipynb', reset_kernel_client=True)
+        notebook_runner('main_config.ipynb')
         os.chdir('./data')
         notebook_runner('data_abalone.ipynb')
         os.chdir('../sklearn')
+        notebook_runner('sklearn_fix_version.ipynb')
         notebook_runner('sklearn_predict_udf.ipynb')
         notebook_runner('sklearn_train_abalone.ipynb')
         notebook_runner('sklearn_predict_abalone.ipynb')
@@ -40,11 +42,6 @@ def test_classification(notebook_runner) -> None:
     current_dir = os.getcwd()
     try:
         notebook_runner('main_config.ipynb')
-        os.chdir('./sklearn')
-        notebook_runner('sklearn_fix_version.ipynb')
-        os.chdir('..')
-        #
-        notebook_runner('main_config.ipynb', reset_kernel_client=True)
         os.chdir('./data')
         notebook_runner('data_telescope.ipynb')
         os.chdir('../sklearn')
