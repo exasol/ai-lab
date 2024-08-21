@@ -32,18 +32,18 @@ click = "^8.1.3"
 boto3 = "^1.22.0"
 jinja2 = ">=3.1.0"
 ansible-runner = "^2.2.1"
-ansible = "^9.2.0"
-importlib_resources = ">=5.4.0"
-rich = "^12.5.1"
-pandas = "^1.5.3"
-numpy = "^1.26.4" # avoid version >= 2
+ansible = "^10.3.0"
+importlib_resources = "^6.4.3"
+rich = "^13.7.1"
+pandas = "^2.2.2"
+# numpy = "^1.26.4" # avoid version >= 2
 humanfriendly = "^10.0"
-tenacity = "^8.2.3"
+tenacity = "^9.0.0"
 pygithub = "^2.2.0"
-importlib-metadata = "^7.0.1"
+importlib-metadata = "^8.4.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest-check-links = "^0.9.0"
+pytest-check-links = ">=0.10.1,<1.0.0"
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
@@ -52,16 +52,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dev-dependencies]
 toml = ">=0.10.2"
-pytest = "^7.1.1"
+pytest = "^8.3.2"
 pytest-mock = "^3.7.0"
-cfn-lint = "^0.65.1"
+cfn-lint = "^1.10.3"
 gitpython = ">=2.1.0"
 localstack = "^3.1.0"
-# docker 7.0.0 is broken
-# see https://github.com/docker/docker-py/issues/3223
-docker = {version = "^6.1.3", markers = "sys_platform != 'win32'"}
-fabric = "^2.7.1"
-requests = "<2.32.0"
+docker = {version = "^7.1.0", markers = "sys_platform != 'win32'"}
+fabric = "^3.2.2"
+requests = "^2.32.3"
 
 
 [tool.pytest.ini_options]
