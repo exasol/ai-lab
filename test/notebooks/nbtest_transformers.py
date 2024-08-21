@@ -26,7 +26,6 @@ set_log_level_for_libraries()
         'zero_shot_classification.ipynb'
     ]
 )
-@pytest.mark.skip(reason="The expected functionality is not yet implemented in the Transformers Extension")
 def test_transformers(notebook_runner, uploading_hack, notebook_file) -> None:
 
     running_hack = (
