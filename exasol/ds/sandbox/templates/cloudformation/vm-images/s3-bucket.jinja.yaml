@@ -1,8 +1,6 @@
 Resources:
   VMBucket:
     Type: 'AWS::S3::Bucket'
-    Properties:
-      AccessControl: 'Private'
     Metadata:
       Comment: 'Bucket to store AI-Lab VM images'
     DeletionPolicy: Retain

@@ -48,7 +48,6 @@ TEMPLATES = {
 def test_lint_cloudformation_templates(tmp_path, template_key):
     validate_using_cfn_lint(tmp_path, TEMPLATES[template_key])
 
-
 @pytest.mark.parametrize("key", ("vm-bucket", "vm-bucket-waf"))
 def test_template_rendering(key):
     expected = (
