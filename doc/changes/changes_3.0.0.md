@@ -1,25 +1,24 @@
-# AI-Lab 2.1.0 released TBD
+# AI-Lab 3.0.0 released 2024-08-26
 
 Code name: Exasol SaaS and Python 3.10
 
 ## Summary
 
-This release adds support for parameters for SaaS instances of Exasol database to the configuration page and fixes vulnerability `CVE-2024-23342` by updating dependencies.
+This release uses an updated version of the notebook-connector with transitive dependency `transformers-extension` (TE) updated to version `2.0.0`.  TE version `2.0.0` fixes an error in saving and loading of the model metadata but required a breaking change regarding the storage format of the TE model.
 
-This release also updates the operating system from ubuntu 20.04 to 22.04 and Python version to 3.10 in the published images for Docker, AMI, and virtual machines.
+The release adds support for parameters for SaaS instances of Exasol database to the configuration page and fixes vulnerability `CVE-2024-23342` by updating dependencies and also updates the operating system from ubuntu 20.04 to 22.04 and Python version to 3.10 in the published images for Docker, AMI, and virtual machines.
 
 Additionally, this release fixes the following vulnerabilities by updating dependencies:
 * Vulnerability CVE-2024-23342 in transitive dependency via `localstack` to `ecdsa` vulnerably to Minerva timing attack on P-256 in `python-ecdsa`.
 * Vulnerability CVE-2024-5206 in dependency `scikit-learn` versions below `1.5.0` caused by sensitive data leakage.
+* Vulnerability CVE-2024-35195 in dependency `requests` in versions below `2.32.0` caused by requests `Session` object not verifying requests after making first request with `verify=False`.
+* Vulnerability CVE-2024-37891 in transitive dependency via `boto3` to `urllib3` in versions below `2.2.2` caused by proxy-authorization request header not to be stripped during cross-origin redirects.
 
-The release ignores the following vulnerabilities
-* Ignoring vulnerability CVE-2024-33663 in transitive dependency via `localstack` to `python-jose` `3.3.0` caused by algorithm confusion with OpenSSH ECDSA keys as there is no newer version of `python-jose` available and the dependency only affects tests.
-* Ignoring vulnerability CVE-2024-35195 in dependency `requests` in versions below `2.32.0` caused by requests `Session` object not verifying requests after making first request with `verify=False` as `requests` in version `2.32.0` and higher are incompatible with docker-compose.
-* Ignoring vulnerability CVE-2024-37891 in transitive dependency via `boto3` to `urllib3` in versions below `2.2.2` caused by proxy-authorization request header not to be stripped during cross-origin redirects as no update of notebook-connector is available, yet.
+The release ignores vulnerability CVE-2024-33663 in transitive dependency via `localstack` to `python-jose` `3.3.0` caused by algorithm confusion with OpenSSH ECDSA keys as there is no newer version of `python-jose` available and the dependency only affects tests.
 
 ## AI-Lab-Release
 
-Version: 2.1.0
+Version: 3.0.0
 
 ## Features
 
@@ -55,6 +54,7 @@ Version: 2.1.0
 * #297: Reduced log level for transitive libraries in notebook tests
 * #307: Made the notebook tests running in parallel; moved common steps from test jobs to a composite action
 * #308: Removed redundant dependencies from file `notebook_requirements.txt`.
+* #318: Re-enabled disabled notebook tests
 
 ## Dependency Updates
 
