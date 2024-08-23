@@ -1,12 +1,14 @@
 # AI-Lab 3.0.0 released 2024-08-26
 
-Code name: TE-Update, Exasol SaaS and Python 3.10
+Code name: More Notebooks, TE-Update, Exasol SaaS, Python 3.10
 
 ## Summary
 
-This release uses an updated version of the notebook-connector with transitive dependency `transformers-extension` (TE) updated to version `2.0.0`.
-* [TE version 2.0.0](https://github.com/exasol/transformers-extension/releases/2.0.0) fixes an error in saving and loading of the model metadata but required a breaking change regarding the storage format of the TE model.
-* **Users of the AI-Lab must redeploy TE into their database and upload the models once again.**
+This release adds Jupyter tutorials for using the [IBIS dataframe library](https://ibis-project.org/) and for building [Exasol Script Language Containers (SLC)](https://docs.exasol.com/db/latest/database_concepts/udf_scripts/adding_new_packages_script_languages.htm#ScriptLanguageContainer).
+
+Transitive dependency `transformers-extension` (TE) via `notebook-connector` has been updated to [TE version 2.0.0](https://github.com/exasol/transformers-extension/releases/2.0.0). This fixes an error in saving and loading of the model but required a breaking change regarding the storage format of the TE model.
+
+**Users of the AI-Lab must redeploy TE into their database and upload the models once again.**
 
 The release adds support for parameters for SaaS instances of Exasol database to the configuration page and fixes vulnerability `CVE-2024-23342` by updating dependencies and also updates the operating system from ubuntu 20.04 to 22.04 and Python version to 3.10 in the published images for Docker, AMI, and virtual machines.
 
