@@ -1,2 +1,0 @@
-exasol-bucketfs==0.8.0
-pyexasol==0.25.2
