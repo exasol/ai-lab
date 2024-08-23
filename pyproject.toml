@@ -36,7 +36,6 @@ ansible = "^10.3.0"
 importlib_resources = "^6.4.3"
 rich = "^13.7.1"
 pandas = "^2.2.2"
-# numpy = "^1.26.4" # avoid version >= 2
 humanfriendly = "^10.0"
 tenacity = "^9.0.0"
 pygithub = "^2.2.0"

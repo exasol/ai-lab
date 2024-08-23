@@ -43,6 +43,7 @@ Version: 2.1.0
 
 * #249: Added a troubleshooting section to the user guide documenting died kernel for transformers/te_init.ipynb.
 * #284: Improved User Guide regarding Docker volumes
+* #322: Made URL in IBIS notebook point to new example data bucket https://dut5tonqye28.cloudfront.net/ai_lab/flight-info
 
 ## Refactoring
 
@@ -65,5 +66,8 @@ In File [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/e
 * Updated `matplotlib:3.7.4` to `3.9.2`
 * Updated `jupysql:0.10.10` to `0.10.12`
 * Relaxed `stopwatch.py:2.0.1` dependency to `2.*` to avoid inconsistencies with ITDE
-* Replaced GitHub dependency to `exasol/notebook-connector:main` by pypi dependency `0.2.9`
+* Updated `exasol-notebook-connector:0.2.8` to `0.2.9`
 * Updated `ipywidgets:8.1.1` to `8.1.3`
+
+### Dependencies in `ai-lab/pyproject.toml`
+
