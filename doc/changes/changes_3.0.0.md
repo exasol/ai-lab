@@ -4,7 +4,9 @@ Code name: Exasol SaaS and Python 3.10
 
 ## Summary
 
-This release uses an updated version of the notebook-connector with transitive dependency `transformers-extension` (TE) updated to version `2.0.0`.  TE version `2.0.0` fixes an error in saving and loading of the model metadata but required a breaking change regarding the storage format of the TE model.
+This release uses an updated version of the notebook-connector with transitive dependency `transformers-extension` (TE) updated to version `2.0.0`.  [TE version 2.0.0](https://github.com/exasol/transformers-extension/releases/2.0.0) fixes an error in saving and loading of the model metadata but required a breaking change regarding the storage format of the TE model.
+
+This requires users of the AI-Lab to redeploy TE into their database and upload the models once again.
 
 The release adds support for parameters for SaaS instances of Exasol database to the configuration page and fixes vulnerability `CVE-2024-23342` by updating dependencies and also updates the operating system from ubuntu 20.04 to 22.04 and Python version to 3.10 in the published images for Docker, AMI, and virtual machines.
 
