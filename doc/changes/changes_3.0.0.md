@@ -1,12 +1,12 @@
 # AI-Lab 3.0.0 released 2024-08-26
 
-Code name: Exasol SaaS and Python 3.10
+Code name: TE-Update, Exasol SaaS and Python 3.10
 
 ## Summary
 
-This release uses an updated version of the notebook-connector with transitive dependency `transformers-extension` (TE) updated to version `2.0.0`.  [TE version 2.0.0](https://github.com/exasol/transformers-extension/releases/2.0.0) fixes an error in saving and loading of the model metadata but required a breaking change regarding the storage format of the TE model.
-
-This requires users of the AI-Lab to redeploy TE into their database and upload the models once again.
+This release uses an updated version of the notebook-connector with transitive dependency `transformers-extension` (TE) updated to version `2.0.0`.
+* [TE version 2.0.0](https://github.com/exasol/transformers-extension/releases/2.0.0) fixes an error in saving and loading of the model metadata but required a breaking change regarding the storage format of the TE model.
+* **Users of the AI-Lab must redeploy TE into their database and upload the models once again.**
 
 The release adds support for parameters for SaaS instances of Exasol database to the configuration page and fixes vulnerability `CVE-2024-23342` by updating dependencies and also updates the operating system from ubuntu 20.04 to 22.04 and Python version to 3.10 in the published images for Docker, AMI, and virtual machines.
 
@@ -17,10 +17,6 @@ Additionally, this release fixes the following vulnerabilities by updating depen
 * Vulnerability CVE-2024-37891 in transitive dependency via `boto3` to `urllib3` in versions below `2.2.2` caused by proxy-authorization request header not to be stripped during cross-origin redirects.
 
 The release ignores vulnerability CVE-2024-33663 in transitive dependency via `localstack` to `python-jose` `3.3.0` caused by algorithm confusion with OpenSSH ECDSA keys as there is no newer version of `python-jose` available and the dependency only affects tests.
-
-## AI-Lab-Release
-
-Version: 3.0.0
 
 ## Features
 
