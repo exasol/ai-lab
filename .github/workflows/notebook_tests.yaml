@@ -14,6 +14,8 @@ jobs:
           - { name: "sklearn notebook", test_file: "nbtest_sklearn.py" }
           - { name: "ibis notebook", test_file: "nbtest_ibis.py" }
           - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py" }
+          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py"}
+          - { name: "TE notebooks", test_file: "nbtest_transformers.py"}
           - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\""}
     name: Running ${{ matrix.nb_test.name }}
     steps:
