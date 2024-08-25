@@ -1,10 +1,8 @@
-uncertainties==3.1.7
-scikit-learn==1.0.2
-matplotlib==3.7.4
-jupysql==0.10.10
-sqlalchemy_exasol==4.6.3
-stopwatch.py==2.0.1
-boto3==1.26.163
-exasol-notebook-connector @ git+https://github.com/exasol/notebook-connector.git@main
+scikit-learn==1.5.1 # required for notebook sklearn
+matplotlib==3.7.4 # required for notebook sklearn
+jupysql==0.10.10 # required for multiple notebooks
+stopwatch.py>=2.0.1 # also required by ITDE
+exasol-notebook-connector==0.2.9
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
-ipyfilechooser==0.6.0
+ipyfilechooser==0.6.0 # required for SLC notebooks
+ipywidgets==8.1.1 # enable interactive Javascript widgets in the notebooks

@@ -1,5 +1,2 @@
 jupyterlab==4.1.1
-# enable interactive Javascript widgets in the notebooks
-ipywidgets==8.1.1
 pexpect==4.8.0
-pyexasol==0.16.1

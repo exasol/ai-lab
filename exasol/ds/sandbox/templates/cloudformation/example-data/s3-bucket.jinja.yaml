@@ -1,8 +1,6 @@
 Resources:
   AiLabExampleDataBucket:
     Type: 'AWS::S3::Bucket'
-    Properties:
-      AccessControl: 'Private'
     Metadata:
       Comment: 'Bucket to store example data for the AI-Lab'
     DeletionPolicy: Retain

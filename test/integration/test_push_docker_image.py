@@ -69,9 +69,8 @@ def docker_registry(request, registry_image):
         yield LocalDockerRegistry(existing)
         return
 
-    test_name = normalize_request_name(request.node.name)
-    container_name = f"{test_name}_registry"
-
+    # Valid container names must match [a-zA-Z0-9][a-zA-Z0-9_.-]
+    container_name = f"registry_{DssDockerImage.timestamp()}"
     port = find_free_port()
     client = docker.from_env()
     _logger.debug(f"Starting container {container_name}")
