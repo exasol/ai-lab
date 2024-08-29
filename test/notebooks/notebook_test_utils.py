@@ -4,10 +4,7 @@ from functools import partial
 import random
 import string
 import textwrap
-from contextlib import contextmanager, ExitStack
-from datetime import timedelta
 import logging
-import os
 from inspect import cleandoc
 
 import pytest
@@ -21,19 +18,10 @@ from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
 )
-from exasol.saas.client.api_access import (
-    OpenApiAccess,
-    create_saas_client,
-    timestamp_name,
-)
+from pytest-exasol-backend import BACKEND_ONPREM, BACKEND_SAAS
+
 
 LOG = logging.getLogger(__name__)
-
-def _env(var: str) -> str:
-    result = os.environ.get(var)
-    if result:
-        return result
-    raise RuntimeError(f"Environment variable {var} is empty.")
 
 
 def generate_password(pwd_length):
@@ -47,22 +35,6 @@ def url_exists(url):
         return response.status_code < 400
     except requests.ConnectionError:
         return False
-
-
-def _init_onprem_secret_store(secrets: Secrets) -> None:
-    secrets.save(CKey.use_itde, 'yes')
-    secrets.save(CKey.mem_size, '4')
-    secrets.save(CKey.disk_size, '4')
-    secrets.save(CKey.db_schema, 'NOTEBOOK_TESTS')
-
-
-def _init_saas_secret_store(secrets: Secrets) -> None:
-    secrets.save(CKey.storage_backend, StorageBackend.saas.name)
-    secrets.save(CKey.saas_url, _env("SAAS_HOST"))
-    secrets.save(CKey.saas_token, _env("SAAS_PAT"))
-    secrets.save(CKey.saas_account_id, _env("SAAS_ACCOUNT_ID"))
-    secrets.save(CKey.saas_database_name, timestamp_name('NBTEST'))
-    secrets.save(CKey.db_schema, 'NOTEBOOK_TESTS_SAAS')
 
 
 def _insert_hacks(nb: nbformat.NotebookNode, hacks: List[Tuple[str, str]]):
@@ -116,7 +88,6 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
     nb_client.execute()
 
 
-
 # ~/git/ai-lab/test/notebooks/notebook_test_utils.py
 def set_log_level_for_libraries(level=logging.WARNING):
     modules = cleandoc(
@@ -139,109 +110,55 @@ def set_log_level_for_libraries(level=logging.WARNING):
         logging.getLogger(m).setLevel(level)
 
 
-@contextmanager
-def access_to_temp_onprem_secret_store(tmp_path: Path) -> Tuple[Path, str]:
-    """
-    Creates a temporary configuration store.
-    Brings up and subsequently destroys the Exasol Docker-DB.
-    Returns the temporary configuration store path and password.
-    """
-
-    # Create temporary secret store
-    store_path = tmp_path / 'tmp_config.sqlite'
-    # Should the password be constant or randomly generated is debatable.
-    # Strictly speaking, random password makes a test non-deterministic.
-    # On the other hand, it improves the security. If for some reason the
-    # temporary configuration store is not deleted, there will be no access
-    # to it since the password will be forgotten once the session is over.
-    store_password = generate_password(12)
-    secrets = Secrets(store_path, master_password=store_password)
-
-    # Set the configuration required by the ITDE manager and those the
-    # manager will not set after starting the Exasol Docker-DB.
-    _init_onprem_secret_store(secrets)
-
-    # Start the Exasol Docker-DB and then destroy it after the test finishes.
-    bring_itde_up(secrets)
-    try:
-        yield store_path, store_password
-    finally:
-        take_itde_down(secrets)
-
-
 @pytest.fixture(scope='session')
-def access_to_temp_saas_secret_store(tmp_path_factory) -> Tuple[Path, str]:
+def backend_setup(backend,
+                  saas_host,
+                  saas_pat,
+                  saas_account_id,
+                  database_name,
+                  backend_aware_onprem_database,
+                  backend_aware_saas_database_id,
+                  tmp_path_factory) -> Tuple[Path, str]:
     """
-    Creates a temporary configuration store.
-    Initiates the creation of a temporary SaaS database and waits till this database
-    becomes operational.
-    Saves the SaaS connection parameters in the configuration store.
+    Creates a temporary configuration store and initialises it according to the
+    backend in use.
     """
 
     store_path = tmp_path_factory.mktemp('tmp_config_dir') / 'tmp_config_saas.sqlite'
-    # See access_to_temp_onprem_secret_store for considerations about the store password.
     store_password = generate_password(12)
     secrets = Secrets(store_path, master_password=store_password)
+    secrets.save(CKey.db_schema, 'NOTEBOOK_TESTS')
 
-    _init_saas_secret_store(secrets)
+    if backend == BACKEND_ONPREM:
+        secrets.save(CKey.storage_backend, StorageBackend.onprem.name)
+        secrets.save(CKey.use_itde, 'yes')
+        bring_itde_up(secrets, backend_aware_onprem_database)
+        try:
+            yield store_path, store_password
+        finally:
+            take_itde_down(secrets, False)
 
-    with ExitStack() as stack:
-        client = stack.enter_context(create_saas_client(
-            host=secrets.get(CKey.saas_url),
-            pat=secrets.get(CKey.saas_token)))
-        api_access = OpenApiAccess(
-            client=client,
-            account_id=secrets.get(CKey.saas_account_id))
-        stack.enter_context(api_access.allowed_ip())
-        db = stack.enter_context(api_access.database(
-            name=secrets.get(CKey.saas_database_name),
-            idle_time=timedelta(hours=12)))
-        api_access.wait_until_running(db.id)
+    elif backend == BACKEND_SAAS:
+        secrets.save(CKey.storage_backend, StorageBackend.saas.name)
+        secrets.save(CKey.saas_url, saas_host)
+        secrets.save(CKey.saas_token, saas_pat)
+        secrets.save(CKey.saas_account_id, saas_account_id)
+        secrets.save(CKey.saas_database_name, database_name)
         yield store_path, store_password
 
-
-@pytest.fixture
-def access_to_temp_secret_store(request,
-                                tmp_path: Path,
-                                access_to_temp_saas_secret_store
-                                ) -> Tuple[Path, str]:
-    """
-    Creates a temporary configuration store.
-    Ensures that the database (either on-prem or SaaS, depending on the request parameter)
-    is running for the duration of the fixture.
-    """
-    if request.param == StorageBackend.onprem:
-        with access_to_temp_onprem_secret_store(tmp_path) as onprem_store:
-            yield onprem_store
-    elif request.param == StorageBackend.saas:
-        yield access_to_temp_saas_secret_store
     else:
-        raise ValueError(('Unrecognised testing backend in the access_to_temp_secret_store. '
-                          'Should be either "onprem" or "saas"'))
+        raise RuntimeError(f'Unknown backend {backend}')
 
 
 @pytest.fixture
-def notebook_runner(request,
-                    tmp_path: Path,
-                    access_to_temp_saas_secret_store
-                    ) -> Callable:
+def notebook_runner(backend_setup) -> Callable:
     """
     A fixture for running a notebook.
     """
-    if request.param == StorageBackend.onprem:
-        with access_to_temp_onprem_secret_store(tmp_path) as onprem_store:
-            store_path, store_password = onprem_store
-            yield partial(run_notebook,
-                          store_file=str(store_path),
-                          store_password=store_password)
-    elif request.param == StorageBackend.saas:
-        store_path, store_password = access_to_temp_saas_secret_store
-        yield partial(run_notebook,
-                      store_file=str(store_path),
-                      store_password=store_password)
-    else:
-        raise ValueError(('Unrecognised testing backend in the notebook_runner. '
-                          'Should be either "onprem" or "saas"'))
+    store_path, store_password = backend_setup
+    return partial(run_notebook,
+                   store_file=str(store_path),
+                   store_password=store_password)
 
 
 @pytest.fixture
