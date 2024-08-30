@@ -2,6 +2,7 @@ import os
 import textwrap
 
 from notebook_test_utils import (
+    backend_setup,
     notebook_runner,
     set_log_level_for_libraries,
 )

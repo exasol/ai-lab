@@ -3,6 +3,7 @@ import textwrap
 import pytest
 
 from notebook_test_utils import (
+    backend_setup,
     notebook_runner,
     uploading_hack,
     set_log_level_for_libraries,
