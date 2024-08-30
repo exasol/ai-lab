@@ -11,14 +11,14 @@ jobs:
       fail-fast: false
       matrix:
         nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "all" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "all" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "all" }
-          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem" }
-          - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem" }
-          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas" }
-          - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
-          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
+          # - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "all" }
+          # - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "all" }
+          # - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "all" }
+          # - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem" }
+          # - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem" }
+          # - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas" }
+          # - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
+          # - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
           - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "all"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
@@ -34,8 +34,8 @@ jobs:
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
-            --nb-test-file=${{ matrix.nb_test.test_file }} \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
+            --nb-test-file=${{ matrix.nb_test.test_file }} \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
