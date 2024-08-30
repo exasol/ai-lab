@@ -19,7 +19,7 @@ jobs:
           # - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas" }
           # - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
           # - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
-          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "all"}
+          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: ""}
     name: Running ${{ matrix.nb_test.name }}
     steps:
       - uses: actions/checkout@v4
