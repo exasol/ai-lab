@@ -11,13 +11,16 @@ jobs:
       fail-fast: false
       matrix:
         nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py" }
-          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py" }
-          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py"}
-          - { name: "TE notebooks", test_file: "nbtest_transformers.py"}
-          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\""}
+          - { name: "CSE notebook", test_file: "nbtest_cloud.py", options: "--backend=onprem --backend=saas" }
+          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", options: "--backend=onprem --backend=saas" }
+          - { name: "ibis notebook", test_file: "nbtest_ibis.py", options: "--backend=onprem --backend=saas" }
+          - { name: "SLC notebook onprem", test_file: "nbtest_script_languages_container.py", options: "--backend=onprem" }
+          - { name: "SLC notebook saas", test_file: "nbtest_script_languages_container.py", options: "--backend=saas" }
+          - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", options: "--backend=onprem"}
+          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", options: "--backend=saas"}
+          - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", options: "--backend=onprem"}
+          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", options: "--backend=saas"}
+          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", options: "--backend=onprem --backend=saas"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +36,7 @@ jobs:
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
+            ${{ matrix.nb_test.options }} \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
