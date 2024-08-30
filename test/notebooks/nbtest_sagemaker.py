@@ -5,13 +5,11 @@ import boto3
 from inspect import cleandoc
 import textwrap
 
-import pytest
 from exasol.nb_connector.secret_store import Secrets
-from exasol.nb_connector.ai_lab_config import AILabConfig as CKey, StorageBackend
+from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 
 from notebook_test_utils import (
-    access_to_temp_secret_store,
-    access_to_temp_saas_secret_store,
+    backend_setup,
     run_notebook,
     uploading_hack,
     set_log_level_for_libraries,
@@ -182,10 +180,9 @@ def get_job_polling_hack() -> Tuple[str, str]:
     )
 
 
-@pytest.mark.parametrize('access_to_temp_secret_store', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
-def test_sagemaker(access_to_temp_secret_store, uploading_hack):
+def test_sagemaker(backend_setup, uploading_hack):
 
-    store_path, store_password = access_to_temp_secret_store
+    store_path, store_password = backend_setup
     store_file = str(store_path)
 
     _copy_aws_credentials()
