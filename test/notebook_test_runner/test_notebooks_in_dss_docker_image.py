@@ -74,14 +74,14 @@ def notebook_test_container_with_log(notebook_test_container):
     yield container
 
 
-def test_notebook(notebook_test_container_with_log, notebook_test_file):
-    _logger.info(f"Running notebook tests for {notebook_test_file}")
+def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook_test_backend):
+    _logger.info(f"Running notebook tests for {notebook_test_file} at {notebook_test_backend}")
     container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = (
         f"{virtual_env}/bin/python"
-        f" -m pytest --setup-show -s --backend=all {notebook_test_file}"
+        f" -m pytest --setup-show -s --backend={notebook_test_backend} {notebook_test_file}"
     )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"

@@ -22,12 +22,14 @@ def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool):
     conf.save(CKey.slc_source, slc_source)
     conf.save(CKey.slc_target_dir, str(_slc_repo_dir()))
 
+
 @pytest.fixture()
-def cleanup_slc_repo_dir():
+def cleanup_slc_repo_dir(backend):
     import shutil
     yield
-    p = Path.cwd() / "script_languages_container" / "script_languages_release"
-    shutil.rmtree(p)
+    if backend == BACKEND_ONPREM:
+        p = Path.cwd() / "script_languages_container" / "script_languages_release"
+        shutil.rmtree(p)
 
 
 def test_script_languages_container_cloning_slc_repo(backend,
