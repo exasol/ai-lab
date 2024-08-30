@@ -18,7 +18,7 @@ from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
 )
-from pytest-exasol-backend import BACKEND_ONPREM, BACKEND_SAAS
+from exasol.pytest_backend import BACKEND_ONPREM, BACKEND_SAAS
 
 
 LOG = logging.getLogger(__name__)
