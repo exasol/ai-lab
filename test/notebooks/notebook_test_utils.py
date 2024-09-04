@@ -143,6 +143,8 @@ def backend_setup(backend,
         secrets.save(CKey.saas_url, saas_host)
         secrets.save(CKey.saas_token, saas_pat)
         secrets.save(CKey.saas_account_id, saas_account_id)
+        # Although we know the database id, we want to test the
+        # case when we don't and have to look up the db name.
         secrets.save(CKey.saas_database_name, database_name)
         yield store_path, store_password
 

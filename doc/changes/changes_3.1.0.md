@@ -1,4 +1,4 @@
-# AI-Lab 4.0.0 released T.B.D.
+# AI-Lab 3.1.0 released T.B.D.
 
 ## Refactoring
 

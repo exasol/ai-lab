@@ -8,6 +8,8 @@ import textwrap
 from exasol.nb_connector.secret_store import Secrets
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 
+# We need to manually import all fixtures that we use, directly or indirectly,
+# since the pytest won't do this for us.
 from notebook_test_utils import (
     backend_setup,
     run_notebook,

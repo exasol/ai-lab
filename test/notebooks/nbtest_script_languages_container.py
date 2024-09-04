@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
+import shutil
 
 import pytest
 
+# We need to manually import all fixtures that we use, directly or indirectly,
+# since the pytest won't do this for us.
 from notebook_test_utils import (backend_setup,
                                  run_notebook)
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
@@ -25,7 +28,6 @@ def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool):
 
 @pytest.fixture()
 def cleanup_slc_repo_dir(backend):
-    import shutil
     yield
     if backend == BACKEND_ONPREM:
         p = Path.cwd() / "script_languages_container" / "script_languages_release"
