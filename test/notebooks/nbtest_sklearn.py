@@ -1,10 +1,9 @@
 import os
-import pytest
 
-from exasol.nb_connector.ai_lab_config import StorageBackend
+# We need to manually import all fixtures that we use, directly or indirectly,
+# since the pytest won't do this for us.
 from notebook_test_utils import (
-    access_to_temp_secret_store,
-    access_to_temp_saas_secret_store,
+    backend_setup,
     notebook_runner,
     set_log_level_for_libraries,
 )
@@ -13,7 +12,6 @@ from notebook_test_utils import (
 set_log_level_for_libraries()
 
 
-@pytest.mark.parametrize('notebook_runner', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_regression(notebook_runner) -> None:
 
     current_dir = os.getcwd()
@@ -30,7 +28,6 @@ def test_regression(notebook_runner) -> None:
         os.chdir(current_dir)
 
 
-@pytest.mark.parametrize('notebook_runner', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_classification(notebook_runner) -> None:
 
     current_dir = os.getcwd()

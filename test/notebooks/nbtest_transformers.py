@@ -2,10 +2,10 @@ import os
 import textwrap
 import pytest
 
-from exasol.nb_connector.ai_lab_config import StorageBackend
+# We need to manually import all fixtures that we use, directly or indirectly,
+# since the pytest won't do this for us.
 from notebook_test_utils import (
-    access_to_temp_secret_store,
-    access_to_temp_saas_secret_store,
+    backend_setup,
     notebook_runner,
     uploading_hack,
     set_log_level_for_libraries,
@@ -27,7 +27,6 @@ set_log_level_for_libraries()
         'zero_shot_classification.ipynb'
     ]
 )
-@pytest.mark.parametrize('notebook_runner', [StorageBackend.onprem, StorageBackend.saas], indirect=True)
 def test_transformers(notebook_runner, uploading_hack, notebook_file) -> None:
 
     running_hack = (

@@ -1,14 +1,16 @@
 import os
 from pathlib import Path
+import shutil
 
 import pytest
 
-from notebook_test_utils import (access_to_temp_secret_store,
-                                 access_to_temp_saas_secret_store,
-                                 run_notebook,
-                                 uploading_hack)
-from exasol.nb_connector.ai_lab_config import AILabConfig as CKey, StorageBackend
+# We need to manually import all fixtures that we use, directly or indirectly,
+# since the pytest won't do this for us.
+from notebook_test_utils import (backend_setup,
+                                 run_notebook)
+from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 from exasol.nb_connector.secret_store import Secrets
+from exasol.pytest_backend import BACKEND_ONPREM
 
 
 def _slc_repo_dir() -> Path:
@@ -23,19 +25,22 @@ def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool):
     conf.save(CKey.slc_source, slc_source)
     conf.save(CKey.slc_target_dir, str(_slc_repo_dir()))
 
+
 @pytest.fixture()
-def cleanup_slc_repo_dir():
-    import shutil
+def cleanup_slc_repo_dir(backend):
     yield
-    p = Path.cwd() / "script_languages_container" / "script_languages_release"
-    shutil.rmtree(p)
+    if backend == BACKEND_ONPREM:
+        p = Path.cwd() / "script_languages_container" / "script_languages_release"
+        shutil.rmtree(p)
 
 
-@pytest.mark.parametrize('access_to_temp_secret_store', [StorageBackend.onprem], indirect=True)
-def test_script_languages_container_cloning_slc_repo(access_to_temp_secret_store,
+def test_script_languages_container_cloning_slc_repo(backend,
+                                                     backend_setup,
                                                      cleanup_slc_repo_dir) -> None:
+    if backend != BACKEND_ONPREM:
+        pytest.skip()
     current_dir = Path.cwd()
-    store_path, store_password = access_to_temp_secret_store
+    store_path, store_password = backend_setup
     store_file = str(store_path)
     try:
         run_notebook('main_config.ipynb', store_file, store_password)
@@ -57,11 +62,13 @@ def _clone_slc_repo():
     repo.submodule_update(recursive=True)
 
 
-@pytest.mark.parametrize('access_to_temp_secret_store', [StorageBackend.onprem], indirect=True)
-def test_script_languages_container_with_existing_slc_repo(access_to_temp_secret_store,
+def test_script_languages_container_with_existing_slc_repo(backend,
+                                                           backend_setup,
                                                            cleanup_slc_repo_dir) -> None:
+    if backend != BACKEND_ONPREM:
+        pytest.skip()
     current_dir = Path.cwd()
-    store_path, store_password = access_to_temp_secret_store
+    store_path, store_password = backend_setup
     store_file = str(store_path)
     try:
         run_notebook('main_config.ipynb', store_file, store_password)
