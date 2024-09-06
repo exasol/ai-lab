@@ -9,6 +9,7 @@ import pytest
 from notebook_test_utils import (backend_setup,
                                  run_notebook)
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
+from exasol.nb_connector.slct_manager import SlctManager
 from exasol.nb_connector.secret_store import Secrets
 from exasol.pytest_backend import BACKEND_ONPREM
 
@@ -17,13 +18,14 @@ def _slc_repo_dir() -> Path:
     return Path.cwd() / "script_languages_release"
 
 
-def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool):
+def _store_slc_config(store_path: Path, store_password: str, clone_repo: bool) -> Secrets:
 
     slc_source = "Clone script languages release repository" if clone_repo else "Use the existing clone"
     conf = Secrets(store_path, store_password)
     conf.connection()
     conf.save(CKey.slc_source, slc_source)
     conf.save(CKey.slc_target_dir, str(_slc_repo_dir()))
+    return conf
 
 
 @pytest.fixture()
@@ -56,12 +58,6 @@ def test_script_languages_container_cloning_slc_repo(backend,
         os.chdir(current_dir)
 
 
-def _clone_slc_repo():
-    from git import Repo
-    repo = Repo.clone_from("https://github.com/exasol/script-languages-release", _slc_repo_dir())
-    repo.submodule_update(recursive=True)
-
-
 def test_script_languages_container_with_existing_slc_repo(backend,
                                                            backend_setup,
                                                            cleanup_slc_repo_dir) -> None:
@@ -75,8 +71,9 @@ def test_script_languages_container_with_existing_slc_repo(backend,
         os.chdir('./script_languages_container')
         slc_repo_path = _slc_repo_dir()
         assert not slc_repo_path.is_dir()
-        _clone_slc_repo()
-        _store_slc_config(store_path, store_password, False)
+        secrets = _store_slc_config(store_path, store_password, False)
+        slct_manager = SlctManager(secrets)
+        slct_manager.clone_slc_repo()
         run_notebook('configure_slc_repository.ipynb', store_file, store_password)
         run_notebook('export_as_is.ipynb', store_file, store_password)
         run_notebook('customize.ipynb', store_file, store_password)
