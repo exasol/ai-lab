@@ -1,4 +1,10 @@
-# AI-Lab 3.1.0 released T.B.D.
+# AI-Lab 3.1.0 released 2024-09-09
+
+Code name: Additional fixes on top of release 3.0.0
+
+## Summary
+
+This release applies additional fixes on top of release 3.0.0.
 
 ## Refactoring
 
