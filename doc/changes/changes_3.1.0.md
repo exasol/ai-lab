@@ -4,7 +4,7 @@ Code name: Additional fixes on top of release 3.0.0
 
 ## Summary
 
-This release applies additional fixes on top of release 3.0.0.
+This release updates jupyterlab to version `4.2.5`, applies some fixes to the Jupyter notebooks.
 
 ## Refactoring
 
