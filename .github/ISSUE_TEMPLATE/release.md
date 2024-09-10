@@ -24,6 +24,10 @@ Always
   * [ ] `user_guide/vm-edition/win-vbox.md`
 * Update version number in developer guide
   * [ ] `testing.md`
+* Replace dependencies to unreleased version (e.g. git dependencies) in files, see instructions in [notebooks.md](https://github.com/exasol/ai-lab/blob/main/doc/developer_guide/notebooks.md):
+  * [ ] [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt)
+  * [ ] [jupyter_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/jupyter_requirements.txt)
+  * [ ] [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml)
 
 Ship the Actual Release
 * [ ] Run release droid `java -jar ~/java/jar/release-droid-*.jar -n ai-lab --goal release`
