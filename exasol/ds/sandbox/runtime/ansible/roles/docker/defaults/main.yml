@@ -3,5 +3,5 @@
 apt_dependencies:
   - apt-transport-https=2.4.5
   - gpg-agent=2.2.27-3ubuntu2.1
-  - ca-certificates_20240203~20.04.1
+  - ca-certificates=20240203~20.04.1
   - software-properties-common=0.99.22.9
