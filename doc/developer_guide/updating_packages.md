@@ -10,7 +10,7 @@ If the update is very new and not yet displayed on packages.ubuntu.com you can u
 
 ```shell
 apt-get update
-apt-search <package>
+apt search <package>
 ```
 
 Maybe installing the command [chdist](https://manpages.ubuntu.com/manpages/xenial/en/man1/chdist.1.html) could also be helpful, as it allows searching for packages and updates in other versions and distributions of ubuntu than the one installed on your local system.
