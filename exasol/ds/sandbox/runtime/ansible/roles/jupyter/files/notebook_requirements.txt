@@ -3,6 +3,7 @@ matplotlib==3.7.4 # required for notebook sklearn
 jupysql==0.10.10 # required for multiple notebooks
 stopwatch.py>=2.0.1 # also required by ITDE
 exasol-notebook-connector==0.3.0
+exasol-integration-test-docker-environment==3.1.0 # experimental
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
 ipyfilechooser==0.6.0 # required for SLC notebooks
 ipywidgets==8.1.1 # enable interactive Javascript widgets in the notebooks
