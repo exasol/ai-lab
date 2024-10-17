@@ -16,6 +16,12 @@ jobs:
      - name: Run shellcheck
        run: ./scripts/build/shellcheck.sh
 
+     - name: Validate Nameserver
+       run: |
+         ping google.com
+         nslookup google.com 8.8.8.8
+         nslookup google.com 1.1.1.1
+
      - name: Setup Python & Poetry Environment
        uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
        with:
