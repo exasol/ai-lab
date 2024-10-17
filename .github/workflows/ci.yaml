@@ -18,10 +18,11 @@ jobs:
 
      - name: Validate Nameserver
        run: |
-         ping -c 3 google.com || true
-         nslookup google.com 8.8.8.8
-         nslookup google.com 1.1.1.1
-         nslookup google.com 208.67.222.222
+         for i in 8.8.8.8 1.1.1.1 208.67.222.222; do
+           echo -e "\nValidating DNS name server $i"
+           ping -c 3 $i || true
+           nslookup google.com $i || true
+         done
 
      - name: Setup Python & Poetry Environment
        uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
