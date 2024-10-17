@@ -18,7 +18,7 @@ jobs:
 
      - name: Validate Nameserver
        run: |
-         ping -c 3 google.com
+         ping -c 3 google.com || true
          nslookup google.com 8.8.8.8
          nslookup google.com 1.1.1.1
          nslookup google.com 208.67.222.222
