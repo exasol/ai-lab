@@ -81,7 +81,7 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = (
         f"{virtual_env}/bin/python"
-        f" -m pytest --setup-show -s --backend={notebook_test_backend} {notebook_test_file}"
+        f" -m pytest --setup-show -s --backend={notebook_test_backend} --itde-nameserver='8.8.8.8' {notebook_test_file}"
     )
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
