@@ -84,7 +84,7 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         f"-m pytest --setup-show -s "
         f"--backend={notebook_test_backend} "
         f"--itde-nameserver='8.8.8.8' "
-        f"--itde-db-mem-size '3 GiB' "
+        f"--itde-db-mem-size '4 GiB' "
         f"{notebook_test_file}"
     )
     environ = os.environ.copy()
