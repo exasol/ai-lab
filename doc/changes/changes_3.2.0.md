@@ -7,3 +7,7 @@ Code name:
 ## Refactorings
 
 * #333: Added project short tag in notebook tests
+
+## Bug Fixes
+
+ - #335: Fixed DNS resolution in ITDE when running jupyter notebook tests
