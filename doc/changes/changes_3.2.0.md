@@ -4,6 +4,9 @@ Code name:
 
 ## Summary
 
+## Refactorings
+
+* #333: Added project short tag in notebook tests
 
 ## Bug Fixes
 
