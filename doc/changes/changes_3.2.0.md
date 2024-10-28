@@ -7,6 +7,7 @@ Code name:
 ## Refactorings
 
 * #333: Added project short tag in notebook tests
+* #339: Improved error reporting when the DockerDB doesn't start properly.
 
 ## Bug Fixes
 
