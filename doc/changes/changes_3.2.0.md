@@ -12,3 +12,4 @@ Code name:
 ## Bug Fixes
 
  - #335: Fixed DNS resolution in ITDE when running jupyter notebook tests
+ - #342: Updated the jupysql dependency to resolve the conflict with prettytable 
