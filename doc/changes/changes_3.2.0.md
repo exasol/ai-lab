@@ -1,8 +1,29 @@
-# AI-Lab 3.2.0 released ????-??-??
+# AI-Lab 3.2.0 released 2025-??-??
 
-Code name:
+Code name: Additional Updates on top of 3.1.0
 
 ## Summary
+
+This release updates dependencies and fixes security vulnerabilities on top of 3.1.0.
+
+Fixed vulnerabilities:
+
+* Vulnerabilities in direct dependency `jinja2` version 3.1.4
+  * [#50](https://github.com/exasol/ai-lab/security/dependabot/#50) Moderate: Jinja has a sandbox breakout through malicious filenames Moderate
+  * [#49](https://github.com/exasol/ai-lab/security/dependabot/#49) Moderate: Jinja has a sandbox breakout through indirect reference to format method Moderate
+* Vulnerabilities in transitive dependency `ansible-core` via `ansible`:
+  * [#44](https://github.com/exasol/ai-lab/security/dependabot/44) Moderate, affects versions < 2.17.6, ansible-core Incorrect Authorization vulnerability Moderate
+  * [#47](https://github.com/exasol/ai-lab/security/dependabot/47) Low, affects versions < 2.17.7: Ansible-Core vulnerable to content protections bypass Low
+* Vulnerabilities in transitive testing dependency `tornado` version 6.4.1 via `pytest-check-links`,  `nbconvert`, `nbclient`, `jupyter-client`:
+  * [#46](https://github.com/exasol/ai-lab/security/dependabot/#46) High: Tornado has an HTTP cookie parsing DoS vulnerability High
+
+Accepted vulnerabilities:
+
+* Vulnerabilities in transitive testing dependency `python-jose` version 3.3.0 via `localstack` as there is no newer version available.
+  * [#31](https://github.com/exasol/ai-lab/security/dependabot/31) Critical: python-jose algorithm confusion with OpenSSH ECDSA keys Critical
+  * [#32](https://github.com/exasol/ai-lab/security/dependabot/#32) Moderate: python-jose denial of service via compressed JWE content Moderate
+* Vulnerabilities in transitive dependency `ansible-core` 2.17.7 version via `ansible` as there is no newer version available.
+  * [#43](https://github.com/exasol/ai-lab/security/dependabot/43) High: Ansible vulnerable to Insertion of Sensitive Information into Log File High
 
 ## Security Issues
 
