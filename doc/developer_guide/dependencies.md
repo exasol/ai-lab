@@ -13,6 +13,7 @@ AI-Lab contains dependencies on multiple levels and specified in multiple places
   * [docker/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml)
   * [roles/jupyter/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/defaults/main.yml)
 * AMI base image, see [exasol/ds/sandbox/lib/config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py)
+* [test_dependencies.txt](https://github.com/exasol/ai-lab/blob/main/test/notebooks/test_dependencies.txt): Dependencies of the notebook tests
 * GitHub Workflows: no actual dependencies
 
 ## Ansible packages

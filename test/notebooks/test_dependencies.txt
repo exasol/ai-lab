@@ -4,3 +4,17 @@ pytest
 testbook
 pytest-check-links
 pytest-exasol-backend
+
+# exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt
+# currently declares dependency exasol-notebook-connector==0.4.0 which in turn
+# depends on script-languages-container-tool 0.19.0.
+#
+# The dependency to exasol-pytest-backend above in turn depends on
+# exasol-integration-test-docker-environment [required: >=3.1.0,<4.0.0] which
+# leads to installing ITDE 3.3.0 which removes module upload_file_to_db.
+#
+# In consequence ./test/notebooks/nbtest_script_languages_container.py fails.
+#
+# The following additional dependency fixes this.
+
+exasol-integration-test-docker-environment==3.2.0
