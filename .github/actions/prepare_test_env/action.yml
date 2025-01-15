@@ -21,12 +21,12 @@ runs:
      shell: bash
 
    - name: Show available disk space
-     run: df -h
      shell: bash
+     run: df -h
 
    - name: Allow unprivileged user namespaces
-     run: |
-       sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+     shell: bash
+     run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
    - name: Setup Python & Poetry Environment
      uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
