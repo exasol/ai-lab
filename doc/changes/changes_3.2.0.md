@@ -4,6 +4,10 @@ Code name:
 
 ## Summary
 
+## Security Issues
+
+* #346: Dependency upgrade
+
 ## Refactorings
 
 * #333: Added project short tag in notebook tests
@@ -12,4 +16,4 @@ Code name:
 ## Bug Fixes
 
  - #335: Fixed DNS resolution in ITDE when running jupyter notebook tests
- - #342: Updated the jupysql dependency to resolve the conflict with prettytable 
+ - #342: Updated the jupysql dependency to resolve the conflict with prettytable
