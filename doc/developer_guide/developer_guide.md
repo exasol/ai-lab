@@ -16,5 +16,6 @@ the virtual image formats.
 6. [Running tests in the CI](ci.md)
 7. [Updating Packages](updating_packages.md)
 8. [Notebooks](notebooks.md)
+9. [Dependencies](dependencies.md)
 
-
+Section [Dependencies](dependencies.md) is dedicated to enumerating all places defining dependencies as the AI-Lab contains dependencies on multiple levels and specified in multiple places.
