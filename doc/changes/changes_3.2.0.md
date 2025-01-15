@@ -1,4 +1,4 @@
-# AI-Lab 3.2.0 released 2025-??-??
+# AI-Lab 3.2.0 released 2025-01-16
 
 Code name: Additional Updates on top of 3.1.0
 
@@ -36,5 +36,5 @@ Accepted vulnerabilities:
 
 ## Bug Fixes
 
- - #335: Fixed DNS resolution in ITDE when running jupyter notebook tests
- - #342: Updated the jupysql dependency to resolve the conflict with prettytable
+* #335: Fixed DNS resolution in ITDE when running jupyter notebook tests
+* #342: Updated the jupysql dependency to resolve the conflict with prettytable

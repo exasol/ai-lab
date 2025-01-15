@@ -40,12 +40,12 @@ Shell function to find all packages in the ansible scripts
 
 ```shell
 function xail-ansible-dependencies() {
-    local DIR=exasol/ds/sandbox/runtime/ansible
+    local DIR=exasol/ds/sandbox/runtime/ansible/roles
     for i in $( find "$DIR" -name "*.yml"); do
-        local hits=$(grep -E "[a-z]+=[0-9]" "$i")
-        if [ -n "$hits" ]; then
-            local LABEL=$(echo $i | sed -e "s|$DIR/roles/||")
-            echo -Ee "\n$LABEL:\n$hits"
+        local DEPS=$(grep -E "[a-z]+=[0-9]" "$i")
+        if [ -n "$DEPS" ]; then
+            local LABEL=$(echo $i | sed -e "s|$DIR/||")
+            echo -e "\n$LABEL:\n$DEPS"
         fi
     done
 }
