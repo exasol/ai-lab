@@ -24,6 +24,10 @@ runs:
      run: df -h
      shell: bash
 
+   - name: Allow unprivileged user namespaces
+     run: |
+       sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
    - name: Setup Python & Poetry Environment
      uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
      with:
