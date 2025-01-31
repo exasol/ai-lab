@@ -6,3 +6,7 @@ exasol-notebook-connector==0.4.2
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
 ipyfilechooser==0.6.0 # required for SLC notebooks
 ipywidgets==8.1.5 # enable interactive Javascript widgets in the notebooks
+
+# Temporary pin for script-language-container-tool.
+# Could be removed on notebook-container dependency fix: https://github.com/exasol/notebook-connector/issues/159
+exasol-script-languages-container-tool<1.0.0
