@@ -18,3 +18,7 @@ pytest-exasol-backend
 # The following additional dependency fixes this.
 
 exasol-integration-test-docker-environment==3.2.0
+
+# Temporary pin for script-language-container-tool.
+# Could be removed on notebook-container dependency fix: https://github.com/exasol/notebook-connector/issues/159
+exasol-script-languages-container-tool<1.0.0
