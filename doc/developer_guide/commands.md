@@ -49,7 +49,7 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 
 Option `--purpose` is required for both commands `setup-s3-bucket` and `setup-s3-bucket-waf` to select the purpose of the s3 bucket. Supported values are
 * `vm` for virtual machine images of the AI-Lab
-* `example-data` for example data to be used in the AI-Lab.
+* `example-data-http` for example data to be used in the AI-Lab and accessed via HTTP.
 
 For all deployment commands:
 * Don't forget to specify CLI option `--aws-profile`.

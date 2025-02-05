@@ -15,11 +15,11 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
     bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
-    example-data.
+    example-data-http.
     """
     S3_BUCKET = CfTemplateSpec(
         cf_stack_name="Ai-Lab-Example-Data-Bucket",
-        template="cloudformation/example-data/s3-bucket.jinja.yaml",
+        template="cloudformation/example-data-http/s3-bucket.jinja.yaml",
         outputs={
             "BucketId": "ExampleDataBucketId",
             "ExportRoleId": "n/a",
@@ -29,7 +29,7 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
     )
     WAF = CfTemplateSpec(
         cf_stack_name="AI-Lab-Example-Data-Bucket-WAF",
-        template="cloudformation/example-data/waf.jinja.yaml",
+        template="cloudformation/example-data-http/waf.jinja.yaml",
         outputs={
             "DownloadACLArn": "AiLabExampleDataDownloadACLArn",
         },
