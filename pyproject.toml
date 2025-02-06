@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exasol-ai-lab"
-version = "3.2.0"
+version = "3.2.1"
 description = "Provide AI-Lab editions."
 packages = [ {include = "exasol"}, ]
 license = "MIT"
