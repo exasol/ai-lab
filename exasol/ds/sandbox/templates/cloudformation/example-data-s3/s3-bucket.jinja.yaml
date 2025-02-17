@@ -1,0 +1,25 @@
+Resources:
+  AiLabExampleS3DataBucket:
+    Type: 'AWS::S3::Bucket'
+    Metadata:
+      Comment: 'Bucket to store example data for the AI-Lab (exposed via S3)'
+    DeletionPolicy: Retain
+    UpdateReplacePolicy : Retain
+  S3CDNBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref AiLabExampleS3DataBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Principal: "*"
+            Resource:
+              - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }/{{path_in_bucket}}/*"
+
+Outputs:
+  {{BucketId}}:
+    Value: !Ref AiLabExampleS3DataBucket
+    Description: ID of the S3 bucket containing the AI-Lab Example Data.

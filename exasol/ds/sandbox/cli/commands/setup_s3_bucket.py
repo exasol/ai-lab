@@ -9,6 +9,7 @@ from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib.cloudformation_templates import (
     VmBucketCfTemplate,
     ExampleDataCfTemplate,
+    ExampleDataS3CfTemplate,
 )
 
 
@@ -19,7 +20,8 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
     '--purpose', required=True,
     type=click.Choice(['vm', 'example-data-http'], case_sensitive=False),
     help="""Purpose of the S3 bucket: vm = AI-Lab virtual machine images,
-    example-data-http = AI-Lab example data accessed via HTTP.""")
+    example-data-http = AI-Lab example data accessed via HTTP.
+    example-data-s3 = AI-Lab example data accessed via S3.""")
 def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
     """
     Command to deploy one of the AI-Lab S3-Buckets for the specified
@@ -34,3 +36,5 @@ def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
         VmBucketCfTemplate(aws).setup(config)
     elif purpose == "example-data-http":
         ExampleDataCfTemplate(aws).setup(config)
+    elif purpose == "example-data-s3":
+        ExampleDataS3CfTemplate(aws).setup(config)
