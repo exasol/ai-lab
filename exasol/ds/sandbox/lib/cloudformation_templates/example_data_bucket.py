@@ -2,6 +2,7 @@ from typing import Optional
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.cloudformation_templates import (
+    CfTemplate,
     CfTemplateSpec,
     S3BucketCfTemplate,
 )
@@ -62,4 +63,4 @@ class ExampleDataS3CfTemplate(S3BucketCfTemplate):
         super().__init__(aws_access, self.S3_BUCKET, self.WAF)
 
     def setup(self, config: ConfigObject) -> None:
-        super(S3BucketCfTemplate).setup()
+        CfTemplate.setup(self)
