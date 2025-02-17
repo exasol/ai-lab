@@ -5,6 +5,7 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
     CfTemplateSpec,
     S3BucketCfTemplate,
 )
+from exasol.ds.sandbox.lib.config import ConfigObject
 
 
 class ExampleDataCfTemplate(S3BucketCfTemplate):
@@ -59,3 +60,6 @@ class ExampleDataS3CfTemplate(S3BucketCfTemplate):
 
     def __init__(self, aws_access: Optional[AwsAccess]):
         super().__init__(aws_access, self.S3_BUCKET, self.WAF)
+
+    def setup(self, config: ConfigObject) -> None:
+        super(S3BucketCfTemplate).setup()
