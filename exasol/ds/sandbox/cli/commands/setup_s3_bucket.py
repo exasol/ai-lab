@@ -18,7 +18,7 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 @add_options(logging_options)
 @click.option(
     '--purpose', required=True,
-    type=click.Choice(['vm', 'example-data-http'], case_sensitive=False),
+    type=click.Choice(['vm', 'example-data-http', 'example-data-s3'], case_sensitive=False),
     help="""Purpose of the S3 bucket: vm = AI-Lab virtual machine images,
     example-data-http = AI-Lab example data accessed via HTTP.
     example-data-s3 = AI-Lab example data accessed via S3.""")
