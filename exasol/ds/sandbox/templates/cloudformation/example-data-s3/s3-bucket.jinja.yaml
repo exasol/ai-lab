@@ -6,6 +6,7 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy : Retain
     Properties:
+      BucketName: ai-lab-example-data-s3
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
         BlockPublicPolicy: false
