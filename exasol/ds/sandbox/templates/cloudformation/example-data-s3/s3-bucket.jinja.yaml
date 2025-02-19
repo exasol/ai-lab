@@ -5,6 +5,12 @@ Resources:
       Comment: 'Bucket to store example data for the AI-Lab (exposed via S3)'
     DeletionPolicy: Retain
     UpdateReplacePolicy : Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
   S3CDNBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
