@@ -17,7 +17,7 @@ Resources:
               - 's3:GetObject'
             Principal: "*"
             Resource:
-              - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }/{{path_in_bucket}}/*"
+              - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }/*"
 
 Outputs:
   {{BucketId}}:
