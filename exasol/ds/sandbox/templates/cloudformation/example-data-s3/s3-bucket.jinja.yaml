@@ -3,8 +3,8 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Metadata:
       Comment: 'Bucket to store example data for the AI-Lab (exposed via S3)'
-    DeletionPolicy: Retain
-    UpdateReplacePolicy : Retain
+#    DeletionPolicy: Retain
+#    UpdateReplacePolicy : Retain
     Properties:
       BucketName: ai-lab-example-data-s3
       PublicAccessBlockConfiguration:
@@ -25,6 +25,84 @@ Resources:
             Principal: "*"
             Resource:
               - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }/*"
+          - Effect: Allow
+            Action:
+              - 's3:ListBucket'
+            Principal: "*"
+            Resource:
+              - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }"
+
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/cloudtrail/${AWS::StackName}"
+      RetentionInDays: 14
+
+  CloudTrailCWLogsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-CloudTrail-CWRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CloudTrailToCloudWatchLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  CloudTrailLogsBucket:
+    Type: AWS::S3::Bucket
+
+  CloudTrailLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CloudTrailLogsBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AWSCloudTrailAclCheck
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !Sub "arn:aws:s3:::${CloudTrailLogsBucket}"
+          - Sid: AWSCloudTrailWrite
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "arn:aws:s3:::${CloudTrailLogsBucket}/AWSLogs/${AWS::AccountId}/*"
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
+
+  CloudTrailTrail:
+    Type: AWS::CloudTrail::Trail
+    Properties:
+      TrailName: !Sub "${AWS::StackName}-Trail"
+      IsLogging: true
+      S3BucketName: !Ref CloudTrailLogsBucket
+      CloudWatchLogsLogGroupArn: !GetAtt CloudWatchLogsGroup.Arn
+      CloudWatchLogsRoleArn: !GetAtt CloudTrailCWLogsRole.Arn
+      # Configure event selectors to capture S3 data events
+      EventSelectors:
+        - DataResources:
+            - Type: "AWS::S3::Object"
+              Values:
+                - !Sub "arn:aws:s3:::${AiLabExampleS3DataBucket}/"
+          IncludeManagementEvents: false
+          ReadWriteType: ReadOnly
 
 Outputs:
   {{BucketId}}:
