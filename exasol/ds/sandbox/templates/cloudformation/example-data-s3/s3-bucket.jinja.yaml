@@ -104,6 +104,29 @@ Resources:
           IncludeManagementEvents: false
           ReadWriteType: ReadOnly
 
+  RequestsMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Ref CloudWatchLogsGroup
+      FilterPattern: "{$.eventVersion = \"*\"}"
+      MetricTransformations:
+        - MetricName: RequestCount
+          MetricNamespace: "S3/ai-lab/example-data-bucket-s3"
+          MetricValue: "1"
+
+  RequestsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: "Alarm if request count exceeds threshold"
+      Namespace: "S3/ai-lab/example-data-bucket-s3"
+      MetricName: "RequestCount"
+      Statistic: Sum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 10000
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions: [ ]  # Add an SNS topic ARN if you want notifications
+
 Outputs:
   {{BucketId}}:
     Value: !Ref AiLabExampleS3DataBucket
