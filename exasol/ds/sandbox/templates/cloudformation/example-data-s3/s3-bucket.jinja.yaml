@@ -111,7 +111,7 @@ Resources:
       FilterPattern: "{$.eventVersion = \"*\"}"
       MetricTransformations:
         - MetricName: RequestCount
-          MetricNamespace: "S3/ai-lab/example-data-bucket-s3"
+          MetricNamespace: !Sub "S3/ai-lab/${AiLabExampleS3DataBucket}"
           MetricValue: "1"
           DefaultValue: 0
 
@@ -137,6 +137,14 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "*"
+        - PolicyName: S3BucketPublicChange
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutBucketPublicAccessBlock
+                Resource: !Sub "${AiLabExampleS3DataBucket}"
 
   LambdaFunction:
     Type: AWS::Lambda::Function
@@ -149,11 +157,24 @@ Resources:
         ZipFile: |
           import json
           import boto3
+          s3 = boto3.client("s3")
+          
           def lambda_handler(event, context):
-              print("Alarm triggered:", json.dumps(event))
+              bucket_name = "ai-lab-example-data-s3"
+              # Block all public access
+              s3.put_public_access_block(
+                  Bucket=bucket_name,
+                  PublicAccessBlockConfiguration={
+                      "BlockPublicAcls": True,
+                      "IgnorePublicAcls": True,
+                      "BlockPublicPolicy": True,
+                      "RestrictPublicBuckets": True
+                  }
+              )
+              print(f"Public access disabled for bucket {bucket_name}")
               return {
-                  'statusCode': 200,
-                  'body': json.dumps('Alarm processed successfully')
+                  "statusCode": 200,
+                  "body": f"Bucket {bucket_name} is now restricted due to high request volume."
               }
 
   LambdaInvokePermission:
@@ -168,7 +189,7 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: "Alarm if request count exceeds threshold"
-      Namespace: "S3/ai-lab/example-data-bucket-s3"
+      Namespace: !Sub "S3/ai-lab/${AiLabExampleS3DataBucket}"
       MetricName: "RequestCount"
       Statistic: Sum
       Period: 3600
