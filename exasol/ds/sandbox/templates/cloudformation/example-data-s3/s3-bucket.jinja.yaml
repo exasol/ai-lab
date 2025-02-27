@@ -113,6 +113,56 @@ Resources:
         - MetricName: RequestCount
           MetricNamespace: "S3/ai-lab/example-data-bucket-s3"
           MetricValue: "1"
+          DefaultValue: 0
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-LambdaExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ "lambda.amazonaws.com" ]
+            Action: [ "sts:AssumeRole" ]
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-blocker-lambda"
+      Runtime: python3.13
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          def lambda_handler(event, context):
+              print("Alarm triggered:", json.dumps(event))
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Alarm processed successfully')
+              }
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref LambdaFunction
+      Principal: "cloudwatch.amazonaws.com"
+      SourceArn: !Sub "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:*"
 
   RequestsAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -125,7 +175,8 @@ Resources:
       EvaluationPeriods: 1
       Threshold: 10000
       ComparisonOperator: GreaterThanThreshold
-      AlarmActions: [ ]  # Add an SNS topic ARN if you want notifications
+      AlarmActions:
+        - !GetAtt LambdaFunction.Arn
 
 Outputs:
   {{BucketId}}:
