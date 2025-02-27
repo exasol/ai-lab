@@ -161,7 +161,7 @@ Resources:
     Properties:
       Action: "lambda:InvokeFunction"
       FunctionName: !Ref LambdaFunction
-      Principal: "cloudwatch.amazonaws.com"
+      Principal: "lambda.alarms.cloudwatch.amazonaws.com"
       SourceArn: !Sub "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:*"
 
   RequestsAlarm:
