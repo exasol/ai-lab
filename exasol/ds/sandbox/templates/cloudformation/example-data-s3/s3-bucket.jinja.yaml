@@ -144,7 +144,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:PutBucketPublicAccessBlock
-                Resource: !Sub "${AiLabExampleS3DataBucket}"
+                Resource: !Sub "arn:aws:s3:::${AiLabExampleS3DataBucket}"
 
   LambdaFunction:
     Type: AWS::Lambda::Function

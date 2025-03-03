@@ -14,7 +14,7 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 LOG = get_status_logger(LogType.S3_BUCKETS)
 
 
-class S3BucketCfTemplate(CfTemplate):
+class S3BucketWithWAFCfTemplate(CfTemplate):
     """
     Template for a Cloudformation stack for an AWS S3 bucket.
     """

@@ -4,12 +4,12 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.cloudformation_templates import (
     CfTemplate,
     CfTemplateSpec,
-    S3BucketCfTemplate,
+    S3BucketWithWAFCfTemplate,
 )
 from exasol.ds.sandbox.lib.config import ConfigObject
 
 
-class ExampleDataCfTemplate(S3BucketCfTemplate):
+class ExampleDataCfTemplate(S3BucketWithWAFCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
     bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
@@ -37,7 +37,7 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
         super().__init__(aws_access, self.S3_BUCKET, self.WAF)
 
 
-class ExampleDataS3CfTemplate(S3BucketCfTemplate):
+class ExampleDataS3CfTemplate(S3BucketWithWAFCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
     bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
