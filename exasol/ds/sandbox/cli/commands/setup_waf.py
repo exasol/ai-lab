@@ -21,21 +21,21 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
     help="The allowed IP address for which CAPTCHA will not be applied.")
 @click.option(
     '--purpose', required=True,
-    type=click.Choice(['vm', 'example-data'], case_sensitive=False, ),
+    type=click.Choice(['vm', 'example-data-http'], case_sensitive=False, ),
     help="""Purpose of the S3 bucket behind the WAF: vm = AI-Lab virtual
-    machine images, example-data = AI-Lab example data.""")
+    machine images, example-data-http = AI-Lab example data.""")
 def setup_waf(aws_profile: str, allowed_ip: str, log_level: str, purpose: str):
     """
     Command to deploy one of the AI-Lab Web Application Firewalls (WAFs)
     for S3 buckets. Needs to run before deploying the S3 bucket itself.
     PURPOSE:\n
     * vm: WAF for S3 bucket for virtual machine images\n
-    * example-data: WAF for S3 bucket for Example-Data
+    * example-data-http: WAF for S3 bucket for Example-Data
     """
     set_log_level(log_level)
     aws = AwsAccess(aws_profile)
     config = default_config_object
     if purpose == "vm":
         VmBucketCfTemplate(aws).waf(config).setup(allowed_ip)
-    elif purpose == "example-data":
+    elif purpose == "example-data-http":
         ExampleDataCfTemplate(aws).waf(config).setup()
