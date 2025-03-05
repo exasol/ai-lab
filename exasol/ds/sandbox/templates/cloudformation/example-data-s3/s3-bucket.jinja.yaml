@@ -153,9 +153,15 @@ Resources:
       Runtime: python3.13
       Handler: index.lambda_handler
       Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref AiLabExampleS3DataBucket
       Code:
         ZipFile: |
-          {% include 'lambda.py' %}
+          {%- macro get_lambda() -%}
+          {%- include 'cloudformation/example-data-s3/lambda.py' -%}
+          {%- endmacro -%}
+          {{ get_lambda() | indent(10) }}
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
