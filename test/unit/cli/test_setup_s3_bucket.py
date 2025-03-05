@@ -29,5 +29,5 @@ def test_vm_bucket(cli):
 
 def test_example_data_bucket(cli):
     with patch.object(ExampleDataCfTemplate, "setup") as setup:
-        cli.run("--purpose", "example-data")
+        cli.run("--purpose", "example-data-http")
     assert cli.succeeded and setup.call_count == 1

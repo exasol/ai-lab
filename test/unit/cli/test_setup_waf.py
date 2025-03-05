@@ -31,11 +31,11 @@ def test_vm_bucket(cli):
 
 def test_example_data_bucket(cli):
     with patch.object(ExampleDataCfTemplate, "waf") as waf:
-        cli.run("--purpose", "example-data")
+        cli.run("--purpose", "example-data-http")
     assert cli.succeeded and waf.call_count == 1
 
 
-@pytest.mark.parametrize("purpose", ("vm", "example-data"))
+@pytest.mark.parametrize("purpose", ("vm", "example-data-http"))
 def test_waf_setup(cli, purpose):
     with patch.object(WafCfTemplate, "setup") as setup:
         cli.run("--purpose", purpose, "--allowed-ip", "1.2.3.4")

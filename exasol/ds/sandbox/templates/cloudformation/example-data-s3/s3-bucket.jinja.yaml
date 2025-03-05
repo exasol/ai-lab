@@ -1,0 +1,191 @@
+Resources:
+  AiLabExampleS3DataBucket:
+    Type: 'AWS::S3::Bucket'
+    Metadata:
+      Comment: 'Bucket to store example data for the AI-Lab (exposed via S3)'
+#    DeletionPolicy: Retain
+#    UpdateReplacePolicy : Retain
+    Properties:
+      BucketName: ai-lab-example-data-s3
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+  S3CDNBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref AiLabExampleS3DataBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Principal: "*"
+            Resource:
+              - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }/*"
+          - Effect: Allow
+            Action:
+              - 's3:ListBucket'
+            Principal: "*"
+            Resource:
+              - !Sub "arn:aws:s3:::${ AiLabExampleS3DataBucket }"
+
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/cloudtrail/${AWS::StackName}"
+      RetentionInDays: 14
+
+  CloudTrailCWLogsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-CloudTrail-CWRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CloudTrailToCloudWatchLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  CloudTrailLogsBucket:
+    Type: AWS::S3::Bucket
+
+  CloudTrailLogsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CloudTrailLogsBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AWSCloudTrailAclCheck
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !Sub "arn:aws:s3:::${CloudTrailLogsBucket}"
+          - Sid: AWSCloudTrailWrite
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "arn:aws:s3:::${CloudTrailLogsBucket}/AWSLogs/${AWS::AccountId}/*"
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
+
+  CloudTrailTrail:
+    Type: AWS::CloudTrail::Trail
+    Properties:
+      TrailName: !Sub "${AWS::StackName}-Trail"
+      IsLogging: true
+      S3BucketName: !Ref CloudTrailLogsBucket
+      CloudWatchLogsLogGroupArn: !GetAtt CloudWatchLogsGroup.Arn
+      CloudWatchLogsRoleArn: !GetAtt CloudTrailCWLogsRole.Arn
+      # Configure event selectors to capture S3 data events
+      EventSelectors:
+        - DataResources:
+            - Type: "AWS::S3::Object"
+              Values:
+                - !Sub "arn:aws:s3:::${AiLabExampleS3DataBucket}/"
+          IncludeManagementEvents: false
+          ReadWriteType: ReadOnly
+
+  RequestsMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Ref CloudWatchLogsGroup
+      FilterPattern: "{$.eventVersion = \"*\"}"
+      MetricTransformations:
+        - MetricName: RequestCount
+          MetricNamespace: !Sub "S3/ai-lab/${AiLabExampleS3DataBucket}"
+          MetricValue: "1"
+          DefaultValue: 0
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-LambdaExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [ "lambda.amazonaws.com" ]
+            Action: [ "sts:AssumeRole" ]
+      Policies:
+        - PolicyName: LambdaBasicExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+        - PolicyName: S3BucketPublicChange
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutBucketPublicAccessBlock
+                Resource: !Sub "arn:aws:s3:::${AiLabExampleS3DataBucket}"
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-blocker-lambda"
+      Runtime: python3.13
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref AiLabExampleS3DataBucket
+      Code:
+        ZipFile: |
+          {%- macro get_lambda() -%}
+          {%- include 'cloudformation/example-data-s3/lambda.py' -%}
+          {%- endmacro -%}
+          {{ get_lambda() | indent(10) }}
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref LambdaFunction
+      Principal: "lambda.alarms.cloudwatch.amazonaws.com"
+      SourceArn: !Sub "arn:aws:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:*"
+
+  RequestsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: "Alarm if request count exceeds threshold"
+      Namespace: !Sub "S3/ai-lab/${AiLabExampleS3DataBucket}"
+      MetricName: "RequestCount"
+      Statistic: Sum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 10000
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !GetAtt LambdaFunction.Arn
+
+Outputs:
+  {{BucketId}}:
+    Value: !Ref AiLabExampleS3DataBucket
+    Description: ID of the S3 bucket containing the AI-Lab Example Data.
