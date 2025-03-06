@@ -27,11 +27,14 @@ VM_BUCKET_OUTPUTS = {
     "CfDistributionId": TEST_CLOUDFRONT_ID,
     "CfDistributionDomainName": TEST_CLOUDFRONT_DOMAIN_NAME,
 }
-EXAMPLE_DATA_BUCKET_OUTPUTS = {
+EXAMPLE_DATA_BUCKET_HTTP_OUTPUTS = {
     "ExampleDataBucketId": TEST_BUCKET_ID,
     "ExportRoleId": TEST_ROLE_ID,
     "CfDistributionId": TEST_CLOUDFRONT_ID,
     "CfDistributionDomainName": TEST_CLOUDFRONT_DOMAIN_NAME,
+}
+EXAMPLE_DATA_BUCKET_S3_OUTPUTS = {
+    "ExampleDataBucketId": TEST_BUCKET_ID,
 }
 VM_BUCKET_WAF_OUTPUTS = { 'VMDownloadACLArn': TEST_ACL_ARN }
 EXAMPLE_DATA_WAF_OUTPUTS = { 'AiLabExampleDataDownloadACLArn': TEST_ACL_ARN }

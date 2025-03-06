@@ -7,6 +7,7 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.cloudformation_templates import (
     VmBucketCfTemplate,
     ExampleDataCfTemplate,
+    ExampleDataS3CfTemplate,
 )
 from test.aws.mock_data import (
     get_waf_cloudformation_mock_data,
@@ -15,7 +16,8 @@ from test.aws.mock_data import (
     VM_BUCKET_OUTPUTS,
     VM_BUCKET_WAF_OUTPUTS,
     EXAMPLE_DATA_WAF_OUTPUTS,
-    EXAMPLE_DATA_BUCKET_OUTPUTS,
+    EXAMPLE_DATA_BUCKET_HTTP_OUTPUTS,
+    EXAMPLE_DATA_BUCKET_S3_OUTPUTS,
 )
 from test.mock_cast import mock_cast
 
@@ -30,7 +32,8 @@ def cf_template_testee(request):
     "cf_template_testee, s3_outputs, waf_outputs",
      [
          (VmBucketCfTemplate, VM_BUCKET_OUTPUTS, VM_BUCKET_WAF_OUTPUTS),
-         (ExampleDataCfTemplate, EXAMPLE_DATA_BUCKET_OUTPUTS, EXAMPLE_DATA_WAF_OUTPUTS),
+         (ExampleDataCfTemplate, EXAMPLE_DATA_BUCKET_HTTP_OUTPUTS, EXAMPLE_DATA_WAF_OUTPUTS),
+         (ExampleDataS3CfTemplate, EXAMPLE_DATA_BUCKET_S3_OUTPUTS, None),
      ]
 )
 def test_find_bucket_success(test_config, cf_template_testee, s3_outputs, waf_outputs):
@@ -41,9 +44,13 @@ def test_find_bucket_success(test_config, cf_template_testee, s3_outputs, waf_ou
     testee = cf_template_testee(aws)
 
     bucket = cf_stack_mock(testee.stack_name, s3_outputs)
-    waf = cf_stack_mock(testee.waf(test_config).stack_name, waf_outputs)
+    if waf_outputs is None:
+        return_value = bucket
+    else:
+        waf = cf_stack_mock(testee.waf(test_config).stack_name, waf_outputs)
+        return_value = bucket + waf
 
-    mock_cast(aws.describe_stacks).return_value = bucket + waf
+    mock_cast(aws.describe_stacks).return_value = return_value
     mock_cast(aws.instantiate_for_region).return_value = aws
     testee.setup(test_config)
     mock_cast(aws.upload_cloudformation_stack).assert_called_once()
