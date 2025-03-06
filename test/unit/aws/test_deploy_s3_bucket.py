@@ -22,7 +22,7 @@ from test.aws.mock_data import (
 from test.mock_cast import mock_cast
 
 
-@pytest.fixture(params=(VmBucketCfTemplate, ExampleDataCfTemplate))
+@pytest.fixture(params=(VmBucketCfTemplate, ExampleDataCfTemplate, ExampleDataS3CfTemplate))
 def cf_template_testee(request):
     return request.param
 

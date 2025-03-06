@@ -5,6 +5,7 @@ from unittest.mock import patch
 from exasol.ds.sandbox.lib.cloudformation_templates import (
     VmBucketCfTemplate,
     ExampleDataCfTemplate,
+    ExampleDataS3CfTemplate,
 )
 
 
@@ -27,7 +28,13 @@ def test_vm_bucket(cli):
     assert cli.succeeded and setup.call_count == 1
 
 
-def test_example_data_bucket(cli):
+def test_example_data_bucket_http(cli):
     with patch.object(ExampleDataCfTemplate, "setup") as setup:
         cli.run("--purpose", "example-data-http")
+    assert cli.succeeded and setup.call_count == 1
+
+
+def test_example_data_bucket_s3(cli):
+    with patch.object(ExampleDataS3CfTemplate, "setup") as setup:
+        cli.run("--purpose", "example-data-s3")
     assert cli.succeeded and setup.call_count == 1
