@@ -6,12 +6,12 @@ from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.cloudformation_templates import (
     CfTemplateSpec,
-    S3BucketCfTemplate,
+    S3BucketWithWAFCfTemplate,
     WafCfTemplate,
 )
 
 
-class VmBucketCfTemplate(S3BucketCfTemplate):
+class VmBucketCfTemplate(S3BucketWithWAFCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
     bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab

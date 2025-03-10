@@ -1,4 +1,4 @@
 ---
 
 apt_dependencies:
-  - network-manager=1.36.6-0ubuntu2
+  - network-manager=1.36.6-0ubuntu2.1

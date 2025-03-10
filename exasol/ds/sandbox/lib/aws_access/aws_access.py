@@ -115,7 +115,8 @@ class AwsAccess(object):
             cfn_deployer = Deployer(cloudformation_client=cloud_client)
             result = cfn_deployer.create_and_wait_for_changeset(stack_name=stack_name, cfn_template=yml,
                                                                 parameter_values=[],
-                                                                capabilities=("CAPABILITY_IAM",), role_arn=None,
+                                                                capabilities=("CAPABILITY_IAM","CAPABILITY_NAMED_IAM"),
+                                                                role_arn=None,
                                                                 notification_arns=None, tags=tags)
         except Exception as e:
             LOG.error(f"Error creating changeset for cloud formation template: {e}")
