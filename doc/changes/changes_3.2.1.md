@@ -10,6 +10,7 @@ the structured and semi-structured data from S3 buckets.
 ## Features
 
 * #344: S3 Virtual Schema installation and configuration
+* #354: Added initialisation notebook for the Text AI.
 
 ## Refactorings
 

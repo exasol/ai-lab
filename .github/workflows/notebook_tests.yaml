@@ -44,4 +44,6 @@ jobs:
           NBTEST_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           NBTEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
           NBTEST_AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          NBTEST_ZIP_URL: ${{ vars.ZIP_PASSWORD }}
+          NBTEST_ZIP_PASSWORD: ${{ secrets.ZIP_PASSWORD }}
           PROJECT_SHORT_TAG: XAIL-NB
