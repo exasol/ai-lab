@@ -20,8 +20,8 @@ def _store_pre_release_access(store_path: Path, store_password: str) -> None:
 
     conf = Secrets(store_path, store_password)
     conf.connection()
-    conf.save(CKey.text_ai_pre_release_url, os.environ["NBTEST_ZIP_URL"])
-    conf.save(CKey.text_ai_zip_password, os.environ["NBTEST_ZIP_PASSWORD"])
+    conf.save(CKey.text_ai_pre_release_url, os.environ["NBTEST_TXAIE_ZIP_URL"])
+    conf.save(CKey.text_ai_zip_password, os.environ["NBTEST_TXAIE_ZIP_PASSWORD"])
 
 
 def test_text_ai(notebook_runner, uploading_hack) -> None:
