@@ -6,7 +6,7 @@ pytest-check-links
 pytest-exasol-backend
 
 # exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt
-# currently declares dependency exasol-notebook-connector==0.4.0 which in turn
+# currently declares dependency exasol-notebook-connector==0.5.0 which in turn
 # depends on script-languages-container-tool 0.19.0.
 #
 # The dependency to exasol-pytest-backend above in turn depends on
