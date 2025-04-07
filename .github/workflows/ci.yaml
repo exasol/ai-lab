@@ -6,7 +6,7 @@ on:
 jobs:
   run-unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
      - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
   run-integration-tests:
     name: Integration Tests
     environment: AWS_CI_TESTS
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: run-unit-tests
 
     steps:
@@ -60,7 +60,7 @@ jobs:
 
   approval-for-notebook-tests:
     name: Run Jupyter Notebook Tests?
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Detect Running Notebook Tests
         run: true
@@ -74,7 +74,7 @@ jobs:
 
   gate-2:
     name: Gate 2 - Allow Merge
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [ run-unit-tests, run-integration-tests, run-notebook-tests ]
     steps:
       - name: Branch Protection

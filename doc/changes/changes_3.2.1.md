@@ -13,5 +13,7 @@ the structured and semi-structured data from S3 buckets.
 
 ## Refactorings
 
+* #358: Switched GitHub runners to ubuntu-24.04
+
 ## Bug Fixes
 
