@@ -23,6 +23,6 @@ phases:
         - echo DSS_RUN_CI_TEST is "$DSS_RUN_CI_TEST" #supposed to be true
   build:
       commands: >
-        poetry run python3 -m pytest
+        poetry run -- python3 -m pytest
         -s -o log_cli=true -o log_cli_level=INFO
         test/codebuild/test_ci*.py

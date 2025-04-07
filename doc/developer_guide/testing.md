@@ -10,7 +10,7 @@ To get test results faster, you can use an existing Docker image. You can create
 
 Sample usage of the command `create-docker-image`:
 ```shell
-poetry run exasol/ds/sandbox/main.py \
+poetry run -- exasol/ds/sandbox/main.py \
        create-docker-image \
        --version 9.9.9 \
        --log-level info
@@ -19,7 +19,7 @@ poetry run exasol/ds/sandbox/main.py \
 To use an existing docker image in the tests in `integration/test_create_dss_docker_image.py`, simply add the CLI option `--dss-docker-image` when calling `pytest`:
 
 ```shell
-poetry run pytest --dss-docker-image exasol/ai-lab:3.1.0
+poetry run -- pytest --dss-docker-image exasol/ai-lab:3.1.0
 ```
 
 ## Tests for Jupyter Notebooks
@@ -42,7 +42,7 @@ You can speed up the notebook tests using the [same strategy](#speeding-up-docke
 The CLI option to keep the image is `--keep-docker-image-notebook-test`, the option for using an existing Docker image for executing the notebook tests is `--docker-image-notebook-test`.
 
 ```shell
-poetry run pytest --docker-image-notebook-test <name:version>
+poetry run -- pytest --docker-image-notebook-test <name:version>
 ```
 
 ## Executing Tests Involving AWS Resources
@@ -70,7 +70,7 @@ After that, you can set an environment variable and execute the tests involving 
 
 ```shell
 export AWS_PROFILE=dss_aws_tests_mfa
-poetry run pytest test/test_deploy_codebuild.py
+poetry run -- pytest test/test_deploy_codebuild.py
 ```
 
 ## Executing Tests Involving Ansible
@@ -78,5 +78,5 @@ poetry run pytest test/test_deploy_codebuild.py
 To make pytest display Ansible log messages, please use:
 
 ```shell
-poetry run pytest -s -o log_cli=true -o log_cli_level=INFO
+poetry run -- pytest -s -o log_cli=true -o log_cli_level=INFO
 ```

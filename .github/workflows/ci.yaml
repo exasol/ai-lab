@@ -23,11 +23,11 @@ jobs:
          poetry-version: '1.8.5'
 
      - name: Check Version Number
-       run: poetry run python3 -u "./scripts/build/check_release.py"
+       run: poetry run -- python3 -u "./scripts/build/check_release.py"
 
      - name: Run Unit Tests
        run: >
-         poetry run pytest
+         poetry run -- pytest
          --capture=no
          --override-ini=log_cli=true
          --override-ini=log_cli_level=INFO
@@ -48,7 +48,7 @@ jobs:
 
       - name: Run Integration Tests
         run: >
-          poetry run pytest
+          poetry run -- pytest
           --capture=no
           --override-ini=log_cli=true
           --override-ini=log_cli_level=INFO

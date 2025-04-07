@@ -30,7 +30,7 @@ jobs:
 
       - name: Run notebook tests
         run: |
-          poetry run pytest \
+          poetry run -- pytest \
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \

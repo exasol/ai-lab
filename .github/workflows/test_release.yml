@@ -22,7 +22,7 @@ jobs:
         poetry-version: '1.8.5'
 
     - name: Start test release
-      run: poetry run python3 -m exasol.ds.sandbox.main start-test-release-build --release-title  "${{ github.event.inputs.release_title }}" --branch "$GITHUB_REF"
+      run: poetry run -- python3 -m exasol.ds.sandbox.main start-test-release-build --release-title  "${{ github.event.inputs.release_title }}" --branch "$GITHUB_REF"
       env: # Set the secret as an env variable
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}

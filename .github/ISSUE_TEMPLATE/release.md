@@ -10,7 +10,7 @@ assignees: ''
 * [ ] Adjust version number in file `pyproject.toml`
 
 If you decided to change the version number then
-* [ ] Run `poetry run version-check <path/version.py> --fix` (only when using PTB)
+* [ ] Run `poetry run -- version-check <path/version.py> --fix` (only when using PTB)
 * [ ] Rename latest file `doc/changes/changes_*.md` accordingly
 * [ ] Update reference in file `doc/changes/changelog.md`
 * [ ] Update version number in latest file `doc/changes/changes_*.md`
