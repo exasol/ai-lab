@@ -14,9 +14,9 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 LOG = get_status_logger(LogType.S3_BUCKETS)
 
 
-class S3BucketCfTemplate(CfTemplate):
+class S3BucketWithWAFCfTemplate(CfTemplate):
     """
-    Template for a Cloudformation stack for an AWS S3 bucket.
+    Template for a Cloudformation stack for an AWS S3 bucket with WAF spec.
     """
     def __init__(
             self,
@@ -48,3 +48,22 @@ class S3BucketCfTemplate(CfTemplate):
     @property
     def import_role(self) -> str:
         return self.stack_output("ExportRoleId")
+
+
+class S3BucketCfTemplate(CfTemplate):
+    """
+    Template for a Cloudformation stack for an AWS S3 bucket.
+    """
+    def __init__(
+            self,
+            aws_access: Optional[AwsAccess],
+            bucket_spec: CfTemplateSpec):
+        super().__init__(aws_access, bucket_spec)
+
+    def setup(self, config: ConfigObject) -> None:
+        super().setup()
+        LOG.info(f"Deployed cloudformation stack {self.stack_name}")
+
+    @property
+    def id(self) -> str:
+        return self.stack_output("BucketId")

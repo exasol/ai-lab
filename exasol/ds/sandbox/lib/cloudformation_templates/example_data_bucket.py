@@ -1,25 +1,24 @@
 from typing import Optional
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.config import ConfigObject
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.cloudformation_templates import (
+    CfTemplate,
     CfTemplateSpec,
+    S3BucketWithWAFCfTemplate,
     S3BucketCfTemplate,
-    WafCfTemplate,
 )
+from exasol.ds.sandbox.lib.config import ConfigObject
 
 
-class ExampleDataCfTemplate(S3BucketCfTemplate):
+class ExampleDataCfTemplate(S3BucketWithWAFCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
     bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
-    example-data.
+    example-data-http.
     """
     S3_BUCKET = CfTemplateSpec(
         cf_stack_name="Ai-Lab-Example-Data-Bucket",
-        template="cloudformation/example-data/s3-bucket.jinja.yaml",
+        template="cloudformation/example-data-http/s3-bucket.jinja.yaml",
         outputs={
             "BucketId": "ExampleDataBucketId",
             "ExportRoleId": "n/a",
@@ -29,7 +28,7 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
     )
     WAF = CfTemplateSpec(
         cf_stack_name="AI-Lab-Example-Data-Bucket-WAF",
-        template="cloudformation/example-data/waf.jinja.yaml",
+        template="cloudformation/example-data-http/waf.jinja.yaml",
         outputs={
             "DownloadACLArn": "AiLabExampleDataDownloadACLArn",
         },
@@ -37,3 +36,25 @@ class ExampleDataCfTemplate(S3BucketCfTemplate):
 
     def __init__(self, aws_access: Optional[AwsAccess]):
         super().__init__(aws_access, self.S3_BUCKET, self.WAF)
+
+
+class ExampleDataS3CfTemplate(S3BucketCfTemplate):
+    """
+    Enables to instantiate templates for cloudformation stacks for an S3
+    bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
+    example-data-s3.
+    """
+    S3_BUCKET = CfTemplateSpec(
+        cf_stack_name="Ai-Lab-Example-Data-Bucket-S3",
+        template="cloudformation/example-data-s3/s3-bucket.jinja.yaml",
+        outputs={
+            "BucketId": "ExampleDataBucketId",
+            "CfDistributionId": "CfDistributionId",
+        },
+    )
+
+    def __init__(self, aws_access: Optional[AwsAccess]):
+        super().__init__(aws_access, self.S3_BUCKET)
+
+    def setup(self, config: ConfigObject) -> None:
+        CfTemplate.setup(self)
