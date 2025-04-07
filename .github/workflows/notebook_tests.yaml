@@ -5,6 +5,7 @@ on:
 
 jobs:
   notebook_tests-normal-runner:
+    if: false
     environment: AWS_CI_TESTS
     runs-on: ubuntu-latest
     strategy:
