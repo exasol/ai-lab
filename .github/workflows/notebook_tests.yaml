@@ -46,7 +46,7 @@ jobs:
           NBTEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
           NBTEST_AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
           NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
-          NBTEST_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
+          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
           PROJECT_SHORT_TAG: XAIL-NB
 
   notebook_tests-large-runner:
@@ -77,5 +77,5 @@ jobs:
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
-          NBTEST_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
+          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
           PROJECT_SHORT_TAG: XAIL-NB
