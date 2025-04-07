@@ -17,4 +17,4 @@ pytest-exasol-backend
 #
 # The following additional dependency fixes this.
 
-exasol-integration-test-docker-environment==3.2.0
+exasol-integration-test-docker-environment==3.4.0
