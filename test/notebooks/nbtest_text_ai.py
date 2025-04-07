@@ -24,7 +24,7 @@ def _store_pre_release_access(store_path: Path, store_password: str) -> None:
     conf.save(CKey.text_ai_zip_password, os.environ["NBTEST_TXAIE_ZIP_PASSWORD"])
 
 
-def test_text_ai(notebook_runner, uploading_hack) -> None:
+def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
 
     store_path, store_password = backend_setup
     _store_pre_release_access(store_path, store_password)
