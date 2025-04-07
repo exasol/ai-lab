@@ -32,6 +32,7 @@ def notebook_test_dockerfile_content(dss_docker_image) -> str:
         WORKDIR $NOTEBOOK_FOLDER_INITIAL
         RUN sudo "$VIRTUAL_ENV/bin/python3" -m pip install -r test_dependencies.txt
         RUN sudo chown -R jupyter:jupyter "$VIRTUAL_ENV"
+        RUN sudo apt install unzip
         """
     )
 
