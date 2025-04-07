@@ -18,7 +18,7 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
         with:
           python-version: "3.10"
-          poetry-version: '1.8.2'
+          poetry-version: '1.8.5'
       - name: Build Release
         run: poetry run python3 -u "./scripts/build/check_release.py"
 
@@ -33,7 +33,7 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
         with:
           python-version: "3.10"
-          poetry-version: '1.8.2'
+          poetry-version: '1.8.5'
       - name: Build Release
         run: poetry run python3 -m exasol.ds.sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
         env: # Set the secret as an env variable
