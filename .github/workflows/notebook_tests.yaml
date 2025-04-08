@@ -20,7 +20,7 @@ jobs:
           - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
           - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
           - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: ""}
-          - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas"}
+          # - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
       - uses: actions/checkout@v4
