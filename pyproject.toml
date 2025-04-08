@@ -1,30 +1,31 @@
-[tool.poetry]
+[project]
 name = "exasol-ai-lab"
 version = "3.2.1"
 description = "Provide AI-Lab editions."
-packages = [ {include = "exasol"}, ]
-license = "MIT"
 authors = [
-    "Torsten Kilias <torsten.kilias@exasol.com>",
-    "Mikhail Beck <mikhail.beck@exasol.com>",
-    "Christoph Kuhnke <christoph.kuhnke@exasol.com>",
-    "Maxim Lapan <maxim.lapan@exasol.com>",
+    {name="Torsten Kilias", email="torsten.kilias@exasol.com"},
+    {name="Mikhail Beck", email="mikhail.beck@exasol.com"},
+    {name="Christoph Kuhnke", email="christoph.kuhnke@exasol.com"},
+    {name="Maxim Lapan", email="maxim.lapan@exasol.com"},
 ]
+readme = "README.md"
+license = "MIT"
+dynamic = ["classifiers"]
+
+[project.urls]
+Homepage = "https://github.com/exasol/ai-lab"
+Documentation = "https://github.io/exasol/ai-lab"
+Source = "https://github.io/exasol/ai-lab"
+Issues = "https://github.io/exasol/ai-lab/issues"
+
+[tool.poetry]
+packages = [ {include = "exasol"}, ]
 classifiers = [
    "Programming Language :: Python :: 3",
    "Development Status :: 3 - Alpha",
    "Framework :: Jupyter :: JupyterLab :: 3",
    "License :: OSI Approved :: MIT License",
 ]
-readme = "README.md"
-
-
-[tool.poetry.urls]
-"Homepage" = "https://github.com/exasol/ai-lab"
-"Documentation" = "https://github.io/exasol/ai-lab"
-"Source" = "https://github.io/exasol/ai-lab"
-"Issues" = "https://github.io/exasol/ai-lab/issues"
-
 
 [tool.poetry.dependencies]
 python = ">=3.10.0,<4.0"
@@ -43,13 +44,6 @@ importlib-metadata = "^8.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-check-links = ">=0.10.1,<1.0.0"
-
-[build-system]
-requires = ["poetry_core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-
-[tool.poetry.dev-dependencies]
 toml = ">=0.10.2"
 pytest = "^8.3.2"
 pytest-mock = "^3.7.0"
@@ -60,6 +54,12 @@ docker = {version = "^7.1.0", markers = "sys_platform != 'win32'"}
 fabric = "^3.2.2"
 requests = "^2.32.3"
 
+[build-system]
+requires = [
+    "poetry>=2.0.0",
+    "poetry_core>=1.0.0"
+]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

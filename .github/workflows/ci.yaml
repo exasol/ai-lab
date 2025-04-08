@@ -17,10 +17,9 @@ jobs:
        run: ./scripts/build/shellcheck.sh
 
      - name: Setup Python & Poetry Environment
-       uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+       uses: exasol/python-toolbox/.github/actions/python-environment@1.0.0
        with:
          python-version: "3.10"
-         poetry-version: '1.8.5'
 
      - name: Check Version Number
        run: poetry run -- python3 -u "./scripts/build/check_release.py"

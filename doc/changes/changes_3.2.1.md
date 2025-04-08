@@ -18,7 +18,7 @@ Additionally, this release fixes the following vulnerabilities by updating depen
 
 ## Refactorings
 
-* #358: Switched GitHub runners to ubuntu-24.04
+* #358: Updated to poetry 2.1.2 & switched GitHub runners to ubuntu-24.04
 
 ## Bug Fixes
 

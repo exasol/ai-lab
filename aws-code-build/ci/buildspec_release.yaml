@@ -18,6 +18,7 @@ phases:
       python: 3.10
     commands:
       - git submodule update --init --recursive
+      - export POETRY_VERSION=2.1.2
       - curl -sSL https://install.python-poetry.org | python3 -
       - export PATH=$PATH:$HOME/.local/bin
       - poetry env use $(command -v "python3.10")

@@ -5,7 +5,7 @@
 This package requires:
 
 * Python (>=3.10)
-* Poetry (>=1.2.0)
+* Poetry (>=2.1.2)
 * Docker
 * AWS CLI
 
