@@ -5,7 +5,7 @@ on:
 
 jobs:
   notebook_tests-normal-runner:
-    environment: AWS_CI_TESTS
+    environment: AWS_SAGEMAKER
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -50,7 +50,7 @@ jobs:
           PROJECT_SHORT_TAG: XAIL-NB
 
   notebook_tests-large-runner:
-    environment: AWS_CI_TESTS
+    environment: AWS_SAGEMAKER
     runs-on:
       labels: int-linux-x64-4core-ubuntu24.04-1
     strategy:
