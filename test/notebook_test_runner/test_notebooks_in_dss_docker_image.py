@@ -74,7 +74,8 @@ def notebook_test_container_with_log(notebook_test_container):
     yield container
 
 
-def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook_test_backend):
+def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook_test_backend,
+                  notebook_test_mem_size):
     _logger.info(f"Running notebook tests for {notebook_test_file} at {notebook_test_backend}")
     container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
@@ -84,7 +85,7 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         f"-m pytest --setup-show -s "
         f"--backend={notebook_test_backend} "
         f"--itde-nameserver='8.8.8.8' "
-        f"--itde-db-mem-size '4 GiB' "
+        f"--itde-db-mem-size='{notebook_test_mem_size}' "
         f"{notebook_test_file}"
     )
     environ = os.environ.copy()

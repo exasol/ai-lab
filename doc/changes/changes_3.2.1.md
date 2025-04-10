@@ -15,6 +15,7 @@ Additionally, this release fixes the following vulnerabilities by updating depen
 ## Features
 
 * #344: S3 Virtual Schema installation and configuration
+* #354: Added initialisation notebook for the Text AI.
 
 ## Refactorings
 
