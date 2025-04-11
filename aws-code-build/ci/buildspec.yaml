@@ -13,6 +13,7 @@ phases:
       python: 3.10
     commands:
       - git submodule update --init --recursive
+      - export POETRY_VERSION=2.1.2
       - curl -sSL https://install.python-poetry.org | python3 -
       - export PATH=$PATH:$HOME/.local/bin
       - poetry env use $(command -v "python3.10")
@@ -23,6 +24,6 @@ phases:
         - echo DSS_RUN_CI_TEST is "$DSS_RUN_CI_TEST" #supposed to be true
   build:
       commands: >
-        poetry run python3 -m pytest
+        poetry run -- python3 -m pytest
         -s -o log_cli=true -o log_cli_level=INFO
         test/codebuild/test_ci*.py

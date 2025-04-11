@@ -9,33 +9,31 @@ on:
 
 jobs:
   check-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.0
         with:
           python-version: "3.10"
-          poetry-version: '1.8.2'
       - name: Build Release
-        run: poetry run python3 -u "./scripts/build/check_release.py"
+        run: poetry run -- python3 -u "./scripts/build/check_release.py"
 
   upload:
     needs: check-release
     environment: AWS_RELEASE
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.0
         with:
           python-version: "3.10"
-          poetry-version: '1.8.2'
       - name: Build Release
-        run: poetry run python3 -m exasol.ds.sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
+        run: poetry run -- python3 -m exasol.ds.sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
         env: # Set the secret as an env variable
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}

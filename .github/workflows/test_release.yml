@@ -11,18 +11,17 @@ jobs:
 
   build_and_upload:
     environment: AWS_CI_TESTS
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
 
     - name: Setup Python & Poetry Environment
-      uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+      uses: exasol/python-toolbox/.github/actions/python-environment@1.0.0
       with:
         python-version: "3.10"
-        poetry-version: '1.8.2'
 
     - name: Start test release
-      run: poetry run python3 -m exasol.ds.sandbox.main start-test-release-build --release-title  "${{ github.event.inputs.release_title }}" --branch "$GITHUB_REF"
+      run: poetry run -- python3 -m exasol.ds.sandbox.main start-test-release-build --release-title  "${{ github.event.inputs.release_title }}" --branch "$GITHUB_REF"
       env: # Set the secret as an env variable
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}

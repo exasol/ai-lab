@@ -6,7 +6,7 @@ on:
 jobs:
   notebook_tests-normal-runner:
     environment: AWS_SAGEMAKER
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -31,7 +31,7 @@ jobs:
 
       - name: Run notebook tests
         run: |
-          poetry run pytest \
+          poetry run -- pytest \
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
