@@ -2,7 +2,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-      ansible_python_interpreter: python3
+    ansible_python_interpreter: python3
   tasks:
     - name: Add Docker Container to Ansible Inventory
       add_host:
@@ -36,6 +36,7 @@
     docker_group: docker
     user_home: /home/jupyter
     initial_notebook_folder: "{{ user_home }}/notebook-defaults"
+    work_in_progress_notebooks: {{work_in_progress_notebooks}}
     need_sudo: yes
     docker_integration_test: true
   tasks:

@@ -131,7 +131,7 @@ def test_import_notebook_connector(dss_docker_container):
     assert_exec_run(dss_docker_container, command, user=JUPYTER_USER)
 
 
-def test_install_notebooks(dss_docker_container):
+def test_install_notebooks(dss_docker_container, work_in_progress_notebooks):
     def filename_set(string: str) -> Set[str]:
         return set(re.split(r'\s+', string.strip()))
 
@@ -149,6 +149,8 @@ def test_install_notebooks(dss_docker_container):
         cloud/
         sagemaker/
     """)
+    if work_in_progress_notebooks:
+        expected.add("work_in_progress")
     assert actual.issuperset(expected)
 
 
