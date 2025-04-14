@@ -21,7 +21,7 @@ def get_git_version():
 
 def get_poetry_version():
     parsed_toml = toml.load('pyproject.toml')
-    return parsed_toml["tool"]["poetry"]["version"].strip()
+    return parsed_toml["project"]["version"].strip()
 
 
 def get_change_log_version():
@@ -42,8 +42,8 @@ if __name__ == '__main__':
     print(f'Current version: "{poetry_version}"', file=sys.stderr)
     print(f'Latest git tag: "{latest_tag}"', file=sys.stderr)
 
-    # We expect that the current version in pyproject.toml is alway greater than the latest tag.
-    # Thus we avoid creating a release without having the version number updated.
+    # We expect that the current version in pyproject.toml is always greater than the latest tag.
+    # Thus, we avoid creating a release without having the version number updated.
     if poetry_version == latest_tag:
         raise ValueError("Poetry version needs to be updated!")
 

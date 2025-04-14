@@ -6,7 +6,7 @@ on:
 jobs:
   check-links:
     name: Find Broken Links in Documentation and Jupyter Notebooks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
 
      - uses: actions/checkout@v4
@@ -14,10 +14,9 @@ jobs:
          fetch-depth: 0
 
      - name: Setup Python & Poetry Environment
-       uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+       uses: exasol/python-toolbox/.github/actions/python-environment@1.0.0
        with:
          python-version: "3.10"
-         poetry-version: '1.8.2'
 
      - name: Check Hyperlinks in Documentation
        id: lychee
@@ -28,4 +27,4 @@ jobs:
 
      - name: Check Hyperlinks in Jupyter Notebooks
        run: >
-         poetry run pytest --check-links --check-links-ignore "https://www.transtats.bts.gov/.*" exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
+         poetry run -- pytest --check-links --check-links-ignore "https://www.transtats.bts.gov/.*" exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/

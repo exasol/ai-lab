@@ -4,9 +4,9 @@ on:
   workflow_call:
 
 jobs:
-  notebook_tests:
+  notebook_tests-normal-runner:
     environment: AWS_SAGEMAKER
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -20,6 +20,44 @@ jobs:
           - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
           - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
           - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: ""}
+          # - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas"}
+    name: Running ${{ matrix.nb_test.name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/prepare_test_env/
+
+      - name: Run notebook tests
+        run: |
+          poetry run -- pytest \
+            --capture=no \
+            --override-ini=log_cli=true \
+            --override-ini=log_cli_level=INFO \
+            --nb-test-backend=${{ matrix.nb_test.test_backend }} \
+            --nb-test-file=${{ matrix.nb_test.test_file }} \
+            test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+        env:
+          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
+          NBTEST_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          NBTEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          NBTEST_AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
+          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
+          PROJECT_SHORT_TAG: XAIL-NB
+
+  notebook_tests-large-runner:
+    environment: AWS_SAGEMAKER
+    runs-on:
+      labels: int-linux-x64-4core-ubuntu24.04-1
+    strategy:
+      fail-fast: false
+      matrix:
+        nb_test:
+          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
       - uses: actions/checkout@v4
@@ -36,12 +74,9 @@ jobs:
             --override-ini=log_cli_level=INFO \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
+            --nb-test-db-mem-size="8 GiB" \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
-          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
-          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
-          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
-          NBTEST_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          NBTEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-          NBTEST_AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
+          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
           PROJECT_SHORT_TAG: XAIL-NB

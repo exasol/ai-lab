@@ -6,7 +6,7 @@ on:
 jobs:
   run-unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
      - uses: actions/checkout@v4
@@ -17,17 +17,16 @@ jobs:
        run: ./scripts/build/shellcheck.sh
 
      - name: Setup Python & Poetry Environment
-       uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+       uses: exasol/python-toolbox/.github/actions/python-environment@1.0.0
        with:
          python-version: "3.10"
-         poetry-version: "1.8.2"
 
      - name: Check Version Number
-       run: poetry run python3 -u "./scripts/build/check_release.py"
+       run: poetry run -- python3 -u "./scripts/build/check_release.py"
 
      - name: Run Unit Tests
        run: >
-         poetry run pytest
+         poetry run -- pytest
          --capture=no
          --override-ini=log_cli=true
          --override-ini=log_cli_level=INFO
@@ -36,7 +35,7 @@ jobs:
   run-integration-tests:
     name: Integration Tests
     environment: AWS_CI_TESTS
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: run-unit-tests
 
     steps:
@@ -48,7 +47,7 @@ jobs:
 
       - name: Run Integration Tests
         run: >
-          poetry run pytest
+          poetry run -- pytest
           --capture=no
           --override-ini=log_cli=true
           --override-ini=log_cli_level=INFO
@@ -60,7 +59,7 @@ jobs:
 
   approval-for-notebook-tests:
     name: Run Jupyter Notebook Tests?
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Detect Running Notebook Tests
         run: true
@@ -74,7 +73,7 @@ jobs:
 
   gate-2:
     name: Gate 2 - Allow Merge
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [ run-unit-tests, run-integration-tests, run-notebook-tests ]
     steps:
       - name: Branch Protection
