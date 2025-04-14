@@ -27,7 +27,7 @@ def _store_pre_release_access(store_path: Path, store_password: str) -> None:
 
 def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
     work_in_progress = Path("./work_in_progress")
-    if work_in_progress.exists():
+    if not work_in_progress.exists():
         pytest.skip("work in progress notebooks not installed")
     store_path, store_password = backend_setup
     _store_pre_release_access(store_path, store_password)
