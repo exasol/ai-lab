@@ -150,7 +150,7 @@ def test_install_notebooks(dss_docker_container, work_in_progress_notebooks):
         sagemaker/
     """)
     if work_in_progress_notebooks:
-        expected.add("work_in_progress")
+        expected.add("work_in_progress/")
     assert actual.issuperset(expected)
 
 
