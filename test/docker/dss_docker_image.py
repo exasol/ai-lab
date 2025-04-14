@@ -51,7 +51,9 @@ def docker_auth():
     }
 
 
-@pytest.fixture(scope="session", params=[True, False])
+@pytest.fixture(scope="session",
+                params=[pytest.param(True, id="work_in_progress_notebooks=True"),
+                        pytest.param(False, id="work_in_progress_notebooks=False")])
 def work_in_progress_notebooks(request) -> bool:
     return request.param
 
