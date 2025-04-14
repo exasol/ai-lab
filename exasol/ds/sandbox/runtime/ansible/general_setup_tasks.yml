@@ -38,6 +38,7 @@
     jupyterlab_password: "{{ dss_facts.jupyter.password }}"
     jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
     jupyterlab_notebook_folder: "{{ dss_facts.notebook_folder.final }}"
+    work_in_progress_notebooks: "{{ work_in_progress_notebooks }}"
 - name: Change Owner of All Files and Dirs in Home Directory
   ansible.builtin.file:
     path: "{{ user_home }}"

@@ -26,6 +26,7 @@ def run_install_dependencies(ansible_access: AnsibleAccess,
     """
     new_extra_vars = {
         "ai_lab_version": configuration.ai_lab_version,
+        "work_in_progress_notebooks": False
     }
     if ansible_run_context.extra_vars is not None:
         new_extra_vars.update(ansible_run_context.extra_vars)

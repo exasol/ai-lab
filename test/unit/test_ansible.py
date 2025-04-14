@@ -37,7 +37,9 @@ class AnsibleTestAccess:
 def _extra_vars(config):
     return {
         "ai_lab_version": config.ai_lab_version,
+        'work_in_progress_notebooks': False,
     }
+
 
 def test_run_ansible_default_values(test_config):
     """
@@ -113,6 +115,7 @@ def test_run_ansible_check_default_repository(test_config):
      1. the playbook of the default repository exists on target.
      2. One of the role files exists (Validate deep copy)
     """
+
     def check_playbook(work_dir: str, ansible_run_context: AnsibleRunContext):
         p = pathlib.Path(work_dir) / "ai_lab_docker_playbook.yml"
         assert p.exists()
@@ -127,6 +130,7 @@ def test_run_ansible_check_multiple_repositories(test_config):
     Test that multiple repositories are being copied correctly.
     For simplicity, we check only if the playbook of the repositories exists on target.
     """
+
     def check_playbooks(work_dir: str, ansible_run_context: AnsibleRunContext):
         p = pathlib.Path(f"{work_dir}/general_setup_tasks.yml")
         assert p.exists()

@@ -51,8 +51,15 @@ def docker_auth():
     }
 
 
+@pytest.fixture(scope="session",
+                params=[pytest.param(True, id="work_in_progress_notebooks=True"),
+                        pytest.param(False, id="work_in_progress_notebooks=False")])
+def work_in_progress_notebooks(request) -> bool:
+    return request.param
+
+
 @pytest.fixture(scope="session")
-def dss_docker_image(request):
+def dss_docker_image(request, work_in_progress_notebooks):
     """
     If dss_docker_image_name is provided then don't create an image but
     reuse the existing image as specified by cli option
@@ -65,10 +72,12 @@ def dss_docker_image(request):
         yield DssDockerImage(name, version)
         return
 
+    suffix = '_wip' if work_in_progress_notebooks else '_no_wip'
     testee = DssDockerImage(
         "my-repo/dss-test-image",
-        version=f"{DssDockerImage.timestamp()}",
+        version=f"{DssDockerImage.timestamp()}{suffix}",
         keep_container=False,
+        work_in_progress_notebooks=work_in_progress_notebooks
     )
     testee.create()
     try:
