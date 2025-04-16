@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schemas.exasol.com/edml-1.2.0.json",
+  "source": "reuters1-*.json",
+  "destinationTable": "NEWS",
+  "addSourceReferenceColumn": true,
+  "mapping": {
+    "fields": {
+      "title": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 255,
+          "overflowBehaviour": "TRUNCATE"
+        }
+      },
+      "id": {
+        "toVarcharMapping": {
+          "destinationName": "NEWS_ID",
+          "varcharColumnSize": 50
+        }
+      }
+    }
+  }
+}
