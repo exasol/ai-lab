@@ -1,6 +1,6 @@
 {
   "$schema": "https://schemas.exasol.com/edml-1.2.0.json",
-  "source": "reuters-*.json",
+  "source": "reuters1-*.json",
   "destinationTable": "NEWS",
   "addSourceReferenceColumn": true,
   "mapping": {
@@ -12,10 +12,9 @@
         }
       },
       "id": {
-        "toDecimalMapping": {
-          "decimalPrecision": 18,
-          "decimalScale": 0,
-          "destinationName": "NEWS_ID"
+        "toVarcharMapping": {
+          "destinationName": "NEWS_ID",
+          "varcharColumnSize": 50
         }
       }
     }
