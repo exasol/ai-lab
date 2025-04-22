@@ -1,6 +1,6 @@
 {
   "$schema": "https://schemas.exasol.com/edml-1.2.0.json",
-  "source": "reuters1-*.json",
+  "source": "reuters-out/reuters1-*.json",
   "destinationTable": "NEWS",
   "addSourceReferenceColumn": true,
   "mapping": {
