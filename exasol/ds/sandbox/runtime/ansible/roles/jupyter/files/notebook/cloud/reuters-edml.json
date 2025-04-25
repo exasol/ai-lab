@@ -5,16 +5,27 @@
   "addSourceReferenceColumn": true,
   "mapping": {
     "fields": {
+      "id": {
+        "toVarcharMapping": {
+          "destinationName": "NEWS_ID",
+          "varcharColumnSize": 50
+        }
+      },
+      "date": {
+        "toVarcharMapping": {
+          "varcharColumnSize": 50
+        }
+      },
       "title": {
         "toVarcharMapping": {
           "varcharColumnSize": 255,
           "overflowBehaviour": "TRUNCATE"
         }
       },
-      "id": {
+      "body": {
         "toVarcharMapping": {
-          "destinationName": "NEWS_ID",
-          "varcharColumnSize": 50
+          "varcharColumnSize": 1024,
+          "overflowBehaviour": "TRUNCATE"
         }
       }
     }
