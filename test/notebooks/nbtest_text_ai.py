@@ -26,6 +26,10 @@ def _store_pre_release_access(store_path: Path, store_password: str) -> None:
 
 
 def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
+    """
+    This test currently requires some specific Jupyter notebooks which are work in progress
+    and is only executed if the folder work_in_progress exists.
+    """
     work_in_progress = Path("./work_in_progress")
     if not work_in_progress.exists():
         pytest.skip("work in progress notebooks not installed")
