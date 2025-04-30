@@ -1,9 +1,10 @@
-import click
 import os
 
-from exasol.ds.sandbox.cli.cli import cli, option_with_env_default
-from exasol.ds.sandbox.cli.options.logging import logging_options
+import click
+
+from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
+from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.dss_docker import (
     DEFAULT_ORG_AND_REPOSITORY,
     DssDockerImage,
@@ -11,7 +12,6 @@ from exasol.ds.sandbox.lib.dss_docker import (
     USER_ENV,
     PASSWORD_ENV,
 )
-from exasol.ds.sandbox.lib.logging import SUPPORTED_LOG_LEVELS
 from exasol.ds.sandbox.lib.logging import set_log_level
 
 
@@ -27,7 +27,7 @@ from exasol.ds.sandbox.lib.logging import set_log_level
         see https://docs.docker.com/engine/reference/commandline/tag.
         """),
     click.option(
-        "--version", type=str,  metavar="VERSION",
+        "--version", type=str, metavar="VERSION",
         help="Docker image version tag"),
     click.option(
         "--publish", type=bool, is_flag=True,
@@ -40,11 +40,14 @@ from exasol.ds.sandbox.lib.logging import set_log_level
         variable {USER_ENV}]. If specified then password is read
         from environment variable {PASSWORD_ENV}.
         """
-        ),
+    ),
     click.option(
         "--keep-container", type=bool, is_flag=True,
         help="""Keep the Docker Container running after creating the image.
         Otherwise stop and remove the container."""),
+    click.option(
+        "--work-in-progress-notebooks", type=bool, is_flag=True, default=False,
+        help="""Adds work in progress notebooks to the container."""),
 ])
 @add_options(logging_options)
 def create_docker_image(
@@ -53,6 +56,7 @@ def create_docker_image(
         publish: bool,
         registry_user: str,
         keep_container: bool,
+        work_in_progress_notebooks: bool,
         log_level: str,
 ):
     """
@@ -61,13 +65,14 @@ def create_docker_image(
     user name and reading the password from environment variable
     ``PASSWORD_ENV``.
     """
+
     def registry_password():
         if registry_user is None:
             return None
         return os.environ.get(PASSWORD_ENV, None)
 
     set_log_level(log_level)
-    creator = DssDockerImage(repository, version, keep_container)
+    creator = DssDockerImage(repository, version, keep_container, work_in_progress_notebooks)
     if publish:
         creator.registry = DockerRegistry(registry_user, registry_password())
     creator.create()

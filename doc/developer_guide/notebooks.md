@@ -14,6 +14,19 @@ e.g. `exasol-notebook-connector @ git+https://github.com/exasol/notebook-connect
 It is important to reference a commit in the `main` branch, not the `main` branch itself. The git dependency should be
 replaced with the proper pypi dependency before releasing of the AI-Lab.
 
+## Work-in-progress Notebooks
+
+Sometimes, we might have notebooks which we don't want to release yet, either because they are incomplete or 
+only a pre-release. However, we already want to test these notebooks using the notebook tests or build 
+Docker images that contain them.
+These work-in-progress notebooks should be located in the following directory:
+
+```exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/work_in_progress```
+
+The directory then only gets copied into the Docker image when either the test parameter `work_in_progress_notebooks`
+is requesting it or if you use the commandline option `--work-in-progress-notebooks` is added to the 
+`create-docker-image` command in the CLI.
+
 ## Notebook Testing
 
 We are running tests for the notebooks in the Docker Edition of the AI Lab. For this we are creating a Docker test setup in 

@@ -1,15 +1,8 @@
-import os
-import pytest
-import shlex
-import subprocess
-
 from copy import copy
 
-from exasol.ds.sandbox.lib.config import default_config_object, ConfigObject
-from exasol.ds.sandbox.lib.render_template import render_template
-from importlib.metadata import version
-from exasol.ds.sandbox.lib.tags import DEFAULT_TAG_KEY
-from exasol.ds.sandbox.lib.asset_id import AssetId
+import pytest
+
+from exasol.ds.sandbox.lib.config import default_config_object
 
 pytest_plugins = (
     "test.docker.dss_docker_image",
