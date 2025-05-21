@@ -32,11 +32,6 @@
           "varcharColumnSize": 1024,
           "overflowBehaviour": "TRUNCATE"
         }
-      },
-      "date": {
-        "toTimestampMapping": {
-          "notTimestampBehavior": "CONVERT_OR_NULL"
-        }
       }
     }
   }
