@@ -31,8 +31,10 @@ def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
 
     current_dir = os.getcwd()
     try:
-        notebook_runner('main_config.ipynb')
+        notebook_runner('main_config.ipynb') #todo
         os.chdir('./text_ai')
         notebook_runner(notebook_file='txaie_init.ipynb', hacks=[uploading_hack])
+        notebook_runner(notebook_file="../data/data_customer_support.ipynb")
+        notebook_runner(notebook_file="txaie_preprocessing.ipynb")
     finally:
-        os.chdir(current_dir)
+        os.chdir(current_dir)#todo delete models and data?
