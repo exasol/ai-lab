@@ -6,6 +6,13 @@
     dest: "{{ jupyterlab_notebook_folder_initial }}"
   become: "{{ need_sudo }}"
 
+- name: Remove work in progress notebooks
+  ansible.builtin.file:
+    path: "{{ jupyterlab_notebook_folder_initial }}/work_in_progress"
+    state: absent
+  when: not work_in_progress_notebooks
+  become: "{{ need_sudo }}"
+
 # 1. create_image.py adds this directory as volume mount point to the Docker
 # image which makes root the owner. 2. entrypoint.py running as separate user
 # fails to copy the notebook files to it.  3. Mitigation: Ansible creates the
