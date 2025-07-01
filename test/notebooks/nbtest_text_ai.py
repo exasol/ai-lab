@@ -42,7 +42,7 @@ def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
         text_ai = work_in_progress / "text_ai"
         os.chdir(text_ai)
         notebook_runner(notebook_file='txaie_init.ipynb', hacks=[uploading_hack])
-        notebook_runner(notebook_file="../data/data_customer_support.ipynb", hacks=[uploading_hack])
+        notebook_runner(notebook_file="../../data/data_customer_support.ipynb", hacks=[uploading_hack])
         notebook_runner(notebook_file="txaie_preprocessing.ipynb", hacks=[uploading_hack])
     finally:
         os.chdir(current_dir)
