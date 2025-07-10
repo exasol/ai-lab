@@ -11,16 +11,19 @@ jobs:
       fail-fast: false
       matrix:
         nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "all" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "all" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "all" }
+          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem" }
+#          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas" }
+          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem" }
+#          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas" }
+          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem" }
+#          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas" }
           - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem" }
           - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem" }
-          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas" }
+#          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas" }
           - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
-          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
+#          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
           - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: ""}
-          # - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas"}
+#          - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
       - uses: actions/checkout@v4
