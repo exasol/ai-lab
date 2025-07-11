@@ -85,7 +85,8 @@ def run_notebook(notebook_file: str, store_file: str, store_password: str,
 
     # Execute the notebook object, expecting to get no exceptions.
     nb_client = NotebookClient(nb, timeout=timeout, kernel_name='python3')
-    nb_client.execute()
+    result = nb_client.execute()
+    print((result))
 
 
 # ~/git/ai-lab/test/notebooks/notebook_test_utils.py
