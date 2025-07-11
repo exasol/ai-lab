@@ -1,4 +1,5 @@
 import os
+import pprint
 from pathlib import Path
 
 import pytest
@@ -43,7 +44,13 @@ def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
         notebook_runner(notebook_file="data_customer_support.ipynb", hacks=[uploading_hack])
         os.chdir(current_dir)
         os.chdir(work_in_progress / "text_ai")
-        notebook_runner(notebook_file='txaie_init.ipynb', hacks=[uploading_hack])
+        result = notebook_runner(notebook_file='txaie_init.ipynb', hacks=[uploading_hack])
+        for cell in result.cells:
+            print("Cell Source:")
+            print(cell.source)
+            if "outputs" in cell:
+                print("Cell Output:")
+                pprint.pp(cell.outputs)
         notebook_runner(notebook_file="txaie_preprocessing.ipynb", hacks=[uploading_hack])
     finally:
         os.chdir(current_dir)
