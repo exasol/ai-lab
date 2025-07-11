@@ -14,5 +14,5 @@ jupyterlab_notebook_folder: "{{ user_home }}/notebooks"
 
 apt_dependencies:
   - virtualenv=20.13.0+ds-2
-  - git=1:2.34.1-1ubuntu1.14
+  - git=1:2.34.1-1ubuntu1.15
   - unzip=6.0-26ubuntu3.2
