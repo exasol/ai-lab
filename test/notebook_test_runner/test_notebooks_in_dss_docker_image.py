@@ -37,7 +37,6 @@ def notebook_test_dockerfile_content(dss_docker_image, work_in_progress_notebook
         RUN sudo chmod -R 777  "/home"
         ENV HOME=/home/jupyter
         ENV PATH=$VIRTUAL_ENV/bin:$PATH
-        USER jupyter
         """
     )
 
@@ -105,4 +104,5 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         container,
         print_output=True,
         environment=nbtest_environ,
+        user="jupyter"
     )
