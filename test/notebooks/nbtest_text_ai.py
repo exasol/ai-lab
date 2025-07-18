@@ -19,7 +19,6 @@ set_log_level_for_libraries()
 
 
 def _store_pre_release_access(store_path: Path, store_password: str) -> None:
-
     conf = Secrets(store_path, store_password)
     conf.connection()
     conf.save(CKey.text_ai_pre_release_url, os.environ["NBTEST_TXAIE_ZIP_URL"])
@@ -31,9 +30,6 @@ def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
     This test currently requires some specific Jupyter notebooks which are work in progress
     and is only executed if the folder work_in_progress exists.
     """
-    work_in_progress = Path("./work_in_progress")
-    if not work_in_progress.exists():
-        pytest.skip("work in progress notebooks not installed")
     store_path, store_password = backend_setup
     _store_pre_release_access(store_path, store_password)
 
@@ -43,14 +39,10 @@ def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
         os.chdir("data")
         notebook_runner(notebook_file="data_customer_support.ipynb", hacks=[uploading_hack])
         os.chdir(current_dir)
-        os.chdir(work_in_progress / "text_ai")
+        os.chdir("text_ai")
         result = notebook_runner(notebook_file='txaie_init.ipynb', hacks=[uploading_hack])
-        for cell in result.cells:
-            print("Cell Source:")
-            print(cell.source)
-            if "outputs" in cell:
-                print("Cell Output:")
-                pprint.pp(cell.outputs)
         notebook_runner(notebook_file="txaie_preprocessing.ipynb", hacks=[uploading_hack])
     finally:
         os.chdir(current_dir)
+
+
