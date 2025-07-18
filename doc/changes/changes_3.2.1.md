@@ -1,11 +1,11 @@
-# AI-Lab 3.2.1 released 2025-?-?
+# AI-Lab 3.2.1 released 2025-07-18
 
-Code name: S3 Virtual schema support
+Code name: Text AI and S3 Virtual schema notebooks
 
 ## Summary
 
-This release adds support of S3 Virtual schema extension which allows to access 
-the structured and semi-structured data from S3 buckets.
+This release adds notebooks for Exasol Text AI and the S3 Virtual schema extension. 
+They provide capabilities to deal with semi-structured and unstructed data. 
 
 Additionally, this release fixes the following vulnerabilities by updating dependencies:
 * CVE-2024-33663 in transitive dependency via `localstack` to `python-jose`
@@ -17,6 +17,7 @@ Additionally, this release fixes the following vulnerabilities by updating depen
 * #344: S3 Virtual Schema installation and configuration
 * #354: Added initialisation notebook for the Text AI.
 * #363: Added preprocessing notebook for the Text AI.
+* #369: Added analytics notebook for the Text AI.
 
 ## Refactorings
 
