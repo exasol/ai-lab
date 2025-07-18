@@ -182,3 +182,14 @@ def uploading_hack() -> Tuple[str, str]:
         pause_notebook_execution()
         """)
     )
+
+def print_notebook_output(notebook_result):
+    """
+    Print the output of notebook run
+    """
+    for cell in notebook_result.cells:
+        print("Cell Source:")
+        print(cell.source)
+        if "outputs" in cell:
+            print("Cell Output:")
+            pprint.pp(cell.outputs)
