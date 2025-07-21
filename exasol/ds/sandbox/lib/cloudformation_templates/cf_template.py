@@ -45,8 +45,9 @@ class CfTemplate:
         key.
         """
         try:
+            stacks = self._aws.describe_stacks()
             stack = next(
-                s for s in self._aws.describe_stacks()
+                s for s in stacks
                 if s.name == self.stack_name
             )
         except StopIteration:
@@ -58,4 +59,3 @@ class CfTemplate:
                 f"Output key '{key}' in output for "
                 f"stack {self.stack_name} not found or non-uniq")
         return outputs[0].output_value
-

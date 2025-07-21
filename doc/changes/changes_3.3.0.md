@@ -1,4 +1,4 @@
-# AI-Lab 3.3.0 released 2025-07-18
+# AI-Lab 3.3.0 released 2025-07-21
 
 Code name: Exasol Text AI and S3 Virtual schema notebooks
 
@@ -25,3 +25,4 @@ Additionally, this release fixes the following vulnerabilities by updating depen
 
 ## Bug Fixes
 
+* #372: Fix VM export

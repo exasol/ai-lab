@@ -1,12 +1,11 @@
+import os
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from tempfile import NamedTemporaryFile
+from typing import Any, Dict, List, Optional, Tuple
 
 import boto3
 import botocore
-import os
 import humanfriendly
-
-from tempfile import NamedTemporaryFile
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.cloudformation_stack import CloudformationStack
@@ -19,9 +18,9 @@ from exasol.ds.sandbox.lib.aws_access.s3_object import S3Object
 from exasol.ds.sandbox.lib.aws_access.snapshot import Snapshot
 from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
 from exasol.ds.sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
+from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
-from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 
 LOG = get_status_logger(LogType.AWS_ACCESS)
 
@@ -31,12 +30,14 @@ def _log_function_start(func):
     Logging function which can be used to debug-log start of member function of AwsAccess.
     This decorator works only for class AwsAccess.
     """
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         LOG.debug('Start {func_name} for aws profile "{aws_profile}"'.
                   format(func_name=func.__name__, aws_profile=self.aws_profile_for_logging))
         result = func(self, *args, **kwargs)
         return result
+
     return wrapper
 
 
@@ -115,7 +116,7 @@ class AwsAccess(object):
             cfn_deployer = Deployer(cloudformation_client=cloud_client)
             result = cfn_deployer.create_and_wait_for_changeset(stack_name=stack_name, cfn_template=yml,
                                                                 parameter_values=[],
-                                                                capabilities=("CAPABILITY_IAM","CAPABILITY_NAMED_IAM"),
+                                                                capabilities=("CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"),
                                                                 role_arn=None,
                                                                 notification_arns=None, tags=tags)
         except Exception as e:
@@ -134,8 +135,8 @@ class AwsAccess(object):
         Uses Boto3 to retrieve the ARN of a secret from secrets manager.
         """
         LOG.debug("Reading secret for getting ARN,"
-                 f" physical resource ID = {physical_resource_id},"
-                 f" for aws profile {self.aws_profile_for_logging}")
+                  f" physical resource ID = {physical_resource_id},"
+                  f" for aws profile {self.aws_profile_for_logging}")
         client = self._get_aws_client("secretsmanager")
         try:
             secret = client.get_secret_value(SecretId=physical_resource_id)
@@ -264,7 +265,8 @@ class AwsAccess(object):
                                            RoleName=role_name, DiskImageFormat=disk_format.value,
                                            S3ExportLocation={"S3Bucket": s3_bucket, "S3Prefix": s3_prefix},
                                            TagSpecifications=tags)
-
+        if "ExportImageTaskId" not in result:
+            raise RuntimeError(f"Did not find ExportImageTaskId in {result}")
         return result["ExportImageTaskId"]
 
     @_log_function_start
@@ -275,7 +277,8 @@ class AwsAccess(object):
         """
         cloud_client = self._get_aws_client("ec2")
         result = cloud_client.describe_export_image_tasks(ExportImageTaskIds=[export_image_task_id])
-        assert "NextToken" not in result  # We expect only one result
+        if "NextToken" in result and result["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {result}.")
         export_image_tasks = result["ExportImageTasks"]
         if len(export_image_tasks) != 1:
             raise RuntimeError(f"Unexpected number of export image tasks: {export_image_tasks}")
@@ -293,7 +296,8 @@ class AwsAccess(object):
         response = cloud_client.describe_images(ImageIds=[image_id])
         images = response["Images"]
         if len(images) != 1:
-            raise RuntimeError(f"AwsAccess.get_ami() for image_id='{image_id}' returned {len(images)} elements: {images}")
+            raise RuntimeError(
+                f"AwsAccess.get_ami() for image_id='{image_id}' returned {len(images)} elements: {images}")
         return Ami(images[0])
 
     @_log_function_start
@@ -330,7 +334,8 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
 
         response = cloud_client.describe_snapshots(Filters=filters)
-        assert "NextToken" not in response
+        if "NextToken" in response and response["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {response}.")
         return [Snapshot(snapshot) for snapshot in response["Snapshots"]]
 
     @_log_function_start
@@ -342,7 +347,8 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
 
         response = cloud_client.describe_export_image_tasks(Filters=filters)
-        assert "NextToken" not in response
+        if "NextToken" in response and response["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {response}.")
         return [ExportImageTask(export_image_task) for export_image_task in response["ExportImageTasks"]]
 
     @_log_function_start
@@ -354,7 +360,8 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
 
         response = cloud_client.describe_key_pairs(Filters=filters)
-        assert "NextToken" not in response
+        if "NextToken" in response and response["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {response}.")
         return [KeyPair(keypair) for keypair in response["KeyPairs"]]
 
     @_log_function_start
@@ -415,7 +422,7 @@ class AwsAccess(object):
         ret_val = codebuild_client.start_build(projectName=project,
                                                sourceVersion=branch,
                                                environmentVariablesOverride=list(
-                                                 environment_variables_overrides))
+                                                   environment_variables_overrides))
         build_id = ret_val['build']['id']
         LOG.debug(f"Codebuild for project {project} with branch {branch} triggered. Id is {build_id}.")
         return build_id, CodeBuildWaiter(codebuild_client, build_id)

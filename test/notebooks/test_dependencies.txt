@@ -3,4 +3,4 @@ nbformat
 pytest
 testbook
 pytest-check-links
-pytest-exasol-backend
+pytest-exasol-backend<1.1.0
