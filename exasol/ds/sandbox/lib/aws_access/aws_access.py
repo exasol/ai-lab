@@ -334,7 +334,8 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
 
         response = cloud_client.describe_snapshots(Filters=filters)
-        assert "NextToken" not in response
+        if "NextToken" in response and response["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {response}.")
         return [Snapshot(snapshot) for snapshot in response["Snapshots"]]
 
     @_log_function_start
@@ -346,7 +347,8 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
 
         response = cloud_client.describe_export_image_tasks(Filters=filters)
-        assert "NextToken" not in response
+        if "NextToken" in response and response["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {response}.")
         return [ExportImageTask(export_image_task) for export_image_task in response["ExportImageTasks"]]
 
     @_log_function_start
@@ -358,7 +360,8 @@ class AwsAccess(object):
         cloud_client = self._get_aws_client("ec2")
 
         response = cloud_client.describe_key_pairs(Filters=filters)
-        assert "NextToken" not in response
+        if "NextToken" in response and response["NextToken"] != '':
+            raise RuntimeError(f"We expected only one result, but got {response}.")
         return [KeyPair(keypair) for keypair in response["KeyPairs"]]
 
     @_log_function_start
