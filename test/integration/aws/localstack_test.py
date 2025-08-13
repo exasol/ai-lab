@@ -13,23 +13,31 @@ def test_ec2_lifecycle_with_local_stack(
         local_stack_aws_access,
         default_asset_id,
         test_dummy_ami_id,
+        # test_ec2_instance_type,
 ):
     """
     This test uses localstack to simulate lifecycle of an EC-2 instance
     """
     execution_generator = run_lifecycle_for_ec2(
-        local_stack_aws_access, None, None,
-        default_asset_id, test_dummy_ami_id, user_name=None)
-    ec2_data = next(execution_generator)
-    ec2_instance_description, key_file_location = ec2_data
-    while ec2_instance_description.is_pending:
-        ec2_data = next(execution_generator)
-        ec2_instance_description, key_file_location = ec2_data
+        aws_access=local_stack_aws_access,
+        ec2_key_file=None,
+        ec2_key_name=None,
+        asset_id=default_asset_id,
+        ami_id=test_dummy_ami_id,
+        user_name=None,
+        ec2_instance_type="g4dn.xlarge",
+    )
+    status = next(execution_generator)
+    ec2_instance, key_file_location = status
+    while ec2_instance.is_pending:
+        status = next(execution_generator)
+        ec2_instance, key_file_location = status
 
-    assert ec2_instance_description.is_running
-    ec2_data = next(execution_generator)
-    ec2_instance_description, key_file_location = ec2_data
-    assert ec2_instance_description is None and key_file_location is None
+    assert ec2_instance.instance_type == "g4dn.xlarge"
+    assert ec2_instance.is_running
+    status = next(execution_generator)
+    ec2_instance, key_file_location = status
+    assert ec2_instance is None and key_file_location is None
 
 
 def test_ec2_manage_keypair_with_local_stack(local_stack_aws_access, default_asset_id):
@@ -110,20 +118,25 @@ Resources:
 
 
 def test_cloudformation_access_with_local_stack(
-        local_stack_aws_access,
-        default_asset_id,
-        test_dummy_ami_id,
+    local_stack_aws_access,
+    default_asset_id,
+    test_dummy_ami_id,
+    test_ec2_instance_type,
 ):
     aws = local_stack_aws_access
-    with CloudformationStackContextManager(
-            CloudformationStack(
-                aws, "test_key", aws.get_user(),
-                default_asset_id, test_dummy_ami_id)
-    ) as cf_stack:
-        ec2_instance_id = cf_stack.get_ec2_instance_id()
-        ec2_instance_description = aws.describe_instance(ec2_instance_id)
+    stack = CloudformationStack(
+        aws,
+        "test_key",
+        aws.get_user(),
+        default_asset_id,
+        test_dummy_ami_id,
+        test_ec2_instance_type,
+    )
+    with CloudformationStackContextManager(stack) as uploaded_stack:
+        id = uploaded_stack.get_ec2_instance_id()
+        description = aws.describe_instance(id)
         host_name = ec2_instance_description.public_dns_name
-        assert ec2_instance_description.is_running
+        assert description.is_running
         assert host_name.endswith(".eu-central-1.compute.amazonaws.com")
 
 

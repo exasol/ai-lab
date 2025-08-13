@@ -20,4 +20,8 @@ def install_dependencies(
     Debug command to ansible-installation onto an EC-2 instance.
     """
     set_log_level(log_level)
-    run_install_dependencies(AnsibleAccess(), default_config_object, (HostInfo(host_name, ssh_private_key),))
+    run_install_dependencies(
+        AnsibleAccess(),
+        default_config_object,
+        (HostInfo(host_name, ssh_private_key),),
+    )

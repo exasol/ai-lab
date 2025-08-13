@@ -32,7 +32,15 @@ class CloudformationStack:
     and when exiting the stack will be destroyed.
     """
 
-    def __init__(self, aws_access: AwsAccess, ec2_key_name: str, user_name: str, asset_id: AssetId, ami_id: str):
+    def __init__(
+        self,
+        aws_access: AwsAccess,
+        ec2_key_name: str,
+        user_name: str,
+        asset_id: AssetId,
+        ami_id: str,
+        instance_type: str = "t2.medium",
+    ):
         self._aws_access = aws_access
         self._stack_name = None
         self._ec2_key_name = ec2_key_name
@@ -40,6 +48,7 @@ class CloudformationStack:
         self._stack_prefix = asset_id.stack_prefix
         self._tag_value = asset_id.tag_value
         self._ami_id = ami_id
+        self._instance_type = instance_type
 
     def _generate_stack_name(self) -> str:
         """
@@ -60,10 +69,15 @@ class CloudformationStack:
                 return stack_name
 
     def upload_cloudformation_stack(self) -> CloudformationStack:
-        yml = render_template("ec2_cloudformation.jinja.yaml",
-                              key_name=self._ec2_key_name, user_name=self._user_name,
-                              trace_tag=DEFAULT_TAG_KEY, trace_tag_value=self._tag_value,
-                              ami_id=self._ami_id)
+        yml = render_template(
+            "ec2_cloudformation.jinja.yaml",
+            key_name=self._ec2_key_name,
+            user_name=self._user_name,
+            trace_tag=DEFAULT_TAG_KEY,
+            trace_tag_value=self._tag_value,
+            ami_id=self._ami_id,
+            instance_type=self._instance_type,
+        )
         self._stack_name = self._find_new_stack_name()
         self._aws_access.upload_cloudformation_stack(yml, self._stack_name,
                                                      tags=tuple(create_default_asset_tag(self._tag_value)))

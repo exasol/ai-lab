@@ -39,6 +39,7 @@ def ec2_template():
         trace_tag=DEFAULT_TAG_KEY,
         trace_tag_value=DEFAULT_ASSET_ID.tag_value,
         ami_id=TEST_DUMMY_AMI_ID,
+        instance_type="t2.medium",
     )
 
 

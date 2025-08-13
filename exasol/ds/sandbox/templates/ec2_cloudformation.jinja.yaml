@@ -26,7 +26,7 @@ Resources:
       Properties:
           ImageId: {{ami_id}}
           KeyName: {{key_name}}
-          InstanceType: "t2.medium"
+          InstanceType: {{instance_type}}
           SecurityGroups:
           - !Ref Ec2SecurityGroup
           BlockDeviceMappings:
