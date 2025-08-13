@@ -69,6 +69,8 @@ The following pytest fixtures in file `test/integration/aws/conftest.py` will de
 * `local_stack` configures localstack to forward its internal port.
 * `local_stack_aws_access` passes the Docker host to the constructor of `AwsLocalStackAccess`.
 
+See also [localstack documentation](https://docs.localstack.cloud/aws/capabilities/networking/external-port-range/).
+
 ## Executing Tests Involving AWS Resources
 
 In the AWS web interface, section IAM create an access key for CLI usage and save or download the *access key id* and the *secret access key*.
