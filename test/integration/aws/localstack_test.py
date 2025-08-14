@@ -135,7 +135,7 @@ def test_cloudformation_access_with_local_stack(
     with CloudformationStackContextManager(stack) as uploaded_stack:
         id = uploaded_stack.get_ec2_instance_id()
         description = aws.describe_instance(id)
-        host_name = ec2_instance_description.public_dns_name
+        host_name = description.public_dns_name
         assert description.is_running
         assert host_name.endswith(".eu-central-1.compute.amazonaws.com")
 
