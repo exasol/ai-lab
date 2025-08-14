@@ -7,7 +7,12 @@ from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
 
 
-def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id, test_dummy_ami_id):
+def test_deploy_ec2_upload_invoked(
+    ec2_cloudformation_yml,
+    default_asset_id,
+    test_dummy_ami_id,
+    test_ec2_instance_type,
+):
     """"
     Test if function upload_cloudformation_stack() will be invoked with
     expected values when we run run_deploy_ci_build()
@@ -20,6 +25,7 @@ def test_deploy_ec2_upload_invoked(ec2_cloudformation_yml, default_asset_id, tes
                 "test_user",
                 default_asset_id,
                 test_dummy_ami_id,
+                test_ec2_instance_type,
             )) as cloudformation:
         pass
     default_tag = tuple(create_default_asset_tag(default_asset_id.tag_value))
