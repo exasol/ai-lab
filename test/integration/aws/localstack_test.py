@@ -13,7 +13,6 @@ def test_ec2_lifecycle_with_local_stack(
         local_stack_aws_access,
         default_asset_id,
         test_dummy_ami_id,
-        # test_ec2_instance_type,
 ):
     """
     This test uses localstack to simulate lifecycle of an EC-2 instance

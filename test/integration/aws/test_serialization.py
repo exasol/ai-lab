@@ -129,7 +129,6 @@ def test_cloudformation_stack_with_local_stack(
         with contextlib.closing(pickle.load(f)) as cloudformation:
             restored_stack_name = cloudformation.stack_name
             restored_ec2_instance_id = cloudformation.get_ec2_instance_id()
-            # TODO: try print, get ec2 instance type and verify against expectation
 
     assert stack_name == restored_stack_name
     assert ec2_instance_id == restored_ec2_instance_id
