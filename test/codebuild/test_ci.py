@@ -95,7 +95,7 @@ def new_ec2_from_ami():
         ec2_key_file=None,
         ec2_key_name=None,
         asset_id=asset_id,
-        ami_id=ami.id
+        ami_id=ami.id,
         user_name=user_name
         ec2_instance_type=ec2_instance_type,
     )
