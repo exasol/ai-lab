@@ -16,7 +16,7 @@ def test_dummy_ami_id():
     return TEST_DUMMY_AMI_ID
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def test_ec2_instance_type():
     return "t2.medium"
 
