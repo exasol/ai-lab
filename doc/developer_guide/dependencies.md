@@ -39,7 +39,7 @@ Maybe installing the command [chdist](https://manpages.ubuntu.com/manpages/xenia
 Shell function to find all packages in the ansible scripts
 
 ```shell
-function xail-ansible-dependencies() {
+function ai-lab-ansible-dependencies() {
     local DIR=exasol/ds/sandbox/runtime/ansible/roles
     for i in $( find "$DIR" -name "*.yml"); do
         local DEPS=$(grep -E "[a-z]+=[0-9]" "$i")

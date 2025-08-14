@@ -81,7 +81,7 @@ def new_ec2_from_ami():
         asset_id=asset_id,             
         configuration=default_config_object,
         user_name=user_name,            
-        make_ami_public=make_ami_public=False,
+        make_ami_public=False,
         ec2_instance_type=ec2_instance_type,
     )
 
