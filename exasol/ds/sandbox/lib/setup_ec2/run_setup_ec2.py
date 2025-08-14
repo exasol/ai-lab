@@ -150,18 +150,18 @@ def run_setup_ec2(
         ec2_instance_type=ec2_instance_type,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
-        ec2_instance_description: Optional[EC2Instance]
+        ec2_instance: Optional[EC2Instance]
         key_file_location: Optional[str]
-        ec2_instance_description, key_file_location = res
+        ec2_instance, key_file_location = res
 
-        if not ec2_instance_description.is_running:
+        if not ec2_instance.is_running:
             LOG.error(f"Error during startup of EC2 instance "
-                      f"'{ec2_instance_description.id}'. "
-                      f"Status is {ec2_instance_description.state_name}")
+                      f"'{ec2_instance.id}'. "
+                      f"Status is {ec2_instance.state_name}")
         else:
             LOG.info(f"You can now login to the ec2 machine with "
                      f"'ssh -i {key_file_location} "
-                     f"ubuntu@{ec2_instance_description.public_dns_name}'")
+                     f"ubuntu@{ec2_instance.public_dns_name}'")
         LOG.info('Press Ctrl+C to stop and cleanup.')
 
         def signal_handler(sig, frame):

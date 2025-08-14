@@ -61,17 +61,17 @@ def run_create_vm(
         ec2_instance_type=ec2_instance_type,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as ec2_data:
-        ec_description, key_file_location = ec2_data
-        if not ec_description.is_running:
+        ec2_instance, key_file_location = ec2_data
+        if not ec2_instance.is_running:
             raise RuntimeError(
-                f"Error during startup of EC2 instance '{ec_description.id}'. "
-                f"Status is {ec_description.state_name}"
+                f"Error during startup of EC2 instance '{ec2_instance.id}'. "
+                f"Status is {ec2_instance.state_name}"
             )
 
         # Wait for the EC-2 instance to become ready.
         time.sleep(configuration.time_to_wait_for_polling)
 
-        host_name = ec_description.public_dns_name
+        host_name = ec2_instance.public_dns_name
         run_install_dependencies(
             ansible_access,
             configuration,
@@ -88,7 +88,7 @@ def run_create_vm(
         )
         export_vm(
             aws_access,
-            ec_description.id,
+            ec2_instance.id,
             vm_image_formats,
             asset_id,
             configuration,

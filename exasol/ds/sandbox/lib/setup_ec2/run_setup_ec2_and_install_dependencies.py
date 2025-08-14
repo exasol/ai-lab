@@ -55,17 +55,17 @@ def run_setup_ec2_and_install_dependencies(
         ec2_instance_type=ec2_instance_type,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
-        ec2_instance_description, key_file_location = res
+        ec2_instance, key_file_location = res
 
-        if not ec2_instance_description.is_running:
+        if not ec2_instance.is_running:
             LOG.error(f"Error during startup of EC2 instance "
-                      f"'{ec2_instance_description.id}'. "
-                      f"Status is {ec2_instance_description.state_name}")
+                      f"'{ec2_instance.id}'. "
+                      f"Status is {ec2_instance.state_name}")
             return
 
         # Wait for the EC-2 instance to become ready.
         time.sleep(configuration.time_to_wait_for_polling)
-        host_name = ec2_instance_description.public_dns_name
+        host_name = ec2_instance.public_dns_name
         try:
             run_install_dependencies(ansible_access, configuration,
                                      (HostInfo(host_name, key_file_location),),

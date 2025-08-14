@@ -125,12 +125,12 @@ def test_run_lifecycle_for_ec2_with_context_manager(
         ec2_instance_type=test_ec2_instance_type,
     )
     with EC2StackLifecycleContextManager(res_gen, test_config) as res:
-        ec2_instance_description, key_file_location = res
+        ec2_instance, key_file_location = res
         assert not aws_access_mock.create_new_ec2_key_pair.called
         assert aws_access_mock.upload_cloudformation_stack.called
-        assert ec2_instance_description.is_running
-        assert ec2_instance_description.public_dns_name == "public_host"
-        assert ec2_instance_description.id == "abc"
+        assert ec2_instance.is_running
+        assert ec2_instance.public_dns_name == "public_host"
+        assert ec2_instance.id == "abc"
         assert key_file_location == "test_key_file_loc"
     # Check cleanup
     assert aws_access_mock.delete_stack.called

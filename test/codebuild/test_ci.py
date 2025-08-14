@@ -52,7 +52,7 @@ def _create_asset_id():
 
 
 @pytest.fixture(scope="session")
-def new_ec2_from_ami(ec2_instance_type):
+def new_ec2_from_ami(test_ec2_instance_type):
     """
     Start the EC2 instance, run all setup, export the AMI, then start
     another EC2 instance, based on the new AMI, then change the password
@@ -81,7 +81,7 @@ def new_ec2_from_ami(ec2_instance_type):
         configuration=default_config_object,
         user_name=user_name,            
         make_ami_public=False,
-        ec2_instance_type=ec2_instance_type,
+        ec2_instance_type=test_ec2_instance_type,
     )
 
     # Use the ami_name to find the AMI id (alternatively we could use the tag here)
@@ -96,23 +96,23 @@ def new_ec2_from_ami(ec2_instance_type):
         asset_id=asset_id,
         ami_id=ami.id,
         user_name=user_name,
-        ec2_instance_type=ec2_instance_type,
+        ec2_instance_type=test_ec2_instance_type,
     )
 
     try:
         with EC2StackLifecycleContextManager(lifecycle_generator, default_config_object) as ec2_data:
-            ec2_instance_description, key_file_location = ec2_data
-            assert ec2_instance_description.is_running
+            ec2_instance, key_file_location = ec2_data
+            assert ec2_instance.is_running
 
-            status = aws_access.get_instance_status(ec2_instance_description.id)
+            status = aws_access.get_instance_status(ec2_instance.id)
             while status.initializing:
                 time.sleep(10)
-                status = aws_access.get_instance_status(ec2_instance_description.id)
+                status = aws_access.get_instance_status(ec2_instance.id)
             assert status.ok
             time.sleep(10)
-            change_password(host=ec2_instance_description.public_dns_name, user='ubuntu',
+            change_password(host=ec2_instance.public_dns_name, user='ubuntu',
                             curr_pass=default_password, new_password=new_password)
-            yield ec2_instance_description.public_dns_name, new_password, default_password
+            yield ec2_instance.public_dns_name, new_password, default_password
     finally:
         # Cleanup: We need to unregister the AMI and the snapshot
         # (the rest was removed automatically by deleting the cloudformation stack)
