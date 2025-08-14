@@ -19,12 +19,12 @@ def test_ec2_lifecycle_with_local_stack(
     """
     execution_generator = run_lifecycle_for_ec2(
         aws_access=local_stack_aws_access,
+        ec2_instance_type="g4dn.xlarge",
         ec2_key_file=None,
         ec2_key_name=None,
         asset_id=default_asset_id,
         ami_id=test_dummy_ami_id,
         user_name=None,
-        ec2_instance_type="g4dn.xlarge",
     )
     status = next(execution_generator)
     ec2_instance, key_file_location = status
@@ -124,12 +124,12 @@ def test_cloudformation_access_with_local_stack(
 ):
     aws = local_stack_aws_access
     stack = CloudformationStack(
-        aws,
-        "test_key",
-        aws.get_user(),
-        default_asset_id,
-        test_dummy_ami_id,
-        test_ec2_instance_type,
+        aws_access=aws,
+        ec2_key_name="test_key",
+        user_name=aws.get_user(),
+        asset_id=default_asset_id,
+        ami_id=test_dummy_ami_id,
+        instance_type=test_ec2_instance_type,
     )
     with CloudformationStackContextManager(stack) as uploaded_stack:
         id = uploaded_stack.get_ec2_instance_id()

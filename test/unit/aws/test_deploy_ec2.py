@@ -20,12 +20,12 @@ def test_deploy_ec2_upload_invoked(
     aws = MagicMock()
     with CloudformationStackContextManager(
             CloudformationStack(
-                aws,
-                "test_key",
-                "test_user",
-                default_asset_id,
-                test_dummy_ami_id,
-                test_ec2_instance_type,
+                aws_access=aws,
+                ec2_key_name="test_key",
+                user_name="test_user",
+                asset_id=default_asset_id,
+                ami_id=test_dummy_ami_id,
+                instance_type=test_ec2_instance_type,
             )) as cloudformation:
         pass
     default_tag = tuple(create_default_asset_tag(default_asset_id.tag_value))
@@ -36,7 +36,12 @@ def test_deploy_ec2_upload_invoked(
     )
 
 
-def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id, test_dummy_ami_id):
+def test_deploy_ec2_custom_prefix(
+    ec2_cloudformation_yml,
+    default_asset_id,
+    test_dummy_ami_id,
+    test_ec2_instance_type,
+):
     """"
     Test that the custom prefix will be used for the cloudformation stack name.
     """
@@ -44,10 +49,11 @@ def test_deploy_ec2_custom_prefix(ec2_cloudformation_yml, default_asset_id, test
     aws.stack_exists.return_value = False
     with CloudformationStackContextManager(
             CloudformationStack(
-                aws,
-                "test_key",
-                "test_user",
-                default_asset_id,
-                test_dummy_ami_id,
+                aws_access=aws,
+                ec2_key_name="test_key",
+                user_name="test_user",
+                asset_id=default_asset_id,
+                ami_id=test_dummy_ami_id,
+                instance_type=test_ec2_instance_type,
             )) as cloudformation:
         assert cloudformation.stack_name.startswith("test-stack")

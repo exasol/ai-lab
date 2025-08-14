@@ -32,6 +32,7 @@ def release_codebuild_template():
 
 
 def ec2_template():
+    # why isn't this a fixture?
     return render_template(
         "ec2_cloudformation.jinja.yaml",
         key_name="test_key",

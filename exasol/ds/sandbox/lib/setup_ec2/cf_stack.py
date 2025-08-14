@@ -39,7 +39,7 @@ class CloudformationStack:
         user_name: str,
         asset_id: AssetId,
         ami_id: str,
-        instance_type: str = "t2.medium",
+        instance_type: str,
     ):
         self._aws_access = aws_access
         self._stack_name = None

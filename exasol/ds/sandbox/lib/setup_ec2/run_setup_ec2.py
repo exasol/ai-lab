@@ -39,12 +39,12 @@ def retrieve_user_name(user_name: Optional[str], aws_access: AwsAccess) -> str:
 
 def run_lifecycle_for_ec2(
     aws_access: AwsAccess,
+    ec2_instance_type: str,
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
     asset_id: AssetId,
     ami_id: str,
     user_name: Optional[str],
-    ec2_instance_type: str = "t2.medium",
 ) -> EC2LifecycleDataIterator:
     """
     This method launches a new EC2 instance, using the given AMI
@@ -74,12 +74,12 @@ def run_lifecycle_for_ec2(
         # KeyFileManagerContextManager ensures key_file to be initialized, i.e.
         # its key-pair to have been created
         stack = CloudformationStack(
-            aws_access,
-            km.key_name,
-            retrieve_user_name(user_name, aws_access),
-            asset_id,
-            ami_id,
-            ec2_instance_type,
+            aws_access=aws_access,
+            ec2_key_name=km.key_name,
+            user_name=retrieve_user_name(user_name, aws_access),
+            asset_id=asset_id,
+            ami_id=ami_id,
+            instance_type=ec2_instance_type,
         )
         with CloudformationStackContextManager(stack) as uploaded_stack:
             id = uploaded_stack.get_ec2_instance_id()
@@ -117,11 +117,11 @@ class EC2StackLifecycleContextManager:
 
 def run_setup_ec2(
     aws_access: AwsAccess,
+    ec2_instance_type: str,
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
     asset_id: AssetId,
     configuration: ConfigObject,
-    ec2_instance_type: str = "t2.medium",
 ) -> None:
     """
     Launches an EC2-instance and then waits until the user presses Ctrl-C,
@@ -142,12 +142,12 @@ def run_setup_ec2(
 
     execution_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
+        ec2_instance_type=ec2_instance_type,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         asset_id=asset_id,
         ami_id=source_ami.id,
         user_name=None,
-        ec2_instance_type=ec2_instance_type,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance: Optional[EC2Instance]

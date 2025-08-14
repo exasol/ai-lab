@@ -51,12 +51,12 @@ def test_run_lifecycle_for_ec2(
     aws_access_mock.describe_instance.side_effect = INSTANCES_STATES
     res_gen = run_lifecycle_for_ec2(
         aws_access=aws_access_mock,
+        ec2_instance_type=test_ec2_instance_type,
         ec2_key_file="test_key_file_loc",
         ec2_key_name="test_key",
         asset_id=default_asset_id,
         ami_id=test_dummy_ami_id,
         user_name=None,
-        ec2_instance_type=test_ec2_instance_type,
     )
     res = next(res_gen)
     ec2_instance_description, key_file_loc = res
@@ -117,12 +117,12 @@ def test_run_lifecycle_for_ec2_with_context_manager(
     aws_access_mock.describe_instance.side_effect = INSTANCES_STATES
     res_gen = run_lifecycle_for_ec2(
         aws_access=aws_access_mock,
+        ec2_instance_type=test_ec2_instance_type,
         ec2_key_file="test_key_file_loc",
         ec2_key_name="test_key",
         asset_id=default_asset_id,
         ami_id=test_dummy_ami_id,
         user_name=None,
-        ec2_instance_type=test_ec2_instance_type,
     )
     with EC2StackLifecycleContextManager(res_gen, test_config) as res:
         ec2_instance, key_file_location = res

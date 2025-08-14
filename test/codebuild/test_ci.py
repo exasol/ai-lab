@@ -71,17 +71,17 @@ def new_ec2_from_ami(test_ec2_instance_type):
     user_name = os.getenv("AWS_USER_NAME")
     asset_id = _create_asset_id()
     run_create_vm(
-        aws_access=aws_access,           
-        ec2_key_file=None,                 
-        ec2_key_name=None,                 
-        ansible_access=AnsibleAccess(),      
-        default_password=default_password,     
-        vm_image_formats=tuple(),              
-        asset_id=asset_id,             
-        configuration=default_config_object,
-        user_name=user_name,            
-        make_ami_public=False,
+        aws_access=aws_access,
         ec2_instance_type=test_ec2_instance_type,
+        ec2_key_file=None,
+        ec2_key_name=None,
+        ansible_access=AnsibleAccess(),
+        default_password=default_password,
+        vm_image_formats=tuple(),
+        asset_id=asset_id,
+        configuration=default_config_object,
+        user_name=user_name,
+        make_ami_public=False,
     )
 
     # Use the ami_name to find the AMI id (alternatively we could use the tag here)
@@ -91,12 +91,12 @@ def new_ec2_from_ami(test_ec2_instance_type):
 
     lifecycle_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
+        ec2_instance_type=test_ec2_instance_type,
         ec2_key_file=None,
         ec2_key_name=None,
         asset_id=asset_id,
         ami_id=ami.id,
         user_name=user_name,
-        ec2_instance_type=test_ec2_instance_type,
     )
 
     try:
