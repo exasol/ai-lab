@@ -52,7 +52,7 @@ def _create_asset_id():
 
 
 @pytest.fixture(scope="session")
-def new_ec2_from_ami():
+def new_ec2_from_ami(ec2_instance_type):
     """
     Start the EC2 instance, run all setup, export the AMI, then start
     another EC2 instance, based on the new AMI, then change the password
@@ -70,7 +70,6 @@ def new_ec2_from_ami():
     aws_access = AwsAccess(aws_profile=None)
     user_name = os.getenv("AWS_USER_NAME")
     asset_id = _create_asset_id()
-    ec2_instance_type = "t2.medium"
     run_create_vm(
         aws_access=aws_access,           
         ec2_key_file=None,                 
