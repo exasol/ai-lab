@@ -13,6 +13,6 @@ vm_options = [
     click.option(
         '--no-vm', is_flag=True,
         help="If set, no vm image will be exported. "
-        "This option takes prrecedence over 'vm-image-format'."
+        "This option takes precedence over 'vm-image-format'."
     )
 ]

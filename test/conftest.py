@@ -25,4 +25,3 @@ def test_config():
 
 def pytest_addoption(parser):
     parser.addoption(AwsLocalStackAccess.DOCKER_HOST_OPTION)
-    # "--aws-localstack-docker-host")

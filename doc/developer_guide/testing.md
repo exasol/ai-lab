@@ -1,6 +1,6 @@
 # Tests
 
-XAIL comes with a number of tests in the directory `test`.
+AI Lab comes with a number of tests in the directory `test`.
 
 | Directory              | Test Scope                 | Verified functionality | Content                                                      |
 |------------------------|----------------------------|------------------------|--------------------------------------------------------------|

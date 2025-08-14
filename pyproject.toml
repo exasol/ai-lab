@@ -1,7 +1,7 @@
 [project]
 name = "exasol-ai-lab"
 version = "3.4.0"
-description = "Exasol Artificial Intelligence Laboratory"
+description = "Exasol AI Lab"
 authors = [
     {name="Torsten Kilias", email="torsten.kilias@exasol.com"},
     {name="Mikhail Beck", email="mikhail.beck@exasol.com"},

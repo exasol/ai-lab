@@ -92,4 +92,4 @@ The following commands dealing with AWS EC2 instances support CLI option `--ec2-
 
 Typical values for this CLI option are
 * `t2.medium` -- the smallest and cheapest EC2 instance
-* `g4dn.xlarge` -- an EC2 instance incl a T4 GPU device for using GPU acceleration
+* `g4dn.xlarge` -- an EC2 instance including a T4 GPU device for using GPU acceleration

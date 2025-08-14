@@ -47,7 +47,7 @@ def run_lifecycle_for_ec2(
     ec2_instance_type: str = "t2.medium",
 ) -> EC2LifecycleDataIterator:
     """
-    This method launches a new EC-2 instance, using the given AMI
+    This method launches a new EC2 instance, using the given AMI
     (parameter ami_id), and yields every status: (pending, running).
 
     The client must check if the instance was launched successfully (by
