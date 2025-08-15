@@ -16,7 +16,7 @@ The commands are organized in 3 groups:
 ## Release commands
 
 The following commands are used during the release AWS Codebuild job:
-* `create-vm`: Create a new AMI and VM images, see also [EC2 Instance Type](#selecting-an-ec2-instance-type) and [Source AMI](#selecting-a-source-ami-aws-machine-image)
+* `create-vm`: Create a new AMI and VM images, see also [options for EC2 instances](#options-for-ec2-instances).
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
 * `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
@@ -34,7 +34,7 @@ All other commands provide a subset of the features of the release commands, and
 * `export-vm`: Create a new VM image from a running EC2-Instance.
 * `install-dependencies`: Start an ansible-installation onto an existing EC-2 instance.
 * `reset-password`: Reset password on a remote EC-2-instance via ansible.
-* `setup-ec2`: Start a new EC2 instance based on an Ubuntu AMI, see also [EC2 Instance Type](#selecting-an-ec2-instance-type) and [Source AMI](#selecting-a-source-ami-aws-machine-image).
+* `setup-ec2`: Start a new EC2 instance based on an Ubuntu AMI, see also [options for EC2 instances](#options-for-ec2-instances).
 * `setup-ec2-and-install-dependencies`: Start a new EC2 instance and install dependencies via Ansible.
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
@@ -82,20 +82,27 @@ Resources:
       Token: "{{resolve:secretsmanager:github_personal_token:SecretString:github_personal_token}}"
 ```
 
-## Selecting an EC2 Instance Type
+## Options for EC2 Instances
 
-The following commands dealing with AWS EC2 instances support CLI option `--ec2-instance-type`:
+The commands `create-vm`, `setup-ec2`, `setup-ec2-and-install-dependencies` are dealing with AWS EC2 instances and support additional options.
 
-* `create-vm`
-* `setup-ec2`
-* `setup-ec2-and-install-dependencies`
+### Selecting an EC2 Instance Type
+
+With option `--ec2-instance-type` you can specify the EC2 instance type.
 
 Typical values for this CLI option are
-* `t2.medium` -- the smallest and cheapest EC2 instance
+* `t2.medium` -- the smallest and cheapest EC2 instance, this is the default.
 * `g4dn.xlarge` -- an EC2 instance including a T4 GPU device for using GPU acceleration
 
-## Selecting a Source AMI (AWS Machine Image)
+### Selecting a Source AMI
 
-When creating an EC2 instance you can also specify the AMI to be used by the EC2 instance with CLI option `--ec2-source-ami`.
+With option `--ec2-source-ami` you can specify the source AMI (AWS Machine Image) to be used by the EC2 instance.
 
 By default the `ai-lab` CLI commands will search for AMIs matching the pattern defined in file [lib/config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py).
+
+You can find AMIs in the [AMI Catalog](https://eu-west-1.console.aws.amazon.com/ec2/home?region=eu-west-1#AMICatalog).
+
+For GPU acceleration as of August 2025 the AI Lab proposes
+* `--ec2-source-ami ami-0f753fadb2ac2b883`.
+* This is using a 64-bit x86 CPU and labeled _Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)_.
+* The 64-bit ARM variant ami-07374ff070b65c2e1 is probably not supported by the DB
