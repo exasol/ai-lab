@@ -8,7 +8,7 @@ AI-Lab contains dependencies on multiple levels and specified in multiple places
 * Requirements files in ansible scripts
   * [jupyter_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/jupyter_requirements.txt)
   * [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt)
-  * Including the notebook-connector and its dependencies SLCT and [slct_manager.py](https://github.com/exasol/notebook-connector/blob/main/exasol/nb_connector/slct_manager.py)
+  * Including the notebook-connector and its dependencies SLCT and class `SlctManager`.
 * Dependencies in other ansible scripts, e.g.
   * [docker/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml)
   * [roles/jupyter/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/defaults/main.yml)
@@ -39,7 +39,7 @@ Maybe installing the command [chdist](https://manpages.ubuntu.com/manpages/xenia
 Shell function to find all packages in the ansible scripts
 
 ```shell
-function xail-ansible-dependencies() {
+function ai-lab-ansible-dependencies() {
     local DIR=exasol/ds/sandbox/runtime/ansible/roles
     for i in $( find "$DIR" -name "*.yml"); do
         local DEPS=$(grep -E "[a-z]+=[0-9]" "$i")

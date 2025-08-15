@@ -3,7 +3,7 @@ from typing import Optional
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.aws_options import aws_options
-from exasol.ds.sandbox.cli.options.ec2_options import ec2_key_options
+from exasol.ds.sandbox.cli.options.ec2_options import ec2_instance_options, ec2_key_options
 from exasol.ds.sandbox.cli.options.id_options import id_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
@@ -18,17 +18,27 @@ from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2_and_install_dependencies impo
 @cli.command()
 @add_options(aws_options)
 @add_options(logging_options)
+@add_options(ec2_instance_options)
 @add_options(ec2_key_options)
 @add_options(id_options)
 def setup_ec2_and_install_dependencies(
-            aws_profile: str,
-            ec2_key_file: Optional[str],
-            ec2_key_name: Optional[str],
-            asset_id: str,
-            log_level: str):
+    aws_profile: str,
+    ec2_instance_type: str,
+    ec2_key_file: Optional[str],
+    ec2_key_name: Optional[str],
+    asset_id: str,
+    log_level: str,
+):
     """
     Debug command to check setup and installation of an EC-2 instance.
     """
     set_log_level(log_level)
-    run_setup_ec2_and_install_dependencies(AwsAccess(aws_profile), ec2_key_file, ec2_key_name,
-                                           AssetId(asset_id), AnsibleAccess(), default_config_object)
+    run_setup_ec2_and_install_dependencies(
+        aws_access=AwsAccess(aws_profile),
+        ec2_instance_type=ec2_instance_type,
+        ec2_key_file=ec2_key_file,
+        ec2_key_name=ec2_key_name,
+        asset_id=AssetId(asset_id),
+        ansible_access=AnsibleAccess(),
+        configuration=default_config_object,
+    )

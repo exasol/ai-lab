@@ -22,35 +22,50 @@ from exasol.ds.sandbox.lib.setup_ec2.source_ami import find_source_ami
 LOG = get_status_logger(LogType.SETUP)
 
 
-def run_setup_ec2_and_install_dependencies(aws_access: AwsAccess,
-                                           ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                                           asset_id: AssetId, ansible_access: AnsibleAccess,
-                                           configuration: ConfigObject,
-                                           ansible_run_context: AnsibleRunContext = default_ansible_run_context,
-                                           ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories
-                                           ) -> None:
+def run_setup_ec2_and_install_dependencies(
+    aws_access: AwsAccess,
+    ec2_instance_type: str,
+    ec2_key_file: Optional[str],
+    ec2_key_name: Optional[str],
+    asset_id: AssetId,
+    ansible_access: AnsibleAccess,
+    configuration: ConfigObject,
+    ansible_run_context: AnsibleRunContext = default_ansible_run_context,
+    ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories,
+) -> None:
     """
-    Runs setup of an EC2 instance and then installs all dependencies via Ansible.
-    Note that if an error occurs during the ansible installation, the EC2-machine is not removed immediately. This
-    gives you time to login into the machine and identify any setup issues.
+    Runs setup of an EC2 instance and then installs all dependencies via
+    Ansible.
+
+    Note that if an error occurs during the ansible installation, the
+    EC2-machine is not removed immediately. This gives you time to login into
+    the machine and identify any setup issues.
+
     You can stop the EC-2 machine by pressing Ctrl-C.
     """
     source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
     LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name,
-                                                asset_id, source_ami.id, user_name=None)
+    execution_generator = run_lifecycle_for_ec2(
+        aws_access=aws_access,
+        ec2_instance_type=ec2_instance_type,
+        ec2_key_file=ec2_key_file,
+        ec2_key_name=ec2_key_name,
+        asset_id=asset_id,
+        ami_id=source_ami.id,
+        user_name=None,
+    )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
-        ec2_instance_description, key_file_location = res
+        ec2_instance, key_file_location = res
 
-        if not ec2_instance_description.is_running:
+        if not ec2_instance.is_running:
             LOG.error(f"Error during startup of EC2 instance "
-                      f"'{ec2_instance_description.id}'. "
-                      f"Status is {ec2_instance_description.state_name}")
+                      f"'{ec2_instance.id}'. "
+                      f"Status is {ec2_instance.state_name}")
             return
 
         # Wait for the EC-2 instance to become ready.
         time.sleep(configuration.time_to_wait_for_polling)
-        host_name = ec2_instance_description.public_dns_name
+        host_name = ec2_instance.public_dns_name
         try:
             run_install_dependencies(ansible_access, configuration,
                                      (HostInfo(host_name, key_file_location),),

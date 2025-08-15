@@ -25,7 +25,11 @@ INSTANCES_STATES = [
 ]
 
 
-def test_run_lifecycle_for_ec2(default_asset_id, test_dummy_ami_id):
+def test_run_lifecycle_for_ec2(
+    default_asset_id,
+    test_dummy_ami_id,
+    test_ec2_instance_type,
+):
     """
     Test that the EC2 deployment and cleanup works as expected. The test
     calls execute_setup_ec2() and simulates the return states from AWS (2x
@@ -45,8 +49,15 @@ def test_run_lifecycle_for_ec2(default_asset_id, test_dummy_ami_id):
     aws_access_mock.get_all_stack_resources.return_value = stack_resources_mock
     aws_access_mock.stack_exists.return_value = False
     aws_access_mock.describe_instance.side_effect = INSTANCES_STATES
-    res_gen = run_lifecycle_for_ec2(aws_access_mock, "test_key_file_loc", "test_key",
-                                    default_asset_id, test_dummy_ami_id, user_name=None)
+    res_gen = run_lifecycle_for_ec2(
+        aws_access=aws_access_mock,
+        ec2_instance_type=test_ec2_instance_type,
+        ec2_key_file="test_key_file_loc",
+        ec2_key_name="test_key",
+        asset_id=default_asset_id,
+        ami_id=test_dummy_ami_id,
+        user_name=None,
+    )
     res = next(res_gen)
     ec2_instance_description, key_file_loc = res
 
@@ -78,7 +89,12 @@ def test_run_lifecycle_for_ec2(default_asset_id, test_dummy_ami_id):
         next(res_gen)
 
 
-def test_run_lifecycle_for_ec2_with_context_manager(default_asset_id, test_dummy_ami_id, test_config):
+def test_run_lifecycle_for_ec2_with_context_manager(
+    default_asset_id,
+    test_dummy_ami_id,
+    test_config,
+    test_ec2_instance_type,
+):
     """
     Test that the EC2 deployment and cleanup works as expected, by using
     the context manager helper class.  The test calls execute_setup_ec2() and
@@ -100,20 +116,21 @@ def test_run_lifecycle_for_ec2_with_context_manager(default_asset_id, test_dummy
     aws_access_mock.stack_exists.return_value = False
     aws_access_mock.describe_instance.side_effect = INSTANCES_STATES
     res_gen = run_lifecycle_for_ec2(
-        aws_access_mock,
-        "test_key_file_loc",
-        "test_key",
-        default_asset_id,
-        test_dummy_ami_id,
+        aws_access=aws_access_mock,
+        ec2_instance_type=test_ec2_instance_type,
+        ec2_key_file="test_key_file_loc",
+        ec2_key_name="test_key",
+        asset_id=default_asset_id,
+        ami_id=test_dummy_ami_id,
         user_name=None,
     )
     with EC2StackLifecycleContextManager(res_gen, test_config) as res:
-        ec2_instance_description, key_file_location = res
+        ec2_instance, key_file_location = res
         assert not aws_access_mock.create_new_ec2_key_pair.called
         assert aws_access_mock.upload_cloudformation_stack.called
-        assert ec2_instance_description.is_running
-        assert ec2_instance_description.public_dns_name == "public_host"
-        assert ec2_instance_description.id == "abc"
+        assert ec2_instance.is_running
+        assert ec2_instance.public_dns_name == "public_host"
+        assert ec2_instance.id == "abc"
         assert key_file_location == "test_key_file_loc"
     # Check cleanup
     assert aws_access_mock.delete_stack.called

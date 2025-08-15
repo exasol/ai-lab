@@ -1,6 +1,11 @@
 # Commands
 
-The AI-Lab CLI offers commands in the following three groups:
+The following command shows all commands provided by the AI Lab CLI:
+```shell
+poetry run ai-lab --help
+```
+
+The commands are organized in 3 groups:
 
 | Group                | Usage                                   |
 |----------------------|-----------------------------------------|
@@ -11,7 +16,7 @@ The AI-Lab CLI offers commands in the following three groups:
 ## Release commands
 
 The following commands are used during the release AWS Codebuild job:
-* `create-vm`: Create a new AMI and VM images.
+* `create-vm`: Create a new AMI and VM images, see also [EC2 Instance Type](#selecting-an-ec2-instance-type)
 * `update-release`: Update release notes of an existing Github release.
 * `start-release-build`: Start the release on AWS codebuild.
 * `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
@@ -29,7 +34,7 @@ All other commands provide a subset of the features of the release commands, and
 * `export-vm`: Create a new VM image from a running EC2-Instance.
 * `install-dependencies`: Start an ansible-installation onto an existing EC-2 instance.
 * `reset-password`: Reset password on a remote EC-2-instance via ansible.
-* `setup-ec2`: Start a new EC2 instance (based on an Ubuntu AMI).
+* `setup-ec2`: Start a new EC2 instance based on an Ubuntu AMI, see also [EC2 Instance Type](#selecting-an-ec2-instance-type).
 * `setup-ec2-and-install-dependencies`: Start a new EC2 instance and install dependencies via Ansible.
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
@@ -76,3 +81,15 @@ Resources:
       Username: "{{resolve:secretsmanager:github_personal_token:SecretString:github_user_name}}"
       Token: "{{resolve:secretsmanager:github_personal_token:SecretString:github_personal_token}}"
 ```
+
+## Selecting an EC2 Instance Type
+
+The following commands dealing with AWS EC2 instances support CLI option `--ec2-instance-type`:
+
+* `create-vm`
+* `setup-ec2`
+* `setup-ec2-and-install-dependencies`
+
+Typical values for this CLI option are
+* `t2.medium` -- the smallest and cheapest EC2 instance
+* `g4dn.xlarge` -- an EC2 instance including a T4 GPU device for using GPU acceleration

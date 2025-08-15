@@ -3,5 +3,9 @@
 import exasol.ds.sandbox.cli.commands
 from exasol.ds.sandbox.cli.cli import cli
 
-if __name__ == '__main__':
+def main():
     cli()
+
+if __name__ == '__main__':
+    main()
+

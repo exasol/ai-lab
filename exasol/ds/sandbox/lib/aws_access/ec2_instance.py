@@ -24,6 +24,10 @@ class EC2Instance:
         return self._aws_object["PublicDnsName"]
 
     @property
+    def instance_type(self) -> str:
+        return self._aws_object["InstanceType"]
+
+    @property
     def is_pending(self) -> bool:
         return self.state_name == "pending"
 

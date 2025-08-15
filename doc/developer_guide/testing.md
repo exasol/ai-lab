@@ -1,6 +1,17 @@
 # Tests
 
-XAIL comes with a number of tests in the directory `test`. Besides, unit and integration tests in the respective directories, there are tests in the directory `codebuild`, see [Executing AWS CodeBuild](ci.md#executing-aws-codebuild).
+AI Lab comes with a number of tests in the directory `test`.
+
+| Directory              | Test Scope                 | Verified functionality | Content                                                      |
+|------------------------|----------------------------|------------------------|--------------------------------------------------------------|
+| `unit`                 | Unit tests                 | arbitrary              | pytest test cases                                            |
+| `integration`          | Integration tests          | arbitrary              | pytest test cases                                            |
+| `ansible`              | Unit tests                 | ansible                | Resources                                                    |
+| `aws`                  | Unit and Integration tests | AWS                    | Fixtures etc.                                                |
+| `codebuild`            | AWS CodeBuild tests        | test cases             | see [Executing AWS CodeBuild](ci.md#executing-aws-codebuild) |
+| `docker`               | Integration tests          | Docker                 | Fixtures etc.                                                |
+| `notebook_test_runner` | End-2-end tests            | Jupyter notebooks      | Runner for executing the test cases                          |
+| `notebooks`            | End-2-end tests            | Jupyter notebooks      | pytest test cases                                            |
 
 ## Speeding up Docker-based Tests
 
@@ -19,7 +30,7 @@ poetry run -- exasol/ds/sandbox/main.py \
 To use an existing docker image in the tests in `integration/test_create_dss_docker_image.py`, simply add the CLI option `--dss-docker-image` when calling `pytest`:
 
 ```shell
-poetry run -- pytest --dss-docker-image exasol/ai-lab:3.1.0
+poetry run -- pytest --dss-docker-image exasol/ai-lab:3.3.0
 ```
 
 ## Tests for Jupyter Notebooks
@@ -45,9 +56,24 @@ The CLI option to keep the image is `--keep-docker-image-notebook-test`, the opt
 poetry run -- pytest --docker-image-notebook-test <name:version>
 ```
 
+## Executing Tests Using AWS Localstack
+
+Some of the integration tests involving AWS services are using [Localstack](https://docs.docker.com/guides/localstack/) instead of real AWS services.
+
+The AI Lab tests can interact with the emulated services inside a Localstack Docker Container like with real AWS services saving time and costs for cloud resources.
+
+Use pytest option `--aws-localstack-docker-host` to specify the ip address of the Docker host if different from `localhost`, which means that also localstack is listening on ports of this host.
+
+The following pytest fixtures in file `test/integration/aws/conftest.py` will detect this option and act accordingly:
+
+* `local_stack` configures localstack to forward its internal port.
+* `local_stack_aws_access` passes the Docker host to the constructor of `AwsLocalStackAccess`.
+
+See also [localstack documentation](https://docs.localstack.cloud/aws/capabilities/networking/external-port-range/).
+
 ## Executing Tests Involving AWS Resources
 
-In the AWS web interface, IAM create an access key for CLI usage and save or download the *access key id* and the *secret access key*.
+In the AWS web interface, section IAM create an access key for CLI usage and save or download the *access key id* and the *secret access key*.
 
 In the file `~/.aws/config`, add lines:
 

@@ -37,34 +37,57 @@ def retrieve_user_name(user_name: Optional[str], aws_access: AwsAccess) -> str:
         return user_name_from_aws
 
 
-def run_lifecycle_for_ec2(aws_access: AwsAccess,
-                          ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                          asset_id: AssetId, ami_id: str, user_name: Optional[str]) -> EC2LifecycleDataIterator:
+def run_lifecycle_for_ec2(
+    aws_access: AwsAccess,
+    ec2_instance_type: str,
+    ec2_key_file: Optional[str],
+    ec2_key_name: Optional[str],
+    asset_id: AssetId,
+    ami_id: str,
+    user_name: Optional[str],
+) -> EC2LifecycleDataIterator:
     """
-    This method launches a new EC-2 instance, using the given AMI (parameter ami_id), and yields every status:
-    (pending, running). After it has yielded any other status than 'pending',
-    when calling next() on the iterator object again, it will shutdown the instance.
-    The client must check if the instance was launched successfully (by checking EC2Instance's state).
-    :param aws_access: AwsAccess proxy.
-    :param ec2_key_file:  The private key file to use for the EC2-Instance.
-    :param ec2_key_name:  The key name of the key to use for the EC2-Instance.
-    :param asset_id: The asset id to use: Will use the tags (for the cloudformation stack and the key) and the prefix of the cloudformation stack
-    :param ami_id: The id of the AMI to use.
-    :param user_name: Optional username to be used. If not given, the function will try to retrieve the user name from the AWS profile (however, this does not work for IAM roles).
-    :return: An iterator which can be used to control the lifecycle of the EC2-instance.
-    """
-    with KeyFileManagerContextManager(KeyFileManager(aws_access, ec2_key_name, ec2_key_file, asset_id.tag_value)) as km:
-        with CloudformationStackContextManager(CloudformationStack(aws_access, km.key_name,
-                                                                   retrieve_user_name(user_name, aws_access),
-                                                                   asset_id, ami_id)) \
-                as cf_stack:
-            ec2_instance_id = cf_stack.get_ec2_instance_id()
+    This method launches a new EC2 instance, using the given AMI
+    (parameter ami_id), and yields every status: (pending, running).
 
-            LOG.info(f"Waiting for EC2 instance ({ec2_instance_id}) to start...")
+    The client must check if the instance was launched successfully (by
+    checking EC2Instance's state).  When calling next() on the iterator object
+    after a status other than 'pending' was yielded, the method will shutdown
+    the EC2 instance.
+
+    :param aws_access: AwsAccess proxy.
+    :param ec2_key_file: The private key file to use for the EC2-Instance.
+    :param ec2_key_name: The key name of the key to use for the EC2-Instance.
+    :param asset_id: The asset id to use: Will use the tags (for the
+           cloudformation stack and the key) and the prefix of the
+           cloudformation stack
+    :param ami_id: The id of the AMI to use.
+    :param user_name: Optional username to be used. If not given, the function
+           will try to retrieve the user name from the AWS profile (however,
+           this does not work for IAM roles).
+    :param ec2_instance_type: The name of the EC2 instance type to use.
+    :return: An iterator which can be used to control the lifecycle of the
+            EC2-instance.
+    """
+    key_file = KeyFileManager(aws_access, ec2_key_name, ec2_key_file, asset_id.tag_value)
+    with KeyFileManagerContextManager(key_file) as km:
+        # KeyFileManagerContextManager ensures key_file to be initialized, i.e.
+        # its key-pair to have been created
+        stack = CloudformationStack(
+            aws_access=aws_access,
+            ec2_key_name=km.key_name,
+            user_name=retrieve_user_name(user_name, aws_access),
+            asset_id=asset_id,
+            ami_id=ami_id,
+            instance_type=ec2_instance_type,
+        )
+        with CloudformationStackContextManager(stack) as uploaded_stack:
+            id = uploaded_stack.get_ec2_instance_id()
+            LOG.info(f"Waiting for EC2 instance ({id}) to start...")
             while True:
-                ec2_instance_description = aws_access.describe_instance(ec2_instance_id)
-                yield ec2_instance_description, km.key_file_location
-                if not ec2_instance_description.is_pending:
+                description = aws_access.describe_instance(id)
+                yield description, km.key_file_location
+                if not description.is_pending:
                     break
     yield None, None
 
@@ -92,33 +115,53 @@ class EC2StackLifecycleContextManager:
         next(self._lifecycle_generator)
 
 
-def run_setup_ec2(aws_access: AwsAccess, ec2_key_file: Optional[str], ec2_key_name: Optional[str],
-                  asset_id: AssetId, configuration: ConfigObject) -> None:
+def run_setup_ec2(
+    aws_access: AwsAccess,
+    ec2_instance_type: str,
+    ec2_key_file: Optional[str],
+    ec2_key_name: Optional[str],
+    asset_id: AssetId,
+    configuration: ConfigObject,
+) -> None:
     """
-    Launches an EC2-instance and then waits until the user presses Ctrl-C, then shuts down the instance again.
+    Launches an EC2-instance and then waits until the user presses Ctrl-C,
+    then shuts down the instance again.
+
     :param aws_access: AWSAccess proxy.
-    :param ec2_key_file:  The private key file to use for the EC2-Instance.
-    :param ec2_key_name:  The key name of the key to use for the EC2-Instance.
-    :param asset_id: The asset id to use: Will use the tags (for the cloudformation stack and the key) and the prefix of the cloudformation stack
+    :param ec2_key_file: The private key file to use for the EC2-Instance.
+    :param ec2_key_name: The key name of the key to use for the EC2-Instance.
+    :param asset_id: The asset id to use: Will use the tags (for the
+           cloudformation stack and the key) and the prefix of the
+           cloudformation stack
     :param configuration: The global configuration to use.
+    :param ec2_instance_type: The name of the EC2 instance type to use,
+           e.g. "t2.medium".
     """
     source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
     LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
-    execution_generator = run_lifecycle_for_ec2(aws_access, ec2_key_file, ec2_key_name,
-                                                asset_id, source_ami.id, user_name=None)
-    with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
-        ec2_instance_description: Optional[EC2Instance]
-        key_file_location: Optional[str]
-        ec2_instance_description, key_file_location = res
 
-        if not ec2_instance_description.is_running:
+    execution_generator = run_lifecycle_for_ec2(
+        aws_access=aws_access,
+        ec2_instance_type=ec2_instance_type,
+        ec2_key_file=ec2_key_file,
+        ec2_key_name=ec2_key_name,
+        asset_id=asset_id,
+        ami_id=source_ami.id,
+        user_name=None,
+    )
+    with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
+        ec2_instance: Optional[EC2Instance]
+        key_file_location: Optional[str]
+        ec2_instance, key_file_location = res
+
+        if not ec2_instance.is_running:
             LOG.error(f"Error during startup of EC2 instance "
-                      f"'{ec2_instance_description.id}'. "
-                      f"Status is {ec2_instance_description.state_name}")
+                      f"'{ec2_instance.id}'. "
+                      f"Status is {ec2_instance.state_name}")
         else:
             LOG.info(f"You can now login to the ec2 machine with "
                      f"'ssh -i {key_file_location} "
-                     f"ubuntu@{ec2_instance_description.public_dns_name}'")
+                     f"ubuntu@{ec2_instance.public_dns_name}'")
         LOG.info('Press Ctrl+C to stop and cleanup.')
 
         def signal_handler(sig, frame):

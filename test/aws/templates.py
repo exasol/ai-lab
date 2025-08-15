@@ -32,6 +32,7 @@ def release_codebuild_template():
 
 
 def ec2_template():
+    # why isn't this a fixture?
     return render_template(
         "ec2_cloudformation.jinja.yaml",
         key_name="test_key",
@@ -39,6 +40,7 @@ def ec2_template():
         trace_tag=DEFAULT_TAG_KEY,
         trace_tag_value=DEFAULT_ASSET_ID.tag_value,
         ami_id=TEST_DUMMY_AMI_ID,
+        instance_type="t2.medium",
     )
 
 

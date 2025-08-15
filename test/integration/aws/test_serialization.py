@@ -67,6 +67,7 @@ def create_cloudformation_stack_and_serialize(
         q: mp.Queue,
         default_asset_id: AssetId,
         test_dummy_ami_id: str,
+        test_ec2_instance_type: str,
 ):
     try:
         aws = AwsLocalStackAccess(aws_key_id, aws_secret_key)
@@ -74,14 +75,19 @@ def create_cloudformation_stack_and_serialize(
         key_file_manager.create_key_if_needed()
         with open(tmp_location_key_manager, "wb") as f:
             pickle.dump(key_file_manager, f)
-        cloudformation = CloudformationStack(aws, key_file_manager.key_name,
-                                             aws.get_user(), default_asset_id,
-                                             test_dummy_ami_id)
-        cloudformation.upload_cloudformation_stack()
+        stack = CloudformationStack(
+            aws_access=aws,
+            ec2_key_name=key_file_manager.key_name,
+            user_name=aws.get_user(),
+            asset_id=default_asset_id,
+            ami_id=test_dummy_ami_id,
+            instance_type=test_ec2_instance_type,
+        )
+        stack.upload_cloudformation_stack()
         with open(tmp_location_cloudformation, "wb") as f:
-            pickle.dump(cloudformation, f)
-        q.put(cloudformation.stack_name)
-        q.put(cloudformation.get_ec2_instance_id())
+            pickle.dump(stack, f)
+        q.put(stack.stack_name)
+        q.put(stack.get_ec2_instance_id())
     except Exception as e:
         traceback.print_exc()
         raise e
@@ -92,9 +98,11 @@ def test_cloudformation_stack_with_local_stack(
         local_stack_aws_access,
         default_asset_id,
         test_dummy_ami_id,
+        test_ec2_instance_type,
 ):
     """
-    Test that serialization and deserialization of CloudformationStack work!
+    This test verifies serialization and deserialization of
+    CloudformationStack.
     """
     tmp_file_key_file = Path(tmp_path) / "key_file_manager.data"
     tmp_file_cloud_formation = Path(tmp_path) / "cloudformation.data"
@@ -109,6 +117,7 @@ def test_cloudformation_stack_with_local_stack(
             q,
             default_asset_id,
             test_dummy_ami_id,
+            test_ec2_instance_type,
         ))
     p.start()
     p.join()

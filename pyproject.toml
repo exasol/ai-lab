@@ -1,7 +1,7 @@
 [project]
 name = "exasol-ai-lab"
-version = "3.3.0"
-description = "Provide AI-Lab editions."
+version = "3.4.0"
+description = "Exasol AI Lab"
 authors = [
     {name="Torsten Kilias", email="torsten.kilias@exasol.com"},
     {name="Mikhail Beck", email="mikhail.beck@exasol.com"},
@@ -14,9 +14,9 @@ dynamic = ["classifiers"]
 
 [project.urls]
 Homepage = "https://github.com/exasol/ai-lab"
-Documentation = "https://github.io/exasol/ai-lab"
-Source = "https://github.io/exasol/ai-lab"
-Issues = "https://github.io/exasol/ai-lab/issues"
+Documentation = "https://github.com/exasol/ai-lab"
+Source = "https://github.com/exasol/ai-lab"
+Issues = "https://github.com/exasol/ai-lab/issues"
 
 [tool.poetry]
 packages = [ {include = "exasol"}, ]
@@ -77,3 +77,6 @@ filterwarnings = [
     "ignore:the imp module is deprecated:DeprecationWarning",
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
 ]
+
+[tool.poetry.plugins."console_scripts"]
+ai-lab = "exasol.ds.sandbox.main:main"
