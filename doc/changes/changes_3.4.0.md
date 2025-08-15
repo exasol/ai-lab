@@ -1,12 +1,12 @@
-# AI-Lab 3.4.0 released TBD
+# AI-Lab 3.4.0 released <TBD>
 
-Code name:
+Code name: Support GPU usage in AWS EC2 instances
 
 ## Summary
 
-This release add support for arbitrary AWS EC2 instance types, e.g. T4 GPU.
+This release add support for arbitrary AWS EC2 instance types (e.g. T4 GPU) and AWS Machine Images (AMI).
 
-See the affected CLI commands in Developer Guide
+See the related CLI commands in the Developer Guide
 * `create-vm`
 * `setup-ec2`
 * `setup-ec2-and-install-dependencies`
@@ -14,3 +14,6 @@ See the affected CLI commands in Developer Guide
 ## Features
 
 * #376: Added support for arbitrary AWS EC2 instance types, e.g. T4 GPU
+* #379: Updated AI Lab version in user guide and developer guide
+* #380: Updated version of PTB actions used in GitHub workflows
+* #381: Supported using arbitrary AWS machine images (AMI)
