@@ -105,4 +105,4 @@ You can find AMIs in the [AMI Catalog](https://eu-west-1.console.aws.amazon.com/
 For GPU acceleration as of August 2025 the AI Lab proposes
 * `--ec2-source-ami ami-0f753fadb2ac2b883`.
 * This is using a 64-bit x86 CPU and labeled _Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)_.
-* The 64-bit ARM variant ami-07374ff070b65c2e1 is probably not supported by the DB
+* The 64-bit ARM variant ami-07374ff070b65c2e1 is not supported by the DB
