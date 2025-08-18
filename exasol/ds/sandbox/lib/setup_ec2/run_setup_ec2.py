@@ -11,7 +11,7 @@ from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
     CloudformationStackContextManager
 from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, \
     KeyFileManagerContextManager
-from exasol.ds.sandbox.lib.setup_ec2.source_ami import find_source_ami
+from exasol.ds.sandbox.lib.setup_ec2.source_ami import source_ami_id_with_logging
 
 
 LOG = get_status_logger(LogType.SETUP)
@@ -118,6 +118,7 @@ class EC2StackLifecycleContextManager:
 def run_setup_ec2(
     aws_access: AwsAccess,
     ec2_instance_type: str,
+    ec2_source_ami: Optional[str],
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
     asset_id: AssetId,
@@ -137,16 +138,18 @@ def run_setup_ec2(
     :param ec2_instance_type: The name of the EC2 instance type to use,
            e.g. "t2.medium".
     """
-    source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
-    LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
-
+    source_ami_id = ec2_source_ami or source_ami_id_with_logging(
+        aws_access,
+        configuration.source_ami_filters,
+        LOG,
+    )
     execution_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
         ec2_instance_type=ec2_instance_type,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         asset_id=asset_id,
-        ami_id=source_ami.id,
+        ami_id=source_ami_id,
         user_name=None,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:

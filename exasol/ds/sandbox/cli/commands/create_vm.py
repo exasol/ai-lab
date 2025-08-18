@@ -32,6 +32,7 @@ from exasol.ds.sandbox.lib.run_create_vm import run_create_vm
 def create_vm(
     aws_profile: str,
     ec2_instance_type: str,
+    ec2_source_ami: Optional[str],
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
     default_password: str,
@@ -49,6 +50,7 @@ def create_vm(
     run_create_vm(
         aws_access=AwsAccess(aws_profile),
         ec2_instance_type=ec2_instance_type,
+        ec2_source_ami=ec2_source_ami,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         ansible_access=AnsibleAccess(),
