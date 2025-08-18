@@ -10,7 +10,7 @@ pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details
 ipyfilechooser==0.6.0 # required for SLC notebooks
 ipywidgets==8.1.5 # enable interactive Javascript widgets in the notebooks
 
-git+https://github.com/exasol/notebook-connector.git@main#egg=exasol-notebook-connector
+exasol-notebook-connector==1.0.0
 # dependency resolution from poetry export in notebook-connector
 # removed nvidia dependencies, because they are very large and currently not needed
 # removed scikit-learn, because it is explicitly defined to be compatible with builtin SLC of the DB
