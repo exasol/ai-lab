@@ -73,6 +73,7 @@ def new_ec2_from_ami(test_ec2_instance_type):
     run_create_vm(
         aws_access=aws_access,
         ec2_instance_type=test_ec2_instance_type,
+        ec2_source_ami=None,
         ec2_key_file=None,
         ec2_key_name=None,
         ansible_access=AnsibleAccess(),

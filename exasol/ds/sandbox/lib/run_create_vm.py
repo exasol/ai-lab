@@ -21,7 +21,7 @@ from exasol.ds.sandbox.lib.setup_ec2.run_reset_password import \
     run_reset_password
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import (
     EC2StackLifecycleContextManager, run_lifecycle_for_ec2)
-from exasol.ds.sandbox.lib.setup_ec2.source_ami import find_source_ami
+from exasol.ds.sandbox.lib.setup_ec2.source_ami import source_ami_id_with_logging
 
 LOG = get_status_logger(LogType.CREATE_VM)
 
@@ -29,6 +29,7 @@ LOG = get_status_logger(LogType.CREATE_VM)
 def run_create_vm(
     aws_access: AwsAccess,
     ec2_instance_type: str,
+    ec2_source_ami: Optional[str],
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
     ansible_access: AnsibleAccess,
@@ -49,15 +50,18 @@ def run_create_vm(
     If anything goes wrong the cloudformation stack of the EC-2 instance will be removed.
     For debuging you can use the available debug commands.
     """
-    source_ami = find_source_ami(aws_access, configuration.source_ami_filters)
-    LOG.info(f"Using source ami: '{source_ami.name}' from {source_ami.creation_date}")
+    source_ami_id = ec2_source_ami or source_ami_id_with_logging(
+        aws_access,
+        configuration.source_ami_filters,
+        LOG,
+    )
     execution_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
         ec2_instance_type=ec2_instance_type,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         asset_id=asset_id,
-        ami_id=source_ami.id,
+        ami_id=source_ami_id,
         user_name=user_name,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as ec2_data:

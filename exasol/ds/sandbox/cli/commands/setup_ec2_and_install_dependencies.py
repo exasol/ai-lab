@@ -24,6 +24,7 @@ from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2_and_install_dependencies impo
 def setup_ec2_and_install_dependencies(
     aws_profile: str,
     ec2_instance_type: str,
+    ec2_source_ami: Optional[str],
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
     asset_id: str,
@@ -36,6 +37,7 @@ def setup_ec2_and_install_dependencies(
     run_setup_ec2_and_install_dependencies(
         aws_access=AwsAccess(aws_profile),
         ec2_instance_type=ec2_instance_type,
+        ec2_source_ami=ec2_source_ami,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         asset_id=AssetId(asset_id),
