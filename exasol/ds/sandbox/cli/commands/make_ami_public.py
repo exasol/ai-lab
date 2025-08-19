@@ -18,7 +18,7 @@ def make_ami_public(
             asset_id: str,
             log_level: str):
     """
-    Debug command which makes an existing AMI public.
+    Developer command making an existing AMI public.
     """
     set_log_level(log_level)
     run_make_ami_public(AwsAccess(aws_profile), AssetId(asset_id))

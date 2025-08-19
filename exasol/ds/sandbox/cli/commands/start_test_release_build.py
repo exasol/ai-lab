@@ -29,9 +29,9 @@ def start_test_release_build(
         release_title: str
 ):
     """
-    This command triggers the AWS release Codebuild to generate a new
-    sandbox test version. GitHub token is expected to be found in environment
-    variable GITHUB_TOKEN.
+    Developer command triggering the AWS release Codebuild to generate a
+    new sandbox test version. GitHub token is expected to be found in
+    environment variable GITHUB_TOKEN.
     """
     set_log_level(log_level)
     gh_token = github_token_or_exit()

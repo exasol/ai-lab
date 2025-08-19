@@ -60,10 +60,11 @@ def create_docker_image(
         log_level: str,
 ):
     """
-    Create a Docker image for ai-lab.  If option ``--publish`` is
-    specified then deploy the image to the Docker registry using the specified
-    user name and reading the password from environment variable
-    ``PASSWORD_ENV``.
+    Release command creating a Docker image of the AI Lab.
+
+    If option ``--publish`` is specified then deploy the image to the Docker
+    registry using the specified user name and reading the password from
+    environment variable ``PASSWORD_ENV``.
     """
 
     def registry_password():

@@ -15,7 +15,7 @@ def setup_release_codebuild(
             aws_profile: str,
             log_level: str):
     """
-    Command to deploy the Release CodeBuild stack
+    Deployment command for the Release CodeBuild stack.
     """
     set_log_level(log_level)
     run_setup_release_codebuild(AwsAccess(aws_profile))

@@ -14,7 +14,7 @@ def setup_ci_codebuild(
             aws_profile: str,
             log_level: str):
     """
-    Command to deploy the CI CodeBuild stack
+    Deployment command for the CI CodeBuild stack.
     """
     set_log_level(log_level)
     run_setup_ci_codebuild(AwsAccess(aws_profile))

@@ -2,6 +2,7 @@ import signal
 import time
 from typing import Optional, Tuple, Iterator
 
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
@@ -13,6 +14,7 @@ from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, \
     KeyFileManagerContextManager
 from exasol.ds.sandbox.lib.setup_ec2.source_ami import source_ami_id_with_logging
 
+from exasol.ds.sandbox.lib.ansible.dependency_installer import AnsibleDependencyInstaller
 
 LOG = get_status_logger(LogType.SETUP)
 
@@ -115,6 +117,27 @@ class EC2StackLifecycleContextManager:
         next(self._lifecycle_generator)
 
 
+def install_dependencies(
+    host_name: str,
+    key_file_location: Optional[str],
+    configuration: ConfigObject,
+    installer: AnsibleDependencyInstaller,
+) -> None:
+    # Wait for the EC-2 instance to become ready.
+    time.sleep(configuration.time_to_wait_for_polling)
+    try:
+        host_info = HostInfo(host_name, key_file_location)
+        run_install_dependencies(
+            ansible_access=installer.ansible_access,
+            configuration=configuration,
+            host_infos=(host_info,),
+            ansible_run_context=installer.run_context,
+            ansible_repositories=installer.repositories,
+        )
+    except Exception as e:
+        LOG.exception("Failed to install dependencies.")
+
+
 def run_setup_ec2(
     aws_access: AwsAccess,
     ec2_instance_type: str,
@@ -123,20 +146,23 @@ def run_setup_ec2(
     ec2_key_name: Optional[str],
     asset_id: AssetId,
     configuration: ConfigObject,
+    dependency_installer: Optional[AnsibleDependencyInstaller],
 ) -> None:
     """
     Launches an EC2-instance and then waits until the user presses Ctrl-C,
     then shuts down the instance again.
 
     :param aws_access: AWSAccess proxy.
+    :param ec2_instance_type: The name of the EC2 instance type to use,
+           e.g. "t2.medium".
     :param ec2_key_file: The private key file to use for the EC2-Instance.
     :param ec2_key_name: The key name of the key to use for the EC2-Instance.
     :param asset_id: The asset id to use: Will use the tags (for the
            cloudformation stack and the key) and the prefix of the
            cloudformation stack
     :param configuration: The global configuration to use.
-    :param ec2_instance_type: The name of the EC2 instance type to use,
-           e.g. "t2.medium".
+    :param dependency_installer: If provided then additionally install
+           dependencies using the provided installer.
     """
     source_ami_id = ec2_source_ami or source_ami_id_with_logging(
         aws_access,
@@ -158,19 +184,35 @@ def run_setup_ec2(
         ec2_instance, key_file_location = res
 
         if not ec2_instance.is_running:
-            LOG.error(f"Error during startup of EC2 instance "
-                      f"'{ec2_instance.id}'. "
-                      f"Status is {ec2_instance.state_name}")
+            LOG.error(
+                f"Error during startup of EC2 instance '{ec2_instance.id}', "
+                f"status {ec2_instance.state_name}."
+            )
         else:
-            LOG.info(f"You can now login to the ec2 machine with "
-                     f"'ssh -i {key_file_location} "
-                     f"ubuntu@{ec2_instance.public_dns_name}'")
-        LOG.info('Press Ctrl+C to stop and cleanup.')
+            host_name = ec2_instance.public_dns_name
+            if dependency_installer is not None:
+                install_dependencies(
+                    host_name=host_name,
+                    key_file_location=key_file_location,
+                    configuration=configuration,
+                    installer=dependency_installer,
+                )
+
+            LOG.info(
+                "\n-----------------------------------------------------\n"
+                "You can now login to the ec2 machine with\n"
+                f"'ssh -i {key_file_location} ubuntu@{host_name}'"
+            )
+            if dependency_installer:
+                # literal value to be replaced by variable in ticket #140
+                LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
+
+        LOG.info("Press Ctrl+C to stop and cleanup.")
 
         def signal_handler(sig, frame):
-            LOG.info('Start cleanup.')
+            LOG.info("Start cleanup.")
 
         signal.signal(signal.SIGINT, signal_handler)
         signal.pause()
 
-    LOG.info('Cleanup done.')
+    LOG.info("Cleanup done.")

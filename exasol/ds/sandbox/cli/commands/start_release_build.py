@@ -26,7 +26,8 @@ def start_release_build(
         upload_url: str,
         branch: str):
     """
-    This command  triggers the AWS release Codebuild to generate a new sandbox version.
+    Release command triggering the AWS release Codebuild to generate a new
+    version of the AI Lab.
     """
     set_log_level(log_level)
     run_start_release_build(AwsAccess(aws_profile), default_config_object,

@@ -24,7 +24,7 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
     example-data-s3 = AI-Lab example data accessed via S3.""")
 def setup_s3_bucket(aws_profile: str, log_level: str, purpose: str):
     """
-    Command to deploy one of the AI-Lab S3-Buckets for the specified
+    Deployment command for one of the AI-Lab S3-Buckets for the specified
     PURPOSE:\n
     * vm: S3 bucket for virtual machine images\n
     * example-data-http: S3 bucket for Example-Data to be accessed via HTTP
