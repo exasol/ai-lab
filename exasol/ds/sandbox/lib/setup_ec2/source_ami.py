@@ -1,21 +1,37 @@
 import logging
+from dataclasses import dataclass
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.config import ConfigObject
 
 
-def find_source_ami(aws_access: AwsAccess, filters: dict[str, str]) -> Ami:
-    amis = aws_access.list_amis(filters=[{"Name": key, "Values": [value]} for key, value in filters.items()])
-    latest_ami = max(amis, key=lambda ami: ami.creation_date)
-    return latest_ami
+@dataclass
+class AmiFinder:
+    aws_access: AwsAccess
+    logger: logging.Logger
 
+    def _list(self, filters: dict[str, str]) -> list[Ami]:
+        filter_list = [
+            {"Name": key, "Values": [value]}
+            for key, value in filters.items()
+        ]
+        return self.aws_access.list_amis(filters=filter_list)
 
-def source_ami_id_with_logging(
-    aws_access: AwsAccess,
-    filters: dict[str, str],
-    logger: logging.Logger,
-) -> str:
-    ami = find_source_ami(aws_access, filters)
-    logger.info(f"Using source ami: '{ami.name}' from {ami.creation_date}")
-    return ami.id
+    def unique(self, filters: dict[str, str]) -> Ami | None:
+        amis = self._list(filters)
+        if len(amis) == 1:
+            unique = amis[0]
+            self.logger.info(f"Found unique AMI matching {filters}:\n{unique.name}")
+            return unique
+        prefix = "Found more than one" if amis else "Couldn't find any"
+        self.logger.error(f"{prefix} AMI matching {filters}.")
+        return None
+
+    def latest(self, filters: dict[str, str]) -> Ami | None:
+        amis = self._list(filters)
+        if len(amis) < 1:
+            self.logger.error(f"Couldn't find any AMI matching: {filters}")
+            return None
+        latest = max(amis, key=lambda ami: ami.creation_date)
+        self.logger.info(f"Using source ami: '{latest.name}' from {latest.creation_date}")
+        return latest

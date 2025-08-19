@@ -1,20 +1,22 @@
 import signal
 import time
-from typing import Optional, Tuple, Iterator
+from typing import Iterator, Optional, Tuple
 
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.ansible.dependency_installer import \
+    AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
 from exasol.ds.sandbox.lib.config import ConfigObject
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
-    CloudformationStackContextManager
-from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, \
-    KeyFileManagerContextManager
-from exasol.ds.sandbox.lib.setup_ec2.source_ami import source_ami_id_with_logging
-
-from exasol.ds.sandbox.lib.ansible.dependency_installer import AnsibleDependencyInstaller
+from exasol.ds.sandbox.lib.logging import LogType, get_status_logger
+from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
+    CloudformationStack, CloudformationStackContextManager)
+from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
+from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import (
+    KeyFileManager, KeyFileManagerContextManager)
+from exasol.ds.sandbox.lib.setup_ec2.source_ami import AmiFinder
+from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
 LOG = get_status_logger(LogType.SETUP)
 
@@ -117,25 +119,43 @@ class EC2StackLifecycleContextManager:
         next(self._lifecycle_generator)
 
 
-def install_dependencies(
-    host_name: str,
+def _install_dependencies_and_report_status(
+    ec2_instance: Optional[EC2Instance],
     key_file_location: Optional[str],
     configuration: ConfigObject,
     installer: AnsibleDependencyInstaller,
 ) -> None:
-    # Wait for the EC-2 instance to become ready.
-    time.sleep(configuration.time_to_wait_for_polling)
-    try:
-        host_info = HostInfo(host_name, key_file_location)
-        run_install_dependencies(
-            ansible_access=installer.ansible_access,
-            configuration=configuration,
-            host_infos=(host_info,),
-            ansible_run_context=installer.run_context,
-            ansible_repositories=installer.repositories,
+    if not ec2_instance.is_running:
+        LOG.error(
+            f"Error during startup of EC2 instance '{ec2_instance.id}', "
+            f"status {ec2_instance.state_name}."
         )
-    except Exception as e:
-        LOG.exception("Failed to install dependencies.")
+        return
+    host_name = ec2_instance.public_dns_name
+    if installer is not None:
+        try:
+            # Wait for the EC-2 instance to become ready.
+            time.sleep(configuration.time_to_wait_for_polling)
+            host_info = HostInfo(host_name, key_file_location)
+            run_install_dependencies(
+                ansible_access=installer.ansible_access,
+                configuration=configuration,
+                host_infos=(host_info,),
+                ansible_run_context=installer.run_context,
+                ansible_repositories=installer.repositories,
+            )
+        except Exception as e:
+            LOG.exception("Failed to install dependencies.")
+            return
+
+    LOG.info(
+        "\n-----------------------------------------------------\n"
+        "You can now login to the ec2 machine with\n"
+        f"'ssh -i {key_file_location} ubuntu@{host_name}'"
+    )
+    if installer:
+        # literal value to be replaced by variable in ticket #140
+        LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
 
 
 def run_setup_ec2(
@@ -164,49 +184,32 @@ def run_setup_ec2(
     :param dependency_installer: If provided then additionally install
            dependencies using the provided installer.
     """
-    source_ami_id = ec2_source_ami or source_ami_id_with_logging(
-        aws_access,
-        configuration.source_ami_filters,
-        LOG,
+    finder = AmiFinder(aws_access, LOG)
+    source_ami = (
+        finder.unique({"image-id": ec2_source_ami}) if ec2_source_ami
+        else finder.latest(configuration.source_ami_filters)
     )
+    if not source_ami:
+        return
     execution_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
         ec2_instance_type=ec2_instance_type,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         asset_id=asset_id,
-        ami_id=source_ami_id,
+        ami_id=source_ami.id,
         user_name=None,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance: Optional[EC2Instance]
         key_file_location: Optional[str]
         ec2_instance, key_file_location = res
-
-        if not ec2_instance.is_running:
-            LOG.error(
-                f"Error during startup of EC2 instance '{ec2_instance.id}', "
-                f"status {ec2_instance.state_name}."
-            )
-        else:
-            host_name = ec2_instance.public_dns_name
-            if dependency_installer is not None:
-                install_dependencies(
-                    host_name=host_name,
-                    key_file_location=key_file_location,
-                    configuration=configuration,
-                    installer=dependency_installer,
-                )
-
-            LOG.info(
-                "\n-----------------------------------------------------\n"
-                "You can now login to the ec2 machine with\n"
-                f"'ssh -i {key_file_location} ubuntu@{host_name}'"
-            )
-            if dependency_installer:
-                # literal value to be replaced by variable in ticket #140
-                LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
-
+        _install_dependencies_and_report_status(
+            ec2_instance=ec2_instance,
+            key_file_location=key_file_location,
+            configuration=configuration,
+            installer=dependency_installer,
+        )
         LOG.info("Press Ctrl+C to stop and cleanup.")
 
         def signal_handler(sig, frame):

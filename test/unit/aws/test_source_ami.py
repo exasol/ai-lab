@@ -1,7 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import Mock
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
-from exasol.ds.sandbox.lib.setup_ec2.source_ami import find_source_ami
+from exasol.ds.sandbox.lib.setup_ec2.source_ami import AmiFinder
 
 # The following is just a dump of data returned from aws cli:
 # 'aws ec2 --profile exa_individual_mfa describe-images --filters Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-* --owners 099720109477'
@@ -993,13 +993,14 @@ mock_data = [
 ]
 
 
-def test_find_source_ami_returns_latest_ami(test_config):
+def test_ami_finder_latest(test_config):
     """
-    Test that find_source_ami returns the latest AMI image based on the filters given in the global config.
+    Test that AmiFinder.latest() returns the latest AMI image based on the
+    filters given in the global config.
     """
-    aws = MagicMock()
+    aws = Mock()
     aws.list_amis.return_value = mock_data
-    latest_ami = find_source_ami(aws, test_config.source_ami_filters)
+    finder = AmiFinder(aws, logger=Mock())
+    latest_ami = finder.latest(test_config.source_ami_filters)
     # ami-0d203747b007677da is the latest one in the mock data
     assert latest_ami.id == "ami-0d203747b007677da"
-
