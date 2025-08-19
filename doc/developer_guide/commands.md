@@ -34,8 +34,9 @@ All other commands provide a subset of the features of the release commands, and
 * `export-vm`: Create a new VM image from a running EC2-Instance.
 * `install-dependencies`: Start an ansible-installation onto an existing EC-2 instance.
 * `reset-password`: Reset password on a remote EC-2-instance via ansible.
-* `setup-ec2`: Start a new EC2 instance based on an Ubuntu AMI, see also [options for EC2 instances](#options-for-ec2-instances).
-* `setup-ec2-and-install-dependencies`: Start a new EC2 instance and install dependencies via Ansible.
+* `start-ec2`:
+  * Start a new EC2 instance based on an Ubuntu AMI, see also [options for EC2 instances](#options-for-ec2-instances).
+  * Option `--install-dependencies` additionally installs dependencies via Ansible.
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
 * `show-aws-assets`: Show AWS entities associated with a specific keyword (called __asset-id__).
@@ -84,7 +85,7 @@ Resources:
 
 ## Options for EC2 Instances
 
-The commands `create-vm`, `setup-ec2`, `setup-ec2-and-install-dependencies` are dealing with AWS EC2 instances and support additional options.
+The commands `create-vm`, `start-ec2` are dealing with AWS EC2 instances and support additional options.
 
 ### Selecting an EC2 Instance Type
 
@@ -103,6 +104,6 @@ By default the `ai-lab` CLI commands will search for AMIs matching the pattern d
 You can find AMIs in the [AMI Catalog](https://eu-west-1.console.aws.amazon.com/ec2/home?region=eu-west-1#AMICatalog).
 
 For GPU acceleration as of August 2025 the AI Lab proposes
-* `--ec2-source-ami ami-0f753fadb2ac2b883`.
+* `--ec2-source-ami ami-0ce636d5de4a460fa`.
 * This is using a 64-bit x86 CPU and labeled _Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 24.04)_.
 * The 64-bit ARM variant ami-07374ff070b65c2e1 is not supported by the DB
