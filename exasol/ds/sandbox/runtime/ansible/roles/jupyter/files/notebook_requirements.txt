@@ -20,9 +20,7 @@ ipywidgets==8.1.5 # enable interactive Javascript widgets in the notebooks
 #
 # See AI Lab Developer Guide.
 # -----------------------------------------------------------
-
-git+https://github.com/exasol/notebook-connector.git@main#egg=exasol-notebook-connector
-
+exasol-notebook-connector==1.0.0
 accelerate==1.9.0 ; python_version >= "3.10" and python_version < "3.13"
 annotated-types==0.7.0 ; python_version >= "3.10" and python_version < "3.13"
 antlr4-python3-runtime==4.9.3 ; python_version >= "3.10" and python_version < "3.13"
