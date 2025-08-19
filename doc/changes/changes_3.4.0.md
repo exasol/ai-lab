@@ -18,3 +18,7 @@ See the related CLI commands in the Developer Guide
 * #380: Updated version of PTB actions used in GitHub workflows
 * #381: Supported using arbitrary AWS machine images (AMI)
 * #374: Added GPU option to Jupyter UI
+
+## Documentation
+
+* #385: Developer Guide: Described updating of notebook dependencies
