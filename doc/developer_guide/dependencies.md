@@ -1,24 +1,24 @@
-# Update dependencies
+# Dependencies
 
-## Dependencies
+## Multiple Types of Dependencies
 
-AI-Lab contains dependencies on multiple levels and specified in multiple places.
+AI-Lab contains dependencies on multiple levels and specified in multiple places, each requiring specific steps for [updating dependencies](#updating-dependencies).
 
-* [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml) impacting [poetry.lock](https://github.com/exasol/ai-lab/blob/main/poetry.lock)
+* [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml) and [poetry.lock](https://github.com/exasol/ai-lab/blob/main/poetry.lock)
 * Requirements files in ansible scripts
   * [jupyter_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/jupyter_requirements.txt)
   * [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt)
-  * Including the notebook-connector and its dependencies.
+  * Including the notebook-connector and its dependencies, see [updating dependencies](#updating-dependencies) below
 * Dependencies in other ansible scripts, e.g.
   * [docker/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml)
   * [roles/jupyter/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/defaults/main.yml)
-* AMI base image, see [exasol/ds/sandbox/lib/config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py)
-* [test_dependencies.txt](https://github.com/exasol/ai-lab/blob/main/test/notebooks/test_dependencies.txt): Dependencies of the notebook tests
+* AMI base image, see [lib/config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py)
+* Dependencies of the notebook tests in [test_dependencies.txt](https://github.com/exasol/ai-lab/blob/main/test/notebooks/test_dependencies.txt)
 * GitHub Workflows and Actions:
   * no actual dependencies but references to actions of the Exasol Python Toolbox (PTB)
-* Dockerfile `exasol/ds/sandbox/lib/dss_docker/Dockerfile`
+* [lib/dss_docker/Dockerfile](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/dss_docker/Dockerfile)
 
-## Ansible packages
+### Ansible packages
 
 The packages to be installed by Ansible are using pinned versions, e.g. for [docker](../../exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml).
 
@@ -52,3 +52,21 @@ function ai-lab-ansible-dependencies() {
     done
 }
 ```
+
+## Updating Dependencies
+
+### Dependencies from `notebook-connector`
+
+Optimization considerations
+* The dependencies of the notebook-connector also include nvidia packages which are very large.
+* The AI Lab doesn't need to mention these dependencies explicitly as they need to be provided on the machine the AI Lab finally is running on anyway, see [Editions](../user_guide/editions.md). In Maven you would marke such dependencies as _provided_.
+* In consequence, file `notebook_requirements.txt` does not require the notebook-connector itself, but only its dependencies &mdash; excluding the nvidia packages.
+* Additionally also package `scikit-learn` can be skipped as it is explicitly defined to be compatible with builtin SLC of the Exasol database used by the AI Lab.
+
+So finally, when updating the AI Labs dependency to the notebook-connector, then additionally file [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt) needs to be updated using
+
+```shell
+poetry export --without-hashes | grep -v "^nvidia\|^scikit-learn"
+```
+
+<p style="height: 10cm"></p>
