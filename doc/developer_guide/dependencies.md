@@ -63,7 +63,7 @@ Optimization considerations
 * Additionally, file `notebook_requirements.txt` should also mention the dependencies of the notebook-connector for speeding up the dependency resolution and avoiding conflicts.
 * Additionally also package `scikit-learn` can be skipped as it is defined explicitly in the file for being compatible with builtin SLC of the Exasol database used by the AI Lab.
 
-So finally, when updating the AI Labs dependency to the notebook-connector, then additionally file [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt) needs to be updated using
+So finally, when updating the AI Labs dependency to the notebook-connector, then additionally file [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt) needs to be updated using the following command in the `notebook-connector` project:
 
 ```shell
 poetry export --without-hashes | grep -v "^nvidia\|^scikit-learn"
