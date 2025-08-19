@@ -59,8 +59,8 @@ function ai-lab-ansible-dependencies() {
 
 Optimization considerations
 * The dependencies of the notebook-connector also include nvidia packages which are very large.
-* The AI Lab doesn't need to mention these dependencies explicitly as they need to be provided on the machine the AI Lab finally is running on anyway, see [Editions](../user_guide/editions.md). In Maven you would marke such dependencies as _provided_.
-* In consequence, file `notebook_requirements.txt` does not require the notebook-connector itself, but only its dependencies &mdash; excluding the nvidia packages.
+* The AI Lab doesn't need to mention the nvidia packages explicitly as they need to be provided on the machine the AI Lab finally is running on anyway, see [Editions](../user_guide/editions.md). In Maven you would marke such dependencies as _provided_.
+* Additionally, file `notebook_requirements.txt` should also mention the dependencies of the notebook-connector for speeding up the dependency resolution and avoiding conflicts.
 * Additionally also package `scikit-learn` can be skipped as it is defined explicitly in the file for being compatible with builtin SLC of the Exasol database used by the AI Lab.
 
 So finally, when updating the AI Labs dependency to the notebook-connector, then additionally file [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt) needs to be updated using

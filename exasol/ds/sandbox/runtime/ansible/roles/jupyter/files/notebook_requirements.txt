@@ -9,6 +9,7 @@ wordcloud==1.9.4 # required for Text AI notebooks
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
 ipyfilechooser==0.6.0 # required for SLC notebooks
 ipywidgets==8.1.5 # enable interactive Javascript widgets in the notebooks
+exasol-notebook-connector==1.0.0
 
 # -----------------------------------------------------------
 # dependencies of the notebook-connector
@@ -20,7 +21,6 @@ ipywidgets==8.1.5 # enable interactive Javascript widgets in the notebooks
 #
 # See AI Lab Developer Guide.
 # -----------------------------------------------------------
-exasol-notebook-connector==1.0.0
 accelerate==1.9.0 ; python_version >= "3.10" and python_version < "3.13"
 annotated-types==0.7.0 ; python_version >= "3.10" and python_version < "3.13"
 antlr4-python3-runtime==4.9.3 ; python_version >= "3.10" and python_version < "3.13"
