@@ -17,3 +17,7 @@ See the related CLI commands in the Developer Guide
 * #379: Updated AI Lab version in user guide and developer guide
 * #380: Updated version of PTB actions used in GitHub workflows
 * #381: Supported using arbitrary AWS machine images (AMI)
+
+## Refactorings
+
+* #377: Adjusted SLC notebooks to new interface 

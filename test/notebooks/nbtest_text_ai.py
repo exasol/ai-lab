@@ -17,21 +17,12 @@ from notebook_test_utils import (
 
 set_log_level_for_libraries()
 
-
-def _store_pre_release_access(store_path: Path, store_password: str) -> None:
-    conf = Secrets(store_path, store_password)
-    conf.connection()
-    conf.save(CKey.text_ai_pre_release_url, os.environ["NBTEST_TXAIE_ZIP_URL"])
-    conf.save(CKey.text_ai_zip_password, os.environ["NBTEST_TXAIE_ZIP_PASSWORD"])
-
-
 def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
     """
     This test currently requires some specific Jupyter notebooks which are work in progress
     and is only executed if the folder work_in_progress exists.
     """
     store_path, store_password = backend_setup
-    _store_pre_release_access(store_path, store_password)
 
     current_dir = os.getcwd()
     try:
