@@ -22,3 +22,7 @@ See the related CLI commands in the Developer Guide
 ## Documentation
 
 * #385: Developer Guide: Described updating of notebook dependencies
+
+## Refactorings
+
+* #377: Adjusted SLC notebooks to new interface
