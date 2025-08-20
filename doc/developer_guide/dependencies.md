@@ -8,7 +8,7 @@ AI-Lab contains dependencies on multiple levels and specified in multiple places
 * Requirements files in ansible scripts
   * [jupyter_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/jupyter_requirements.txt)
   * [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt)
-  * Including the notebook-connector and its dependencies, see [updating dependencies](#updating-dependencies) below
+  * Including the notebook-connector and its dependencies
 * Dependencies in other ansible scripts, e.g.
   * [docker/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml)
   * [roles/jupyter/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/defaults/main.yml)
@@ -51,20 +51,4 @@ function ai-lab-ansible-dependencies() {
         fi
     done
 }
-```
-
-## Updating Dependencies
-
-### Dependencies of `notebook-connector`
-
-Optimization considerations
-* The dependencies of the notebook-connector also include nvidia packages which are very large.
-* To reduce the size, AI Lab currently uses a CPU-only variant of dependency `pytorch` via pip `--extra-index-url`.
-* For speeding up the dependency resolution and avoiding conflicts, file `notebook_requirements.txt` also contains the dependencies of the notebook-connector
-* Additionally also package `scikit-learn` can be skipped as it is defined explicitly in the file for being compatible with builtin SLC of the Exasol database used by the AI Lab.
-
-So finally, when updating the AI Labs dependency to the notebook-connector, then additionally file [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt) needs to be updated using the following command in the `notebook-connector` project:
-
-```shell
-poetry export --without-hashes | grep -v "^nvidia\|^scikit-learn"
 ```
