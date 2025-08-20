@@ -26,7 +26,7 @@ from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_setup_ec2
 @add_options(id_options)
 @click.option(
     "--install-dependencies", is_flag=True,
-    help="Additionally install dependencies via ansible.",
+    help="Additionally install dependencies via Ansible.",
 )
 def start_ec2(
     aws_profile: str,

@@ -30,7 +30,7 @@ def start_test_release_build(
 ):
     """
     Developer command triggering the AWS release Codebuild to generate a
-    new sandbox test version. GitHub token is expected to be found in
+    new AI Lab test version. GitHub token is expected to be found in
     environment variable GITHUB_TOKEN.
     """
     set_log_level(log_level)
