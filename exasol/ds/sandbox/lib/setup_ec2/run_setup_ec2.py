@@ -1,5 +1,7 @@
 import signal
 import time
+from dataclasses import dataclass
+from enum import Enum
 from typing import Iterator, Optional, Tuple
 
 from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
@@ -119,43 +121,56 @@ class EC2StackLifecycleContextManager:
         next(self._lifecycle_generator)
 
 
-def _install_dependencies_and_report_status(
+@dataclass(frozen=True)
+class Ec2State:
+    login: bool
+    dependencies: bool = False
+
+
+def _ec2_status_with_optional_dependencies(
     ec2_instance: Optional[EC2Instance],
     key_file_location: Optional[str],
     configuration: ConfigObject,
     installer: Optional[AnsibleDependencyInstaller],
-) -> None:
+) -> Ec2State:
+    """
+    Check status of EC2 instance.
+
+    If installer is not None, and EC2 instance is running then then also
+    install dependencies via the provided installer.
+
+    The returned status tells whether a login to the EC2 instance is possible
+    and whether the dependencies are installed successfully.
+    """
+
     if not ec2_instance.is_running:
         LOG.error(
             f"Error during startup of EC2 instance '{ec2_instance.id}', "
             f"status {ec2_instance.state_name}."
         )
-        return
-    host_name = ec2_instance.public_dns_name
-    if installer is not None:
-        try:
-            # Wait for the EC-2 instance to become ready.
-            time.sleep(configuration.time_to_wait_for_polling)
-            host_info = HostInfo(host_name, key_file_location)
-            run_install_dependencies(
-                ansible_access=installer.ansible_access,
-                configuration=configuration,
-                host_infos=(host_info,),
-                ansible_run_context=installer.run_context,
-                ansible_repositories=installer.repositories,
-            )
-        except Exception as e:
-            LOG.exception("Failed to install dependencies.")
-            return
+        return Ec2State(login=False)
 
-    LOG.info(
-        "\n-----------------------------------------------------\n"
-        "You can now login to the ec2 machine with\n"
-        f"'ssh -i {key_file_location} ubuntu@{host_name}'"
-    )
-    if installer:
-        # literal value to be replaced by variable in ticket #140
-        LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
+    status = Ec2State(login=True)
+    if installer is None:
+        return status
+
+    host_name = ec2_instance.public_dns_name
+    # Wait for the EC-2 instance to become ready.
+    time.sleep(configuration.time_to_wait_for_polling)
+    host_info = HostInfo(host_name, key_file_location)
+    try:
+        run_install_dependencies(
+            ansible_access=installer.ansible_access,
+            configuration=configuration,
+            host_infos=(host_info,),
+            ansible_run_context=installer.run_context,
+            ansible_repositories=installer.repositories,
+        )
+    except Exception as e:
+        LOG.exception("Failed to install dependencies.")
+        return status
+
+    return Ec2State(login=True, dependencies=True)
 
 
 def run_setup_ec2(
@@ -199,12 +214,23 @@ def run_setup_ec2(
         ec2_instance: Optional[EC2Instance]
         key_file_location: Optional[str]
         ec2_instance, key_file_location = res
-        _install_dependencies_and_report_status(
+        status = _ec2_status_with_optional_dependencies(
             ec2_instance=ec2_instance,
             key_file_location=key_file_location,
             configuration=configuration,
             installer=dependency_installer,
         )
+        host_name = ec2_instance.public_dns_name
+        if status.login:
+            LOG.info(
+                "\n-----------------------------------------------------\n"
+                "You can now login to the ec2 machine with\n"
+                f"'ssh -i {key_file_location} ubuntu@{host_name}'"
+            )
+        if status.dependencies:
+            # literal value to be replaced by variable in ticket #140
+            LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
+
         LOG.info("Press Ctrl+C to stop and cleanup.")
 
         def signal_handler(sig, frame):
