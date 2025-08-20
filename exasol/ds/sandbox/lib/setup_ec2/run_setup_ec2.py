@@ -123,7 +123,7 @@ def _install_dependencies_and_report_status(
     ec2_instance: Optional[EC2Instance],
     key_file_location: Optional[str],
     configuration: ConfigObject,
-    installer: AnsibleDependencyInstaller,
+    installer: Optional[AnsibleDependencyInstaller],
 ) -> None:
     if not ec2_instance.is_running:
         LOG.error(
