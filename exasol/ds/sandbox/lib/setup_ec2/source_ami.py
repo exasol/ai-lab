@@ -1,14 +1,18 @@
-import logging
+from datetime import datetime, timezone
 from dataclasses import dataclass
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 
 
+class FindAmiError(Exception):
+    ...
+
+
 @dataclass
 class AmiFinder:
     aws_access: AwsAccess
-    logger: logging.Logger
+    default_filters: dict[str, str]
 
     def _list(self, filters: dict[str, str]) -> list[Ami]:
         filter_list = [
@@ -17,21 +21,27 @@ class AmiFinder:
         ]
         return self.aws_access.list_amis(filters=filter_list)
 
-    def unique(self, filters: dict[str, str]) -> Ami | None:
+    def unique(self, filters: dict[str, str]) -> Ami:
         amis = self._list(filters)
         if len(amis) == 1:
-            unique = amis[0]
-            self.logger.info(f"Found unique AMI matching {filters}:\n{unique.name}")
-            return unique
+            return amis[0]
         prefix = "Found more than one" if amis else "Couldn't find any"
-        self.logger.error(f"{prefix} AMI matching {filters}.")
-        return None
+        raise FindAmiError(f"{prefix} AMI matching {filters}.")
 
-    def latest(self, filters: dict[str, str]) -> Ami | None:
-        amis = self._list(filters)
+    @property
+    def latest(self) -> Ami:
+        def as_datetime(value: str) -> datetime:
+            if value.endswith("Z"):
+                return datetime.fromisoformat(value[:-1]).replace(tzinfo=timezone.utc)
+            return datetime.fromisoformat(value)
+
+        amis = self._list(self.default_filters)
         if len(amis) < 1:
-            self.logger.error(f"Couldn't find any AMI matching: {filters}")
-            return None
-        latest = max(amis, key=lambda ami: ami.creation_date)
-        self.logger.info(f"Using source ami: '{latest.name}' from {latest.creation_date}")
+            raise FindAmiError(f"Couldn't find any AMI matching: {self.default_filters}")
+        latest = max(amis, key=lambda ami: as_datetime(ami.creation_date))
         return latest
+
+    def find(self, ami_id: str | None) -> Ami:
+        if ami_id:
+            return self.unique({"image-id": ami_id})
+        return self.latest

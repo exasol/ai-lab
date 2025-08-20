@@ -184,13 +184,8 @@ def run_setup_ec2(
     :param dependency_installer: If provided then additionally install
            dependencies using the provided installer.
     """
-    finder = AmiFinder(aws_access, LOG)
-    source_ami = (
-        finder.unique({"image-id": ec2_source_ami}) if ec2_source_ami
-        else finder.latest(configuration.source_ami_filters)
-    )
-    if not source_ami:
-        return
+    source_ami = AmiFinder(aws_access, configuration.source_ami_filters).find(ec2_source_ami)
+    LOG.info(f"Using source AMI: {source_ami.info}")
     execution_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
         ec2_instance_type=ec2_instance_type,
