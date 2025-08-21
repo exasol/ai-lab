@@ -29,9 +29,6 @@
       vars:
         requirements_file: "notebook_requirements.txt"
 
-    - name: Setup Systemd service
-      ansible.builtin.import_tasks: systemd.yml
-
     - name: Copy tutorial notebook
       ansible.builtin.import_tasks: tutorial.yml
 
@@ -42,6 +39,9 @@
         group: "{{ user_group }}"
         recurse: true
       become: "{{ need_sudo }}"
+
+    - name: Setup Systemd service
+      ansible.builtin.import_tasks: systemd.yml
 
     - name: Setup motd
       ansible.builtin.import_tasks: motd.yml

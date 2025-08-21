@@ -25,3 +25,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 ## Refactorings
 
 * #377: Adjusted SLC notebooks to new interface
+
+## Bug Fixes
+
+* #392: Fixed automatic start of Jupyterlab in EC2
