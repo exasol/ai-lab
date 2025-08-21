@@ -17,7 +17,12 @@ See the related CLI commands in the Developer Guide
 * #379: Updated AI Lab version in user guide and developer guide
 * #380: Updated version of PTB actions used in GitHub workflows
 * #381: Supported using arbitrary AWS machine images (AMI)
+* #374: Added GPU option to Jupyter UI
+
+## Documentation
+
+* #385: Developer Guide: Described updating of notebook dependencies
 
 ## Refactorings
 
-* #377: Adjusted SLC notebooks to new interface 
+* #377: Adjusted SLC notebooks to new interface

@@ -1,22 +1,24 @@
-# Update dependencies
+# Dependencies
 
-## Dependencies
+## Multiple Types of Dependencies
 
-AI-Lab contains dependencies on multiple levels and specified in multiple places.
+AI-Lab contains dependencies on multiple levels and specified in multiple places, each requiring specific steps for [updating dependencies](#updating-dependencies).
 
-* [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml) impacting [poetry.lock](https://github.com/exasol/ai-lab/blob/main/poetry.lock)
+* [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml) and [poetry.lock](https://github.com/exasol/ai-lab/blob/main/poetry.lock)
 * Requirements files in ansible scripts
   * [jupyter_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/jupyter_requirements.txt)
   * [notebook_requirements.txt](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt)
-  * Including the [notebook-connector](https://github.com/exasol/notebook-connector) and its dependencies.
+  * Including the notebook-connector and its dependencies
 * Dependencies in other ansible scripts, e.g.
   * [docker/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml)
   * [roles/jupyter/defaults/main.yml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/defaults/main.yml)
-* AMI base image, see [exasol/ds/sandbox/lib/config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py)
-* [test_dependencies.txt](https://github.com/exasol/ai-lab/blob/main/test/notebooks/test_dependencies.txt): Dependencies of the notebook tests
-* GitHub Workflows: no actual dependencies
+* AMI base image, see [lib/config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py)
+* Dependencies of the notebook tests in [test_dependencies.txt](https://github.com/exasol/ai-lab/blob/main/test/notebooks/test_dependencies.txt)
+* GitHub Workflows and Actions:
+  * no actual dependencies but references to actions of the Exasol Python Toolbox (PTB)
+* [lib/dss_docker/Dockerfile](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/dss_docker/Dockerfile)
 
-## Ansible packages
+### Ansible packages
 
 The packages to be installed by Ansible are using pinned versions, e.g. for [docker](../../exasol/ds/sandbox/runtime/ansible/roles/docker/defaults/main.yml).
 
