@@ -1,6 +1,5 @@
 import signal
 import time
-from dataclasses import dataclass
 from enum import Enum
 from typing import Iterator, Optional, Tuple
 
@@ -121,10 +120,19 @@ class EC2StackLifecycleContextManager:
         next(self._lifecycle_generator)
 
 
-@dataclass(frozen=True)
-class Ec2State:
-    login: bool
-    dependencies: bool = False
+class Ec2State(Enum):
+    INIT = 0
+    RUNNING = 1
+    INSTALLED = 2
+
+    @property
+    def login_possible(self) -> bool:
+        return self.value >= Ec2State.RUNNING.value
+
+    @property
+    def jupyter_running(self) -> bool:
+        return self.value >= Ec2State.INSTALLED.value
+
 
 
 def _ec2_status_with_optional_dependencies(
@@ -148,11 +156,10 @@ def _ec2_status_with_optional_dependencies(
             f"Error during startup of EC2 instance '{ec2_instance.id}', "
             f"status {ec2_instance.state_name}."
         )
-        return Ec2State(login=False)
+        return Ec2State.INIT
 
-    status = Ec2State(login=True)
     if installer is None:
-        return status
+        return Ec2State.RUNNING
 
     host_name = ec2_instance.public_dns_name
     # Wait for the EC-2 instance to become ready.
@@ -168,9 +175,9 @@ def _ec2_status_with_optional_dependencies(
         )
     except Exception as e:
         LOG.exception("Failed to install dependencies.")
-        return status
+        return Ec2State.RUNNING
 
-    return Ec2State(login=True, dependencies=True)
+    return Ec2State.INSTALLED
 
 
 def run_setup_ec2(
@@ -221,13 +228,13 @@ def run_setup_ec2(
             installer=dependency_installer,
         )
         host_name = ec2_instance.public_dns_name
-        if status.login:
+        if status.login_possible:
             LOG.info(
                 "\n-----------------------------------------------------\n"
                 "You can now login to the ec2 machine with\n"
                 f"'ssh -i {key_file_location} ubuntu@{host_name}'"
             )
-        if status.dependencies:
+        if status.jupyter_running:
             # literal value to be replaced by variable in ticket #140
             LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
 
