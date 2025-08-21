@@ -20,7 +20,8 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #380: Updated version of PTB actions used in GitHub workflows
 * #381: Supported using arbitrary AWS machine images (AMI)
 * #386: Simplified developer commands
+* #374: Added GPU option to Jupyter UI
 
 ## Refactorings
 
-* #377: Adjusted SLC notebooks to new interface 
+* #377: Adjusted SLC notebooks to new interface
