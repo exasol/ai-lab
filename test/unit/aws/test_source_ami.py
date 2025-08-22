@@ -72,7 +72,6 @@ def test_unique(sample_finder):
 
 
 def test_unique_failure(sample_finder):
-    id = "123"
     with pytest.raises(FindAmiError):
         sample_finder.find("non-existing-id")
 

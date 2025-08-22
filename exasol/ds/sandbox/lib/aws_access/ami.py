@@ -44,7 +44,7 @@ class Ami:
 
     @property
     def info(self) -> str:
-        return f"'{self.name}', created {self.creation_date}"
+        return f"{self.id}, created {self.creation_date}\n'{self.name}'"
 
     @property
     def creation_date(self) -> str:
