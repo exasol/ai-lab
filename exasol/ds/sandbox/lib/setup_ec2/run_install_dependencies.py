@@ -12,11 +12,13 @@ from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 
 
-def run_install_dependencies(ansible_access: AnsibleAccess,
-                             configuration: ConfigObject,
-                             host_infos: Tuple[HostInfo, ...] = tuple(),
-                             ansible_run_context: AnsibleRunContext = default_ansible_run_context,
-                             ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories) -> AnsibleFacts:
+def run_install_dependencies(
+    ansible_access: AnsibleAccess,
+    configuration: ConfigObject,
+    host_infos: Tuple[HostInfo, ...] = tuple(),
+    ansible_run_context: AnsibleRunContext = default_ansible_run_context,
+    ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories,
+) -> AnsibleFacts:
     """
     Runs ansible installation. The ansible working dir is created dynamically and removed afterwards.
     Any hosts, given by variable host_infos, are added to the ansible inventory in the dynamic working directory.

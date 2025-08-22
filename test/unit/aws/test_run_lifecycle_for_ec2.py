@@ -32,7 +32,7 @@ def test_run_lifecycle_for_ec2(
 ):
     """
     Test that the EC2 deployment and cleanup works as expected. The test
-    calls execute_setup_ec2() and simulates the return states from AWS (2x
+    calls run_lifecycle_for_ec2() and simulates the return states from AWS (2x
     pending, 1x running) for the EC2 instance.  At the end it expects that the
     AWS Cloudformation stack was deleted.
     """
@@ -97,9 +97,9 @@ def test_run_lifecycle_for_ec2_with_context_manager(
 ):
     """
     Test that the EC2 deployment and cleanup works as expected, by using
-    the context manager helper class.  The test calls execute_setup_ec2() and
-    simulates the return states from AWS (2x pending, 1x running) for the EC2
-    instance.  At the end it expects that the AWS Cloudformation stack was
+    the context manager helper class.  The test calls run_lifecycle_for_ec2()
+    and simulates the return states from AWS (2x pending, 1x running) for the
+    EC2 instance.  At the end it expects that the AWS Cloudformation stack was
     deleted.
     """
     aws_access_mock = MagicMock()

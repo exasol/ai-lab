@@ -26,7 +26,7 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
     machine images, example-data-http = AI-Lab example data.""")
 def setup_waf(aws_profile: str, allowed_ip: str, log_level: str, purpose: str):
     """
-    Command to deploy one of the AI-Lab Web Application Firewalls (WAFs)
+    Deployment command for one of the AI-Lab Web Application Firewalls (WAFs)
     for S3 buckets. Needs to run before deploying the S3 bucket itself.
     PURPOSE:\n
     * vm: WAF for S3 bucket for virtual machine images\n

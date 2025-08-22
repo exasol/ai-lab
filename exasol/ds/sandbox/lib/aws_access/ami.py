@@ -43,6 +43,10 @@ class Ami:
         return self._aws_object["ImageLocation"]
 
     @property
+    def info(self) -> str:
+        return f"{self.id}, created {self.creation_date}\n'{self.name}'"
+
+    @property
     def creation_date(self) -> str:
         return self._aws_object["CreationDate"]
 

@@ -17,7 +17,7 @@ def install_dependencies(
             ssh_private_key: str,
             log_level: str):
     """
-    Debug command to ansible-installation onto an EC-2 instance.
+    Developer command installing dependencies via ansible onto an EC-2 instance.
     """
     set_log_level(log_level)
     run_install_dependencies(

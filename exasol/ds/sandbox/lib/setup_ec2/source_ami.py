@@ -1,21 +1,49 @@
-import logging
+from datetime import datetime, timezone
 
 from exasol.ds.sandbox.lib.aws_access.ami import Ami
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.config import ConfigObject
 
 
-def find_source_ami(aws_access: AwsAccess, filters: dict[str, str]) -> Ami:
-    amis = aws_access.list_amis(filters=[{"Name": key, "Values": [value]} for key, value in filters.items()])
-    latest_ami = max(amis, key=lambda ami: ami.creation_date)
-    return latest_ami
+class FindAmiError(Exception):
+    """
+    In case the specified filters did not match any AMI or
+    when selecing an AMI by ID the ID was not unique.
+    """
 
 
-def source_ami_id_with_logging(
-    aws_access: AwsAccess,
-    filters: dict[str, str],
-    logger: logging.Logger,
-) -> str:
-    ami = find_source_ami(aws_access, filters)
-    logger.info(f"Using source ami: '{ami.name}' from {ami.creation_date}")
-    return ami.id
+class AmiFinder:
+    def __init__(self, aws_access: AwsAccess, filters: dict[str, str]):
+        self._aws_access = aws_access
+        self._default_filters = filters
+
+    def _list(self, filters: dict[str, str]) -> list[Ami]:
+        filter_list = [
+            {"Name": key, "Values": [value]}
+            for key, value in filters.items()
+        ]
+        return self._aws_access.list_amis(filters=filter_list)
+
+    def unique(self, filters: dict[str, str]) -> Ami:
+        amis = self._list(filters)
+        if len(amis) == 1:
+            return amis[0]
+        prefix = "Found more than one" if amis else "Couldn't find any"
+        raise FindAmiError(f"{prefix} AMI matching {filters}.")
+
+    @property
+    def latest(self) -> Ami:
+        def as_datetime(value: str) -> datetime:
+            if value.endswith("Z"):
+                return datetime.fromisoformat(value[:-1]).replace(tzinfo=timezone.utc)
+            return datetime.fromisoformat(value)
+
+        amis = self._list(self._default_filters)
+        if len(amis) < 1:
+            raise FindAmiError(f"Couldn't find any AMI matching: {self._default_filters}")
+        latest = max(amis, key=lambda ami: as_datetime(ami.creation_date))
+        return latest
+
+    def find(self, ami_id: str | None) -> Ami:
+        if ami_id:
+            return self.unique({"image-id": ami_id})
+        return self.latest

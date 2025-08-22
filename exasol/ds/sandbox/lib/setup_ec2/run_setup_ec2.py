@@ -1,18 +1,23 @@
 import signal
 import time
-from typing import Optional, Tuple, Iterator
+from enum import Enum
+from typing import Iterator, Optional, Tuple
 
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
+from exasol.ds.sandbox.lib.ansible.dependency_installer import \
+    AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
 from exasol.ds.sandbox.lib.config import ConfigObject
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-from exasol.ds.sandbox.lib.setup_ec2.cf_stack import CloudformationStack, \
-    CloudformationStackContextManager
-from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import KeyFileManager, \
-    KeyFileManagerContextManager
-from exasol.ds.sandbox.lib.setup_ec2.source_ami import source_ami_id_with_logging
-
+from exasol.ds.sandbox.lib.logging import LogType, get_status_logger
+from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
+    CloudformationStack, CloudformationStackContextManager)
+from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
+from exasol.ds.sandbox.lib.setup_ec2.key_file_manager import (
+    KeyFileManager, KeyFileManagerContextManager)
+from exasol.ds.sandbox.lib.setup_ec2.source_ami import AmiFinder
+from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
 LOG = get_status_logger(LogType.SETUP)
 
@@ -115,6 +120,66 @@ class EC2StackLifecycleContextManager:
         next(self._lifecycle_generator)
 
 
+class Ec2State(Enum):
+    INIT = 0
+    RUNNING = 1
+    INSTALLED = 2
+
+    @property
+    def login_possible(self) -> bool:
+        return self.value >= Ec2State.RUNNING.value
+
+    @property
+    def jupyter_running(self) -> bool:
+        return self.value >= Ec2State.INSTALLED.value
+
+
+
+def _ec2_status_with_optional_dependencies(
+    ec2_instance: Optional[EC2Instance],
+    key_file_location: Optional[str],
+    configuration: ConfigObject,
+    installer: Optional[AnsibleDependencyInstaller],
+) -> Ec2State:
+    """
+    Check status of EC2 instance.
+
+    If installer is not None, and EC2 instance is running then then also
+    install dependencies via the provided installer.
+
+    The returned status tells whether a login to the EC2 instance is possible
+    and whether the dependencies are installed successfully.
+    """
+
+    if not ec2_instance.is_running:
+        LOG.error(
+            f"Error during startup of EC2 instance '{ec2_instance.id}', "
+            f"status {ec2_instance.state_name}."
+        )
+        return Ec2State.INIT
+
+    if installer is None:
+        return Ec2State.RUNNING
+
+    host_name = ec2_instance.public_dns_name
+    # Wait for the EC-2 instance to become ready.
+    time.sleep(configuration.time_to_wait_for_polling)
+    host_info = HostInfo(host_name, key_file_location)
+    try:
+        run_install_dependencies(
+            ansible_access=installer.ansible_access,
+            configuration=configuration,
+            host_infos=(host_info,),
+            ansible_run_context=installer.run_context,
+            ansible_repositories=installer.repositories,
+        )
+    except Exception as e:
+        LOG.exception("Failed to install dependencies.")
+        return Ec2State.RUNNING
+
+    return Ec2State.INSTALLED
+
+
 def run_setup_ec2(
     aws_access: AwsAccess,
     ec2_instance_type: str,
@@ -123,54 +188,62 @@ def run_setup_ec2(
     ec2_key_name: Optional[str],
     asset_id: AssetId,
     configuration: ConfigObject,
+    dependency_installer: Optional[AnsibleDependencyInstaller],
 ) -> None:
     """
     Launches an EC2-instance and then waits until the user presses Ctrl-C,
     then shuts down the instance again.
 
     :param aws_access: AWSAccess proxy.
+    :param ec2_instance_type: The name of the EC2 instance type to use,
+           e.g. "t2.medium".
     :param ec2_key_file: The private key file to use for the EC2-Instance.
     :param ec2_key_name: The key name of the key to use for the EC2-Instance.
     :param asset_id: The asset id to use: Will use the tags (for the
            cloudformation stack and the key) and the prefix of the
            cloudformation stack
     :param configuration: The global configuration to use.
-    :param ec2_instance_type: The name of the EC2 instance type to use,
-           e.g. "t2.medium".
+    :param dependency_installer: If provided then additionally install
+           dependencies using the provided installer.
     """
-    source_ami_id = ec2_source_ami or source_ami_id_with_logging(
-        aws_access,
-        configuration.source_ami_filters,
-        LOG,
-    )
+    source_ami = AmiFinder(aws_access, configuration.source_ami_filters).find(ec2_source_ami)
+    LOG.info(f"Using source AMI: {source_ami.info}")
     execution_generator = run_lifecycle_for_ec2(
         aws_access=aws_access,
         ec2_instance_type=ec2_instance_type,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
         asset_id=asset_id,
-        ami_id=source_ami_id,
+        ami_id=source_ami.id,
         user_name=None,
     )
     with EC2StackLifecycleContextManager(execution_generator, configuration) as res:
         ec2_instance: Optional[EC2Instance]
         key_file_location: Optional[str]
         ec2_instance, key_file_location = res
+        status = _ec2_status_with_optional_dependencies(
+            ec2_instance=ec2_instance,
+            key_file_location=key_file_location,
+            configuration=configuration,
+            installer=dependency_installer,
+        )
+        host_name = ec2_instance.public_dns_name
+        if status.login_possible:
+            LOG.info(
+                "\n-----------------------------------------------------\n"
+                "You can now login to the ec2 machine with\n"
+                f"'ssh -i {key_file_location} ubuntu@{host_name}'"
+            )
+        if status.jupyter_running:
+            # literal value to be replaced by variable in ticket #140
+            LOG.info(f"Also you can access Jupyterlab via http://{host_name}:49494/lab")
 
-        if not ec2_instance.is_running:
-            LOG.error(f"Error during startup of EC2 instance "
-                      f"'{ec2_instance.id}'. "
-                      f"Status is {ec2_instance.state_name}")
-        else:
-            LOG.info(f"You can now login to the ec2 machine with "
-                     f"'ssh -i {key_file_location} "
-                     f"ubuntu@{ec2_instance.public_dns_name}'")
-        LOG.info('Press Ctrl+C to stop and cleanup.')
+        LOG.info("Press Ctrl+C to stop and cleanup.")
 
         def signal_handler(sig, frame):
-            LOG.info('Start cleanup.')
+            LOG.info("Start cleanup.")
 
         signal.signal(signal.SIGINT, signal_handler)
         signal.pause()
 
-    LOG.info('Cleanup done.')
+    LOG.info("Cleanup done.")

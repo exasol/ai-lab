@@ -44,7 +44,7 @@ def show_aws_assets(
             out_file: Optional[str],
             log_level: str):
     """
-    Shows all AWS assets.
+    Developer commands showing all AWS assets.
     """
     set_log_level(log_level)
     _asset_id = AssetId(asset_id) if asset_id is not None else None

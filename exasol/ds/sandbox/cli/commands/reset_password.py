@@ -21,7 +21,8 @@ def reset_password(
             default_password: str,
             log_level: str):
     """
-    Debug command to reset password on a remote EC-2-instance via ansible.
+    Developer command resetting the password on a remote EC-2-instance via
+    Ansible.
     """
     set_log_level(log_level)
     run_reset_password(AnsibleAccess(), default_password, (HostInfo(host_name, ssh_private_key),))

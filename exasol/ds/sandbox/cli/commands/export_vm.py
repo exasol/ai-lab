@@ -31,7 +31,7 @@ def export_vm(
             asset_id: str,
             log_level: str):
     """
-    Debug command which creates a new VM image from a running EC2-Instance.
+    Developer command creating a new VM image from a running EC2-Instance.
     """
     current_vm_image_formats = tuple() if no_vm else vm_image_format
     set_log_level(log_level)

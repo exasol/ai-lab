@@ -43,7 +43,7 @@ def create_vm(
     log_level: str,
 ):
     """
-    Creates a new VM image from a fresh EC-2 Ubuntu AMI.
+    Release command creating a new VM image from a fresh EC-2 Ubuntu AMI.
     """
     current_vm_image_formats = tuple() if no_vm else vm_image_format
     set_log_level(log_level)
