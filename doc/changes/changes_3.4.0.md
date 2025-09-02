@@ -25,6 +25,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 ## Refactorings
 
 * #377: Adjusted SLC notebooks to new interface
+* #399: Use model installation model from notebook-connector for transformer notebooks
 
 ## Bug Fixes
 
