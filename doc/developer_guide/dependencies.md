@@ -34,7 +34,7 @@ sudo apt search <package name>
 sudo apt-get install <package name>=<version>
 ```
 
-Maybe installing the command [chdist](https://manpages.ubuntu.com/manpages/xenial/en/man1/chdist.1.html) could also be helpful, as it allows searching for packages and updates in other versions and distributions of ubuntu than the one installed on your local system.
+Maybe installing the command [chdist](https://manpages.ubuntu.com/manpages/questing/en/man1/chdist.1.html) could also be helpful, as it allows searching for packages and updates in other versions and distributions of ubuntu than the one installed on your local system.
 
 ### Find Packages in All Ansible Scripts
 
