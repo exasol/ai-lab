@@ -28,6 +28,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #397: Upgraded to notebook-connector 2.0.0
 * #399: Use model installation function from notebook-connector for transformer notebooks
 * #402: Added Exasol logo
+* Switched exasol/python-toolbox/.github/actions/python-environment in Github workflows to `v1` 
 
 ## Bug Fixes
 
