@@ -30,6 +30,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #402: Added Exasol logo
 * Switched exasol/python-toolbox/.github/actions/python-environment in Github workflows to `v1`
 * #401: Add Exasol Logo to Notebooks
+* #404: Create docker image for notebook tests separately
 
 ## Bug Fixes
 
