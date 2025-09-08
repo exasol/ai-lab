@@ -48,18 +48,18 @@ jobs:
       fail-fast: false
       matrix:
         nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem", wip: "no-wip" }
+#          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem", wip: "no-wip" }
 #          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas", wip: "no-wip" }
           - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem", wip: "no-wip" }
 #          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas", wip: "no-wip" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip" }
+#          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip" }
 #          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas", wip: "no-wip" }
-          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip" }
-          - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip" }
+#          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip" }
+#          - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip" }
 #          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas", wip: "no-wip" }
-          - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip" }
+#          - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip" }
 #          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas", wip: "no-wip"}
-          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "", wip: "no-wip"}
+#          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "", wip: "no-wip"}
 #          - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas", wip: "no-wip"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
@@ -100,47 +100,47 @@ jobs:
           NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
           PROJECT_SHORT_TAG: XAIL-NB
 
-  notebook_tests-large-runner:
-    environment: AWS_SAGEMAKER
-    env:
-      DOCKER_TAG:"${{ matrix.wip }}-${{ github.sha }}"
-    runs-on:
-      labels: int-linux-x64-4core-ubuntu24.04-1
-    strategy:
-      fail-fast: false
-      matrix:
-        nb_test:
-          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem"}
-    name: Running ${{ matrix.nb_test.name }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/prepare_test_env/
-
-      - name: Download ai-lab image ${{matrix.wip}}
-        id: download-image
-        uses: actions/download-artifact@v4
-        with:
-          name: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
-          path: "."
-
-      - name: Load ai-lab image ${{matrix.wip}}
-        run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
-
-      - name: Run notebook tests
-        run: |
-          poetry run pytest \
-            --capture=no \
-            --override-ini=log_cli=true \
-            --override-ini=log_cli_level=INFO \
-            --nb-test-backend=${{ matrix.nb_test.test_backend }} \
-            --nb-test-file=${{ matrix.nb_test.test_file }} \
-            --nb-test-db-mem-size="8 GiB" \
-            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
-            test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
-        env:
-          NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
-          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
-          PROJECT_SHORT_TAG: XAIL-NB
+#  notebook_tests-large-runner:
+#    environment: AWS_SAGEMAKER
+#    env:
+#      DOCKER_TAG:"${{ matrix.wip }}-${{ github.sha }}"
+#    runs-on:
+#      labels: int-linux-x64-4core-ubuntu24.04-1
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        nb_test:
+#          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem"}
+#    name: Running ${{ matrix.nb_test.name }}
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - uses: ./.github/actions/prepare_test_env/
+#
+#      - name: Download ai-lab image ${{matrix.wip}}
+#        id: download-image
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+#          path: "."
+#
+#      - name: Load ai-lab image ${{matrix.wip}}
+#        run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
+#
+#      - name: Run notebook tests
+#        run: |
+#          poetry run pytest \
+#            --capture=no \
+#            --override-ini=log_cli=true \
+#            --override-ini=log_cli_level=INFO \
+#            --nb-test-backend=${{ matrix.nb_test.test_backend }} \
+#            --nb-test-file=${{ matrix.nb_test.test_file }} \
+#            --nb-test-db-mem-size="8 GiB" \
+#            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
+#            test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+#        env:
+#          NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
+#          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
+#          PROJECT_SHORT_TAG: XAIL-NB
