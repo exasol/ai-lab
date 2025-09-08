@@ -45,7 +45,7 @@ jobs:
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
     env:
-      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
     strategy:
       fail-fast: false
       matrix:
@@ -71,14 +71,14 @@ jobs:
 
       - uses: ./.github/actions/prepare_test_env/
 
-      - name: Download ai-lab image ${{matrix.wip}}
+      - name: Download ai-lab image ${{matrix.nb_test.wip}}
         id: download-image
         uses: actions/download-artifact@v4
         with:
-          name: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
-          path: "./ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
+          name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+          path: "./ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
 
-      - name: Load ai-lab image ${{matrix.wip}}
+      - name: Load ai-lab image ${{matrix.nb_test.wip}}
         run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
 
       - name: Run notebook tests
@@ -106,7 +106,7 @@ jobs:
 #    needs: [notebook-tests-docker-image-builder]
 #    environment: AWS_SAGEMAKER
 #    env:
-#      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
+#      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
 #    runs-on:
 #      labels: int-linux-x64-4core-ubuntu24.04-1
 #    strategy:
@@ -126,10 +126,10 @@ jobs:
 #        id: download-image
 #        uses: actions/download-artifact@v4
 #        with:
-#          name: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+#          name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
 #          path: "."
 #
-#      - name: Load ai-lab image ${{matrix.wip}}
+#      - name: Load ai-lab image ${{matrix.nb_test.wip}}
 #        run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
 #
 #      - name: Run notebook tests
