@@ -40,6 +40,7 @@ jobs:
           retention-days: 1
 
   notebook_tests-normal-runner:
+    needs: [notebook-tests-docker-image-builder]
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
     env:
@@ -101,6 +102,7 @@ jobs:
           PROJECT_SHORT_TAG: XAIL-NB
 
 #  notebook_tests-large-runner:
+#    needs: [notebook-tests-docker-image-builder]
 #    environment: AWS_SAGEMAKER
 #    env:
 #      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
