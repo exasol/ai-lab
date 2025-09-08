@@ -76,7 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
-          path: "./ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
+          path: "."
 
       - name: Load ai-lab image ${{matrix.nb_test.wip}}
         run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
