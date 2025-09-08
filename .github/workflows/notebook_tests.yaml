@@ -138,10 +138,10 @@ jobs:
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
+            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
             --nb-test-db-mem-size="8 GiB" \
-            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
