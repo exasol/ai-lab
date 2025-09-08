@@ -13,7 +13,7 @@ jobs:
         wip: [no-wip, wip]
     name: Running Build Docker image - ${{ matrix.wip }}
     env:
-      DOCKER_TAG:"${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,7 +43,7 @@ jobs:
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
     env:
-      DOCKER_TAG:"${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
     strategy:
       fail-fast: false
       matrix:
@@ -103,7 +103,7 @@ jobs:
 #  notebook_tests-large-runner:
 #    environment: AWS_SAGEMAKER
 #    env:
-#      DOCKER_TAG:"${{ matrix.wip }}-${{ github.sha }}"
+#      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
 #    runs-on:
 #      labels: int-linux-x64-4core-ubuntu24.04-1
 #    strategy:
