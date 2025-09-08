@@ -37,7 +37,7 @@ jobs:
         with:
           name: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
           path: "./ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
-          compression-level: 9
+          compression-level: 5
           retention-days: 1
 
   notebook_tests-normal-runner:
