@@ -30,6 +30,10 @@ jobs:
             poetry run ai-lab create-docker-image --version "$DOCKER_TAG" --log-level info $additional_options
       - name: Export docker image
         run: docker save -o "./ai-lab-$DOCKER_TAG.tar" "exasol/ai-lab:$DOCKER_TAG"
+      - name: Export docker image
+        run: docker save -o "./ai-lab-$DOCKER_TAG.tar" "exasol/ai-lab:$DOCKER_TAG"
+      - name: Ls
+        run: ls -la
 
       - uses: actions/upload-artifact@v4
         name: Upload ai-lab docker image
