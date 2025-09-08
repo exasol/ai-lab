@@ -87,9 +87,9 @@ jobs:
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
+            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
-            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
@@ -113,7 +113,7 @@ jobs:
       fail-fast: false
       matrix:
         nb_test:
-          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem"}
+          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem", wip: "no-wip"}
     name: Running ${{ matrix.nb_test.name }}
     steps:
       - uses: actions/checkout@v4
