@@ -14,6 +14,8 @@ jobs:
     name: Running Build Docker image - ${{ matrix.wip }}
     env:
       DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
     steps:
       - uses: actions/checkout@v5
         with:
@@ -27,12 +29,12 @@ jobs:
             fi
             poetry run ai-lab create-docker-image --version "$DOCKER_TAG" --log-level info $additional_options
       - name: Export docker image
-        run: docker save -o "./ai-lab-$DOCKER_TAG.tar" "exasol/ai-lab:$DOCKER_TAG"
+        run: docker save -o "./$DOCKER_IMG_FILENAME" "exasol/ai-lab:$DOCKER_TAG"
       - uses: actions/upload-artifact@v4
         name: Upload ai-lab docker image
         with:
-          name: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
-          path: "./ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
+          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
+          path: "./${{ env.DOCKER_IMG_FILENAME }}"
           compression-level: 5
           retention-days: 1
 
@@ -41,7 +43,9 @@ jobs:
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
     env:
-      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
     strategy:
       fail-fast: false
       matrix:
@@ -71,11 +75,11 @@ jobs:
         id: download-image
         uses: actions/download-artifact@v5
         with:
-          name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
           path: "."
 
       - name: Load ai-lab image ${{matrix.nb_test.wip}}
-        run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
+        run: docker load -i "./$DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests
         run: |
@@ -102,7 +106,9 @@ jobs:
     needs: [notebook-tests-docker-image-builder]
     environment: AWS_SAGEMAKER
     env:
-      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
     runs-on:
       labels: int-linux-x64-4core-ubuntu24.04-1
     strategy:
@@ -122,11 +128,11 @@ jobs:
         id: download-image
         uses: actions/download-artifact@v5
         with:
-          name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
           path: "."
 
       - name: Load ai-lab image ${{matrix.nb_test.wip}}
-        run: docker load -i "./ai-lab-$DOCKER_TAG.tar"
+        run: docker load -i "./$DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests
         run: |
