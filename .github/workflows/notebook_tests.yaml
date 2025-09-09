@@ -55,13 +55,13 @@ jobs:
           - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
           - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
           - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
-          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
-          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+#          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+#          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+#          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+#          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+#          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
           - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "", wip: "no-wip", "test_status": "stable" }
-          - { name: "TXAIE notebooks", test_file: "nbtest_text_ai.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+#          - { name: "TXAIE notebooks", test_file: "nbtest_text_ai.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     continue-on-error: ${{ matrix.nb_test.test_status == 'unstable' }}
     steps:

@@ -73,6 +73,7 @@ jobs:
 
   gate-2:
     name: Gate 2 - Allow Merge
+    continue-on-error: false
     runs-on: ubuntu-24.04
     needs: [ run-unit-tests, run-integration-tests, run-notebook-tests ]
     steps:
