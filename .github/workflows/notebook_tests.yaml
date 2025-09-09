@@ -2,43 +2,38 @@ name: Notebook Tests
 
 on:
   workflow_call:
-
+    inputs:
+      status-filter:
+          description: 'Only nb tests with the given status will be executed.'
+          required: true
+          type: string
 jobs:
-  notebook-tests-docker-image-builder:
+  fetch-notebook-tests:
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        wip: [no-wip, wip]
-    name: Running Build Docker image - ${{ matrix.wip }}
-    env:
-      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
+    name: Fetching tests
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: ./.github/actions/prepare_test_env/
-      - name: Run notebook tests
+
+      - id: set-normal-tests
         run: |
-            additional_options=""
-            if [[ "${{ matrix.wip }}" == "wip" ]]; then
-              additional_options="--work-in-progress-notebooks"
-            fi
-            poetry run ai-lab create-docker-image --version "$DOCKER_TAG" --log-level info $additional_options
-      - name: Export docker image
-        run: docker save -o "./$DOCKER_IMG_FILENAME" "exasol/ai-lab:$DOCKER_TAG"
-      - uses: actions/upload-artifact@v4
-        name: Upload ai-lab docker image
-        with:
-          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
-          path: "./${{ env.DOCKER_IMG_FILENAME }}"
-          compression-level: 5
-          retention-days: 1
+          TESTS=`nox -s get-notebook-tests -- --test-status ${{ input.status-filter }} --test-classification normal`
+          echo "normal-tests=$TESTS" >> "$GITHUB_OUTPUT"
+      - id: set-large-tests
+        run: |
+          TESTS=`nox -s get-notebook-tests -- --test-status ${{ input.status-filter }} --test-classification large`
+          echo "large-tests=$TESTS" >> "$GITHUB_OUTPUT"
+
+    outputs:
+      normal-tests: ${{ steps.set-normal-tests.outputs.normal-tests }}
+      large-tests: ${{ steps.set-large-tests.outputs.large-tests }}
+
 
   notebook_tests-normal-runner:
-    needs: [notebook-tests-docker-image-builder]
+    needs: [fetch-notebook-tests]
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
     env:
@@ -48,22 +43,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas", wip: "no-wip", "test_status": "stable" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
-#          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-#          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-#          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
-#          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-#          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
-          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "", wip: "no-wip", "test_status": "stable" }
-#          - { name: "TXAIE notebooks", test_file: "nbtest_text_ai.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.normal-tests).tests}}
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
-    continue-on-error: ${{ matrix.nb_test.test_status == 'unstable' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -103,7 +84,7 @@ jobs:
           PROJECT_SHORT_TAG: XAIL-NB
 
   notebook_tests-large-runner:
-    needs: [notebook-tests-docker-image-builder]
+    needs: [fetch-notebook-tests]
     environment: AWS_SAGEMAKER
     env:
       DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
@@ -114,8 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nb_test:
-          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem", wip: "no-wip"}
+        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.large-tests).tests}}
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
       - uses: actions/checkout@v4
