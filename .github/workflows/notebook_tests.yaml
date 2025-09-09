@@ -16,15 +16,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ./.github/actions/prepare_test_env/
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@v1
+        with:
+          python-version: "3.10"
 
       - id: set-normal-tests
         run: |
-          TESTS=`nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification normal`
+          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification normal`
           echo "normal-tests=$TESTS" >> "$GITHUB_OUTPUT"
       - id: set-large-tests
         run: |
-          TESTS=`nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification large`
+          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification large`
           echo "large-tests=$TESTS" >> "$GITHUB_OUTPUT"
 
     outputs:
