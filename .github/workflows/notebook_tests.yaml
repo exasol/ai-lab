@@ -42,27 +42,27 @@ jobs:
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
     env:
-      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
+      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
     strategy:
       fail-fast: false
       matrix:
         nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem", wip: "no-wip", "test-status": "stable" }
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas", wip: "no-wip", "test-status": "unstable" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem", wip: "no-wip", "test-status": "stable" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas", wip: "no-wip", "test-status": "unstable" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip", "test-status": "stable" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas", wip: "no-wip", "test-status": "unstable" }
-          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip", "test-status": "stable" }
-          - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip", "test-status": "stable" }
-          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas", wip: "no-wip", "test-status": "unstable" }
-          - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip", "test-status": "stable" }
-          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas", wip: "no-wip", "test-status": "unstable" }
-          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "", wip: "no-wip", "test-status": "stable" }
-          - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas", wip: "no-wip", "test-status": "unstable" }
-    name: Running ${{ matrix.nb_test.name }}
+          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+          - { name: "SME notebooks", test_file: "nbtest_sagemaker.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
+          - { name: "TE notebooks", test_file: "nbtest_transformers.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: "", wip: "no-wip", "test_status": "stable" }
+          - { name: "TXAIE notebooks", test_file: "nbtest_text_ai.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+    name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,7 +81,7 @@ jobs:
         run: docker load -i "./$DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests
-        continue-on-error: ${{ matrix.nb_test.test-status == 'unstable' }}
+        continue-on-error: ${{ matrix.nb_test.test_status == 'unstable' }}
         run: |
           poetry run -- pytest \
             --capture=no \
@@ -106,9 +106,9 @@ jobs:
     needs: [notebook-tests-docker-image-builder]
     environment: AWS_SAGEMAKER
     env:
-      DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
+      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
     runs-on:
       labels: int-linux-x64-4core-ubuntu24.04-1
     strategy:
@@ -116,7 +116,7 @@ jobs:
       matrix:
         nb_test:
           - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem", wip: "no-wip"}
-    name: Running ${{ matrix.nb_test.name }}
+    name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
       - uses: actions/checkout@v4
         with:
