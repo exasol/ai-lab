@@ -20,11 +20,11 @@ jobs:
 
       - id: set-normal-tests
         run: |
-          TESTS=`nox -s get-notebook-tests -- --test-status ${{ input.status-filter }} --test-classification normal`
+          TESTS=`nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification normal`
           echo "normal-tests=$TESTS" >> "$GITHUB_OUTPUT"
       - id: set-large-tests
         run: |
-          TESTS=`nox -s get-notebook-tests -- --test-status ${{ input.status-filter }} --test-classification large`
+          TESTS=`nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification large`
           echo "large-tests=$TESTS" >> "$GITHUB_OUTPUT"
 
     outputs:
