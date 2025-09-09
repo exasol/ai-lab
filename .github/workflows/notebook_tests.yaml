@@ -50,7 +50,7 @@ jobs:
       matrix:
         nb_test:
           - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
+          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas", wip: "no-wip", "test_status": "stable" }
           - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
           - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas", wip: "no-wip", "test_status": "unstable" }
           - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem", wip: "no-wip", "test_status": "stable" }
