@@ -15,12 +15,10 @@ jobs:
     env:
       DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-
       - uses: ./.github/actions/prepare_test_env/
-
       - name: Run notebook tests
         run: |
             additional_options=""
@@ -28,8 +26,6 @@ jobs:
               additional_options="--work-in-progress-notebooks"
             fi
             poetry run ai-lab create-docker-image --version "$DOCKER_TAG" --log-level info $additional_options
-      - name: Export docker image
-        run: docker save -o "./ai-lab-$DOCKER_TAG.tar" "exasol/ai-lab:$DOCKER_TAG"
       - name: Export docker image
         run: docker save -o "./ai-lab-$DOCKER_TAG.tar" "exasol/ai-lab:$DOCKER_TAG"
       - uses: actions/upload-artifact@v4
@@ -73,7 +69,7 @@ jobs:
 
       - name: Download ai-lab image ${{matrix.nb_test.wip}}
         id: download-image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
           path: "."
@@ -124,7 +120,7 @@ jobs:
 
       - name: Download ai-lab image ${{matrix.nb_test.wip}}
         id: download-image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
           path: "."
