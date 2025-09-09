@@ -14,8 +14,8 @@ jobs:
     name: Running Build Docker image - ${{ matrix.wip }}
     env:
       DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ env.DOCKER_TAG }}"
-      DOCKER_IMG_FILENAME: "${{ env.DOCKER_IMG_ARTIFACT }}.tar"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
     steps:
       - uses: actions/checkout@v5
         with:
@@ -44,8 +44,8 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ env.DOCKER_TAG }}"
-      DOCKER_IMG_FILENAME: "${{ env.DOCKER_IMG_ARTIFACT }}.tar"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
     strategy:
       fail-fast: false
       matrix:
@@ -107,8 +107,8 @@ jobs:
     environment: AWS_SAGEMAKER
     env:
       DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ env.DOCKER_TAG }}"
-      DOCKER_IMG_FILENAME: "${{ env.DOCKER_IMG_ARTIFACT }}.tar"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.wip }}-${{ github.sha }}.tar"
     runs-on:
       labels: int-linux-x64-4core-ubuntu24.04-1
     strategy:
