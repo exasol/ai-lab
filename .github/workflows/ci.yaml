@@ -85,10 +85,13 @@ jobs:
     needs: run-notebook-docker-image-builder
 
   gate-2:
+    if: ${{ !cancelled() }}
     name: Gate 2 - Allow Merge
-    continue-on-error: false
     runs-on: ubuntu-24.04
     needs: [ run-unit-tests, run-integration-tests, run-stable-notebook-tests ]
     steps:
+      - name: Branch Protection - failure if any ancestor failed
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
       - name: Branch Protection
         run: true

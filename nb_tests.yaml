@@ -13,10 +13,18 @@ normal:
         test_file: nbtest_ibis.py
         test_backend: onprem
         wip: no-wip
-      - name: SLC notebook
-        test_file: nbtest_script_languages_container.py
-        test_backend: onprem
-        wip: no-wip
+#      - name: SLC notebook
+#        test_file: nbtest_script_languages_container.py
+#        test_backend: onprem
+#        wip: no-wip
+#      - name: SME notebooks onprem
+#        test_file: nbtest_sagemaker.py
+#        test_backend: onprem
+#        wip: no-wip
+#      - name: TE notebooks onprem
+#        test_file: btest_transformers.py
+#        test_backend: onprem
+#        wip: no-wip
       - name: short notebook tests
         test_file: "nbtest_environment_test.py nbtest_itde.py"
         test_backend: ''
@@ -36,14 +44,14 @@ normal:
         test_file: nbtest_ibis.py
         test_backend: saas
         wip: no-wip
-#      - name: SME notebooks
-#        test_file: nbtest_sagemaker.py
-#        test_backend: saas
-#        wip: no-wip
-#      - name: TE notebooks
-#        test_file: nbtest_transformers.py
-#        test_backend: saas
-#        wip: no-wip
+      - name: SME notebooks
+        test_file: nbtest_sagemaker.py
+        test_backend: saas
+        wip: no-wip
+      - name: TE notebooks
+        test_file: nbtest_transformers.py
+        test_backend: saas
+        wip: no-wip
       - name: TXAIE notebooks
         test_file: nbtest_text_ai.py
         test_backend: saas
@@ -51,9 +59,9 @@ normal:
 large:
   stable:
     tests:
-      - name: TXAIE notebooks onprem
-        test_file: nbtest_text_ai.py
-        test_backend: onprem
-        wip: no-wip
+#      - name: TXAIE notebooks onprem
+#        test_file: nbtest_text_ai.py
+#        test_backend: onprem
+#        wip: no-wip
   unstable:
     tests:
