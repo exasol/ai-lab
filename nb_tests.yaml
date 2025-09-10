@@ -21,13 +21,13 @@ normal:
         test_file: "nbtest_environment_test.py nbtest_itde.py"
         test_backend: ''
         wip: no-wip
-
-  unstable:
-    tests:
       - name: CSE notebook
         test_file: nbtest_cloud.py
         test_backend: saas
         wip: no-wip
+
+  unstable:
+    tests:
       - name: sklearn
         test_file: nbtest_sklearn.py
         test_backend: saas
