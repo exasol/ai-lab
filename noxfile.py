@@ -1,8 +1,10 @@
+import json
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
+import yaml
 from pydantic import BaseModel
 
 import nox
@@ -43,49 +45,22 @@ class NBTestDescription(BaseModel):
     test_backend: NBTestBackend
     wip: WipStatus
 
+class TestList(BaseModel):
+    tests: Optional[List[NBTestDescription]]
 
-class TestSet(BaseModel):
-    tests: List[NBTestDescription]
+class TestSets(BaseModel):
+    stable: TestList
+    unstable: TestList
 
+class TestRepository(BaseModel):
+    normal: TestSets
+    large: TestSets
 
-NOTEBOOKS_TESTS = {
-    TestStatus.stable: TestSet(tests=[
-        NBTestDescription(name="CSE notebook", test_file="nbtest_cloud.py", test_backend=NBTestBackend.on_prem,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="sklearn notebook", test_file="nbtest_sklearn.py", test_backend=NBTestBackend.on_prem,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="ibis notebook", test_file="nbtest_ibis.py", test_backend=NBTestBackend.on_prem,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="SLC notebook", test_file="nbtest_script_languages_container.py",
-                          test_backend=NBTestBackend.on_prem, wip=WipStatus.no_wip),
-        # NBTestDescription(name="SME notebooks", test_file="nbtest_sagemaker.py", test_backend=NBTestBackend.on_prem,
-        #                   wip=WipStatus.no_wip),
-        # NBTestDescription(name="TE notebooks", test_file="nbtest_transformers.py", test_backend=NBTestBackend.on_prem,
-        #                   wip=WipStatus.no_wip),
-        NBTestDescription(name="short notebook tests", test_file="\"nbtest_environment_test.py nbtest_itde.py\"",
-                          test_backend=NBTestBackend.empty, wip=WipStatus.no_wip), ]),
-    TestStatus.unstable: TestSet(tests=[
-        NBTestDescription(name="CSE notebook", test_file="nbtest_cloud.py", test_backend=NBTestBackend.saas,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="sklearn", test_file="nbtest_sklearn.py", test_backend=NBTestBackend.saas,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="ibis notebook", test_file="nbtest_ibis.py", test_backend=NBTestBackend.saas,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="SME notebooks", test_file="nbtest_sagemaker.py", test_backend=NBTestBackend.saas,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="TE notebooks", test_file="nbtest_transformers.py", test_backend=NBTestBackend.saas,
-                          wip=WipStatus.no_wip),
-        NBTestDescription(name="TXAIE notebooks", test_file="nbtest_text_ai.py", test_backend=NBTestBackend.saas,
-                          wip=WipStatus.no_wip), ])
-}
-
-LARGE_NOTEBOOKS_TESTS = {
-    TestStatus.stable: TestSet(tests=[
-        NBTestDescription(name="TXAIE notebooks onprem", test_file="nbtest_text_ai.py",
-                          test_backend=NBTestBackend.on_prem,
-                          wip=WipStatus.no_wip), ]), TestStatus.unstable: TestSet(tests=[]),
-}
-
+def _load_test_repository() -> TestRepository:
+    yaml_file_path = Path('nb_tests.yaml')
+    with open(yaml_file_path, 'r') as file:
+        yaml_data = yaml.safe_load(file)
+        return TestRepository(**yaml_data)
 
 @nox.session(name="get-notebook-tests", python=False)
 def get_notebook_tests(session: nox.Session):
@@ -101,6 +76,7 @@ def get_notebook_tests(session: nox.Session):
     parser.add_argument("--test-classification", type=TestClassification, default=TestClassification.normal.value,
                         help="Test classification", )
     args = parser.parse_args(session.posargs)
-    nb_tests = NOTEBOOKS_TESTS if args.test_classification == TestClassification.normal else LARGE_NOTEBOOKS_TESTS
-    test_set = nb_tests[args.test_status]
-    print(test_set.model_dump_json())
+    test_repository = _load_test_repository()
+    nb_tests = test_repository.normal if args.test_classification == TestClassification.normal else test_repository.large
+    tests = nb_tests.stable if args.test_status == TestStatus.stable else nb_tests.unstable
+    print(tests.model_dump_json())
