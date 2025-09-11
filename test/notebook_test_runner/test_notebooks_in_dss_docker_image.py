@@ -80,7 +80,7 @@ def notebook_test_container_with_log(notebook_test_container):
 
 
 def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook_test_backend,
-                  notebook_test_mem_size):
+                  notebook_test_mem_size, notebook_test_with_gpu):
     _logger.info(f"Running notebook tests for {notebook_test_file} at {notebook_test_backend}")
     container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
@@ -91,6 +91,7 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         f"--backend={notebook_test_backend} "
         f"--itde-nameserver='8.8.8.8' "
         f"--itde-db-mem-size='{notebook_test_mem_size}' "
+        f"--itde-db-version='external' "
         f"{notebook_test_file}"
     )
     environ = os.environ.copy()
@@ -99,6 +100,8 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         key.startswith("NBTEST_")
         or key.startswith("SAAS_")
         or key == "PROJECT_SHORT_TAG")}
+    if notebook_test_with_gpu:
+        nbtest_environ["NBTEST_USE_GPU"] = "true"
     exec_command(
         command_run_test,
         container,
