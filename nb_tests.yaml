@@ -22,7 +22,7 @@ normal:
         test_backend: onprem
         wip: no-wip
       - name: TE notebooks onprem
-        test_file: btest_transformers.py
+        test_file: nbtest_transformers.py
         test_backend: onprem
         wip: no-wip
       - name: short notebook tests
