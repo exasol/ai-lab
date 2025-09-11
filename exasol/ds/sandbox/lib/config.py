@@ -5,7 +5,7 @@ AI_LAB_VERSION = version("exasol-ai-lab")
 
 _default_config = {
     # unit: seconds. For GPU AMIs 60 seconds are required.
-    "time_to_wait_for_polling": 10.0,
+    "time_to_wait_for_polling": 60.0,
     # Source AMI is set to Ubuntu 22.04. Owner id '099720109477' == 'Canonical'
     "source_ami_filters": {
         "name": "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*",
