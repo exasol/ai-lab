@@ -65,13 +65,26 @@ def _load_test_repository() -> TestRepository:
 @nox.session(name="get-notebook-tests", python=False)
 def get_notebook_tests(session: nox.Session):
     """
-    Validates the correctness of the given tag.
+    Filters notebook tests for test-status and test-classification and prints as JSON.
     """
     test_status_values = [ts.value for ts in TestStatus]
     test_classification_values = [ts.value for ts in TestClassification]
+    test_status_values_str = ", ".join(test_status_values)
+    test_classification_values_str = ", ".join(test_classification_values)
+    usage = " ".join([
+        "nox",
+        "-s",
+        session.name,
+        "--",
+        "--test-status",
+        "{" + test_status_values_str + "}",
+        "[",
+        "--test-classification",
+        "{" + test_classification_values_str + "}",
+        "]"
+    ])
 
-    parser = ArgumentParser(
-        usage=f"nox -s {session.name} -- --test-status {{{','.join(test_status_values)}}} <--test-classification {{{','.join(test_classification_values)}}}>")
+    parser = ArgumentParser(usage=usage)
     parser.add_argument("--test-status", type=TestStatus, required=True, help="Test status", )
     parser.add_argument("--test-classification", type=TestClassification, default=TestClassification.normal.value,
                         help="Test classification", )

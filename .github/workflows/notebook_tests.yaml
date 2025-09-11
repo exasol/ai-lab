@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Fetching tests
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -49,7 +49,7 @@ jobs:
         nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.normal-tests).tests}}
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -101,7 +101,7 @@ jobs:
         nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.large-tests).tests}}
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
