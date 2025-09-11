@@ -2,35 +2,68 @@ name: Notebook Tests
 
 on:
   workflow_call:
-
+    inputs:
+      status-filter:
+          description: 'Only nb tests with the given status will be executed.'
+          required: true
+          type: string
 jobs:
+  fetch-notebook-tests:
+    runs-on: ubuntu-24.04
+    name: Fetching tests
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@v1
+        with:
+          python-version: "3.10"
+
+      - id: set-normal-tests
+        run: |
+          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification normal`
+          echo "normal-tests=$TESTS" >> "$GITHUB_OUTPUT"
+      - id: set-large-tests
+        run: |
+          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification large`
+          echo "large-tests=$TESTS" >> "$GITHUB_OUTPUT"
+
+    outputs:
+      normal-tests: ${{ steps.set-normal-tests.outputs.normal-tests }}
+      large-tests: ${{ steps.set-large-tests.outputs.large-tests }}
+
+
   notebook_tests-normal-runner:
+    needs: [fetch-notebook-tests]
     environment: AWS_SAGEMAKER
     runs-on: ubuntu-24.04
+    env:
+      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
     strategy:
       fail-fast: false
       matrix:
-        nb_test:
-          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "onprem" }
-#          - { name: "CSE notebook", test_file: "nbtest_cloud.py", test_backend: "saas" }
-          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "onprem" }
-#          - { name: "sklearn notebook", test_file: "nbtest_sklearn.py", test_backend: "saas" }
-          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "onprem" }
-#          - { name: "ibis notebook", test_file: "nbtest_ibis.py", test_backend: "saas" }
-          - { name: "SLC notebook", test_file: "nbtest_script_languages_container.py", test_backend: "onprem" }
-          - { name: "SME notebooks onprem", test_file: "nbtest_sagemaker.py", test_backend: "onprem" }
-#          - { name: "SME notebooks saas", test_file: "nbtest_sagemaker.py", test_backend: "saas" }
-          - { name: "TE notebooks onprem", test_file: "nbtest_transformers.py", test_backend: "onprem" }
-#          - { name: "TE notebooks saas", test_file: "nbtest_transformers.py", test_backend: "saas"}
-          - { name: "short notebook tests", test_file: "\"nbtest_environment_test.py nbtest_itde.py\"", test_backend: ""}
-#          - { name: "TXAIE notebooks saas", test_file: "nbtest_text_ai.py", test_backend: "saas"}
-    name: Running ${{ matrix.nb_test.name }}
+        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.normal-tests).tests}}
+    name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/prepare_test_env/
+
+      - name: Download ai-lab image ${{matrix.nb_test.wip}}
+        id: download-image
+        uses: actions/download-artifact@v5
+        with:
+          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
+          path: "."
+
+      - name: Load ai-lab image ${{matrix.nb_test.wip}}
+        run: docker load -i "./$DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests
         run: |
@@ -38,6 +71,7 @@ jobs:
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
+            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
@@ -53,21 +87,35 @@ jobs:
           PROJECT_SHORT_TAG: XAIL-NB
 
   notebook_tests-large-runner:
+    needs: [fetch-notebook-tests]
     environment: AWS_SAGEMAKER
+    env:
+      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
     runs-on:
       labels: int-linux-x64-4core-ubuntu24.04-1
     strategy:
       fail-fast: false
       matrix:
-        nb_test:
-          - { name: "TXAIE notebooks onprem", test_file: "nbtest_text_ai.py", test_backend: "onprem"}
-    name: Running ${{ matrix.nb_test.name }}
+        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.large-tests).tests}}
+    name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - uses: ./.github/actions/prepare_test_env/
+
+      - name: Download ai-lab image ${{matrix.nb_test.wip}}
+        id: download-image
+        uses: actions/download-artifact@v5
+        with:
+          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
+          path: "."
+
+      - name: Load ai-lab image ${{matrix.nb_test.wip}}
+        run: docker load -i "./$DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests
         run: |
@@ -75,6 +123,7 @@ jobs:
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
+            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
             --nb-test-db-mem-size="8 GiB" \

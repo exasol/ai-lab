@@ -13,7 +13,7 @@ jobs:
     environment: AWS_CI_TESTS
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup Python & Poetry Environment
       uses: exasol/python-toolbox/.github/actions/python-environment@v1
