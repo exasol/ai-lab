@@ -10,7 +10,7 @@ on:
       test-classification:
           description: 'normal, large or GPU'
           type: string
-          default: normal
+          required: true
 jobs:
   fetch-notebook-tests:
     runs-on: ubuntu-24.04

@@ -72,16 +72,26 @@ jobs:
 
   run-stable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        class: [ normal, large ]
     secrets: inherit
     with:
       status-filter: stable
+      test-classification: ${{ matrix.class }}
     needs: run-notebook-docker-image-builder
 
   run-unstable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        class: [ normal, large ]
     secrets: inherit
     with:
       status-filter: unstable
+      test-classification: ${{ matrix.class }}
     needs: run-notebook-docker-image-builder
 
   approval-for-gpu-notebook-tests:
@@ -98,6 +108,7 @@ jobs:
     secrets: inherit
     with:
       status-filter: stable
+      test-classification: gpu
     needs: [run-notebook-docker-image-builder, approval-for-gpu-notebook-tests]
 
   gate-2:
