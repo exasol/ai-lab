@@ -33,7 +33,7 @@ Resources:
           -
             DeviceName: /dev/sda1
             Ebs:
-              VolumeSize: 100
+              VolumeSize: 250
           Tags:
             - Key: "exasol:project"
               Value: "DataScienceSandbox"
