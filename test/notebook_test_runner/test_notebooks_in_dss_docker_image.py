@@ -99,7 +99,8 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
     nbtest_environ = {key: value for key, value in environ.items() if (
         key.startswith("NBTEST_")
         or key.startswith("SAAS_")
-        or key == "PROJECT_SHORT_TAG")}
+        or key == "PROJECT_SHORT_TAG")
+        or key.startswith("TARGET_DOCKER_")}
     if notebook_test_with_gpu:
         nbtest_environ["NBTEST_USE_GPU"] = "true"
     exec_command(
