@@ -16,8 +16,6 @@ from exasol.slc.api import push as exaslct_push
 
 from exasol.nb_connector.language_container_activation import open_pyexasol_connection_with_lang_definitions
 
-conn = open_pyexasol_connection_with_lang_definitions(secrets, schema=secrets.db_schema,
-                                                      compression=True)
 from exasol.python_extension_common.deployment.extract_validator import ExtractValidator
 from datetime import (
     timedelta,
@@ -41,6 +39,8 @@ def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageConta
     def cb(nproc, pending):
         print(f"{len(pending)} of {nproc} nodes are still pending.")
 
+    conn = open_pyexasol_connection_with_lang_definitions(secrets, schema=secrets.db_schema,
+                                                          compression=True)
     ev = ExtractValidator(pyexasol_connection=conn, timeout=timedelta(minutes=5), callback=cb)
     url = f"http://{secrets.bfs_host_name}:{secrets.bfs_port}"
     print(url)
@@ -58,9 +58,13 @@ def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageConta
     ev.verify_all_nodes(schema=secrets.db_schema, language_alias=slc.language_alias,
                         bfs_archive_path=bfs_archive_path)
 
+@pytest.fixture()
+def check_if_gpu_is_active():
+    if os.getenv("NBTEST_USE_GPU", "false") != "true":
+        pytest.skip()
 
 @pytest.fixture()
-def finish_slc_repo_dir(backend, backend_setup):
+def finish_slc_repo_dir(backend, backend_setup, check_if_gpu_is_active):
     yield
     if backend == BACKEND_ONPREM:
         p = Path.cwd() / "gpu_in_udf" / "slc_workspace"
@@ -69,8 +73,6 @@ def finish_slc_repo_dir(backend, backend_setup):
 
 def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir, uploading_hack) -> None:
     if backend != BACKEND_ONPREM:
-        pytest.skip()
-    if os.getenv("NBTEST_USE_GPU", "false") != "true":
         pytest.skip()
     current_dir = Path.cwd()
     store_path, store_password = backend_setup
