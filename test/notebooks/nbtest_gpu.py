@@ -19,7 +19,7 @@ from exasol.pytest_backend import BACKEND_ONPREM
 def cleanup_slc_repo_dir(backend):
     yield
     if backend == BACKEND_ONPREM:
-        p = Path.cwd() / "script_languages_container" / "slc_workspace"
+        p = Path.cwd() / "gpu_in_udf" / "slc_workspace"
         shutil.rmtree(p)
 
 def test_gpu_notebooks(backend, backend_setup, cleanup_slc_repo_dir) -> None:
