@@ -35,6 +35,7 @@ def test_gpu_notebooks(backend, backend_setup, cleanup_slc_repo_dir) -> None:
         os.chdir('./cloud')
         run_notebook('02_s3_vs_reuters.ipynb', store_file, store_password)
         os.chdir('../gpu_in_udf')
+        run_notebook('setup.ipynb', store_file, store_password)
         run_notebook('basic_udf_with_gpu.ipynb', store_file, store_password)
         run_notebook('advanced_udf_with_gpu.ipynb', store_file, store_password)
     finally:
