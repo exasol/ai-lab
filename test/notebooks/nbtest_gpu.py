@@ -36,11 +36,16 @@ def _upload_docker_img_to_cache(backend, backend_setup):
 def finish_slc_repo_dir(backend, backend_setup):
     yield
     if backend == BACKEND_ONPREM:
-        p = Path.cwd() / "gpu_in_udf" / "slc_workspace"
-        _upload_docker_img_to_cache(backend, backend_setup)
-        shutil.rmtree(p)
+        p = Path.cwd()
+        try:
+            os.chdir(p / "gpu_in_udf" )
+            _upload_docker_img_to_cache(backend, backend_setup)
+        finally:
+            os.chdir(p)
+            shutil.rmtree(p / "gpu_in_udf" / "slc_workspace")
 
-def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir) -> None:
+
+def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir, uploading_hack) -> None:
     if backend != BACKEND_ONPREM:
         pytest.skip()
     if os.getenv("NBTEST_USE_GPU", "false") != "true":
@@ -55,6 +60,6 @@ def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir) -> None:
         os.chdir('../gpu_in_udf')
         run_notebook('setup.ipynb', store_file, store_password)
         run_notebook('basic_udf_with_gpu.ipynb', store_file, store_password)
-        run_notebook('advanced_udf_with_gpu.ipynb', store_file, store_password)
+        run_notebook('advanced_udf_with_gpu.ipynb', store_file, store_password) #, hacks=[uploading_hack]
     finally:
         os.chdir(current_dir)
