@@ -32,7 +32,7 @@ def _upload_docker_img_to_cache(slc: ScriptLanguageContainer):
     if "TARGET_DOCKER_PASSWORD" in os.environ and "TARGET_DOCKER_USERNAME" in os.environ:
         from exasol.nb_connector.slc import ScriptLanguageContainer
         target_docker_username = os.environ["TARGET_DOCKER_USERNAME"]
-        exaslct_push(flavor_path=slc.flavor_path,
+        exaslct_push(flavor_path=(slc.flavor_path,),
                      target_docker_username=target_docker_username)
 
 def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageContainer):
