@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Detect Running Notebook Tests
-        run: echo "$TARGET_DOCKER_PASSWORD" | docker login -u "$TARGET_DOCKER_USERNAME" -password-stdin
+        run: echo "$TARGET_DOCKER_PASSWORD" | docker login -u "$TARGET_DOCKER_USERNAME" --password-stdin
         env:
           TARGET_DOCKER_USERNAME: ${{ secrets.TARGET_DOCKER_USERNAME }}
           TARGET_DOCKER_PASSWORD: ${{ secrets.TARGET_DOCKER_PASSWORD }}
