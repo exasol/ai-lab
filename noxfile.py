@@ -47,7 +47,7 @@ class NBTestDescription(BaseModel):
     wip: WipStatus
 
 class TestList(BaseModel):
-    tests: Optional[List[NBTestDescription]]
+    tests: List[NBTestDescription]
 
 class TestSets(BaseModel):
     stable: TestList

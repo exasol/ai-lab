@@ -3,10 +3,10 @@ normal:
   additional_pytest_parameters:
   stable:
     tests:
-#      - name: CSE notebook
-#        test_file: nbtest_cloud.py
-#        test_backend: onprem
-#        wip: no-wip
+      - name: CSE notebook
+        test_file: nbtest_cloud.py
+        test_backend: onprem
+        wip: no-wip
 #      - name: sklearn notebook
 #        test_file: nbtest_sklearn.py
 #        test_backend: onprem
@@ -33,7 +33,7 @@ normal:
 #        wip: no-wip
 
   unstable:
-    tests:
+    tests: []
 #      - name: CSE notebook
 #        test_file: nbtest_cloud.py
 #        test_backend: saas
@@ -62,21 +62,21 @@ large:
   runner: int-linux-x64-4core-ubuntu24.04-1
   additional_pytest_parameters: '--nb-test-db-mem-size="8 GiB"'
   stable:
-    tests:
+    tests: []
 #      - name: TXAIE notebooks onprem
 #        test_file: nbtest_text_ai.py
 #        test_backend: onprem
 #        wip: no-wip
   unstable:
-    tests:
+    tests: []
 gpu:
   runner: int-linux-x64-4core-gpu-t4-ubuntu24.04-1
   additional_pytest_parameters: '--nb-test-with-gpu'
   stable:
-    tests:
+    tests: []
 #      - name: GPU UDF notebooks
 #        test_file: nbtest_gpu.py
 #        test_backend: onprem
 #        wip: no-wip
   unstable:
-    tests:
+    tests: []
