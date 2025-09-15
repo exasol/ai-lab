@@ -162,3 +162,10 @@ docker exec --user root -it ${CONTAINER_NAME} bash
 See [User Guide](../jupyter.md#installing-additional-dependencies).
 
 Please note: Removing the docker container `docker rm <container>` will discard all dependencies that have been installed additionally.
+
+## Usage with Jupyter Hub 
+
+If your organization uses [JupyterHub](https://jupyter.org/hub) to organize multi-user access to 
+jupyter environments, you can configure JupyterHub to spin up the AI-Lab docker container. 
+The configuration process is outlined in the document 
+[AI Lab with JupyterHub configuration](jupyter-hub.md)
