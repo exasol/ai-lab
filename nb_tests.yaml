@@ -73,10 +73,10 @@ gpu:
   runner: int-linux-x64-4core-gpu-t4-ubuntu24.04-1
   additional_pytest_parameters: '--nb-test-with-gpu'
   stable:
-    tests: []
-#      - name: GPU UDF notebooks
-#        test_file: nbtest_gpu.py
-#        test_backend: onprem
-#        wip: no-wip
+    tests:
+      - name: GPU UDF notebooks
+        test_file: nbtest_gpu.py
+        test_backend: onprem
+        wip: no-wip
   unstable:
     tests: []
