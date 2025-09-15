@@ -57,8 +57,24 @@ jobs:
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
+
+
+  check-docker-credentials:
+    name: Check docker credentials
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Detect Running Notebook Tests
+        run: docker login -u "$TARGET_DOCKER_USERNAME" --password "$TARGET_DOCKER_PASSWORD"
+        env:
+          TARGET_DOCKER_USERNAME: ${{ secrets.TARGET_DOCKER_USERNAME }}
+          TARGET_DOCKER_PASSWORD: ${{ secrets.TARGET_DOCKER_PASSWORD }}
+    environment:
+      AWS_SAGEMAKER
+
+
   approval-for-notebook-tests:
     name: Run Jupyter Notebook Tests?
+    needs: check-docker-credentials
     runs-on: ubuntu-24.04
     steps:
       - name: Detect Running Notebook Tests
