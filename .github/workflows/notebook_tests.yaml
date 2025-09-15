@@ -46,7 +46,7 @@ jobs:
       additional-pytest-parameters: ${{ steps.set-additional-pytest-parameters.outputs.additional_pytest_parameters }}
 
 
-  notebook_tests-normal-runner:
+  notebook_tests-runner:
     needs: [fetch-notebook-tests]
     environment: AWS_SAGEMAKER
     runs-on: ${{ needs.fetch-notebook-tests.outputs.runner }}
@@ -57,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.tests).tests}}
+        nb_test: "${{fromJson(needs.fetch-notebook-tests.outputs.tests).tests}}"
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
       - uses: actions/checkout@v5

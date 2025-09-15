@@ -120,7 +120,7 @@ jobs:
       - name: Branch Protection - failure if any ancestor failed
         if: ${{ contains(needs.*.result, 'failure') }}
         run: |
-          echo ${{ needs }}
+          echo ${{ toJSON(needs) }}
           exit 1
       - name: Branch Protection
         run: true
