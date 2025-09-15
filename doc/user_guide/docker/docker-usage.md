@@ -76,6 +76,8 @@ docker run \
   exasol/ai-lab:${VERSION}
 ```
 
+If you plan to write UDFs with GPU support, there exist [additional requirements](using_gpu_in_integrated_exa_db.md).
+
 ## Stopping the AI-Lab Docker Container
 
 If you used one of the commands given in preceding sections without option `--detach` then you can stop the AI-Lab Docker container by simply pressing Ctrl-C.

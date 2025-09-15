@@ -119,6 +119,8 @@ jobs:
     steps:
       - name: Branch Protection - failure if any ancestor failed
         if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
+        run: |
+          echo ${{ needs }}
+          exit 1
       - name: Branch Protection
         run: true
