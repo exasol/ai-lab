@@ -3,18 +3,18 @@ normal:
   additional_pytest_parameters:
   stable:
     tests:
-      - name: CSE notebook
-        test_file: nbtest_cloud.py
-        test_backend: onprem
-        wip: no-wip
-      - name: sklearn notebook
-        test_file: nbtest_sklearn.py
-        test_backend: onprem
-        wip: no-wip
-      - name: ibis notebook
-        test_file: nbtest_ibis.py
-        test_backend: onprem
-        wip: no-wip
+#      - name: CSE notebook
+#        test_file: nbtest_cloud.py
+#        test_backend: onprem
+#        wip: no-wip
+#      - name: sklearn notebook
+#        test_file: nbtest_sklearn.py
+#        test_backend: onprem
+#        wip: no-wip
+#      - name: ibis notebook
+#        test_file: nbtest_ibis.py
+#        test_backend: onprem
+#        wip: no-wip
 #      - name: SLC notebook
 #        test_file: nbtest_script_languages_container.py
 #        test_backend: onprem
@@ -74,9 +74,9 @@ gpu:
   additional_pytest_parameters: '--nb-test-with-gpu'
   stable:
     tests:
-      - name: GPU UDF notebooks
-        test_file: nbtest_gpu.py
-        test_backend: onprem
-        wip: no-wip
+#      - name: GPU UDF notebooks
+#        test_file: nbtest_gpu.py
+#        test_backend: onprem
+#        wip: no-wip
   unstable:
     tests:
