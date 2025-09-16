@@ -90,7 +90,7 @@ def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir, uploading_ha
         slc = ScriptLanguageContainer(secrets=secrets, name="gpu_slc")
         _wait_for_slc_to_become_available(secrets, slc)
         run_notebook('basic_udf_with_gpu.ipynb', store_file, store_password)
-        run_notebook('advanced_udf_with_gpu.ipynb', store_file, store_password) #, hacks=[uploading_hack]
+        run_notebook('advanced_udf_with_gpu.ipynb', store_file, store_password, hacks=[uploading_hack])
         os.chdir(slc.checkout_dir)
         _upload_docker_img_to_cache(slc)
     finally:

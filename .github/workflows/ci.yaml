@@ -95,7 +95,7 @@ jobs:
     needs: run-notebook-docker-image-builder
 
   approval-for-gpu-notebook-tests:
-    name: Run Jupyter Notebook Tests?
+    name: Run Jupyter GPU Notebook Tests?
     runs-on: ubuntu-24.04
     steps:
       - name: Detect Running GPU Notebook Tests
