@@ -35,6 +35,7 @@ def _upload_docker_img_to_cache(slc: ScriptLanguageContainer):
         exaslct_push(flavor_path=(str(slc.flavor_path),),
                      goal=("release",),
                      push_all=True,
+                     force_push=True,
                      target_docker_username=target_docker_username)
 
 def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageContainer):
