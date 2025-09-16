@@ -7,6 +7,7 @@ import string
 import textwrap
 import logging
 from inspect import cleandoc
+import pprint
 
 import pytest
 import nbformat
