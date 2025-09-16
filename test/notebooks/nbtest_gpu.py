@@ -83,7 +83,7 @@ def finish_slc_repo_dir(backend, backend_setup, check_if_gpu_is_active):
         shutil.rmtree(p)
 
 
-def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir, uploading_hack) -> None:
+def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir, uploading_hack, docker_login) -> None:
     if backend != BACKEND_ONPREM:
         pytest.skip()
     current_dir = Path.cwd()
