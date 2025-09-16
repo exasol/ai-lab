@@ -3,11 +3,12 @@ from pathlib import Path
 import shutil
 
 import pytest
+import docker
 
 # We need to manually import all fixtures that we use, directly or indirectly,
 # since the pytest won't do this for us.
 from notebook_test_utils import (backend_setup,
-                                 run_notebook, uploading_hack)
+                                 run_notebook, uploading_hack, print_notebook_output)
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 from exasol.nb_connector.slc import ScriptLanguageContainer
 from exasol.nb_connector.secret_store import Secrets
@@ -65,6 +66,14 @@ def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageConta
 def check_if_gpu_is_active():
     if os.getenv("NBTEST_USE_GPU", "false") != "true":
         pytest.skip()
+
+@pytest.fixture()
+def docker_login():
+    if "TARGET_DOCKER_PASSWORD" in os.environ and "TARGET_DOCKER_USERNAME" in os.environ:
+        docker_client = docker.from_env(timeout=600)
+        docker_client.login(username=os.environ["TARGET_DOCKER_USERNAME"],
+                            password=os.environ["TARGET_DOCKER_PASSWORD"])
+
 
 @pytest.fixture()
 def finish_slc_repo_dir(backend, backend_setup, check_if_gpu_is_active):
