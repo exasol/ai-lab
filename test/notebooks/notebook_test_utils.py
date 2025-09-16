@@ -55,7 +55,7 @@ def _insert_hacks(nb: nbformat.NotebookNode, hacks: List[Tuple[str, str]]):
 
 
 def run_notebook(notebook_file: str, store_file: str, store_password: str,
-                 timeout: int = -1, hacks: Optional[List[Tuple[str, str]]] = None) -> None:
+                 timeout: int = -1, hacks: Optional[List[Tuple[str, str]]] = None) -> NotebookNode:
     """
     Executes notebook with added access to the configuration store.
 
