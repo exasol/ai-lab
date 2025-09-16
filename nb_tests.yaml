@@ -33,11 +33,11 @@ normal:
 #        wip: no-wip
 
   unstable:
-    tests: []
-#      - name: CSE notebook
-#        test_file: nbtest_cloud.py
-#        test_backend: saas
-#        wip: no-wip
+    tests:
+      - name: CSE notebook
+        test_file: nbtest_cloud.py
+        test_backend: saas
+        wip: no-wip
 #      - name: sklearn
 #        test_file: nbtest_sklearn.py
 #        test_backend: saas
