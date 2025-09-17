@@ -14,7 +14,25 @@ If you face some problems, don't hesitate to file a [bug report](https://github.
 
 ## Introduction
 
-How jh is organized 
+[Jupyter Project](https://jupyter.org/) is inherently provides single-user environment. 
+Both Jupyter Notebooks and more recent Jupyter Lab are using credentials and environment of the 
+user who started the process, without addressing the scenarios when several users have to share
+some resources provided by system administrators.
+
+To mitigate this scenario, [JupyterHub](https://jupyter.org/hub) was created. On the high level,
+it provides the web server which provides the following functionality:
+
+* Authentication of users against pre-configured methods (PAM, OAuth, Kerberos, etc)
+* Allocating required resources (starting virtual machines, for example)
+* Spawning Jupyter processes for the user's needs.
+* Traffic management between the user and Jupyter processes.
+
+Together it provides convenient and flexible open-source tool, which allows administrators to build 
+portals for corporate Jupyter users (Data Science teams, for example) or online courses (MOOCs).
+
+More detailed description of JupyterHub architecture could be found in 
+[A Conceptual Overview of JupyterHub](https://jupyterhub.readthedocs.io/en/stable/explanation/concepts.html) 
+document.
 
 ## Custom image of ai-lab
 
