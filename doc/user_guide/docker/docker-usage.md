@@ -165,7 +165,7 @@ Please note: Removing the docker container `docker rm <container>` will discard 
 
 ## Usage with Jupyter Hub 
 
-If your organization uses [JupyterHub](https://jupyter.org/hub) to organize multi-user access to 
-jupyter environments, you can configure JupyterHub to spin up the AI-Lab docker container. 
+If your organization uses [JupyterHub](https://jupyter.org/hub) to manage multi-user access to 
+Jupyter environments, you can configure JupyterHub to spin up the AI-Lab docker container. 
 The configuration process is outlined in the document 
 [AI Lab with JupyterHub configuration](jupyter-hub.md)
