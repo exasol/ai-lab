@@ -8,7 +8,7 @@ import docker
 # We need to manually import all fixtures that we use, directly or indirectly,
 # since the pytest won't do this for us.
 from notebook_test_utils import (backend_setup,
-                                 run_notebook, uploading_hack, print_notebook_output)
+                                 run_notebook, uploading_hack)
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 from exasol.nb_connector.slc import ScriptLanguageContainer
 from exasol.nb_connector.secret_store import Secrets
@@ -94,8 +94,7 @@ def test_gpu_notebooks(backend, backend_setup, finish_slc_repo_dir, uploading_ha
         os.chdir('./cloud')
         run_notebook('02_s3_vs_reuters.ipynb', store_file, store_password)
         os.chdir('../gpu_in_udf')
-        nb_node = run_notebook('setup.ipynb', store_file, store_password)
-        print_notebook_output(nb_node)
+        run_notebook('setup.ipynb', store_file, store_password)
         secrets = Secrets(store_path, master_password=store_password)
         slc = ScriptLanguageContainer(secrets=secrets, name="gpu_slc")
         _wait_for_slc_to_become_available(secrets, slc)
