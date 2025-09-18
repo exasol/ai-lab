@@ -27,7 +27,7 @@ from exasol.nb_connector.slc.constants import PATH_IN_BUCKET
 
 def _upload_docker_img_to_cache(slc: ScriptLanguageContainer):
     """
-    Building the SLC for the CUDA template flavor takes a very large amount of time.
+    Building the SLC for the CUDA template flavor takes very long.
     In order to speed up the tests, we upload the container
     """
     if "TARGET_DOCKER_PASSWORD" in os.environ and "TARGET_DOCKER_USERNAME" in os.environ:
