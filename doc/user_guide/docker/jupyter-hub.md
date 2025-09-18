@@ -34,9 +34,32 @@ A more detailed description of the JupyterHub architecture can be found in
 [A Conceptual Overview of JupyterHub](https://jupyterhub.readthedocs.io/en/stable/explanation/concepts.html) 
 document.
 
-## Custom image of ai-lab
+## Custom AI Lab image
 
-With installed jupyter hub package
+As the first step in AI Lab integration with JupyterHub, we need to create a custom AI Lab Docker Image, 
+which has JupyterHub Python package installed in the AI Lab python environment.
+This step is required, as JupyterHub needs to plug into the Jupyter environment and communicate with  
+the running Jupyter processes inside the container.
+
+To create a custom AI Lab image, create a file named `Dockerfile` with the following contents:
+
+```dockerfile
+FROM exasol/ai-lab:latest
+USER root
+RUN /home/jupyter/jupyterenv/bin/python3 -m pip install jupyterhub==5.2.1
+USER ubuntu
+ENTRYPOINT []
+```
+
+Then run the command `docker build -t exasol/ai-lab-hub:latest .` (note the dot at the end of the command).
+
+After a couple of minutes, you should have the tagged image in your Docker:
+
+```shell
+$ docker images
+REPOSITORY              TAG       IMAGE ID       CREATED              SIZE
+exasol/ai-lab-hub       latest    8d20c95bc72a   5 seconds ago        3.94GB
+```
 
 ## JupyterHub configuration
 
