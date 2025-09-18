@@ -7,6 +7,10 @@ on:
           description: 'Only nb tests with the given status will be executed.'
           required: true
           type: string
+      test-classification:
+          description: 'normal, large or GPU'
+          type: string
+          required: true
 jobs:
   fetch-notebook-tests:
     runs-on: ubuntu-24.04
@@ -21,24 +25,31 @@ jobs:
         with:
           python-version: "3.10"
 
-      - id: set-normal-tests
+      - id: set-tests
         run: |
-          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification normal`
-          echo "normal-tests=$TESTS" >> "$GITHUB_OUTPUT"
-      - id: set-large-tests
+          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
+          echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
+
+      - id: set-runner
         run: |
-          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification large`
-          echo "large-tests=$TESTS" >> "$GITHUB_OUTPUT"
+          RUNNER=`poetry run -- nox -s get-runner -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
+          echo "runner=$RUNNER" >> "$GITHUB_OUTPUT"
+
+      - id: set-additional-pytest-parameters
+        run: |
+          ADD_PARAMS=`poetry run -- nox -s get-additional-pytest-parameter -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
+          echo "additional_pytest_parameters=$ADD_PARAMS" >> "$GITHUB_OUTPUT"
 
     outputs:
-      normal-tests: ${{ steps.set-normal-tests.outputs.normal-tests }}
-      large-tests: ${{ steps.set-large-tests.outputs.large-tests }}
+      tests: ${{ steps.set-tests.outputs.tests }}
+      runner: ${{ steps.set-runner.outputs.runner }}
+      additional-pytest-parameters: ${{ steps.set-additional-pytest-parameters.outputs.additional_pytest_parameters }}
 
 
-  notebook_tests-normal-runner:
+  notebook_tests-runner:
     needs: [fetch-notebook-tests]
     environment: AWS_SAGEMAKER
-    runs-on: ubuntu-24.04
+    runs-on: ${{ needs.fetch-notebook-tests.outputs.runner }}
     env:
       DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
       DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
@@ -46,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.normal-tests).tests}}
+        nb_test: "${{fromJson(needs.fetch-notebook-tests.outputs.tests).tests}}"
     name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
     steps:
       - uses: actions/checkout@v5
@@ -74,7 +85,9 @@ jobs:
             --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
+            ${{ needs.fetch-notebook-tests.outputs.additional-pytest-parameters }} \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
+
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
@@ -82,53 +95,6 @@ jobs:
           NBTEST_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           NBTEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
           NBTEST_AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-          NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
-          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
           PROJECT_SHORT_TAG: XAIL-NB
-
-  notebook_tests-large-runner:
-    needs: [fetch-notebook-tests]
-    environment: AWS_SAGEMAKER
-    env:
-      DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
-      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
-    runs-on:
-      labels: int-linux-x64-4core-ubuntu24.04-1
-    strategy:
-      fail-fast: false
-      matrix:
-        nb_test: ${{fromJson(needs.fetch-notebook-tests.outputs.large-tests).tests}}
-    name: Running ${{ matrix.nb_test.name }} - ${{ matrix.nb_test.test_backend }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/prepare_test_env/
-
-      - name: Download ai-lab image ${{matrix.nb_test.wip}}
-        id: download-image
-        uses: actions/download-artifact@v5
-        with:
-          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
-          path: "."
-
-      - name: Load ai-lab image ${{matrix.nb_test.wip}}
-        run: docker load -i "./$DOCKER_IMG_FILENAME"
-
-      - name: Run notebook tests
-        run: |
-          poetry run pytest \
-            --capture=no \
-            --override-ini=log_cli=true \
-            --override-ini=log_cli_level=INFO \
-            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
-            --nb-test-backend=${{ matrix.nb_test.test_backend }} \
-            --nb-test-file=${{ matrix.nb_test.test_file }} \
-            --nb-test-db-mem-size="8 GiB" \
-            test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
-        env:
-          NBTEST_TXAIE_ZIP_URL: ${{ vars.TXAIE_ZIP_URL }}
-          NBTEST_TXAIE_ZIP_PASSWORD: ${{ secrets.TXAIE_ZIP_PASSWORD }}
-          PROJECT_SHORT_TAG: XAIL-NB
+          TARGET_DOCKER_USERNAME: ${{ secrets.TARGET_DOCKER_USERNAME }}
+          TARGET_DOCKER_PASSWORD: ${{ secrets.TARGET_DOCKER_PASSWORD }}

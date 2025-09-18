@@ -14,9 +14,6 @@ from exasol.nb_connector.secret_store import Secrets
 from exasol.pytest_backend import BACKEND_ONPREM
 
 
-TEST_FLAVOR = "template-Exasol-all-python-3.10"
-
-
 @pytest.fixture()
 def cleanup_slc_repo_dir(backend):
     yield
@@ -25,9 +22,7 @@ def cleanup_slc_repo_dir(backend):
         shutil.rmtree(p)
 
 
-def test_script_languages_container(backend,
-                                                     backend_setup,
-                                                     cleanup_slc_repo_dir) -> None:
+def test_script_languages_container(backend, backend_setup, cleanup_slc_repo_dir) -> None:
     if backend != BACKEND_ONPREM:
         pytest.skip()
     current_dir = Path.cwd()

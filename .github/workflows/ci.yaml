@@ -72,26 +72,55 @@ jobs:
 
   run-stable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        class: [ normal, large ]
     secrets: inherit
     with:
       status-filter: stable
+      test-classification: ${{ matrix.class }}
     needs: run-notebook-docker-image-builder
 
   run-unstable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
+    strategy:
+      fail-fast: false
+      matrix:
+        class: [ normal, large ]
     secrets: inherit
     with:
       status-filter: unstable
+      test-classification: ${{ matrix.class }}
     needs: run-notebook-docker-image-builder
+
+  approval-for-gpu-notebook-tests:
+    name: Run Jupyter GPU Notebook Tests?
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Detect Running GPU Notebook Tests
+        run: true
+    environment:
+      approve-gpu-test-execution
+
+  run-stable-gpu-notebook-tests:
+    uses: ./.github/workflows/notebook_tests.yaml
+    secrets: inherit
+    with:
+      status-filter: stable
+      test-classification: gpu
+    needs: [run-notebook-docker-image-builder, approval-for-gpu-notebook-tests]
 
   gate-2:
     if: ${{ !cancelled() }}
     name: Gate 2 - Allow Merge
     runs-on: ubuntu-24.04
-    needs: [ run-unit-tests, run-integration-tests, run-stable-notebook-tests ]
+    needs: [ run-unit-tests, run-integration-tests, run-stable-notebook-tests, run-stable-gpu-notebook-tests ]
     steps:
       - name: Branch Protection - failure if any ancestor failed
         if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
+        run: |
+          echo '${{ toJSON(needs) }}'
+          exit 1
       - name: Branch Protection
         run: true
