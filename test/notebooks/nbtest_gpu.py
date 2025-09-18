@@ -47,7 +47,6 @@ def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageConta
                                                           compression=True)
     ev = ExtractValidator(pyexasol_connection=conn, timeout=timedelta(minutes=5), callback=cb)
     url = f"http://{secrets.bfs_host_name}:{secrets.bfs_port}"
-    print(url)
     bfs_archive_path = bfs.path.build_path(
         backend=bfs.path.StorageBackend.onprem,
         url=url,
@@ -58,7 +57,6 @@ def _wait_for_slc_to_become_available(secrets: Secrets, slc: ScriptLanguageConta
         verify=False,
         path=f"{PATH_IN_BUCKET}/{slc.flavor}-release-{slc.language_alias}",
     )
-    print(bfs_archive_path.as_udf_path())
     ev.verify_all_nodes(schema=secrets.db_schema, language_alias=slc.language_alias,
                         bfs_archive_path=bfs_archive_path)
 
