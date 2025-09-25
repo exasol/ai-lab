@@ -22,6 +22,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #386: Simplified developer commands
 * #374: Added GPU option to Jupyter UI
 * #387: Added AI-Lab example for customizing CUDA-enabled template SLC
+* #417: Added TE model mgmt notebook
 
 ## Refactorings
 
