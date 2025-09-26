@@ -8,7 +8,7 @@ from notebook_test_utils import (
     backend_setup,
     notebook_runner,
     uploading_hack,
-    set_log_level_for_libraries,
+    set_log_level_for_libraries, print_notebook_output,
 )
 
 
@@ -53,7 +53,7 @@ def test_transformers(notebook_runner, uploading_hack, notebook_file) -> None:
         os.chdir(current_dir)
 
 def test_model_mgmt(notebook_runner, uploading_hack) -> None:
-    notebook_file = "model_administration.ipynb"
+    notebook_file = "model_management.ipynb"
 
     running_hack = (
         'running_model',
@@ -62,12 +62,20 @@ def test_model_mgmt(notebook_runner, uploading_hack) -> None:
             assert not errors, str(errors)
         """)
     )
-    running_error_hack = (
-        'running_model_error',
+    running_delete_hack = (
+        'running_model_delete',
         textwrap.dedent("""
-            errors = %sql --with udf_output_error SELECT error_message FROM udf_output_error WHERE error_message != 'None'
-            assert len(errors) == 1
-            assert "No such file or directory:" in str(errors[0])
+            df = model_delete.DataFrame()
+            assert df.loc[0, 'success'], df.loc[0, 'success']
+            assert not df.loc[0, 'error_message'], df.loc[0, 'error_message']
+        """)
+    )
+    running_delete_error_hack = (
+        'running_model_delete_error',
+        textwrap.dedent("""
+            df = model_delete_with_error.DataFrame()
+            assert not df.loc[0, 'success'], df.loc[0, 'success']
+            assert "No such file or directory:" in df.loc[0, 'error_message'], df.loc[0, 'error_message']
         """)
     )
     running_pyexasol_hack = (
@@ -81,6 +89,6 @@ def test_model_mgmt(notebook_runner, uploading_hack) -> None:
         os.chdir('./transformers')
         notebook_runner(notebook_file='te_init.ipynb', hacks=[uploading_hack])
         notebook_runner(notebook_file=notebook_file,
-                        hacks=[uploading_hack, running_hack, running_error_hack, running_pyexasol_hack])
+                        hacks=[uploading_hack, running_hack, running_delete_hack, running_delete_error_hack, running_pyexasol_hack])
     finally:
         os.chdir(current_dir)
