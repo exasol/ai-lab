@@ -22,6 +22,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #386: Simplified developer commands
 * #374: Added GPU option to Jupyter UI
 * #387: Added AI-Lab example for customizing CUDA-enabled template SLC
+* #417: Added TE model mgmt notebook
 
 ## Refactorings
 
@@ -32,6 +33,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * Switched exasol/python-toolbox/.github/actions/python-environment in Github workflows to `v1`
 * #401: Add Exasol Logo to Notebooks
 * #404: Create docker image for notebook tests separately
+* #412: GPU notebook tests
 
 ## Bug Fixes
 

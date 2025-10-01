@@ -1,3 +1,4 @@
+import os
 from typing import List, Tuple, Optional, Callable
 from pathlib import Path
 from functools import partial
@@ -6,6 +7,7 @@ import string
 import textwrap
 import logging
 from inspect import cleandoc
+import pprint
 
 import pytest
 import nbformat
@@ -13,7 +15,7 @@ from nbclient import NotebookClient
 import requests
 
 from exasol.nb_connector.secret_store import Secrets
-from exasol.nb_connector.ai_lab_config import AILabConfig as CKey, StorageBackend
+from exasol.nb_connector.ai_lab_config import AILabConfig as CKey, StorageBackend, Accelerator
 from exasol.nb_connector.itde_manager import (
     bring_itde_up,
     take_itde_down
@@ -54,7 +56,7 @@ def _insert_hacks(nb: nbformat.NotebookNode, hacks: List[Tuple[str, str]]):
 
 
 def run_notebook(notebook_file: str, store_file: str, store_password: str,
-                 timeout: int = -1, hacks: Optional[List[Tuple[str, str]]] = None) -> None:
+                 timeout: int = -1, hacks: Optional[List[Tuple[str, str]]] = None) -> nbformat.NotebookNode:
     """
     Executes notebook with added access to the configuration store.
 
@@ -133,6 +135,8 @@ def backend_setup(backend,
     if backend == BACKEND_ONPREM:
         secrets.save(CKey.storage_backend, StorageBackend.onprem.name)
         secrets.save(CKey.use_itde, 'yes')
+        if os.getenv("NBTEST_USE_GPU", "false") == "true":
+            secrets.save(CKey.accelerator, Accelerator.nvidia.value)
         bring_itde_up(secrets, backend_aware_onprem_database)
         try:
             yield store_path, store_password
@@ -183,7 +187,7 @@ def uploading_hack() -> Tuple[str, str]:
         """)
     )
 
-def print_notebook_output(notebook_result):
+def print_notebook_output(notebook_result: nbformat.NotebookNode):
     """
     Print the output of notebook run
     """

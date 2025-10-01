@@ -1,4 +1,6 @@
 normal:
+  runner: ubuntu-24.04
+  additional_pytest_parameters:
   stable:
     tests:
       - name: CSE notebook
@@ -57,6 +59,8 @@ normal:
         test_backend: saas
         wip: no-wip
 large:
+  runner: int-linux-x64-4core-ubuntu24.04-1
+  additional_pytest_parameters: '--nb-test-db-mem-size="8 GiB"'
   stable:
     tests:
       - name: TXAIE notebooks onprem
@@ -64,4 +68,15 @@ large:
         test_backend: onprem
         wip: no-wip
   unstable:
+    tests: []
+gpu:
+  runner: int-linux-x64-4core-gpu-t4-ubuntu24.04-1
+  additional_pytest_parameters: '--nb-test-with-gpu'
+  stable:
     tests:
+      - name: GPU UDF notebooks
+        test_file: nbtest_gpu.py
+        test_backend: onprem
+        wip: no-wip
+  unstable:
+    tests: []

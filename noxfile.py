@@ -1,5 +1,5 @@
 import json
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional
@@ -23,6 +23,7 @@ class TestStatus(Enum):
 class TestClassification(Enum):
     normal = "normal"
     large = "large"
+    gpu = "gpu"
 
 
 class WipStatus(Enum):
@@ -46,15 +47,18 @@ class NBTestDescription(BaseModel):
     wip: WipStatus
 
 class TestList(BaseModel):
-    tests: Optional[List[NBTestDescription]]
+    tests: List[NBTestDescription]
 
 class TestSets(BaseModel):
     stable: TestList
     unstable: TestList
+    runner: str
+    additional_pytest_parameters: Optional[str]
 
 class TestRepository(BaseModel):
     normal: TestSets
     large: TestSets
+    gpu: TestSets
 
 def _load_test_repository() -> TestRepository:
     yaml_file_path = Path('nb_tests.yaml')
@@ -62,11 +66,9 @@ def _load_test_repository() -> TestRepository:
         yaml_data = yaml.safe_load(file)
         return TestRepository(**yaml_data)
 
-@nox.session(name="get-notebook-tests", python=False)
-def get_notebook_tests(session: nox.Session):
-    """
-    Filters notebook tests for test-status and test-classification and prints as JSON.
-    """
+
+
+def _parse_args(session: nox.Session) -> Namespace:
     test_status_values = [ts.value for ts in TestStatus]
     test_classification_values = [ts.value for ts in TestClassification]
     test_status_values_str = ", ".join(test_status_values)
@@ -89,7 +91,44 @@ def get_notebook_tests(session: nox.Session):
     parser.add_argument("--test-classification", type=TestClassification, default=TestClassification.normal.value,
                         help="Test classification", )
     args = parser.parse_args(session.posargs)
+    return args
+
+def _get_tests_for_classification(test_classification: TestClassification) -> TestSets:
     test_repository = _load_test_repository()
-    nb_tests = test_repository.normal if args.test_classification == TestClassification.normal else test_repository.large
+    mapping = {
+        test_classification.normal: test_repository.normal,
+        test_classification.large: test_repository.large,
+        test_classification.gpu: test_repository.gpu,
+    }
+    return mapping[test_classification]
+
+@nox.session(name="get-notebook-tests", python=False)
+def get_notebook_tests(session: nox.Session):
+    """
+    Filters notebook tests for test-status and test-classification and prints as JSON.
+    """
+    args = _parse_args(session)
+    nb_tests = _get_tests_for_classification(args.test_classification)
     tests = nb_tests.stable if args.test_status == TestStatus.stable else nb_tests.unstable
     print(tests.model_dump_json())
+
+
+@nox.session(name="get-runner", python=False)
+def get_runner(session: nox.Session):
+    """
+    Filters runner for test-status and test-classification and prints to stdout.
+    """
+    args = _parse_args(session)
+    nb_tests = _get_tests_for_classification(args.test_classification)
+    print(nb_tests.runner)
+
+
+@nox.session(name="get-additional-pytest-parameter", python=False)
+def get_additional_pytest_parameter(session: nox.Session):
+    """
+    Filters additional pytest parameters for test-status and test-classification and prints to stdout.
+    """
+    args = _parse_args(session)
+    nb_tests = _get_tests_for_classification(args.test_classification)
+    if nb_tests.additional_pytest_parameters:
+        print(nb_tests.additional_pytest_parameters)
