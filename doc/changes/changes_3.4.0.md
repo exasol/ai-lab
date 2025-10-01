@@ -23,6 +23,7 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #374: Added GPU option to Jupyter UI
 * #387: Added AI-Lab example for customizing CUDA-enabled template SLC
 * #417: Added TE model mgmt notebook
+* #420: Added Notebook to demo Exasol DB Personal Edition
 
 ## Refactorings
 
