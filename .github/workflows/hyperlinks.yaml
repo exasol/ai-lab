@@ -23,7 +23,7 @@ jobs:
        uses: lycheeverse/lychee-action@v1.9.0
        with:
          fail: true
-         args: --verbose --no-progress 'doc/**/*.md' 'README.md'
+         args: --exclude localhost --verbose --no-progress 'doc/**/*.md' 'README.md'
 
      - name: Check Hyperlinks in Jupyter Notebooks
        run: >
