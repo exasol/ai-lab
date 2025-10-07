@@ -23,7 +23,7 @@ To mitigate this scenario, [JupyterHub](https://jupyter.org/hub) was created. At
 it provides a web server that offers the following functionality:
 
 * Authentication of users against preconfigured methods (PAM, OAuth, Kerberos, etc.)
-* Allocation required resources (for example, starting virtual machines)
+* Allocation of required resources (for example, starting virtual machines)
 * Spawning Jupyter processes for users.
 * Managing traffic between users and Jupyter processes.
 
