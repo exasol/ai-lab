@@ -106,7 +106,7 @@ c.DockerSpawner.volumes = {
     "/data/jupyter-hub/{username}": "/home/jupyter/notebooks",
 }
 ```
-More elaborated example is available in [this repository](https://github.com/jupyterhub/jupyterhub-deploy-docker/blob/main/basic-example/jupyterhub_config.py).
+A more elaborate example is available in [this repository](https://github.com/jupyterhub/jupyterhub-deploy-docker/blob/main/basic-example/jupyterhub_config.py).
 
 More information about the configuration can be found details in the 
 [JupyterHub configuration documentation](https://jupyterhub.readthedocs.io/en/stable/tutorial/getting-started/config-basics.html).
