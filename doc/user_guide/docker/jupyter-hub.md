@@ -51,10 +51,12 @@ USER ubuntu
 ENTRYPOINT []
 ```
 
-Then run the command `docker build -t exasol/ai-lab-hub:latest .` (note the dot at the end of the command).
+Then run this command
+```shell
+$ docker build -t exasol/ai-lab-hub:latest .
+```
 
 After a couple of minutes, you should have the tagged image in your Docker:
-
 ```shell
 $ docker images
 REPOSITORY              TAG       IMAGE ID       CREATED              SIZE
