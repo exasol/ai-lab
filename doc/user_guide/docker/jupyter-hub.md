@@ -97,6 +97,17 @@ In the code above, we make the JupyterHub:
 - instruct DockerSpawner to map the Docker socket into the container to allow the AI Lab to start new containers (which is needed for the Exasol DockerDB to work properly)
 - specify the command to start inside the container.
 
+In addition, you might want to mount a per-user (or shared) volume for persistent notebook and data storage (the directory `/home/jupyter/notebooks` inside the AI Lab container).
+To achieve this, you will need to add an additional parameter to the `volumes` dictionary, for example:
+
+```python
+c.DockerSpawner.volumes = {
+    "/var/run/docker.sock": "/var/run/docker.sock",
+    "/data/jupyter-hub/{username}": "/home/jupyter/notebooks",
+}
+```
+More elaborated example is available in [this repository](https://github.com/jupyterhub/jupyterhub-deploy-docker/blob/main/basic-example/jupyterhub_config.py).
+
 More information about the configuration can be found details in the 
 [JupyterHub configuration documentation](https://jupyterhub.readthedocs.io/en/stable/tutorial/getting-started/config-basics.html).
 
