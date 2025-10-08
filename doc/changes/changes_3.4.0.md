@@ -34,6 +34,8 @@ The release also merges the developer CLI commands `setup-ec2-and-install-depend
 * #401: Add Exasol Logo to Notebooks
 * #404: Create docker image for notebook tests separately
 * #412: GPU notebook tests
+* #425: Remove unused GitHub environments
+
 
 ## Bug Fixes
 
