@@ -137,6 +137,8 @@ def backend_setup(backend,
         secrets.save(CKey.use_itde, 'yes')
         if os.getenv("NBTEST_USE_GPU", "false") == "true":
             secrets.save(CKey.accelerator, Accelerator.nvidia.value)
+        if db_mem_size := os.getenv("NBTEST_MEMSIZE"):
+            secrets.save(CKey.mem_size, db_mem_size)
         bring_itde_up(secrets, backend_aware_onprem_database)
         try:
             yield store_path, store_password

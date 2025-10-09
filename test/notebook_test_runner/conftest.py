@@ -5,7 +5,7 @@ def pytest_addoption(parser):
     parser.addoption("--nb-test-file", action="store", help="Notebook test file nbtest_*.py")
     parser.addoption("--nb-test-backend", action="store", help="Backend to run the notebook test on")
     parser.addoption("--nb-test-db-mem-size", action="store", help="The Docker-DB memory size for the notebook tests",
-                     default="4 GiB")
+                     default="4")
     parser.addoption("--nb-test-with-gpu", action="store_true", help="Runs the notebook test with a Docker-DB with a GPU device attached.",
                      default=False)
 

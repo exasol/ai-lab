@@ -60,7 +60,7 @@ normal:
         wip: no-wip
 large:
   runner: int-linux-x64-4core-ubuntu24.04-1
-  additional_pytest_parameters: '--nb-test-db-mem-size="12 GiB"'
+  additional_pytest_parameters: '--nb-test-db-mem-size="8"'
   stable:
     tests:
       - name: TXAIE notebooks onprem
