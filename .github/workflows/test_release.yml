@@ -10,7 +10,7 @@ on:
 jobs:
 
   build_and_upload:
-    environment: AWS_CI_TESTS
+    environment: AWS_RELEASE
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v5

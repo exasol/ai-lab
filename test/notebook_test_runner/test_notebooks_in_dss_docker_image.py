@@ -89,8 +89,6 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         f"{virtual_env}/bin/python "
         f"-m pytest --setup-show -s "
         f"--backend={notebook_test_backend} "
-        f"--itde-nameserver='8.8.8.8' "
-        f"--itde-db-mem-size='{notebook_test_mem_size}' "
         f"--itde-db-version='external' "
         f"{notebook_test_file}"
     )
@@ -103,6 +101,8 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         or key.startswith("TARGET_DOCKER_")}
     if notebook_test_with_gpu:
         nbtest_environ["NBTEST_USE_GPU"] = "true"
+    if notebook_test_mem_size:
+        nbtest_environ["NBTEST_MEMSIZE"] = str(notebook_test_mem_size)
     exec_command(
         command_run_test,
         container,
