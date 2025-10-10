@@ -17,7 +17,7 @@ jobs:
        run: ./scripts/build/shellcheck.sh
 
      - name: Setup Python & Poetry Environment
-       uses: exasol/python-toolbox/.github/actions/python-environment@v1
+       uses: exasol/python-toolbox/.github/actions/python-environment@bugs/always_call_poetry_install_in_setup_python
        with:
          python-version: "3.10"
 
