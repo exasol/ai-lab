@@ -34,7 +34,6 @@ jobs:
 
   run-integration-tests:
     name: Integration Tests
-    environment: AWS_CI_TESTS
     runs-on: ubuntu-24.04
     needs: run-unit-tests
 
@@ -52,10 +51,6 @@ jobs:
           --override-ini=log_cli=true
           --override-ini=log_cli_level=INFO
           test/integration
-        env: # Set the secret as an env variable
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-         AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
   approval-for-notebook-tests:
     name: Run Jupyter Notebook Tests?
