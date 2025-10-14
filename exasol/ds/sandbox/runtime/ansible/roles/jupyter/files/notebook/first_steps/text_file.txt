@@ -1,2 +1,0 @@
-This is a small file.
-That can be uploaded to Exasol BucketFS.
