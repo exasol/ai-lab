@@ -1,6 +1,12 @@
 normal:
   runner: ubuntu-24.04
   additional_pytest_parameters:
+  experimental:
+    tests:
+      - name: First Steps notebook
+        test_file: nbtest_first_steps.py
+        test_backend: onprem
+        wip: no-wip
   stable:
     tests:
       - name: CSE notebook
