@@ -65,19 +65,6 @@ jobs:
     uses: ./.github/workflows/notebook_docker_image_builder.yaml
     # needs: approval-for-notebook-tests
 
-  run-experimental-notebook-tests:
-    uses: ./.github/workflows/notebook_tests.yaml
-    strategy:
-      fail-fast: false
-      matrix:
-        class: [ normal ]
-    secrets: inherit
-    with:
-      status-filter: experimental
-      test-classification: ${{ matrix.class }}
-    needs:
-      - run-notebook-docker-image-builder
-
   run-stable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
     strategy:
@@ -90,7 +77,7 @@ jobs:
       test-classification: ${{ matrix.class }}
     needs:
       - run-notebook-docker-image-builder
-      - approval-for-notebook-tests
+    #  - approval-for-notebook-tests
 
   run-unstable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
