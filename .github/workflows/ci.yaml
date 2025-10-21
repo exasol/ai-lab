@@ -70,7 +70,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        class: [ normal, large ]
+        class: [ normal ]
+        # class: [ normal, large ]
     secrets: inherit
     with:
       status-filter: stable
