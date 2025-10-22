@@ -63,22 +63,19 @@ jobs:
 
   run-notebook-docker-image-builder:
     uses: ./.github/workflows/notebook_docker_image_builder.yaml
-    # needs: approval-for-notebook-tests
+    needs: approval-for-notebook-tests
 
   run-stable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
     strategy:
       fail-fast: false
       matrix:
-        class: [ normal ]
-        # class: [ normal, large ]
+        class: [ normal, large ]
     secrets: inherit
     with:
       status-filter: stable
       test-classification: ${{ matrix.class }}
-    needs:
-      - run-notebook-docker-image-builder
-    #  - approval-for-notebook-tests
+    needs: run-notebook-docker-image-builder
 
   run-unstable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
@@ -90,9 +87,7 @@ jobs:
     with:
       status-filter: unstable
       test-classification: ${{ matrix.class }}
-    needs:
-      - run-notebook-docker-image-builder
-      - approval-for-notebook-tests
+    needs: run-notebook-docker-image-builder
 
   approval-for-gpu-notebook-tests:
     name: Run Jupyter GPU Notebook Tests?

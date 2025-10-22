@@ -7,36 +7,34 @@ normal:
         test_file: nbtest_first_steps.py
         test_backend: onprem
         wip: no-wip
-#   stable:
-#     tests:
-#       - name: CSE notebook
-#         test_file: nbtest_cloud.py
-#         test_backend: onprem
-#         wip: no-wip
-#       - name: sklearn notebook
-#         test_file: nbtest_sklearn.py
-#         test_backend: onprem
-#         wip: no-wip
-#       - name: ibis notebook
-#         test_file: nbtest_ibis.py
-#         test_backend: onprem
-#         wip: no-wip
-#       - name: SLC notebook
-#         test_file: nbtest_script_languages_container.py
-#         test_backend: onprem
-#         wip: no-wip
-#       - name: SME notebooks onprem
-#         test_file: nbtest_sagemaker.py
-#         test_backend: onprem
-#         wip: no-wip
-#       - name: TE notebooks onprem
-#         test_file: nbtest_transformers.py
-#         test_backend: onprem
-#         wip: no-wip
-#       - name: short notebook tests
-#         test_file: "\"nbtest_environment_test.py nbtest_itde.py\""
-#         test_backend: ''
-#         wip: no-wip
+      - name: CSE notebook
+        test_file: nbtest_cloud.py
+        test_backend: onprem
+        wip: no-wip
+      - name: sklearn notebook
+        test_file: nbtest_sklearn.py
+        test_backend: onprem
+        wip: no-wip
+      - name: ibis notebook
+        test_file: nbtest_ibis.py
+        test_backend: onprem
+        wip: no-wip
+      - name: SLC notebook
+        test_file: nbtest_script_languages_container.py
+        test_backend: onprem
+        wip: no-wip
+      - name: SME notebooks onprem
+        test_file: nbtest_sagemaker.py
+        test_backend: onprem
+        wip: no-wip
+      - name: TE notebooks onprem
+        test_file: nbtest_transformers.py
+        test_backend: onprem
+        wip: no-wip
+      - name: short notebook tests
+        test_file: "\"nbtest_environment_test.py nbtest_itde.py\""
+        test_backend: ''
+        wip: no-wip
 
   unstable:
     tests:
