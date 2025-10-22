@@ -1,8 +1,19 @@
-# AI-Lab 3.4.0 released <TBD>
+# AI-Lab 3.4.0 released 2025-10-23
 
 Code name: Support GPU usage in AWS EC2 instances
 
 ## Summary
+
+This release includes version 2.2.0 of the Exasol Notebook Connector incl. its
+Command Line Interface for configuring the Secure Configuration Storage (SCS).
+
+This enables a wider range of external applications using the AI Lab with
+preconfigured connections, e.g. to an Exasol database instance, see the
+[Notebook Connector User
+Guide](https://exasol.github.io/notebook-connector/main/user_guide/scs-cli.html)
+for details.
+
+### Developer notes
 
 This release add support for arbitrary AWS EC2 instance types (e.g. T4 GPU) and AWS Machine Images (AMI).
 
