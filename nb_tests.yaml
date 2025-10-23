@@ -3,6 +3,10 @@ normal:
   additional_pytest_parameters:
   stable:
     tests:
+      - name: First Steps notebook
+        test_file: nbtest_first_steps.py
+        test_backend: onprem
+        wip: no-wip
       - name: CSE notebook
         test_file: nbtest_cloud.py
         test_backend: onprem
