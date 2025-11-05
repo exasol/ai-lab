@@ -7,6 +7,10 @@ on:
         description: 'Upload URL'
         required: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   check-release:
     runs-on: ubuntu-24.04
@@ -23,7 +27,6 @@ jobs:
 
   upload:
     needs: check-release
-    environment: AWS_RELEASE
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -32,10 +35,15 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@v1
         with:
           python-version: "3.10"
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_CI_ROLE }}
+          role-session-name: github-actions-ai-lab
+          aws-region: ${{ vars.AWS_CI_REGION }}
+
       - name: Build Release
         run: poetry run -- python3 -m exasol.ds.sandbox.main start-release-build --upload-url "${{ github.event.inputs.upload_url }}" --branch "$GITHUB_REF"
-        env: # Set the secret as an env variable
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        env:
+          AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
           GITHUB_TOKEN: ${{ github.token }}
