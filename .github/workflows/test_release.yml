@@ -7,6 +7,10 @@ on:
         description: 'The release title for the new release draft!'
         required: true
 
+permissions:
+  id-token: write
+  contents: write
+
 jobs:
 
   build_and_upload:
@@ -20,10 +24,14 @@ jobs:
       with:
         python-version: "3.10"
 
+    - uses: aws-actions/configure-aws-credentials@v5
+      with:
+        role-to-assume: ${{ vars.AWS_CI_ROLE }}
+        role-session-name: github-actions-ai-lab
+        aws-region: ${{ vars.AWS_CI_REGION }}
+
     - name: Start test release
       run: poetry run -- python3 -m exasol.ds.sandbox.main start-test-release-build --release-title  "${{ github.event.inputs.release_title }}" --branch "$GITHUB_REF"
       env: # Set the secret as an env variable
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-        GITHUB_TOKEN: ${{ github.token }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
+          GITHUB_TOKEN: ${{ github.token }}
