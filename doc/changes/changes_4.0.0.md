@@ -1,6 +1,6 @@
 # AI-Lab 4.0.0 released 2025-11-25
 
-Code name: Update Transformer Extensions
+Code name: Updated Transformer Extensions
 
 ## Summary
 
