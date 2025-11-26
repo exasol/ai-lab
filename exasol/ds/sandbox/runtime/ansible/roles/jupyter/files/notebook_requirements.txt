@@ -1,13 +1,13 @@
 # added to avoid installation of nvidia packages, because they are very large and currently not needed
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-scikit-learn==1.6.1 # required for notebook sklearn
+scikit-learn==1.7.2 # required for notebook sklearn
 matplotlib==3.10.0 # required for notebook sklearn
 jupysql==0.10.17 # required for multiple notebooks
 stopwatch.py>=2.0.1 # also required by ITDE
 wordcloud==1.9.4 # required for Text AI notebooks
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
 ipyfilechooser==0.6.0 # required for SLC notebooks
-ipywidgets==8.1.5 # enable interactive Javascript widgets in the notebooks
-exasol-notebook-connector [sqlalchemy, pyexasol, bucketfs, docker-db, slc, ibis, transformers, text-ai, sagemaker] ==2.2.0
-pydantic==2.11.4 # See https://github.com/exasol/ai-lab/issues/428
+ipywidgets==8.1.8 # enable interactive Javascript widgets in the notebooks
+exasol-notebook-connector [sqlalchemy, pyexasol, bucketfs, docker-db, slc, ibis, transformers, text-ai, sagemaker] ==2.2.2
+pydantic==2.11.5 # See https://github.com/exasol/ai-lab/issues/428
