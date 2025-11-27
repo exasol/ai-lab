@@ -30,7 +30,7 @@ poetry run -- exasol/ds/sandbox/main.py \
 To use an existing docker image in the tests in `integration/test_create_dss_docker_image.py`, simply add the CLI option `--dss-docker-image` when calling `pytest`:
 
 ```shell
-poetry run -- pytest --dss-docker-image exasol/ai-lab:3.4.0
+poetry run -- pytest --dss-docker-image exasol/ai-lab:4.0.0
 ```
 
 ## Tests for Jupyter Notebooks
