@@ -1,6 +1,6 @@
 ---
 name: Create Release
-about: Create a new release of the AI-Lab
+about: Create a new release of the AI Lab
 title: "\U0001F4E6 Create Release <version>"
 labels: task
 assignees: ''
