@@ -1,4 +1,4 @@
-## How to Release the AI-Lab
+## How to Release the AI Lab
 
 1. Take care to update latest file `doc/changes/changes_*.md`
    * Correct version number

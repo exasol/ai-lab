@@ -13,7 +13,7 @@ from exasol.ds.sandbox.lib.config import ConfigObject
 class ExampleDataCfTemplate(S3BucketWithWAFCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
-    bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
+    bucket and the related Web Application Firewall (WAF) dedicated for AI Lab
     example-data-http.
     """
     S3_BUCKET = CfTemplateSpec(
@@ -41,7 +41,7 @@ class ExampleDataCfTemplate(S3BucketWithWAFCfTemplate):
 class ExampleDataS3CfTemplate(S3BucketCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
-    bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
+    bucket and the related Web Application Firewall (WAF) dedicated for AI Lab
     example-data-s3.
     """
     S3_BUCKET = CfTemplateSpec(

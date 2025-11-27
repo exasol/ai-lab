@@ -35,20 +35,20 @@ poetry run -- pytest --dss-docker-image exasol/ai-lab:3.4.0
 
 ## Tests for Jupyter Notebooks
 
-The AI-Lab also contains end-to-end tests for Jupyter notebooks. Executing these tests can take several hours, currently ~3h.
+The AI Lab also contains end-to-end tests for Jupyter notebooks. Executing these tests can take several hours, currently ~3h.
 
 The notebook tests are based on a common parameterized [test-runner](../../test/notebook_test_runner/test_notebooks_in_dss_docker_image.py). The test-runner contains a single parameterized test case on the outer level. Each time the test is executed, the test is parameterized with a Python file from the directory [test/notebooks](../../test/notebooks/) containing the particular test cases for one of the Jupyter notebooks.
 
-The outer test case then uses a session-scoped fixture for creating an ordinary AI-Lab Docker image. Another session-scoped fixture adds some packages for executing the notebook tests, resulting in a second Docker image. Finally, the test-runner launches a Docker container from the second image and runs the inner test cases for the current notebook inside the Docker container.
+The outer test case then uses a session-scoped fixture for creating an ordinary AI Lab Docker image. Another session-scoped fixture adds some packages for executing the notebook tests, resulting in a second Docker image. Finally, the test-runner launches a Docker container from the second image and runs the inner test cases for the current notebook inside the Docker container.
 
 In total, the following Docker entities are involved:
-* Docker image 1 of the AI-Lab
+* Docker image 1 of the AI Lab
 * Docker image 2 for running the inner notebook tests
 * Docker container running Docker image 2
 
 ### Speeding up Notebook Tests
 
-You can speed up the notebook tests using the [same strategy](#speeding-up-docker-based-tests) as for tests involving the basic Docker image for the AI-Lab.
+You can speed up the notebook tests using the [same strategy](#speeding-up-docker-based-tests) as for tests involving the basic Docker image for the AI Lab.
 
 The CLI option to keep the image is `--keep-docker-image-notebook-test`, the option for using an existing Docker image for executing the notebook tests is `--docker-image-notebook-test`.
 

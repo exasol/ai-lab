@@ -11,7 +11,7 @@ appears to have died. It will restart automatically."
 ### Cause
 
 The issue is caused by an insufficient memory, either RAM or the free disk space. This, for example,
-can be observed when running the AI-Lab from certain restricted EC2 instances, e.g.T2.medium.
+can be observed when running the AI Lab from certain restricted EC2 instances, e.g.T2.medium.
 
 ### Solution
 

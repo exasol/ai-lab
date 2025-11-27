@@ -2,7 +2,7 @@
 
 ## Multiple Types of Dependencies
 
-AI-Lab contains dependencies on multiple levels and specified in multiple places, each requiring specific steps for [updating dependencies](#updating-dependencies).
+AI Lab contains dependencies on multiple levels and specified in multiple places, each requiring specific steps for [updating dependencies](#updating-dependencies).
 
 * [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml) and [poetry.lock](https://github.com/exasol/ai-lab/blob/main/poetry.lock)
 * Requirements files in ansible scripts

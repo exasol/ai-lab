@@ -54,8 +54,8 @@ The following commands can be used to deploy the infrastructure onto a given AWS
 * `setup-waf`: Deploy an AWS cloudformation stack with a Web Application Firefall (WAF ACL) configuration for the Cloudfront distribution of an S3 bucket, requires option `--purpose` (see below).
 
 Option `--purpose` is required for both commands `setup-s3-bucket` and `setup-s3-bucket-waf` to select the purpose of the s3 bucket. Supported values are
-* `vm` for virtual machine images of the AI-Lab
-* `example-data-http` for example data to be used in the AI-Lab and accessed via HTTP.
+* `vm` for virtual machine images of the AI Lab
+* `example-data-http` for example data to be used in the AI Lab and accessed via HTTP.
 * `example-data-s3` for example data to be used via S3 protocol.
 
 For all deployment commands:

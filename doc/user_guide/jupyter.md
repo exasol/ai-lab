@@ -13,7 +13,7 @@ Check [Jupyter Home](https://jupyter.org/) for more information.
 
 You can open the starting page with `https://<host>:<port>`.
 
-Please note specific instructions for [AI-Lab Docker Edition](docker/docker-usage.md).
+Please note specific instructions for [AI Lab Docker Edition](docker/docker-usage.md).
 
 ## Installing Additional Dependencies
 
@@ -24,4 +24,4 @@ The following command installs Python dependency `stream-zip`:
 %pip install --upgrade stream-zip
 ```
 
-Please note the limited lifetime of additional dependencies for [AI-Lab Docker Edition](docker/docker-usage.md#installing-additional-dependencies).
+Please note the limited lifetime of additional dependencies for [AI Lab Docker Edition](docker/docker-usage.md#installing-additional-dependencies).
