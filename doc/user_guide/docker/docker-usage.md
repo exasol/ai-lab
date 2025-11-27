@@ -33,7 +33,7 @@ The AI Lab can connect to an _External Exasol database_, as well as using an _In
 
 You can use the command shown below with some limitations:
 * Does not support Integrated Exasol Docker-DB.
-* Does not allow creating Script Language Containers (SLCs) as in the examples in the notebooks [Exporting a flavor](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/export_as_is.ipynb) and [Customizing a flavor](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/customize.ipynb).
+* Does not allow creating Script Language Containers (SLCs), as is done in the examples in the notebooks [Exporting a flavor](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/export_as_is.ipynb) and [Customizing a flavor](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/customize.ipynb).
 
 The command will
 * Run a Docker container using the specified version of the AI Lab.
@@ -53,7 +53,7 @@ docker run \
 
 Additional options
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`.
-* Add option `--detach` to run the container in the background but please note that the initial welcome message with instructions will be hidden then, see also Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and [Stopping the AI Lab Docker Container](#stopping-the-ai-lab-docker-container).
+* Add option `--detach` to run the container in the background, but please note that the initial welcome message with instructions will as a consequence be hidden. For further information, see Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and [Stopping the AI Lab Docker Container](#stopping-the-ai-lab-docker-container).
 * If you want to use an Integrated Exasol Docker-DB or to create SLCs, you must enable the AI Lab Docker container to access the Docker daemon.
   * **Please note:** In this case
     * Additional [Limitations and security risks](prerequisites.md#enabling-exasol-ai-lab-to-use-docker-features) apply.
