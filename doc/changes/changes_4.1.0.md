@@ -1,4 +1,4 @@
-# AI-Lab 4.0.0 released 2025-11-26
+# AI-Lab 4.1.0 released ????-??-??
 
 Code name:
 
@@ -7,3 +7,7 @@ Code name:
 ## Features
 
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+
+## Documentation
+
+* #432: Fixed structure and links in notebook first-steps
