@@ -1,4 +1,4 @@
-# AI-Lab AMI Edition (Amazon Machine Image)
+# AI Lab AMI Edition (Amazon Machine Image)
 
 The ID of the AMI (Amazon Machine Image) is mentioned in the [release notes](https://github.com/exasol/ai-lab/releases/latest) and can be used to start an EC2-instance in your AWS account.
 

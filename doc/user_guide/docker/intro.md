@@ -1,6 +1,6 @@
 # Need to Know About Docker Images and Containers
 
-Exasol AI-Lab Docker Edition is published as a so-called _Docker Image_ on [Docker Hub](https://hub.docker.com/r/exasol/ai-lab).
+Exasol AI Lab Docker Edition is published as a so-called _Docker Image_ on [Docker Hub](https://hub.docker.com/r/exasol/ai-lab).
 
 In order to use such an image, you need two components
 * Docker client

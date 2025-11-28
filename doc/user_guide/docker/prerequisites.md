@@ -1,6 +1,6 @@
-## Prerequisites for Using AI-Lab Docker Edition
+## Prerequisites for Using AI Lab Docker Edition
 
-Before using Exasol AI-Lab Docker Edition you need to meet the following prerequisites:
+Before using Exasol AI Lab Docker Edition you need to meet the following prerequisites:
 * On the machine you want to interact with (e.g. localhost)
   * A Docker client must be installed
 * The daemon machine must
@@ -26,10 +26,10 @@ When your client is running on Windows or MacOSX then at least the daemon machin
 
 See the next section for a list of verified setups.
 
-### Enabling Exasol AI-Lab to Use Docker Features
+### Enabling Exasol AI Lab to Use Docker Features
 
-<!-- later on AI-Lab will be enhanced to create SLCs, as well. -->
-Exasol AI-Lab can use Docker features to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
+<!-- later on AI Lab will be enhanced to create SLCs, as well. -->
+Exasol AI Lab can use Docker features to provide additional convenience and features, such as starting an Exasol Docker-DB on demand.
 
 <!-- Client Binaries are omitted on purpose, possible on Linux -->
 This is only possible when using
@@ -41,6 +41,6 @@ This is only possible when using
 
 In all scenarios the daemon machine must allow running the Exasol Docker-DB with option [`--privileged`](https://docs.docker.com/engine/containers/run/#runtime-privilege-and-linux-capabilities).
 
-Please note that enabling Exasol AI-Lab to use Docker features creates security risks. In particular, code running inside the AI-Lab could create privileged containers, mount the file system of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
+Please note that enabling Exasol AI Lab to use Docker features creates security risks. In particular, code running inside the AI Lab could create privileged containers, mount the file system of the machine running the Docker daemon, and gain root access to it. For details see https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/, section "The socket solution".
 
-Section [AI-Lab with Integrated Exasol Docker-DB](docker-usage.md#ai-lab-with-integrated-exasol-docker-db) shows the corresponding command line options, for details see [Docker FAQ](https://docs.docker.com/desktop/troubleshoot-and-support/faqs/general/#how-do-i-connect-to-the-remote-docker-engine-api).
+Section [AI Lab with Integrated Exasol Docker-DB](docker-usage.md#ai-lab-with-integrated-exasol-docker-db) shows the corresponding command line options, for details see [Docker FAQ](https://docs.docker.com/desktop/troubleshoot-and-support/faqs/general/#how-do-i-connect-to-the-remote-docker-engine-api).

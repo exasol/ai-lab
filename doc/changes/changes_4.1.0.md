@@ -1,4 +1,4 @@
-# AI-Lab 4.0.0 released 2025-11-26
+# AI-Lab 4.1.0 released ????-??-??
 
 Code name:
 
@@ -7,3 +7,4 @@ Code name:
 ## Documentation
 
 * #432: Fixed structure and links in notebook first-steps
+* #337: Ensured correct spelling for AI Lab

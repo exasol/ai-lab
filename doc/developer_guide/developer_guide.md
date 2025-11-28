@@ -1,4 +1,4 @@
-# Exasol AI-Lab Developer Guide
+# Exasol AI Lab Developer Guide
 
 ## Overview
 
@@ -17,4 +17,4 @@ the virtual image formats.
 7. [Dependencies and Updating Packages](dependencies.md)
 8. [Notebooks](notebooks.md)
 
-Section [Dependencies](dependencies.md) is dedicated to enumerating all places defining dependencies as the AI-Lab contains dependencies on multiple levels and specified in multiple places.
+Section [Dependencies](dependencies.md) is dedicated to enumerating all places defining dependencies as the AI Lab contains dependencies on multiple levels and specified in multiple places.
