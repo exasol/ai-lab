@@ -59,7 +59,7 @@ Additional options
     * Additional [Limitations and security risks](prerequisites.md#enabling-exasol-ai-lab-to-use-docker-features) apply.
     * Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as the `docker.sock`.
     * On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
-  * You can mount the Docker Socket with `--volume /var/run/docker.sock:/var/run/docker.sock`
+  * You can mount the Docker Socket with `--volume /var/run/docker.sock:/var/run/docker.sock`, see [graphical overview](prerequisites.md).
 
 The following example uses all additional options:
 
