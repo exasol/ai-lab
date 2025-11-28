@@ -14,7 +14,7 @@ from exasol.ds.sandbox.lib.cloudformation_templates import (
 class VmBucketCfTemplate(S3BucketWithWAFCfTemplate):
     """
     Enables to instantiate templates for cloudformation stacks for an S3
-    bucket and the related Web Application Firewall (WAF) dedicated for AI-Lab
+    bucket and the related Web Application Firewall (WAF) dedicated for AI Lab
     virtual machine images (VM).
     """
     S3_BUCKET = CfTemplateSpec(

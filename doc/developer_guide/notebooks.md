@@ -1,18 +1,18 @@
 # Notebook Files
 
-AI-Lab repository includes some Jupyter notebooks and scripts to add these notebooks to AI-Lab images (the old name - DSS images), e.g. AMI or Docker Images.
+AI Lab repository includes some Jupyter notebooks and scripts to add these notebooks to AI Lab images (the old name - DSS images), e.g. AMI or Docker Images.
 
 Please add or update the notebook files in folder [exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook](../../exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook).
 
 ## Notebook Connector
 
 Most notebooks use the `exasol-notebook-connector` - the component providing various helper functions for notebooks.
-We typically put there the code we don't want to show in a notebook. Logically, this component is a part of the AI-Lab.
+We typically put there the code we don't want to show in a notebook. Logically, this component is a part of the AI Lab.
 It is listed in the [notebook_requirements.txt](../../exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook_requirements.txt) and gets installed in the container with pip.
 In order to simplify making simultaneous changes to both notebooks and the notebook-connector we allow referencing the latter temporarily through a git dependency,
 e.g. `exasol-notebook-connector @ git+https://github.com/exasol/notebook-connector@e3a8525`.
 It is important to reference a commit in the `main` branch, not the `main` branch itself. The git dependency should be
-replaced with the proper pypi dependency before releasing of the AI-Lab.
+replaced with the proper pypi dependency before releasing of the AI Lab.
 
 ## Work-in-progress Notebooks
 

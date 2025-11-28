@@ -1,6 +1,6 @@
 ## Design Goals
 
-The Exasol AI-Lab (XAIL) uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
+The Exasol AI Lab (XAIL) uses AWS as backend, because it provides the possibility to run the whole workflow during a ci-test.
 
 This project uses
 

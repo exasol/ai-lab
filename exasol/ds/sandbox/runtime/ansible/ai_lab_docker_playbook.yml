@@ -25,7 +25,7 @@
       include_role:
         name: ansible_access
 
-- name: Setup AI-Lab Docker Container
+- name: Setup AI Lab Docker Container
   hosts: docker_container_group
   remote_user: "ubuntu"
   gather_facts: true

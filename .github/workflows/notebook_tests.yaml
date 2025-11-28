@@ -66,14 +66,14 @@ jobs:
 
       - uses: ./.github/actions/prepare_test_env/
 
-      - name: Download ai-lab image ${{matrix.nb_test.wip}}
+      - name: Download AI Lab image ${{matrix.nb_test.wip}}
         id: download-image
         uses: actions/download-artifact@v5
         with:
           name: "${{ env.DOCKER_IMG_ARTIFACT }}"
           path: "."
 
-      - name: Load ai-lab image ${{matrix.nb_test.wip}}
+      - name: Load AI Lab image ${{matrix.nb_test.wip}}
         run: docker load -i "./$DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests

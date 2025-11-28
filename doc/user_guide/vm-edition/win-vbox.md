@@ -2,14 +2,14 @@
 
 ## Preparation
 
-* [Download the VMDK image file](https://github.com/exasol/ai-lab/releases) for the latest version of the AI-Lab VM Edition
+* [Download the VMDK image file](https://github.com/exasol/ai-lab/releases) for the latest version of the AI Lab VM Edition
 * Download Oracle Virtual Box
 * Start Windows application _Oracle Virtual Box_
 
 ## Select Virtual machine Name and Operating System
 
 * Create a new virtual machine
-* Enter a name for your virtual machine, e.g. "Exasol-AI-Lab-3.4.0"
+* Enter a name for your virtual machine, e.g. "Exasol-AI-Lab-4.0.0"
 * Select a folder to store the VM image to
 * Select operating system "Linux", e.g. version "Ubuntu 22.04"
 * Click button "Next"
@@ -27,7 +27,7 @@
 ## Select  Virtual Hard disk
 
 * Select "Use an Existing Virtual Hard Disk File"
-* Select the path to the AI-Lab vmk image file
+* Select the path to the AI Lab vmk image file
 
 ![](img/win-vbox/3.png)
 

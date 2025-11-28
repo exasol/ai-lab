@@ -1,6 +1,6 @@
-# AI-Lab Virtual Machine Edition
+# AI Lab Virtual Machine Edition
 
-The AI-Lab Virtual Machine Edition offers two different VM images
+The AI Lab Virtual Machine Edition offers two different VM images
 * VMware Virtual Machine Disk (VMDK)
 * Virtual Hard Disk by Microsoft (VHD)
 

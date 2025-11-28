@@ -165,7 +165,7 @@ class DssDockerImage:
             container: DockerContainer,
             facts: AnsibleFacts,
     ) -> DockerImage:
-        _logger.debug(f'AI-Lab facts: {get_fact(facts)}')
+        _logger.debug(f'AI Lab facts: {get_fact(facts)}')
         _logger.info("Committing changes to docker container")
         virtualenv = get_fact(facts, "jupyter", "virtualenv")
         port = get_fact(facts, "jupyter", "port")
