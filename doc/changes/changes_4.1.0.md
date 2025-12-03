@@ -9,6 +9,10 @@ Code name:
 * #432: Fixed structure and links in notebook first-steps
 * #337: Ensured correct spelling for AI Lab
 
+## Feature
+
+* #449: Added notebook to demonstrate PyExasol's import and export with Polars and PyArrow
+
 ## Refactorings
 
 * #449: Updated notebook-connector
