@@ -8,3 +8,7 @@ Code name:
 
 * #432: Fixed structure and links in notebook first-steps
 * #337: Ensured correct spelling for AI Lab
+
+## Features
+
+* #438: Added GPU Resource Considerations Notebook
