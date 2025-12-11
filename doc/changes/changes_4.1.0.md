@@ -9,6 +9,10 @@ Code name:
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
 * #434: Supported alternate password on startup
 
+## Security Issues
+
+* #452: Fixed vulnerability CVE-2024-48908 by updating GitHub action `lycheeverse/lychee-action@v1.9.0`
+
 ## Documentation
 
 * #432: Fixed structure and links in notebook first-steps

@@ -1,6 +1,7 @@
 from datetime import datetime
 from functools import reduce
 from typing import (
+    Any,
     Dict,
     List,
     Optional,
@@ -107,7 +108,7 @@ def old_entrypoint(facts: OldAnsibleFacts) -> List[str]:
 
 # obsolete
 def old_entrypoint_2(facts: OldAnsibleFacts, env: dict[str, Any]) -> List[str]:
-    entrypoint = facts.get("entrypoint"):
+    entrypoint = facts.get("entrypoint")
     if not entrypoint:
         return ["sleep", "infinity"]
 

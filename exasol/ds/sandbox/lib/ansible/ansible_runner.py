@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible.facts import AnsibleFacts
+from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
 from exasol.ds.sandbox.lib.ansible.ansible_access import (
     AnsibleAccess,
     AnsibleEvent,
