@@ -16,8 +16,8 @@ from pathlib import Path
 from typing import List, TextIO
 
 
-_logger = logging.getLogger(__name__)
-_logger.setLevel(logging.DEBUG)
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.DEBUG)
 logging.basicConfig(
     format="%(asctime)s %(levelname)-7s %(filename)s: %(message)s",
     datefmt="%Y-%m-%d %X",
@@ -26,23 +26,28 @@ logging.basicConfig(
 
 def arg_parser():
     parser = argparse.ArgumentParser(
-        description="entry point for docker container",
+        description="Entry point for the Docker container",
     )
     parser.add_argument(
         "--notebook-defaults", type=Path,
-        help="copy notebook files from this directory",
+        help="Copy notebook files from this directory",
     )
     parser.add_argument(
         "--notebooks", type=Path,
         help="destination location for notebook files to copy",
     )
     parser.add_argument(
-        "--venv", type=Path, metavar="<PATH-TO-VIRTUAL-ENVIRONMENT>",
-        help="Prepend subdirectory bin to environment variable PATH before starting Jupyter server",
+        "--venv", type=Path, metavar="PATH-TO-VIRTUAL-ENVIRONMENT",
+        help="""Prepend subdirectory bin to environment variable PATH
+        before starting Jupyter server""",
     )
     parser.add_argument(
-        "--jupyter-server", metavar="<PATH-TO-JUPYTER-BINARY>",
-        help="start server for Jupyter notebooks",
+        "--jupyter-server", metavar="JUPYTER-SERVER-EXECUTABLE",
+        help="Path to Jupyter server executable",
+    )
+    parser.add_argument(
+        "--jupyter-core", metavar="JUPYTER-CORE-EXECUTABLE",
+        help="Path to Jupyter core executable",
     )
     parser.add_argument(
         "--port", type=int,
@@ -50,27 +55,27 @@ def arg_parser():
     )
     parser.add_argument(
         "--user", type=str,
-        help="user name for running jupyter server",
+        help="User name for running Jupyter server",
     )
     parser.add_argument(
         "--group", type=str,
-        help="user group for running jupyter server",
+        help="User group for running Jupyter server",
     )
     parser.add_argument(
         "--docker-group", type=str,
-        help="user group for accessing Docker socket",
+        help="User group for accessing the Docker socket",
     )
     parser.add_argument(
         "--home", type=str,
-        help="home directory of user running jupyter server",
+        help="Home directory of user running the Jupyter server",
     )
     parser.add_argument(
         "--password", type=str,
-        help="initial default password for Jupyter server",
+        help="Default password for Jupyter server",
     )
     parser.add_argument(
         "--jupyter-logfile", type=Path,
-        help="path to write Jupyter server log messages to",
+        help="Path to write Jupyter server log messages to",
     )
     parser.add_argument(
         "--warning-as-error", action="store_true",
@@ -79,72 +84,103 @@ def arg_parser():
     return parser
 
 
-def start_jupyter_server(
-        home_directory: str,
-        binary_path: str,
-        port: int,
-        notebook_dir: str,
-        logfile: Path,
-        user: str,
-        password: str,
-        venv: Path,
-        poll_sleep: float = 1,
-):
+def start_jupyter_server(args: argparse.Namespace, poll_sleep: float = 1) -> None:
     """
-    :param poll_sleep: specifies the waiting time in seconds before reading
-    a line from the logfile.
+    :param poll_sleep: specifies the waiting time in seconds before
+    reading a line from the logfile.
     """
+    if not (
+        args.jupyter_server
+        and args.notebooks
+        and args.jupyter_logfile
+        and args.user
+        and args.home
+        and args.password
+    ):
+        sleep_infinity()
+        return
+
+    logfile = args.jupyter_logfile
+
     def exit_on_error(rc):
         if rc is not None and rc != 0:
-            log_messages = logfile.read_text()
-            _logger.error(
-                f"Jupyter Server terminated with error code {rc},"
-                f" Logfile {logfile} contains:\n{log_messages}",
+            messages = logfile.read_text()
+            LOG.error(
+                f"Jupyter server terminated with error code {rc},"
+                f" Logfile {logfile} contains:\n"
+                f"{messages}",
             )
             sys.exit(rc)
 
+    env = os.environ.copy() | {"HOME": args.home}
+    if args.venv:
+        venv_bin = args.venv / "bin"
+        path = env.get("PATH")
+        env["PATH"] = f"{venv_bin}:{path}" if path else str(venv_bin)
+        LOG.info(f'Changed environment variable PATH to {env["PATH"]}')
+
+    alternate_password = os.getenv("JUPYTER_PASSWORD", "")
+    if alternate_password and args.jupyter_core:
+        cmd = [args.jupyter_core, "server", "password"]
+        p = subprocess.run(
+            cmd,
+            input=f"{alternate_password}\n{alternate_password}\n",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            encoding="utf-8",
+            env=env,
+        )
+        rc = p.returncode
+        if rc != 0:
+            LOG.error(
+                "Failed to change password.\n"
+                "%s exited with return code %d.\n"
+                "%s",
+                args.jupyter_core,
+                rc,
+                p.stdout,
+            )
+            sys.exit(rc)
+        LOG.info("Successfully changed password of Jupyter server.")
+
     command_line = [
-        binary_path,
-        f"--notebook-dir={notebook_dir}",
+        args.jupyter_server,
+        f"--notebook-dir={args.notebooks}",
         "--no-browser",
         "--allow-root",
     ]
 
-    env = os.environ.copy()
-    env["HOME"] = home_directory
-    if venv:
-        venv_bin = str(venv / "bin")
-        path = env.get("PATH")
-        env["PATH"] = f"{venv_bin}:{path}" if path else venv_bin
-        _logger.info(f'Changed environment variable PATH to {env["PATH"]}')
     with open(logfile, "w") as f:
         p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
 
-    url = "http://<host>:<port>"
-    localhost_url = url.replace("<host>", "localhost").replace("<port>", str(port))
-    success_message = cleandoc(f"""
-        Server for Jupyter has been started successfully.
+    localhost_url = f"http://localhost:{args.port}"
+    success_message = cleandoc(
+        f"""
+        The server for Jupyter has been started successfully.
 
-        You can connect with {url}.
+        You can connect with http://<host>:<port>.
 
-        If using a Docker daemon on your local machine and you forward the
+        If using a Docker daemon on your local machine and forwarding the
         port to the same port then you can connect with {localhost_url}.
+        """
+    )
+    password_instructions = cleandoc(
+        """
+        You can change the default password by passing the environment
+        variable JUPYTER_PASSWORD when running the Docker container:
 
-        ┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
-        │ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
-        └─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
-
-        The default password is "{password}".
-        To update the password, log in to the Docker container as the user {user} and run
-            {binary_path} server password
-    """)
+        docker run --env JUPYTER_PASSWORD=<your password> ... exasol/ai-lab
+        """
+    )
+    if not alternate_password:
+        success_message += "\n\n" + password_instructions
     with open(logfile, "r") as f:
         regexp = re.compile("Jupyter Server .* is running at:")
         while True:
             time.sleep(poll_sleep)
             line = f.readline()
-            if re.search(regexp, line):
-                _logger.info(success_message)
+            if regexp.search(line):
+                LOG.info(success_message + "\n")
                 break
             exit_on_error(p.poll())
         exit_on_error(p.wait())
@@ -152,9 +188,9 @@ def start_jupyter_server(
 
 def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
     """
-    Copy files and directories missing in dst from src and set
-    permission 666 for files and 777 for directories.
-    If directory src does not exit then do not copy anything.
+    Copy missing files and directories from src to dst and set permission
+    666 for files and 777 for directories.  If directory src does not exist
+    then do not copy anything.
     """
     def ensure_dir(dir: Path):
         if not dir.exists():
@@ -171,9 +207,11 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
         if warning_as_error:
             raise RuntimeError(msg)
         else:
-            _logger.warning(msg)
+            LOG.warning(msg)
         return
+
     ensure_dir(dst)
+
     for root, dirs, files in os.walk(src):
         root = Path(root)
         copy = dst / root.relative_to(src)
@@ -185,7 +223,7 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
 
 def disable_core_dumps():
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-    _logger.info("Disabled coredumps")
+    LOG.info("Disabled coredumps")
 
 
 def sleep_infinity():
@@ -226,7 +264,7 @@ class FileInspector:
 
     def is_group_accessible(self) -> bool:
         if self._stat is None:
-            _logger.debug(f"File not found {self._path}")
+            LOG.debug(f"File not found {self._path}")
             return False
         permissions = stat.filemode(self._stat.st_mode)
         if permissions[4:6] == "rw":
@@ -255,7 +293,7 @@ class GroupAccess:
             return None
 
     def _run(self, command: str) -> int:
-        _logger.debug(f"Executing {command}")
+        LOG.debug(f"Executing {command}")
         return subprocess.run(command.split()).returncode
 
     def enable(self) -> Group:
@@ -300,7 +338,7 @@ class User:
                 os.chown(root / name, uid, gid)
             for name in dirs:
                 os.chown(root / name, uid, gid)
-        _logger.info(f"Did chown -R {self.name}:{self.group.name} {path}")
+        LOG.info(f"Did chown -R {self.name}:{self.group.name} {path}")
 
     def enable_group_access(self, path: Path):
         file = FileInspector(path)
@@ -311,7 +349,7 @@ class User:
             ).enable()
             os.setgroups([group.id])
             self.docker_group = group
-            _logger.info(f"Enabled access to {path}")
+            LOG.info(f"Enabled access to {path}")
         return self
 
     def switch_to(self):
@@ -319,12 +357,12 @@ class User:
         uid = self.id
         os.setresgid(gid, gid, gid)
         os.setresuid(uid, uid, uid)
-        _logger.debug(
+        LOG.debug(
             f"uid = {os.getresuid()}"
             f" gid = {os.getresgid()}"
             f" extra groups = {os.getgroups()}"
         )
-        _logger.info(f"Switched uid/gid to {self.name}/{self.group.name}")
+        LOG.info(f"Switched uid/gid to {self.name}/{self.group.name}")
         return self
 
 
@@ -341,29 +379,11 @@ def main():
             args.notebooks,
             args.warning_as_error,
         )
-        _logger.info(
+        LOG.info(
             "Copied notebooks from"
             f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
-    if (args.jupyter_server
-        and args.notebooks
-        and args.jupyter_logfile
-        and args.user
-        and args.home
-        and args.password
-        ):
-        start_jupyter_server(
-            args.home,
-            args.jupyter_server,
-            args.port,
-            args.notebooks,
-            args.jupyter_logfile,
-            args.user,
-            args.password,
-            args.venv,
-        )
-    else:
-        sleep_infinity()
+    start_jupyter_server(args)
 
 
 if __name__ == "__main__":

@@ -5,12 +5,12 @@ import logging
 from dataclasses import dataclass
 from typing import Callable, Dict, NewType, Optional
 
+from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 
 
 AnsibleEvent = NewType('AnsibleEvent', Dict[str, any])
-AnsibleFacts = NewType('AnsibleFacts', Dict[str, any])
 
 
 class AnsibleException(RuntimeError):

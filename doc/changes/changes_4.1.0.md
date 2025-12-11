@@ -7,6 +7,7 @@ Code name:
 ## Features
 
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+* #434: Supported alternate password on startup
 
 ## Documentation
 

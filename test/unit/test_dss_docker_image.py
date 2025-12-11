@@ -35,49 +35,49 @@ def test_constructor(sample_repo):
     assert testee.work_in_progress_notebooks == True
 
 
-@pytest.mark.parametrize(
-    "testee",
-    [
-        {},
-        {"key": "sample value"},
-    ])
-def test_nested_value_missing_entry(testee):
-    assert create_image.get_nested_value(testee, "missing_entry") == None
-    assert create_image.get_nested_value(testee, "key", "key-2") == None
-
-
-def test_nested_value_level_2():
-    testee = {"key": {"key-2": "value"}}
-    assert create_image.get_nested_value(testee, "key", "key-2") == "value"
-
-
-@pytest.mark.parametrize(
-    "facts",
-    [
-        {},
-        {"other": "other value"},
-        {"dss_facts": {}},
-        {"dss_facts": {"b": {}}},
-    ])
-def test_fact_empty(facts):
-    assert create_image.get_fact(facts, "a", "b", "c") is None
-
-
-def test_fact_found():
-    facts = {"dss_facts": {"b": {"c": "expected"}}}
-    assert create_image.get_fact(facts, "b", "c") == "expected"
-
-
-@pytest.mark.parametrize(
-    "facts",
-    [
-        {},
-        {"key": "value"},
-        {"dss_facts": {}},
-        {"dss_facts": {"key": "value"}},
-    ])
-def test_entrypoint_default(facts):
-    assert create_image.entrypoint(facts) == ["sleep", "infinity"]
+# @pytest.mark.parametrize(
+#     "testee",
+#     [
+#         {},
+#         {"key": "sample value"},
+#     ])
+# def test_nested_value_missing_entry(testee):
+#     assert create_image.get_nested_value(testee, "missing_entry") == None
+#     assert create_image.get_nested_value(testee, "key", "key-2") == None
+#
+#
+# def test_nested_value_level_2():
+#     testee = {"key": {"key-2": "value"}}
+#     assert create_image.get_nested_value(testee, "key", "key-2") == "value"
+#
+#
+# @pytest.mark.parametrize(
+#     "facts",
+#     [
+#         {},
+#         {"other": "other value"},
+#         {"dss_facts": {}},
+#         {"dss_facts": {"b": {}}},
+#     ])
+# def test_fact_empty(facts):
+#     assert create_image.get_fact(facts, "a", "b", "c") is None
+#
+#
+# def test_fact_found():
+#     facts = {"dss_facts": {"b": {"c": "expected"}}}
+#     assert create_image.get_fact(facts, "b", "c") == "expected"
+#
+#
+# @pytest.mark.parametrize(
+#     "facts",
+#     [
+#         {},
+#         {"key": "value"},
+#         {"dss_facts": {}},
+#         {"dss_facts": {"key": "value"}},
+#     ])
+# def test_entrypoint_default(facts):
+#     assert create_image.entrypoint(facts) == ["sleep", "infinity"]
 
 
 def test_entrypoint_with_copy_args():

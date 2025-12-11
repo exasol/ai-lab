@@ -1,6 +1,10 @@
 from datetime import datetime
 from functools import reduce
-from typing import Dict, List, Optional
+from typing import (
+    Dict,
+    List,
+    Optional,
+)
 
 import docker
 import humanfriendly
@@ -11,31 +15,59 @@ from importlib_metadata import version
 
 from exasol.ds.sandbox.lib import pretty_print
 from exasol.ds.sandbox.lib.ansible import ansible_repository
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
+from exasol.ds.sandbox.lib.ansible.ansible_access import (
+    AnsibleAccess,
+    AnsibleFacts as OldAnsibleFacts,
+)
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.config import ConfigObject
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
+from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
+from exasol.ds.sandbox.lib.config import (
+    AI_LAB_VERSION,
+    ConfigObject,
+)
+from exasol.ds.sandbox.lib.logging import (
+    LogType,
+    get_status_logger,
+)
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
-from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
-from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
+from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import (
+    run_install_dependencies,
+)
 
 DEFAULT_ORG_AND_REPOSITORY = "exasol/ai-lab"
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
 
-def get_fact(facts: AnsibleFacts, *keys: str) -> Optional[str]:
-    return get_nested_value(facts, "dss_facts", *keys)
+def to_docker_env(env: dict[str, Any]) -> list[str]:
+    return [f'{var}={val}' for var, val in env.items()]
 
 
-def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
-    def nested_item(current, key):
-        valid = current is not None and key in current
-        return current[key] if valid else None
-
-    return reduce(nested_item, keys, mapping)
+# def get_fact(facts: OldAnsibleFacts, *keys: str) -> Optional[str]:
+#     return get_nested_value(facts, "dss_facts", *keys)
 
 
-def entrypoint(facts: AnsibleFacts) -> List[str]:
+# def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
+#     def nested_item(current, key):
+#         valid = current is not None and key in current
+#         return current[key] if valid else None
+#
+#     return reduce(nested_item, keys, mapping)
+
+
+def jupyter_env_vars(facts: AnsibleFacts) -> dict[str, Any]:
+    if facts.get("jupyter", "server") is None:
+        return {}
+
+    env_spec = {
+        "JUPYTER_VENV": ("jupyter", "virtualenv"),
+        "NOTEBOOK_DEFAULTS": ("notebook_folder", "initial"),
+        "NOTEBOOKS": ("notebook_folder", "final"),
+    }
+    return facts.as_dict(env_spec)
+
+
+# obsolete
+def old_entrypoint(facts: OldAnsibleFacts) -> List[str]:
     def jupyter():
         command = get_fact(facts, "jupyter", "command")
         if command is None:
@@ -65,6 +97,52 @@ def entrypoint(facts: AnsibleFacts) -> List[str]:
         return ["sleep", "infinity"]
     entry_cmd = ["sudo", "python3", entrypoint]
     folder = get_fact(facts, "notebook_folder")
+    if not folder:
+        return entry_cmd + jupyter()
+    return entry_cmd + [
+        "--notebook-defaults", folder["initial"],
+        "--notebooks", folder["final"]
+    ] + jupyter()
+
+
+# obsolete
+def old_entrypoint_2(facts: OldAnsibleFacts, env: dict[str, Any]) -> List[str]:
+    entrypoint = facts.get("entrypoint"):
+    if not entrypoint:
+        return ["sleep", "infinity"]
+
+    env_vars = ",".join(env)
+    return ["sudo", f"--preserve-env={env_vars}", "python3", entrypoint]
+
+
+def build_entrypoint(facts: AnsibleFacts) -> List[str]:
+    def jupyter():
+        command = facts.get("jupyter", "server")
+        if command is None:
+            return []
+        return [
+            "--jupyter-server", command,
+            "--jupyter-core", facts.get("jupyter", "core"),
+            "--home", facts.get("jupyter", "home"),
+            "--port", facts.get("jupyter", "port"),
+            "--user", facts.get("jupyter", "user"),
+            "--group", facts.get("jupyter", "group"),
+            "--docker-group", facts.get("docker_group"),
+            "--password", facts.get("jupyter", "password"),
+            "--jupyter-logfile", facts.get("jupyter", "logfile"),
+            "--venv", facts.get("jupyter", "virtualenv"),
+        ]
+
+    entrypoint = facts.get("entrypoint")
+    if entrypoint is None:
+        return ["sleep", "infinity"]
+    entry_cmd = [
+        "sudo",
+        "--preserve-env=JUPYTER_PASSWORD",
+        "python3",
+        entrypoint,
+    ]
+    folder = facts.get("notebook_folder")
     if not folder:
         return entry_cmd + jupyter()
     return entry_cmd + [
@@ -165,24 +243,28 @@ class DssDockerImage:
             container: DockerContainer,
             facts: AnsibleFacts,
     ) -> DockerImage:
-        _logger.debug(f'AI Lab facts: {get_fact(facts)}')
+        _logger.debug(f'AI Lab facts: {facts.get()}')
         _logger.info("Committing changes to docker container")
-        virtualenv = get_fact(facts, "jupyter", "virtualenv")
-        port = get_fact(facts, "jupyter", "port")
-        notebook_folder_final = get_fact(facts, "notebook_folder", "final")
-        notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
+        # virtualenv = get_fact(facts, "jupyter", "virtualenv")
+        port = facts.get("jupyter", "port")
+        notebook_folder_final = facts.get("notebook_folder", "final")
+        # notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
 
+        env = jupyter_env_vars(facts)
+        # entrypoint = old_entrypoint_2(facts, env)
+        entrypoint = build_entrypoint(facts)
         conf = {
-            "Entrypoint": entrypoint(facts),
+            "Entrypoint": entrypoint,
             "Cmd": [],
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},
-            "User": get_fact(facts, "docker_user"),
-            "Env": [
-                f"VIRTUAL_ENV={virtualenv}",
-                f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
-                f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}",
-            ],
+            "User": facts.get("docker_user"),
+            # "Env": [
+            #     f"VIRTUAL_ENV={virtualenv}",
+            #     f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
+            #     f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}",
+            # ],
+            "Env": to_docker_env(env),
         }
         img = container.commit(repository=self.image_name, conf=conf)
         img.tag(self.repository, "latest")

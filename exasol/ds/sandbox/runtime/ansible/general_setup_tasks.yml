@@ -8,7 +8,9 @@
       docker_group: "{{ docker_group }}"
       jupyter:
         virtualenv: "{{ jupyter_virtualenv }}"
-        command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+        # command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+        server: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+        core: "{{ jupyter_virtualenv }}/bin/jupyter"
         port: "49494"
         user: "{{ user_name }}"
         group: "{{ user_group }}"
