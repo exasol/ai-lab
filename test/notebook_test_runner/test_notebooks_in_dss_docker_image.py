@@ -29,14 +29,14 @@ def notebook_test_dockerfile_content(dss_docker_image, work_in_progress_notebook
         f"""
         FROM {dss_docker_image.image_name}
         COPY notebooks/* /tmp/notebooks/
-        RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_FOLDER_INITIAL" && sudo rmdir /tmp/notebooks/
-        RUN sudo chown -R jupyter:jupyter "$NOTEBOOK_FOLDER_INITIAL"
-        WORKDIR $NOTEBOOK_FOLDER_INITIAL
-        RUN sudo "$VIRTUAL_ENV/bin/python3" -m pip install -r test_dependencies.txt
-        RUN sudo chown -R jupyter:jupyter "$VIRTUAL_ENV"
+        RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_DEFAULTS" && sudo rmdir /tmp/notebooks/
+        RUN sudo chown -R jupyter:jupyter "$NOTEBOOK_DEFAULTS"
+        WORKDIR $NOTEBOOK_DEFAULTS
+        RUN sudo "$JUPYTER_VENV/bin/python3" -m pip install -r test_dependencies.txt
+        RUN sudo chown -R jupyter:jupyter "$JUPYTER_VENV"
         RUN sudo chmod -R 777  "/home"
         ENV HOME=/home/jupyter
-        ENV PATH=$VIRTUAL_ENV/bin:$PATH
+        ENV PATH=$JUPYTER_VENV/bin:$PATH
         """
     )
 
@@ -83,7 +83,7 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
                   notebook_test_mem_size, notebook_test_with_gpu):
     _logger.info(f"Running notebook tests for {notebook_test_file} at {notebook_test_backend}")
     container = notebook_test_container_with_log
-    command_echo_virtual_env = 'bash -c "echo $VIRTUAL_ENV"'
+    command_echo_virtual_env = 'bash -c "echo $JUPYTER_VENV"'
     virtual_env = exec_command(command_echo_virtual_env, container)
     command_run_test = (
         f"{virtual_env}/bin/python "

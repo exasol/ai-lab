@@ -1,7 +1,8 @@
 from importlib.metadata import version
 from typing import Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess, AnsibleFacts
+from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
+from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.ansible.ansible_context_manager import AnsibleContextManager
 from exasol.ds.sandbox.lib.ansible.ansible_repository import AnsibleRepository, \
     default_repositories

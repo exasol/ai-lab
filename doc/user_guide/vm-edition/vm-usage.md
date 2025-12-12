@@ -17,7 +17,7 @@ Notes for Hypervisors based on KVM/[QEMU](https://en.wikipedia.org/wiki/QEMU):
 * There multiple alternative UIs, see https://en.wikipedia.org/wiki/Libvirt#User_Interfaces.
 * File in format VHD or VMDK needs to be converted first, see
   * https://docs.openstack.org/image-guide/convert-images.html
-   * https://linux.die.net/man/1/qemu-img
+  * https://linux.die.net/man/1/qemu-img
 
 ## Instructions for specific operating systems and hypervisors
 

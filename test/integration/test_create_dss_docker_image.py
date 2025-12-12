@@ -293,7 +293,7 @@ def test_chown_notebooks(request, tmp_path, group_changer, dss_docker_image):
 
     notebooks_folder = docker_image_getenv(
         dss_docker_image.image_name,
-        "NOTEBOOK_FOLDER_FINAL")
+        "NOTEBOOKS")
     with container_context(
             request,
             image_name=dss_docker_image.image_name,
