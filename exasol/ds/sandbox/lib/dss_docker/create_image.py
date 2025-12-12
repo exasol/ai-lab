@@ -43,18 +43,6 @@ def to_docker_env(env: dict[str, Any]) -> list[str]:
     return [f'{var}={val}' for var, val in env.items()]
 
 
-# def get_fact(facts: OldAnsibleFacts, *keys: str) -> Optional[str]:
-#     return get_nested_value(facts, "dss_facts", *keys)
-
-
-# def get_nested_value(mapping: Dict[str, any], *keys: str) -> Optional[str]:
-#     def nested_item(current, key):
-#         valid = current is not None and key in current
-#         return current[key] if valid else None
-#
-#     return reduce(nested_item, keys, mapping)
-
-
 def jupyter_env_vars(facts: AnsibleFacts) -> dict[str, Any]:
     if facts.get("jupyter", "server") is None:
         return {}
@@ -65,55 +53,6 @@ def jupyter_env_vars(facts: AnsibleFacts) -> dict[str, Any]:
         "NOTEBOOKS": ("notebook_folder", "final"),
     }
     return facts.as_dict(env_spec)
-
-
-# obsolete
-def old_entrypoint(facts: OldAnsibleFacts) -> List[str]:
-    def jupyter():
-        command = get_fact(facts, "jupyter", "command")
-        if command is None:
-            return []
-        docker_group = get_fact(facts, "docker_group")
-        port = get_fact(facts, "jupyter", "port")
-        user_name = get_fact(facts, "jupyter", "user")
-        group = get_fact(facts, "jupyter", "group")
-        user_home = get_fact(facts, "jupyter", "home")
-        password = get_fact(facts, "jupyter", "password")
-        logfile = get_fact(facts, "jupyter", "logfile")
-        virtualenv = get_fact(facts, "jupyter", "virtualenv")
-        return [
-            "--home", user_home,
-            "--jupyter-server", command,
-            "--port", port,
-            "--user", user_name,
-            "--group", group,
-            "--docker-group", docker_group,
-            "--password", password,
-            "--jupyter-logfile", logfile,
-            "--venv", virtualenv,
-        ]
-
-    entrypoint = get_fact(facts, "entrypoint")
-    if entrypoint is None:
-        return ["sleep", "infinity"]
-    entry_cmd = ["sudo", "python3", entrypoint]
-    folder = get_fact(facts, "notebook_folder")
-    if not folder:
-        return entry_cmd + jupyter()
-    return entry_cmd + [
-        "--notebook-defaults", folder["initial"],
-        "--notebooks", folder["final"]
-    ] + jupyter()
-
-
-# obsolete
-def old_entrypoint_2(facts: OldAnsibleFacts, env: dict[str, Any]) -> List[str]:
-    entrypoint = facts.get("entrypoint")
-    if not entrypoint:
-        return ["sleep", "infinity"]
-
-    env_vars = ",".join(env)
-    return ["sudo", f"--preserve-env={env_vars}", "python3", entrypoint]
 
 
 def build_entrypoint(facts: AnsibleFacts) -> List[str]:

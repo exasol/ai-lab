@@ -44,8 +44,8 @@ class AnsibleAccess:
             raise AnsibleException(r.rc)
 
         if not "docker_container" in run_ctx.extra_vars:
-            return {}
+            return AnsibleFacts({})
 
         host = run_ctx.extra_vars["docker_container"]
         fact_cache = r.get_fact_cache(host)
-        return fact_cache
+        return AnsibleFacts(fact_cache)

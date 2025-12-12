@@ -2,7 +2,7 @@ from typing import Any
 
 
 class DictAccessor:
-    def __init__(self, raw: dict[str, Any], prefixes: list[str] = None):
+    def __init__(self, raw: dict[str, Any], prefixes: list[str]|None = None):
         self._raw = raw
         self.prefixes = prefixes or []
 
