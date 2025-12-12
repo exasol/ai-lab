@@ -35,7 +35,7 @@
     name: jupyter
   vars:
     jupyterlab_virtualenv: "{{ dss_facts.jupyter.virtualenv }}"
-    jupyterlab_command: "{{ dss_facts.jupyter.command }}"
+    jupyterlab_command: "{{ dss_facts.jupyter.server }}"
     jupyterlab_port: "{{ dss_facts.jupyter.port }}"
     jupyterlab_password: "{{ dss_facts.jupyter.password }}"
     jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
