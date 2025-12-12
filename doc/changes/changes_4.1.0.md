@@ -9,7 +9,7 @@ This release supports overriding the default password by passing an environment 
 ## Features
 
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
-* #434: Supported alternate password when running the AI Lab Docker container
+* #434: Supported overriding the default password when running the AI Lab Docker container
 
 ## Security Issues
 
