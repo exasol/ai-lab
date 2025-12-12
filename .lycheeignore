@@ -1,0 +1,4 @@
+# URLs to ignore when checking hyperlinks in GitHub workflow hyperlinks.yaml
+# With lycheeverse/lychee-action@v2.0.2
+
+https://linux.die.net/man/1/qemu-img

@@ -42,7 +42,7 @@ The release ignores vulnerability CVE-2024-33663 in transitive dependency via `l
 
 * #249: Added a troubleshooting section to the user guide documenting died kernel for transformers/te_init.ipynb.
 * #284: Improved User Guide regarding Docker volumes
-* #322: Made URL in IBIS notebook point to new example data bucket https://dut5tonqye28.cloudfront.net/ai_lab/flight-info
+* #322: Made URL in IBIS notebook point to new example data bucket dut5tonqye28
 
 ## Refactoring
 
