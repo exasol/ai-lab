@@ -147,8 +147,8 @@ def success_message(args: argparse.Namespace, alternate_password: str|None) -> s
         f"""
         The default password is "{args.password}".
 
-        You can change it password by passing the environment variable
-        {PASSWORD_ENV} when running the Docker container:
+        You can change it by passing the environment variable {PASSWORD_ENV}
+        when running the Docker container:
 
         docker run --env {PASSWORD_ENV}=<your password> ... exasol/ai-lab
         """

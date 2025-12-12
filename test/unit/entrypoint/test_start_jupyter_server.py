@@ -1,6 +1,13 @@
+from __future__ import annotations
+
+import os
+import re
 from inspect import cleandoc
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import (
+    Mock,
+    patch,
+)
 
 import pytest
 
@@ -8,20 +15,34 @@ from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 
 
 class Testee:
-    __test__ = False # suppress: PytestCollectionWarning
+    __test__ = False # suppress PytestCollectionWarning
 
     def __init__(self, dir: Path):
-        self.script = dir / "script.sh"
+        self.server = dir / "server.sh"
+        self.core = dir / "core.sh"
         self.logfile = dir / "log.log"
 
-    def create_script(self, before="", after=""):
+    def _create_script(self, path: Path, content: str) -> Testee:
+        path.write_text("#!/bin/bash\n" + cleandoc(content))
+        path.chmod(0o744)
+        return self
+
+    def core_script(self, event=""):
         """
-        Parameters :before: and :after: will be inserted into the sample
-        script before and after reporting Jupyter Server to be running.
+        Create a script simulating the Jupyter core executable.
+        """
+        return self._create_script(self.core, event)
+
+    def server_script(self, before="", after=""):
+        """
+        Create a script simulating the Jupyter server executable.
+        Parameters :before: and :after: will be inserted into the script
+        before and after reporting Jupyter Server to be running.
         """
         prefix = "[I 2024-01-22 13:27:48.808 ServerApp]"
-        self.script.write_text(cleandoc(f"""
-            #!/bin/bash
+        return self._create_script(
+            self.server,
+            f"""
             echo "first log message"
             sleep .2
             {before}
@@ -29,15 +50,14 @@ class Testee:
             {after}
             sleep .4
             echo "last log message"
-        """))
-        self.script.chmod(0o744)
-        return self
+            """
+        )
 
     def run(self):
         args = Mock(
             home="home",
-            jupyter_server=self.script,
-            jupyter_core="core",
+            jupyter_server=self.server,
+            jupyter_core=self.core,
             port=123,
             notebooks="notebooks",
             jupyter_logfile=self.logfile,
@@ -49,14 +69,36 @@ class Testee:
         return self
 
 
-def test_success(tmp_path, caplog):
-    testee = Testee(tmp_path).create_script().run()
+@pytest.mark.parametrize("env, expected_message", [
+    ({}, "The default password is .*You can change it by"),
+    ({entrypoint.PASSWORD_ENV: "new-pwd"}, ""),
+])
+def test_success(env, expected_message, tmp_path, caplog, monkeypatch):
+    with patch.dict(os.environ, env):
+        Testee(tmp_path).server_script().core_script().run()
     assert entrypoint.SUCCESS_MESSAGE in caplog.text
+    assert re.search(expected_message, caplog.text, re.DOTALL)
+
+
+def test_change_password_failed(tmp_path, caplog, mocker):
+    testee = Testee(tmp_path).server_script()
+    testee.core_script("echo simulated failure; exit 1")
+    mocker.patch.dict(os.environ, {entrypoint.PASSWORD_ENV: "new-pwd"})
+    with pytest.raises(SystemExit) as ex:
+        testee.run()
+    expected = cleandoc(
+        f"""
+        {testee.core} exited with return code 1 and output:
+        simulated failure
+        """
+    )
+    assert expected in caplog.text
+    assert entrypoint.SUCCESS_MESSAGE not in caplog.text
 
 
 def test_early_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
-        testee = Testee(tmp_path).create_script(before="exit 22").run()
+        Testee(tmp_path).server_script(before="exit 22").run()
     assert ex.value.code == 22
     assert entrypoint.SUCCESS_MESSAGE not in caplog.text
     assert "Jupyter server terminated with error code 22" in caplog.text
@@ -64,7 +106,7 @@ def test_early_error(tmp_path, caplog):
 
 def test_late_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
-        testee = Testee(tmp_path).create_script(after="exit 23").run()
+        Testee(tmp_path).server_script(after="exit 23").run()
     assert ex.value.code == 23
     assert "Changed environment variable PATH to venv/bin:" in caplog.text
     assert entrypoint.SUCCESS_MESSAGE in caplog.text
