@@ -185,13 +185,9 @@ class DssDockerImage:
     ) -> DockerImage:
         _logger.debug(f'AI Lab facts: {facts.get()}')
         _logger.info("Committing changes to docker container")
-        # virtualenv = get_fact(facts, "jupyter", "virtualenv")
         port = facts.get("jupyter", "port")
         notebook_folder_final = facts.get("notebook_folder", "final")
-        # notebook_folder_initial = get_fact(facts, "notebook_folder", "initial")
-
         env = jupyter_env_vars(facts)
-        # entrypoint = old_entrypoint_2(facts, env)
         entrypoint = build_entrypoint(facts)
         conf = {
             "Entrypoint": entrypoint,
@@ -199,11 +195,6 @@ class DssDockerImage:
             "Volumes": {notebook_folder_final: {}, },
             "ExposedPorts": {f"{port}/tcp": {}},
             "User": facts.get("docker_user"),
-            # "Env": [
-            #     f"VIRTUAL_ENV={virtualenv}",
-            #     f"NOTEBOOK_FOLDER_FINAL={notebook_folder_final}",
-            #     f"NOTEBOOK_FOLDER_INITIAL={notebook_folder_initial}",
-            # ],
             "Env": to_docker_env(env),
         }
         img = container.commit(repository=self.image_name, conf=conf)

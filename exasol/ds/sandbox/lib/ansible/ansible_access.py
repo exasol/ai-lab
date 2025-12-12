@@ -1,14 +1,21 @@
-import ansible_runner
 import json
 import logging
-
 from dataclasses import dataclass
-from typing import Callable, Dict, NewType, Optional
+from typing import (
+    Callable,
+    Dict,
+    NewType,
+    Optional,
+)
 
-from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
+import ansible_runner
+
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-
+from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
+from exasol.ds.sandbox.lib.logging import (
+    LogType,
+    get_status_logger,
+)
 
 AnsibleEvent = NewType('AnsibleEvent', Dict[str, any])
 

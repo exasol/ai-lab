@@ -4,10 +4,12 @@ Code name:
 
 ## Summary
 
+This release supports overriding the default password by passing an environment variable when running the Docker container.  See the [User guide](https://github.com/exasol/ai-lab/blob/main/doc/user_guide/docker/docker-usage.md) for details.
+
 ## Features
 
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
-* #434: Supported alternate password on startup
+* #434: Supported alternate password when running the AI Lab Docker container
 
 ## Security Issues
 

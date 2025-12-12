@@ -104,18 +104,4 @@ def test_jupyter(mocker):
     mocker.patch(entrypoint_method("sleep_infinity"))
     entrypoint.main()
     assert entrypoint.start_jupyter_server.called
-    # Args to start_jupyter_server() have been simplified. Hence this test
-    # does not make too much sense anymore.
-    #
-    # expected = mocker.call(
-    #     "home-directory",
-    #     jupyter,
-    #     int(port),
-    #     notebook_folder,
-    #     logfile,
-    #     "usr",
-    #     "pwd",
-    #     venv,
-    # )
-    # assert entrypoint.start_jupyter_server.call_args == expected
     assert not entrypoint.sleep_infinity.called

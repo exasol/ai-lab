@@ -54,7 +54,7 @@ docker run \
 Additional options
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`.
 * Add option `--detach` to run the container in the background, but please note that the initial welcome message with instructions will as a consequence be hidden. For further information, see Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and [Stopping the AI Lab Docker Container](#stopping-the-ai-lab-docker-container).
-* Instead AI Lab's default password you can pass an individual password via environment variable `JUPYTER_PASSWORD` after CLI option `--env` or `-e` of command `docker run`.
+* You can override AI Lab's default password by passing environment variable `JUPYTER_PASSWORD` after CLI option `--env` or `-e` of command `docker run`.
 * If you want to use an Integrated Exasol Docker-DB or to create SLCs, you must enable the AI Lab Docker container to access the Docker daemon.
   * **Please note:** In this case
     * Additional [Limitations and security risks](prerequisites.md#enabling-exasol-ai-lab-to-use-docker-features) apply.

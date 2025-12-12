@@ -2,12 +2,13 @@ from typing import Any
 
 
 class DictAccessor:
+    """
+    Access values in a nested dictionary via key sequences.
+    """
+
     def __init__(self, raw: dict[str, Any], prefixes: list[str]|None = None):
         self._raw = raw
         self.prefixes = prefixes or []
-
-    # def __getitem__(self, item) -> Any:
-    #     return self._raw[item]
 
     def _nested(self, *keys: str) -> Any:
         current = self._raw
@@ -18,7 +19,6 @@ class DictAccessor:
         return current
 
     def get(self, *keys: str) -> Any:
-        # return self._nested("dss_facts", *keys)
         return self._nested(*self.prefixes, *keys)
 
     def as_dict(

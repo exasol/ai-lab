@@ -92,7 +92,6 @@ class DockerRegistry:
         verbosity = 0.01 if _logger.isEnabledFor(logging.INFO) else 0
         reporter = ProgressReporter(verbosity)
         for resp in responses:
-        # for el in resp:
             el = DictAccessor(resp)
             if error := el.get("error"):
                 _logger.error(error)
