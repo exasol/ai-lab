@@ -24,6 +24,8 @@ logging.basicConfig(
 )
 
 
+PASSWORD_ENV = "JUPYTER_PASSWORD"
+
 def arg_parser():
     parser = argparse.ArgumentParser(
         description="Entry point for the Docker container",
@@ -84,22 +86,81 @@ def arg_parser():
     return parser
 
 
+def jupyter_env(home: str, venv: Path | None) -> dict[str, str]:
+    env = os.environ.copy() | {"HOME": home}
+    if not venv:
+        return env
+
+    venv_bin = venv / "bin"
+    path = env.get("PATH")
+    env["PATH"] = f"{venv_bin}:{path}" if path else str(venv_bin)
+    LOG.info(f'Changed environment variable PATH to {env["PATH"]}')
+    return env
+
+
+def change_jupyter_password(
+    jupyter_core: str,
+    new_password: str,
+    env: dict[str, str],
+) -> None:
+    p = subprocess.run(
+        [jupyter_core, "server", "password"],
+        input=f"{new_password}\n{new_password}\n",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        encoding="utf-8",
+        env=env,
+    )
+    rc = p.returncode
+    if rc != 0:
+        LOG.error(
+            "Failed to change password.\n"
+            "%s exited with return code %d and output:\n"
+            "%s",
+            jupyter_core,
+            rc,
+            p.stdout,
+        )
+        sys.exit(rc)
+    LOG.info("Successfully changed the password of Jupyter server.")
+
+
+SUCCESS_MESSAGE = "The server for Jupyter has been started successfully."
+
+
+def success_message(args: argparse.Namespace, alternate_password: str|None) -> str:
+    localhost_url = f"http://localhost:{args.port}"
+    message = cleandoc(
+        f"""
+        {SUCCESS_MESSAGE}
+
+        You can connect with http://<host>:<port>.
+
+        If using a Docker daemon on your local machine and forwarding the
+        port to the same port then you can connect with {localhost_url}.
+        """
+    )
+    if alternate_password:
+        return message
+
+    password_instructions = cleandoc(
+        f"""
+        The default password is "{args.password}".
+
+        You can change it password by passing the environment variable
+        {PASSWORD_ENV} when running the Docker container:
+
+        docker run --env {PASSWORD_ENV}=<your password> ... exasol/ai-lab
+        """
+    )
+    return message + "\n\n" + password_instructions
+
+
 def start_jupyter_server(args: argparse.Namespace, poll_sleep: float = 1) -> None:
     """
     :param poll_sleep: specifies the waiting time in seconds before
     reading a line from the logfile.
     """
-    if not (
-        args.jupyter_server
-        and args.notebooks
-        and args.jupyter_logfile
-        and args.user
-        and args.home
-        and args.password
-    ):
-        sleep_infinity()
-        return
-
     logfile = args.jupyter_logfile
 
     def exit_on_error(rc):
@@ -112,78 +173,32 @@ def start_jupyter_server(args: argparse.Namespace, poll_sleep: float = 1) -> Non
             )
             sys.exit(rc)
 
-    env = os.environ.copy() | {"HOME": args.home}
-    if args.venv:
-        venv_bin = args.venv / "bin"
-        path = env.get("PATH")
-        env["PATH"] = f"{venv_bin}:{path}" if path else str(venv_bin)
-        LOG.info(f'Changed environment variable PATH to {env["PATH"]}')
+    env = jupyter_env(args.home, args.venv)
 
-    alternate_password = os.getenv("JUPYTER_PASSWORD", "")
+    alternate_password = os.getenv(PASSWORD_ENV)
     if alternate_password and args.jupyter_core:
-        cmd = [args.jupyter_core, "server", "password"]
-        p = subprocess.run(
-            cmd,
-            input=f"{alternate_password}\n{alternate_password}\n",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            encoding="utf-8",
-            env=env,
-        )
-        rc = p.returncode
-        if rc != 0:
-            LOG.error(
-                "Failed to change password.\n"
-                "%s exited with return code %d.\n"
-                "%s",
-                args.jupyter_core,
-                rc,
-                p.stdout,
-            )
-            sys.exit(rc)
-        LOG.info("Successfully changed password of Jupyter server.")
-
-    command_line = [
-        args.jupyter_server,
-        f"--notebook-dir={args.notebooks}",
-        "--no-browser",
-        "--allow-root",
-    ]
+        change_jupyter_password(args.jupyter_core, alternate_password, env)
 
     with open(logfile, "w") as f:
-        p = subprocess.Popen(command_line, stdout=f, stderr=f, env=env)
+        cmd = [
+            args.jupyter_server,
+            f"--notebook-dir={args.notebooks}",
+            "--no-browser",
+            "--allow-root",
+        ]
+        process = subprocess.Popen(cmd, stdout=f, stderr=f, env=env)
 
-    localhost_url = f"http://localhost:{args.port}"
-    success_message = cleandoc(
-        f"""
-        The server for Jupyter has been started successfully.
-
-        You can connect with http://<host>:<port>.
-
-        If using a Docker daemon on your local machine and forwarding the
-        port to the same port then you can connect with {localhost_url}.
-        """
-    )
-    password_instructions = cleandoc(
-        """
-        You can change the default password by passing the environment
-        variable JUPYTER_PASSWORD when running the Docker container:
-
-        docker run --env JUPYTER_PASSWORD=<your password> ... exasol/ai-lab
-        """
-    )
-    if not alternate_password:
-        success_message += "\n\n" + password_instructions
     with open(logfile, "r") as f:
         regexp = re.compile("Jupyter Server .* is running at:")
         while True:
             time.sleep(poll_sleep)
             line = f.readline()
             if regexp.search(line):
-                LOG.info(success_message + "\n")
+                message = success_message(args, alternate_password)
+                LOG.info(message + "\n")
                 break
-            exit_on_error(p.poll())
-        exit_on_error(p.wait())
+            exit_on_error(process.poll())
+        exit_on_error(process.wait())
 
 
 def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
@@ -383,7 +398,17 @@ def main():
             "Copied notebooks from"
             f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
-    start_jupyter_server(args)
+    if (
+        args.jupyter_server
+        and args.notebooks
+        and args.jupyter_logfile
+        and args.user
+        and args.home
+        and args.password
+    ):
+        start_jupyter_server(args)
+    else:
+        sleep_infinity()
 
 
 if __name__ == "__main__":
