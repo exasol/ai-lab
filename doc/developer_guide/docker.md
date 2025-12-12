@@ -39,4 +39,3 @@ Finally you also can change the Python implementation of the entrypoint logic in
   ENTRYPOINT ["sudo", "python3", "/home/jupyter/entrypoint.py", "--venv", "other-value" ]
   COPY entrypoint.py /home/jupyter/entrypoint.py
   ```
-

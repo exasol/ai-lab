@@ -60,38 +60,35 @@ def test_entrypoint_with_copy_args():
 
     def fact(*args):
         return facts.get(*args)
-        #return create_image.get_fact(facts, *args)
 
-    expected = {
-        "positional": [
-            "sudo",
-            "--preserve-env=JUPYTER_PASSWORD",
-            "python3",
-            fact("entrypoint"),
-        ],
-        "options": {
-            "--docker-group": fact("docker_group"),
-            "--notebook-defaults": fact("notebook_folder", "initial"),
-            "--notebooks": fact("notebook_folder", "final"),
-            "--home": fact("jupyter", "home"),
-            "--venv": fact("jupyter", "virtualenv"),
-            "--jupyter-server": fact("jupyter", "server"),
-            "--jupyter-core": fact("jupyter", "core"),
-            "--port": fact("jupyter", "port"),
-            "--user": fact("jupyter", "user"),
-            "--group": fact("jupyter", "group"),
-            "--password": fact("jupyter", "password"),
-            "--jupyter-logfile": fact("jupyter", "logfile"),
-        }
+    expected_args = [
+        "sudo",
+        "--preserve-env=JUPYTER_PASSWORD",
+        "python3",
+        fact("entrypoint"),
+    ]
+    expected_kwargs = {
+        "--docker-group": fact("docker_group"),
+        "--notebook-defaults": fact("notebook_folder", "initial"),
+        "--notebooks": fact("notebook_folder", "final"),
+        "--home": fact("jupyter", "home"),
+        "--venv": fact("jupyter", "virtualenv"),
+        "--jupyter-server": fact("jupyter", "server"),
+        "--jupyter-core": fact("jupyter", "core"),
+        "--port": fact("jupyter", "port"),
+        "--user": fact("jupyter", "user"),
+        "--group": fact("jupyter", "group"),
+        "--password": fact("jupyter", "password"),
+        "--jupyter-logfile": fact("jupyter", "logfile"),
     }
     actual = create_image.build_entrypoint(facts)
 
     def as_dict(lst: List[str]) -> Dict[str, str]:
         return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
-    n = len(expected["positional"])
-    assert expected["positional"] == actual[:n]
-    assert expected["options"] == as_dict(actual[n:])
+    n = len(expected_args)
+    assert expected_args == actual[:n]
+    assert expected_kwargs == as_dict(actual[n:])
 
 
 def create_testee() -> DssDockerImage:

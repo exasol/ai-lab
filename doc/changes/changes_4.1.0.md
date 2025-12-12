@@ -4,7 +4,7 @@ Code name:
 
 ## Summary
 
-This release supports overriding the default password by passing an environment variable when running the Docker container.  See the [User guide](https://github.com/exasol/ai-lab/blob/main/doc/user_guide/docker/docker-usage.md) for details.
+This release supports overriding the default password by passing an environment variable when running the Docker container. See the [User guide](https://github.com/exasol/ai-lab/blob/main/doc/user_guide/docker/docker-usage.md) for details.
 
 ## Features
 

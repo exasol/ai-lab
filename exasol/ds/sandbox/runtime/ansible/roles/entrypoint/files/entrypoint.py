@@ -129,6 +129,12 @@ SUCCESS_MESSAGE = "The server for Jupyter has been started successfully."
 
 
 def success_message(args: argparse.Namespace, alternate_password: str|None) -> str:
+    """
+    Builds the success message after having started the Jupyter server
+    successfully. If using the default password, then append instructions for
+    overriding the default password.
+    """
+
     localhost_url = f"http://localhost:{args.port}"
     message = cleandoc(
         f"""

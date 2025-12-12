@@ -109,7 +109,7 @@ See also https://docs.docker.com/engine/reference/commandline/network_connect/.
 
 ## Connecting to the Jupyter Service
 
-When starting AI Lab as a Docker container the command line will display a welcome message showing instructions for connecting to the Jupyter server and for using an individual password.
+When starting AI Lab as a Docker container the command line will display a welcome message showing instructions for connecting to the Jupyter server or overriding the default password.
 
 ```
 $ docker run --publish 0.0.0.0:$PORT:49494 exasol/ai-lab:$VERSION
