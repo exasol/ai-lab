@@ -36,6 +36,13 @@ class DictAccessor:
         replaced by the value retrieved from the entries. If None is returned
         for a key tuple, then the output-entry is missing in the resulting
         dict.
+
+        Here is an example:
+
+        spec = {"E1": ("a", "b"), "E2": ("a", "c")}
+        DictAccessor({"a": {"b": "value"}}).as_dict(spec)
+
+        will return {"E1": "value"}
         """
         return {
             entry: value for entry, keys in spec.items()

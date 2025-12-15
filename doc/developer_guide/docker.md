@@ -1,6 +1,6 @@
 ## Maintaining the AI Lab Docker Edition
 
-Maintaining the AI Lab Docker Edition may require changes to
+Developing the AI Lab Docker Edition may require changes to
 * The entrypoint of the Docker image
 * Startup options
 * Environment variables

@@ -131,7 +131,7 @@ SUCCESS_MESSAGE = "The server for Jupyter has been started successfully."
 def success_message(args: argparse.Namespace, alternate_password: str|None) -> str:
     """
     Builds the success message after having started the Jupyter server
-    successfully. If using the default password, then append instructions for
+    successfully. If alternate_password is None, then append instructions for
     overriding the default password.
     """
 
