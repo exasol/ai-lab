@@ -142,8 +142,8 @@ def success_message(args: argparse.Namespace, alternate_password: str|None) -> s
 
         You can connect with http://<host>:<port>.
 
-        If using a Docker daemon on your local machine and forwarding the
-        port to the same port then you can connect with {localhost_url}.
+        If you are using a Docker daemon on your local machine and forwarding
+        the port to the same port then you can connect with {localhost_url}.
         """
     )
     if alternate_password:

@@ -1,4 +1,4 @@
-## Maintaining the AI Lab Docker Edition
+## Developing the AI Lab Docker Edition
 
 Developing the AI Lab Docker Edition may require changes to
 * The entrypoint of the Docker image

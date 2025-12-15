@@ -117,8 +117,8 @@ Server for Jupyter has been started successfully.
 
 You can connect with http://<host>:<port>.
 
-If using a Docker daemon on your local machine and forwarding the
-port to the same port then you can connect with http://localhost:49494.
+If you are using a Docker daemon on your local machine and forwarding
+the port to the same port then you can connect with http://localhost:49494.
 
 You can change the default password by passing the environment
 variable JUPYTER_PASSWORD when running the Docker container:

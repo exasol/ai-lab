@@ -4,6 +4,7 @@ import os
 import re
 from inspect import cleandoc
 from pathlib import Path
+from test.matchers import re_search
 from unittest.mock import (
     Mock,
     patch,
@@ -77,7 +78,7 @@ def test_success(env, expected_message, tmp_path, caplog, monkeypatch):
     with patch.dict(os.environ, env):
         Testee(tmp_path).server_script().core_script().run()
     assert entrypoint.SUCCESS_MESSAGE in caplog.text
-    assert re.search(expected_message, caplog.text, re.DOTALL)
+    assert re_search(expected_message, re.DOTALL) == caplog.text
 
 
 def test_change_password_failed(tmp_path, caplog, mocker):
