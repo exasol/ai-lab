@@ -4,10 +4,6 @@ Code name:
 
 ## Summary
 
-## Features
-
-* #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
-
 ## Documentation
 
 * #432: Fixed structure and links in notebook first-steps
@@ -17,3 +13,10 @@ Code name:
 ## Features
 
 * #438: Added GPU Resource Considerations Notebook
+* #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+
+## Refactorings
+
+* #458: Switched docker hub credentials
+* #460: Updated notebook-connector
+* #457: Updated pytorch in GPU notebook
