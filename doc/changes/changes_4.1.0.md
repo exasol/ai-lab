@@ -19,4 +19,3 @@ Code name:
 
 * #458: Switched docker hub credentials
 * #460: Updated notebook-connector
-* #457: Updated pytorch in GPU notebook
