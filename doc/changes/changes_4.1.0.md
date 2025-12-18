@@ -14,6 +14,8 @@ Code name:
 
 * #438: Added GPU Resource Considerations Notebook
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+* #462: Adapted SLC notesbooks to ScriptLanguageContainer changes
+
 
 ## Refactorings
 
