@@ -24,3 +24,9 @@ This release supports overriding the default password by passing an environment 
 ## Features
 
 * #438: Added GPU Resource Considerations Notebook
+* #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+
+## Refactorings
+
+* #458: Switched docker hub credentials
+* #460: Updated notebook-connector
