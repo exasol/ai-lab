@@ -8,3 +8,16 @@ Code name:
 
 * #432: Fixed structure and links in notebook first-steps
 * #337: Ensured correct spelling for AI Lab
+* #441: Added section "Getting Started" to User Guide
+
+## Features
+
+* #438: Added GPU Resource Considerations Notebook
+* #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+* #462: Adapted SLC notesbooks to ScriptLanguageContainer changes
+
+
+## Refactorings
+
+* #458: Switched docker hub credentials
+* #460: Updated notebook-connector
