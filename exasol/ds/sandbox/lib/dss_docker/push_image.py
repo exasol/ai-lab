@@ -1,14 +1,19 @@
-import docker
 import json
 import logging
-import requests
+from typing import (
+    Callable,
+    Optional,
+)
 
+import docker
+import requests
 from docker.client import DockerClient
 
-from typing import Callable, Optional
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-from exasol.ds.sandbox.lib.dss_docker.create_image import get_nested_value
-
+from exasol.ds.sandbox.lib.dicts import DictAccessor
+from exasol.ds.sandbox.lib.logging import (
+    LogType,
+    get_status_logger,
+)
 
 _logger = get_status_logger(LogType.DOCKER_IMAGE)
 
@@ -77,7 +82,7 @@ class DockerRegistry:
             "password": self.password,
         }
         client = docker.from_env()
-        resp = client.images.push(
+        responses = client.images.push(
             repository=repository,
             tag=tag,
             auth_config=auth_config,
@@ -86,14 +91,11 @@ class DockerRegistry:
         )
         verbosity = 0.01 if _logger.isEnabledFor(logging.INFO) else 0
         reporter = ProgressReporter(verbosity)
-        for el in resp:
-            error = el.get("error", None)
-            if error is not None:
+        for resp in responses:
+            el = DictAccessor(resp)
+            if error := el.get("error"):
                 _logger.error(error)
-                details = get_nested_value(el, "errorDetail", "message")
+                details = el.get("errorDetail", "message")
                 if details is not None and details != error:
                     _logger.error(f"Details: {details}")
-            reporter.report(
-                el.get("status", None),
-                el.get("progress", None),
-            )
+            reporter.report(el.get("status"), el.get("progress"))

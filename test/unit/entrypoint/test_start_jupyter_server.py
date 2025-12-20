@@ -1,68 +1,114 @@
+from __future__ import annotations
+
+import os
+import re
+from inspect import cleandoc
+from pathlib import Path
+from test.matchers import re_search
+from unittest.mock import (
+    Mock,
+    patch,
+)
+
 import pytest
 
-
-from pathlib import Path
-from inspect import cleandoc
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
 
 
 class Testee:
-    __test__ = False # suppress: PytestCollectionWarning
+    __test__ = False # suppress PytestCollectionWarning
 
     def __init__(self, dir: Path):
-        self.script = dir / "script.sh"
+        self.server = dir / "server.sh"
+        self.core = dir / "core.sh"
         self.logfile = dir / "log.log"
 
-    def create_script(self, before="", after=""):
+    def _create_script(self, path: Path, content: str) -> Testee:
+        path.write_text("#!/bin/bash\n" + cleandoc(content))
+        path.chmod(0o744)
+        return self
+
+    def core_script(self, event=""):
         """
-        Parameters :before: and :after: will be inserted into the sample
-        script before and after reporting Jupyter Server to be running.
+        Create a script simulating the Jupyter core executable.
         """
-        self.script.write_text(cleandoc(f"""
-            #!/bin/bash
+        return self._create_script(self.core, event)
+
+    def server_script(self, before="", after=""):
+        """
+        Create a script simulating the Jupyter server executable.
+        Parameters :before: and :after: will be inserted into the script
+        before and after reporting Jupyter Server to be running.
+        """
+        prefix = "[I 2024-01-22 13:27:48.808 ServerApp]"
+        return self._create_script(
+            self.server,
+            f"""
             echo "first log message"
             sleep .2
             {before}
-            echo "[I 2024-01-22 13:27:48.808 ServerApp] Jupyter Server 2.12.15 is running at:"
+            echo "{prefix} Jupyter Server 2.12.15 is running at:"
             {after}
             sleep .4
             echo "last log message"
-        """))
-        self.script.chmod(0o744)
-        return self
+            """
+        )
 
     def run(self):
-        entrypoint.start_jupyter_server(
-            "home",
-            self.script,
-            "port",
-            "notebooks",
-            self.logfile,
-            "user",
-            "password",
-            Path("venv"),
-            poll_sleep = 0.1,
+        args = Mock(
+            home="home",
+            jupyter_server=self.server,
+            jupyter_core=self.core,
+            port=123,
+            notebooks="notebooks",
+            jupyter_logfile=self.logfile,
+            user="user",
+            password="default-pwd",
+            venv=Path("venv"),
         )
+        entrypoint.start_jupyter_server(args, poll_sleep = 0.1)
         return self
 
 
-def test_success(tmp_path, caplog):
-    testee = Testee(tmp_path).create_script().run()
-    assert "Server for Jupyter has been started successfully." in caplog.text
+@pytest.mark.parametrize("env, expected_message", [
+    ({}, "The default password is .*You can change it by"),
+    ({entrypoint.PASSWORD_ENV: "new-pwd"}, ""),
+])
+def test_success(env, expected_message, tmp_path, caplog, monkeypatch):
+    with patch.dict(os.environ, env):
+        Testee(tmp_path).server_script().core_script().run()
+    assert entrypoint.SUCCESS_MESSAGE in caplog.text
+    assert re_search(expected_message, re.DOTALL) == caplog.text
+
+
+def test_change_password_failed(tmp_path, caplog, mocker):
+    testee = Testee(tmp_path).server_script()
+    testee.core_script("echo simulated failure; exit 1")
+    mocker.patch.dict(os.environ, {entrypoint.PASSWORD_ENV: "new-pwd"})
+    with pytest.raises(SystemExit) as ex:
+        testee.run()
+    expected = cleandoc(
+        f"""
+        {testee.core} exited with return code 1 and output:
+        simulated failure
+        """
+    )
+    assert expected in caplog.text
+    assert entrypoint.SUCCESS_MESSAGE not in caplog.text
 
 
 def test_early_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
-        testee = Testee(tmp_path).create_script(before="exit 22").run()
+        Testee(tmp_path).server_script(before="exit 22").run()
     assert ex.value.code == 22
-    assert "Server for Jupyter has been started successfully." not in caplog.text
-    assert "Jupyter Server terminated with error code 22" in caplog.text
+    assert entrypoint.SUCCESS_MESSAGE not in caplog.text
+    assert "Jupyter server terminated with error code 22" in caplog.text
 
 
 def test_late_error(tmp_path, caplog):
     with pytest.raises(SystemExit) as ex:
-        testee = Testee(tmp_path).create_script(after="exit 23").run()
+        Testee(tmp_path).server_script(after="exit 23").run()
     assert ex.value.code == 23
     assert "Changed environment variable PATH to venv/bin:" in caplog.text
-    assert "Server for Jupyter has been started successfully." in caplog.text
-    assert "Jupyter Server terminated with error code 23" in caplog.text
+    assert entrypoint.SUCCESS_MESSAGE in caplog.text
+    assert "Jupyter server terminated with error code 23" in caplog.text

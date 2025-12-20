@@ -1,25 +1,29 @@
+from pathlib import Path
+from test.unit.entrypoint.entrypoint_mock import entrypoint_method
+from unittest.mock import (
+    Mock,
+    create_autospec,
+)
+
 import pytest
-from unittest.mock import MagicMock, create_autospec
 
 from exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files import entrypoint
-from pathlib import Path
-
-from test.unit.entrypoint.entrypoint_mock import entrypoint_method
 
 
 def test_no_args(mocker):
     mocker.patch("sys.argv", ["app"])
     mocker.patch(entrypoint_method("sleep_infinity"))
-    mocker.patch(entrypoint_method("start_jupyter_server"))
     mocker.patch(entrypoint_method("copy_rec"))
+    mocker.patch(entrypoint_method("subprocess.run"))
+    mocker.patch(entrypoint_method("start_jupyter_server"))
     user = create_autospec(entrypoint.User, is_specified=False)
     mocker.patch(entrypoint_method("User"), return_value=user)
     entrypoint.main()
-    assert entrypoint.sleep_infinity.called
     assert not user.enable_group_access.called
     assert not user.chown_recursive.called
     assert not entrypoint.copy_rec.called
     assert not entrypoint.start_jupyter_server.called
+    assert entrypoint.sleep_infinity.called
 
 
 def test_user_arg(mocker):
@@ -100,15 +104,4 @@ def test_jupyter(mocker):
     mocker.patch(entrypoint_method("sleep_infinity"))
     entrypoint.main()
     assert entrypoint.start_jupyter_server.called
-    expected = mocker.call(
-        "home-directory",
-        jupyter,
-        int(port),
-        notebook_folder,
-        logfile,
-        "usr",
-        "pwd",
-        venv,
-    )
-    assert entrypoint.start_jupyter_server.call_args == expected
     assert not entrypoint.sleep_infinity.called

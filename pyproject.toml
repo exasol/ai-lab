@@ -79,5 +79,9 @@ filterwarnings = [
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
 ]
 
+[tool.isort]
+profile = "black"
+force_grid_wrap = 2
+
 [tool.poetry.plugins."console_scripts"]
 ai-lab = "exasol.ds.sandbox.main:main"
