@@ -14,6 +14,9 @@ This release supports overriding the default password by passing an environment 
 ## Security Issues
 
 * #452: Fixed vulnerability CVE-2024-48908 by updating GitHub action `lycheeverse/lychee-action@v1.9.0`
+* Fixed CVE-2025-66471 (urllib3)
+* Fixed CVE-2025-68146 (filelock)
+* Fixed CVE-2025-59842 (jupyterlab)
 
 ## Documentation
 
