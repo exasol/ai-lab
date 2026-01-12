@@ -32,6 +32,8 @@ docker run \
   exasol/ai-lab:${VERSION}
 ```
 
+For additional options, more details, and limitations please see the dedicated instructions for the [AI Lab's Docker Edition](doc/user_guide/docker/docker-usage.md).
+
 ### Access the Web Interface
 
 You can now access AI Lab's web interface by navigating to `http://localhost:49494` in your web browser. If necessary, replace `<host>` with the IP address or hostname of the machine where the Docker container is running.
