@@ -148,7 +148,10 @@ class DssDockerImage:
         except:
             pass
         docker_file = self._docker_file()
-        _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+        _logger.info(
+            f"Creating docker image {self.image_name} from {docker_file}:"
+            f"\n{docker_file.read_text()}"
+        )
         if self.registry is not None:
             docker_client.login(self.registry.username, self.registry.password)
         with docker_file.open("rb") as fileobj:
@@ -231,3 +234,12 @@ class DssDockerImage:
         size = humanfriendly.format_size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(self._start)
         _logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
+
+
+if __name__ == "__main__":
+    file = (
+        importlib_resources
+        .files("exasol.ds.sandbox.lib.dss_docker")
+        .joinpath("Dockerfile")
+    )
+    print(f'{file.read_text()}')
