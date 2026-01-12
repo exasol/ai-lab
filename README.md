@@ -18,18 +18,7 @@ The fastest way to get started with AI Lab is to use its [Docker Edition](doc/us
 Once you have Docker installed, you can pull the latest AI Lab image from Docker Hub and run it as a container using the following commands:
 
 ```shell
-VERSION=latest
-LISTEN_IP=0.0.0.0
-VOLUME=my-vol
-CONTAINER_NAME=ai-lab
-````
-
-```shell
-docker run \
-  --name ${CONTAINER_NAME} \
-  --volume ${VOLUME}:/home/jupyter/notebooks \
-  --publish ${LISTEN_IP}:49494:49494 \
-  exasol/ai-lab:${VERSION}
+docker run --publish 0.0.0.0:49494:49494 exasol/ai-lab
 ```
 
 For additional options, more details, and limitations please see the dedicated instructions for the [AI Lab's Docker Edition](doc/user_guide/docker/docker-usage.md).
