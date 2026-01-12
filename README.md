@@ -53,3 +53,7 @@ Now that you have AI Lab up and running, you can start exploring the various not
 ## Next Steps
 
 AI Lab offers a comprehensive set of features as well as alternative deployment options. When you are ready to dive deeper, check out the **[User Guide](doc/user_guide/user-guide.md)** for more detailed instructions.
+
+## Contributing
+
+If you want to contribute to the AI Lab, please see the [Developer Guide](doc/developer_guide/developer_guide.md).
