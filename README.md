@@ -14,6 +14,7 @@ Key Features:
 The fastest way to get started with AI Lab is to use its [Docker Edition](doc/user_guide/docker/docker-usage.md) via [Docker](https://www.docker.com/).
 
 ### Install AI Lab via Docker
+
 Once you have Docker installed, you can pull the latest AI Lab image from Docker Hub and run it as a container using the following commands:
 
 ```shell
