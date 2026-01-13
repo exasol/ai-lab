@@ -234,12 +234,3 @@ class DssDockerImage:
         size = humanfriendly.format_size(image.attrs["Size"])
         elapsed = pretty_print.elapsed(self._start)
         _logger.info(f"Built Docker image {self.image_name} size {size} in {elapsed}.")
-
-
-if __name__ == "__main__":
-    file = (
-        importlib_resources
-        .files("exasol.ds.sandbox.lib.dss_docker")
-        .joinpath("Dockerfile")
-    )
-    print(f'{file.read_text()}')
