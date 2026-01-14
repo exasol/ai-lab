@@ -148,7 +148,10 @@ class DssDockerImage:
         except:
             pass
         docker_file = self._docker_file()
-        _logger.info(f"Creating docker image {self.image_name} from {docker_file}")
+        _logger.info(
+            f"Creating docker image {self.image_name} from {docker_file}:"
+            f"\n{docker_file.read_text()}"
+        )
         if self.registry is not None:
             docker_client.login(self.registry.username, self.registry.password)
         with docker_file.open("rb") as fileobj:

@@ -9,7 +9,6 @@ AI Lab also offers a [short introduction](intro.md) to Docker Images and Contain
 ## Environment Variables
 
 The Unix shell commands in the following sections will use some environment variables. By this you can adapt the commands to your specific preferences while still being able to execute them literally:
-* Variable `VERSION` refers to the version of Exasol AI Lab Docker Edition you want to use, alternatively you can use `latest`.
 * Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing-user-data.md).
   * The related Command line option `--volume` is optional and enables keeping your changes to notebook files or the configuration parameters across separate sessions with the AI Lab Docker Edition.
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
@@ -21,7 +20,6 @@ The Unix shell commands in the following sections will use some environment vari
 Here is an example:
 
 ```shell
-VERSION=4.0.0
 LISTEN_IP=0.0.0.0
 VOLUME=my-vol
 CONTAINER_NAME=ai-lab
@@ -48,7 +46,7 @@ docker run \
   --name ${CONTAINER_NAME} \
   --volume ${VOLUME}:/home/jupyter/notebooks \
   --publish ${LISTEN_IP}:49494:49494 \
-  exasol/ai-lab:${VERSION}
+  exasol/ai-lab
 ```
 
 Additional options
@@ -72,7 +70,7 @@ docker run \
   --volume ${VOLUME}:/home/jupyter/notebooks \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --publish ${LISTEN_IP}:55555:49494 \
-  exasol/ai-lab:${VERSION}
+  exasol/ai-lab
 ```
 
 [Additional requirements](using_gpu_in_integrated_exa_db.md) apply when you plan to write UDFs with GPU support while using an Integrated Exasol Docker-DB.
@@ -112,16 +110,17 @@ See also https://docs.docker.com/engine/reference/commandline/network_connect/.
 When starting AI Lab as a Docker container the command line will display a welcome message showing instructions for connecting to the Jupyter server or overriding the default password.
 
 ```
-$ docker run --publish 0.0.0.0:$PORT:49494 exasol/ai-lab:$VERSION
-Server for Jupyter has been started successfully.
+The Server for Jupyter has been started successfully.
 
 You can connect with http://<host>:<port>.
 
 If you are using a Docker daemon on your local machine and forwarding
 the port to the same port then you can connect with http://localhost:49494.
 
-You can change the default password by passing the environment
-variable JUPYTER_PASSWORD when running the Docker container:
+The default password is "ailab".
+
+You can change it by passing the environment variable JUPYTER_PASSWORD
+when running the Docker container:
 
 docker run --env JUPYTER_PASSWORD=<your password> ... exasol/ai-lab
 ```
