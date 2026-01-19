@@ -2,7 +2,7 @@ import dataclasses
 from typing import Any, Dict, Optional
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class AnsibleRunContext:
     playbook: str
     extra_vars: Optional[Dict[str, Any]]
