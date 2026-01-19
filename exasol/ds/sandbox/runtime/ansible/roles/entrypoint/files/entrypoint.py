@@ -1,20 +1,17 @@
 import argparse
-import logging
 import grp
+import logging
 import os
 import pwd
 import re
 import resource
 import shutil
-import subprocess
 import stat
+import subprocess
 import sys
 import time
-
 from inspect import cleandoc
 from pathlib import Path
-from typing import List, TextIO
-
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.DEBUG)
@@ -23,8 +20,8 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %X",
 )
 
-
 PASSWORD_ENV = "JUPYTER_PASSWORD"
+
 
 def arg_parser():
     parser = argparse.ArgumentParser(
@@ -99,9 +96,9 @@ def jupyter_env(home: str, venv: Path | None) -> dict[str, str]:
 
 
 def change_jupyter_password(
-    jupyter_core: str,
-    new_password: str,
-    env: dict[str, str],
+        jupyter_core: str,
+        new_password: str,
+        env: dict[str, str],
 ) -> None:
     p = subprocess.run(
         [jupyter_core, "server", "password"],
@@ -128,7 +125,7 @@ def change_jupyter_password(
 SUCCESS_MESSAGE = "The server for Jupyter has been started successfully."
 
 
-def success_message(args: argparse.Namespace, alternate_password: str|None) -> str:
+def success_message(args: argparse.Namespace, alternate_password: str | None) -> str:
     """
     Builds the success message after having started the Jupyter server
     successfully. If alternate_password is None, then append instructions for
@@ -213,6 +210,7 @@ def copy_rec(src: Path, dst: Path, warning_as_error: bool = False):
     666 for files and 777 for directories.  If directory src does not exist
     then do not copy anything.
     """
+
     def ensure_dir(dir: Path):
         if not dir.exists():
             dir.mkdir()
@@ -303,6 +301,7 @@ class GroupAccess:
     name.  The other group is expected to exist already and user to be added
     to it.
     """
+
     def __init__(self, user: str, group: Group):
         self._user = user
         self._group = group
@@ -405,12 +404,12 @@ def main():
             f" {args.notebook_defaults} to {args.notebooks}")
     disable_core_dumps()
     if (
-        args.jupyter_server
-        and args.notebooks
-        and args.jupyter_logfile
-        and args.user
-        and args.home
-        and args.password
+            args.jupyter_server
+            and args.notebooks
+            and args.jupyter_logfile
+            and args.user
+            and args.home
+            and args.password
     ):
         start_jupyter_server(args)
     else:
