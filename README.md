@@ -1,21 +1,48 @@
 # Exasol AI Lab
 
-The Exasol AI Lab is a pre-configured container designed to empower data scientists. It streamlines common data science and AI tasks, including data loading, preparation, exploration, model training, and deployment. Whether you’re a seasoned practitioner or just getting started, the AI Lab provides a hassle-free experience.
-
-![Transformers Extension](https://github.com/exasol/ai-lab/blob/4.0.0/doc/user_guide/ai-lab-screenshot.png)
+The Exasol AI Lab is a pre-configured container designed to empower data scientists to build AI & ML workflows on top of their Exasol database. It streamlines common data science and AI tasks, including data loading, preparation, exploration, model training, and deployment. Whether you’re a seasoned practitioner or just getting started, AI Lab is your one-stop-shop for AI and machine learning on Exasol.
 
 Key Features:
-* Jupyter Notebook Environment: The heart of the AI Lab is a robust Jupyter Notebook environment. It’s where you’ll work on your data science projects.
-* Exasol Integration: Leverage Exasol’s power for your AI and machine learning use cases. The AI Lab includes essential Exasol packages, extensions, and configuration tasks.
-* Example Notebooks: Jumpstart your work with ready-to-use example notebooks. Explore classic machine learning scenarios (think scikit-learn), seamlessly integrate Exasol with AWS SageMaker, and tap into Hugging Face models directly within Exasol.
+* **Jupyter Notebook Environment**: The heart of the AI Lab is a robust Jupyter Notebook environment. It is where you will work on your AI and Data Science projects.
+* **Exasol Integration**: Leverage Exasol’s power for your AI and machine learning use cases. The AI Lab includes essential Exasol packages, extensions, and configuration tasks.
+* **Example Notebooks**: Jumpstart your work with ready-to-use example notebooks. Explore classic machine learning scenarios (think scikit-learn), seamlessly integrate Exasol with AWS SageMaker, and tap into Hugging Face models directly within Exasol.
+* **Generative AI Support**: AI Lab is equipped with tools and libraries to help you explore generative AI techniques, including transformer models and large language models (LLMs).
+* **Traditional ML and Data Science**: AI Lab supports traditional machine learning and data science workflows, making it a versatile tool for various projects.
 
-Feel free to explore the Exasol AI Lab and unleash your data science potential!
+## Getting Started
 
-The AI Lab is available in multiple [Editions](https://github.com/exasol/ai-lab/blob/4.0.0/doc/user_guide/editions.md) involving different technology stacks, see also common [System Requirements](https://github.com/exasol/ai-lab/blob/4.0.0/doc/user_guide/system-requirements.md).
+The fastest way to get started with AI Lab is to use its [Docker Edition](doc/user_guide/docker/docker-usage.md) via [Docker](https://www.docker.com/).
 
-After downloading the required files and having started the AI Lab you can connect to AI Lab's [Jupyter Service](https://github.com/exasol/ai-lab/blob/4.0.0/doc/user_guide/jupyter.md).
+### Install AI Lab via Docker
 
-## Additional Links
+Once you have Docker installed, you can pull the latest AI Lab image from Docker Hub and run it as a container using the following commands:
 
-* [Troubleshooting](doc/user_guide/troubleshooting.md)
-* [Developer Guide](https://github.com/exasol/ai-lab/blob/4.0.0/doc/developer_guide/developer_guide.md)
+```shell
+docker run --publish 0.0.0.0:49494:49494 exasol/ai-lab
+```
+
+For additional options, more details, and limitations please see the dedicated instructions for the [AI Lab's Docker Edition](doc/user_guide/docker/docker-usage.md).
+
+### Access the Web Interface
+
+You can now access AI Lab's web interface by navigating to `http://localhost:49494` in your web browser. If necessary, replace `<host>` with the IP address or hostname of the machine where the Docker container is running.
+
+You will be asked to enter a password. The default password is `ailab`. The User Guide provides instructions on how to [change the default password](doc/user_guide/docker/docker-usage.md#connecting-to-the-jupyter-service).
+
+### Configure AI Lab to Connect to Your Exasol Database
+
+You can use AI Lab with an existing Exasol database OR you can use AI Lab to spin up a standalone Exasol database in another Docker container.
+
+Once you have opened your browser, navigated to the AI Lab interface and logged in, open the `main_config.ipynb` notebook and follow all of the steps to configure a connection to Exasol.
+
+### Run your first Workflow
+
+Now that you have AI Lab up and running, you can start exploring the various notebooks and tutorials! We recommend starting with the `first_steps.ipynb` notebook, which provides a brief introduction to using AI Lab.
+
+## Next Steps
+
+AI Lab offers a comprehensive set of features as well as alternative deployment options. When you are ready to dive deeper, check out the **[User Guide](doc/user_guide/user-guide.md)** for more detailed instructions.
+
+## Contributing
+
+If you want to contribute to the AI Lab, please see the [Developer Guide](doc/developer_guide/developer_guide.md).

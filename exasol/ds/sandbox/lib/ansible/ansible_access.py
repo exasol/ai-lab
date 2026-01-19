@@ -1,16 +1,23 @@
-import ansible_runner
 import json
 import logging
-
 from dataclasses import dataclass
-from typing import Callable, Dict, NewType, Optional
+from typing import (
+    Callable,
+    Dict,
+    NewType,
+    Optional,
+)
+
+import ansible_runner
 
 from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
-
+from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
+from exasol.ds.sandbox.lib.logging import (
+    LogType,
+    get_status_logger,
+)
 
 AnsibleEvent = NewType('AnsibleEvent', Dict[str, any])
-AnsibleFacts = NewType('AnsibleFacts', Dict[str, any])
 
 
 class AnsibleException(RuntimeError):
@@ -44,8 +51,8 @@ class AnsibleAccess:
             raise AnsibleException(r.rc)
 
         if not "docker_container" in run_ctx.extra_vars:
-            return {}
+            return AnsibleFacts({})
 
         host = run_ctx.extra_vars["docker_container"]
         fact_cache = r.get_fact_cache(host)
-        return fact_cache
+        return AnsibleFacts(fact_cache)

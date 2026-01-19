@@ -4,15 +4,35 @@ Code name:
 
 ## Summary
 
+This release supports overriding the default password by passing an environment variable when running the Docker container. See the [User guide](https://github.com/exasol/ai-lab/blob/main/doc/user_guide/docker/docker-usage.md) for details.
+
+## Features
+
+* #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+* #434: Supported overriding the default password when running the AI Lab Docker container
+
+## Security Issues
+
+* #452: Fixed vulnerability CVE-2024-48908 by updating GitHub action `lycheeverse/lychee-action@v1.9.0`
+* Fixed CVE-2025-66471 (urllib3)
+* Fixed CVE-2025-68146 (filelock)
+* Fixed CVE-2025-59842 (jupyterlab)
+
 ## Documentation
 
 * #432: Fixed structure and links in notebook first-steps
 * #337: Ensured correct spelling for AI Lab
+* #441: Added section "Getting Started" to User Guide
 
-## Feature
+## Features
 
+* #438: Added GPU Resource Considerations Notebook
+* #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
+* #462: Adapted SLC notebooks to ScriptLanguageContainer changes
 * #449: Added notebook to demonstrate PyExasol's import and export with Polars and PyArrow
+
 
 ## Refactorings
 
-* #449: Updated notebook-connector
+* #458: Switched docker hub credentials
+* #460: Updated notebook-connector

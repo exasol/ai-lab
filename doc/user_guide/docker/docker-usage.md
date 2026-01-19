@@ -9,7 +9,6 @@ AI Lab also offers a [short introduction](intro.md) to Docker Images and Contain
 ## Environment Variables
 
 The Unix shell commands in the following sections will use some environment variables. By this you can adapt the commands to your specific preferences while still being able to execute them literally:
-* Variable `VERSION` refers to the version of Exasol AI Lab Docker Edition you want to use, alternatively you can use `latest`.
 * Variable `VOLUME` is expected to contain the name of your Docker volume, see [Managing User Data](managing-user-data.md).
   * The related Command line option `--volume` is optional and enables keeping your changes to notebook files or the configuration parameters across separate sessions with the AI Lab Docker Edition.
 * Variable `LISTEN_IP` defines the range of IP-addresses allowed to connect to the forwarded Jupyter port.
@@ -21,7 +20,6 @@ The Unix shell commands in the following sections will use some environment vari
 Here is an example:
 
 ```shell
-VERSION=4.0.0
 LISTEN_IP=0.0.0.0
 VOLUME=my-vol
 CONTAINER_NAME=ai-lab
@@ -48,18 +46,19 @@ docker run \
   --name ${CONTAINER_NAME} \
   --volume ${VOLUME}:/home/jupyter/notebooks \
   --publish ${LISTEN_IP}:49494:49494 \
-  exasol/ai-lab:${VERSION}
+  exasol/ai-lab
 ```
 
 Additional options
 * If port `49494` is not available on your daemon machine you can forward port `49494` of the Jupyter server in the Docker container to another port, e.g. `55555`, on the daemon machine with `--publish ${LISTEN_IP}:55555:49494`.
 * Add option `--detach` to run the container in the background, but please note that the initial welcome message with instructions will as a consequence be hidden. For further information, see Command [`docker logs`](https://docs.docker.com/engine/reference/commandline/container_logs/) and [Stopping the AI Lab Docker Container](#stopping-the-ai-lab-docker-container).
+* You can override AI Lab's default password by passing environment variable `JUPYTER_PASSWORD` after CLI option `--env` or `-e` of command `docker run`.
 * If you want to use an Integrated Exasol Docker-DB or to create SLCs, you must enable the AI Lab Docker container to access the Docker daemon.
   * **Please note:** In this case
     * Additional [Limitations and security risks](prerequisites.md#enabling-exasol-ai-lab-to-use-docker-features) apply.
     * Only file system objects on the daemon machine can be mounted. This applies to ordinary directories as well as the `docker.sock`.
     * On Windows mounting `docker.sock` only works with Docker Desktop with WSL 2.
-  * You can mount the Docker Socket with `--volume /var/run/docker.sock:/var/run/docker.sock`
+  * You can mount the Docker Socket with `--volume /var/run/docker.sock:/var/run/docker.sock`, see [graphical overview](prerequisites.md).
 
 The following example uses all additional options:
 
@@ -67,10 +66,11 @@ The following example uses all additional options:
 docker run \
   --name ${CONTAINER_NAME} \
   --detach \
+  --env JUPYTER_PASSWORD="individual_password" \
   --volume ${VOLUME}:/home/jupyter/notebooks \
   --volume /var/run/docker.sock:/var/run/docker.sock \
   --publish ${LISTEN_IP}:55555:49494 \
-  exasol/ai-lab:${VERSION}
+  exasol/ai-lab
 ```
 
 [Additional requirements](using_gpu_in_integrated_exa_db.md) apply when you plan to write UDFs with GPU support while using an Integrated Exasol Docker-DB.
@@ -107,35 +107,31 @@ See also https://docs.docker.com/engine/reference/commandline/network_connect/.
 
 ## Connecting to the Jupyter Service
 
-When starting AI Lab as a Docker container the command line will display a welcome message showing connection instructions and a reminder to change the default password:
+When starting AI Lab as a Docker container the command line will display a welcome message showing instructions for connecting to the Jupyter server or overriding the default password.
 
 ```
-$ docker run --publish 0.0.0.0:$PORT:49494 exasol/ai-lab:$VERSION
-Server for Jupyter has been started successfully.
+The Server for Jupyter has been started successfully.
 
-You can connect with http://<host>:<port>
+You can connect with http://<host>:<port>.
 
-If using a Docker daemon on your local machine and did forward the
-port to the same port then you can connect with http://localhost:49494.
-
-┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┬ ┬┬─┐   ┬┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬─┐  ┌─┐┌─┐┌─┐┌─┐┬ ┬┌─┐┬─┐┌┬┐ ┬
-│ │├─┘ ││├─┤ │ ├┤   └┬┘│ ││ │├┬┘   ││ │├─┘└┬┘ │ ├┤ ├┬┘  ├─┘├─┤└─┐└─┐││││ │├┬┘ ││ │
-└─┘┴  ─┴┘┴ ┴ ┴ └─┘   ┴ └─┘└─┘┴└─  └┘└─┘┴   ┴  ┴ └─┘┴└─  ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘ o
+If you are using a Docker daemon on your local machine and forwarding
+the port to the same port then you can connect with http://localhost:49494.
 
 The default password is "ailab".
-To update the password, log in to the Docker container as the user jupyter and run
-    /home/jupyter/jupyterenv/bin/jupyter-lab server password
+
+You can change it by passing the environment variable JUPYTER_PASSWORD
+when running the Docker container:
+
+docker run --env JUPYTER_PASSWORD=<your password> ... exasol/ai-lab
 ```
 
 Using an internet browser you then can connect to the Jupyter server running in the Docker container in order to follow the tutorials presented by a set of Jupyter notebooks, see [Connecting to Jupyter Service](../jupyter.md#open-jupyter-in-your-browser).
 
 For the parameter `<host>`: If your daemon machine is identical to the machine your browser is running on then you can replace `<host>` by `localhost` otherwise please use the IP address of the daemon machine.
 
-The following section explains how to log in to the Docker container to change settings, such as the default password.
+The following section explains how to log in to the Docker container to change settings.
 
 ## Logging in to the Docker container
-
-To update the password you must log in to the Docker container.
 
 First, you need to find out the container's ID. The following command shows the list of currently running Docker containers.
 

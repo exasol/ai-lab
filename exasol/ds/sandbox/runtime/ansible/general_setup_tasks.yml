@@ -8,7 +8,8 @@
       docker_group: "{{ docker_group }}"
       jupyter:
         virtualenv: "{{ jupyter_virtualenv }}"
-        command: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+        server: "{{ jupyter_virtualenv }}/bin/jupyter-lab"
+        core: "{{ jupyter_virtualenv }}/bin/jupyter"
         port: "49494"
         user: "{{ user_name }}"
         group: "{{ user_group }}"
@@ -33,7 +34,7 @@
     name: jupyter
   vars:
     jupyterlab_virtualenv: "{{ dss_facts.jupyter.virtualenv }}"
-    jupyterlab_command: "{{ dss_facts.jupyter.command }}"
+    jupyterlab_command: "{{ dss_facts.jupyter.server }}"
     jupyterlab_port: "{{ dss_facts.jupyter.port }}"
     jupyterlab_password: "{{ dss_facts.jupyter.password }}"
     jupyterlab_notebook_folder_initial: "{{ dss_facts.notebook_folder.initial }}"
