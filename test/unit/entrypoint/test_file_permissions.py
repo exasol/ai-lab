@@ -11,13 +11,12 @@ from unittest.mock import MagicMock
 
 
 def test_file_inspector_non_existing_file(mocker):
-    mocker.patch("os.stat")
-    # need to mock os.path.exists as os.path.exists seems to call os.stat :)
-    mocker.patch("os.path.exists", return_value=False)
+    not_called_if_works = mocker.patch("pathlib.Path.stat")
+    mocker.patch("pathlib.Path.exists", return_value=False)
     testee = entrypoint.FileInspector(Path("/non/existing/file"))
     actual = testee.is_group_accessible()
     assert actual == False
-    assert not os.stat.called
+    assert not not_called_if_works.called
 
 
 def test_file_inspector_group_id_non_existing_file():
