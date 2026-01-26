@@ -1,2 +1,2 @@
-jupyterlab==4.5.1
+jupyterlab==4.2.5
 pexpect==4.8.0
