@@ -28,7 +28,8 @@ This release supports overriding the default password by passing an environment 
 
 * #438: Added GPU Resource Considerations Notebook
 * #440: Re-enabled Parquet import in notebook `first_steps.ipynb`
-* #462: Adapted SLC notesbooks to ScriptLanguageContainer changes
+* #462: Adapted SLC notebooks to ScriptLanguageContainer changes
+* #449: Added notebook to demonstrate PyExasol's import and export with Polars and PyArrow
 
 
 ## Refactorings
