@@ -36,3 +36,4 @@ This release supports overriding the default password by passing an environment 
 
 * #458: Switched docker hub credentials
 * #460: Updated notebook-connector
+* #475: Cleaned notebooks from missed metadata
