@@ -13,11 +13,12 @@ set_log_level_for_libraries()
 
 
 def test_quickstart(notebook_runner, monkeypatch) -> None:
-    monkeypatch.setenv("EXASOL_HOST", "localhost")
+    monkeypatch.setenv("EXASOL_HOST", "172.18.0.2")
     monkeypatch.setenv("EXASOL_PORT", "8563")
     monkeypatch.setenv("EXASOL_USER", "sys")
     monkeypatch.setenv("EXASOL_PASSWORD", "exasol")
     monkeypatch.setenv("EXASOL_SCHEMA", "AI_LAB")
+    monkeypatch.setenv("EXASOL_SSL_CERTIFICATE", "SSL_VERIFY_NONE")
 
     current_dir = os.getcwd()
     try:
