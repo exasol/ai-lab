@@ -11,6 +11,14 @@ normal:
         test_file: nbtest_cloud.py
         test_backend: onprem
         wip: no-wip
+      - name: pyexasol notebook
+        test_file: nbtest_pyexasol.py
+        test_backend: onprem
+        wip: no-wip
+      - name: jupysql notebook
+        test_file: nbtest_jupysql.py
+        test_backend: onprem
+        wip: no-wip
       - name: sklearn notebook
         test_file: nbtest_sklearn.py
         test_backend: onprem
