@@ -1,30 +1,43 @@
+# This file is read by nox session get-notebook-tests implemented in noxfile.py.
+# The nox session generates a build matrix containing various test sets and
+# the GitHub runners to be used to execute the tests in the resp. set.
+# The matrix is then used in GitHub workflow notebook_tests.yaml to execute
+# each set of tests using the assigned GitHub runner.
 normal:
   runner: ubuntu-24.04
   additional_pytest_parameters:
   stable:
     tests:
-      - name: First Steps notebook
-        test_file: nbtest_first_steps.py
-        test_backend: onprem
-        wip: no-wip
       - name: CSE notebook
         test_file: nbtest_cloud.py
         test_backend: onprem
         wip: no-wip
-      - name: sklearn notebook
-        test_file: nbtest_sklearn.py
+      - name: First Steps notebook
+        test_file: nbtest_first_steps.py
         test_backend: onprem
         wip: no-wip
       - name: ibis notebook
         test_file: nbtest_ibis.py
         test_backend: onprem
         wip: no-wip
-      - name: SLC notebook
-        test_file: nbtest_script_languages_container.py
+      - name: jupysql notebook
+        test_file: nbtest_jupysql.py
+        test_backend: onprem
+        wip: no-wip
+      - name: pyexasol notebook
+        test_file: nbtest_pyexasol.py
         test_backend: onprem
         wip: no-wip
       - name: SME notebooks onprem
         test_file: nbtest_sagemaker.py
+        test_backend: onprem
+        wip: no-wip
+      - name: sklearn notebook
+        test_file: nbtest_sklearn.py
+        test_backend: onprem
+        wip: no-wip
+      - name: SLC notebook
+        test_file: nbtest_script_languages_container.py
         test_backend: onprem
         wip: no-wip
       - name: TE notebooks onprem
@@ -42,10 +55,6 @@ normal:
         test_file: nbtest_cloud.py
         test_backend: saas
         wip: no-wip
-      - name: sklearn
-        test_file: nbtest_sklearn.py
-        test_backend: saas
-        wip: no-wip
       - name: ibis notebook
         test_file: nbtest_ibis.py
         test_backend: saas
@@ -54,12 +63,16 @@ normal:
         test_file: nbtest_sagemaker.py
         test_backend: saas
         wip: no-wip
-      - name: TE notebooks
-        test_file: nbtest_transformers.py
+      - name: sklearn
+        test_file: nbtest_sklearn.py
         test_backend: saas
         wip: no-wip
       - name: TXAIE notebooks
         test_file: nbtest_text_ai.py
+        test_backend: saas
+        wip: no-wip
+      - name: TE notebooks
+        test_file: nbtest_transformers.py
         test_backend: saas
         wip: no-wip
 large:
