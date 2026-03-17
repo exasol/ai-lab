@@ -18,10 +18,10 @@ def test_quickstart(notebook_runner, monkeypatch, backend_setup) -> None:
     store_path, store_password = backend_setup
     secrets = Secrets(store_path, master_password=store_password)
 
-    monkeypatch.setenv("EXASOL_HOST", "172.18.0.2")
-    monkeypatch.setenv("EXASOL_PORT", "8563")
-    monkeypatch.setenv("EXASOL_USER", "sys")
-    monkeypatch.setenv("EXASOL_PASSWORD", "exasol")
+    monkeypatch.setenv("EXASOL_HOST", secrets.db_host_name)
+    monkeypatch.setenv("EXASOL_PORT", secrets.db_port)
+    monkeypatch.setenv("EXASOL_USER", secrets.db_user_name)
+    monkeypatch.setenv("EXASOL_PASSWORD", secrets.db_password)
     monkeypatch.setenv("EXASOL_SCHEMA", secrets.db_schema)
     monkeypatch.setenv("EXASOL_SSL_CERTIFICATE", "SSL_VERIFY_NONE")
 
