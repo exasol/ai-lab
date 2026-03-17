@@ -1,6 +1,8 @@
 import os
 import textwrap
 
+from exasol.nb_connector.secret_store import Secrets
+
 # We need to manually import all fixtures that we use, directly or indirectly,
 # since the pytest won't do this for us.
 from notebook_test_utils import (
@@ -9,16 +11,18 @@ from notebook_test_utils import (
     set_log_level_for_libraries,
 )
 
-
 set_log_level_for_libraries()
 
 
-def test_quickstart(notebook_runner, monkeypatch) -> None:
+def test_quickstart(notebook_runner, monkeypatch, backend_setup) -> None:
+    store_path, store_password = backend_setup
+    secrets = Secrets(store_path, master_password=store_password)
+
     monkeypatch.setenv("EXASOL_HOST", "172.18.0.2")
     monkeypatch.setenv("EXASOL_PORT", "8563")
     monkeypatch.setenv("EXASOL_USER", "sys")
     monkeypatch.setenv("EXASOL_PASSWORD", "exasol")
-    monkeypatch.setenv("EXASOL_SCHEMA", "AI_LAB")
+    monkeypatch.setenv("EXASOL_SCHEMA", secrets.db_schema)
     monkeypatch.setenv("EXASOL_SSL_CERTIFICATE", "SSL_VERIFY_NONE")
 
     data_import_hack = (
