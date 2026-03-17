@@ -25,6 +25,10 @@ def test_quickstart(notebook_runner, monkeypatch, backend_setup) -> None:
     monkeypatch.setenv("EXASOL_SCHEMA", secrets.db_schema)
     monkeypatch.setenv("EXASOL_SSL_CERTIFICATE", "SSL_VERIFY_NONE")
 
+    # load_flights_data() is defined in file flight_utils.ipynb.
+    # The function accepts a list of months used as suffixes for CSV files to import.
+    # The CSV files have been uploaded to cloudfront in advance.
+    # The URL is defined in file flight_utils.ipynb as well.
     data_import_hack = (
         'data_selection',
         textwrap.dedent("""
