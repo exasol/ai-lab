@@ -23,7 +23,7 @@ def test_quickstart(notebook_runner, monkeypatch) -> None:
     current_dir = os.getcwd()
     try:
         notebook_runner('main_config.ipynb')
-        os.chdir('../jupysql')
+        os.chdir('./jupysql')
         notebook_runner('quickstart.ipynb')
     finally:
         os.chdir(current_dir)
