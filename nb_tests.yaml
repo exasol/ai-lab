@@ -1,3 +1,8 @@
+# This file is read by nox session get-notebook-tests implemented in noxfile.py.
+# The nox session generates a build matrix containing various test sets and
+# the GitHub runners to be used to execute the tests in the resp. set.
+# The matrix is then used in GitHub workflow notebook_tests.yaml to execute
+# each set of tests using the assigned GitHub runner.
 normal:
   runner: ubuntu-24.04
   additional_pytest_parameters:
