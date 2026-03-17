@@ -3,11 +3,11 @@
 
 scikit-learn==1.7.2 # required for notebook sklearn
 matplotlib==3.10.0 # required for notebook sklearn
-jupysql==0.10.17 # required for multiple notebooks
+jupysql==0.11.1 # required for multiple notebooks
 stopwatch.py>=2.0.1 # also required by ITDE
 wordcloud==1.9.4 # required for Text AI notebooks
 pickleshare==0.7.5 # See https://github.com/exasol/ai-lab/issues/291 for details.
 ipyfilechooser==0.6.0 # required for SLC notebooks
 ipywidgets==8.1.8 # enable interactive Javascript widgets in the notebooks
-exasol-notebook-connector [sqlalchemy, pyexasol, pyexasol-extra, bucketfs, docker-db, slc, ibis, transformers, text-ai, sagemaker] ==2.3.0
+exasol-notebook-connector [sqlalchemy, pyexasol, pyexasol-extra, bucketfs, docker-db, slc, ibis, transformers, text-ai, sagemaker] ==2.5.0
 pydantic==2.11.5 # See https://github.com/exasol/ai-lab/issues/428
