@@ -1,13 +1,12 @@
-from typing import Tuple
 import os
-from pathlib import Path
-import boto3
-from inspect import cleandoc
 import textwrap
+from inspect import cleandoc
+from pathlib import Path
+from typing import Tuple
 
-from exasol.nb_connector.secret_store import Secrets
+import boto3
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
-
+from exasol.nb_connector.secret_store import Secrets
 # We need to manually import all fixtures that we use, directly or indirectly,
 # since the pytest won't do this for us.
 from notebook_test_utils import (
@@ -16,7 +15,6 @@ from notebook_test_utils import (
     uploading_hack,
     set_log_level_for_libraries,
 )
-
 
 set_log_level_for_libraries()
 
@@ -194,7 +192,8 @@ def test_sagemaker(backend_setup, uploading_hack):
 
     current_dir = os.getcwd()
     try:
-        run_notebook('main_config.ipynb', store_file, store_password)
+        # main_config.ipynb is not required in tests:
+        # run_notebook() injects ai_lab_config based on store_file/store_password.
         os.chdir('./data')
         run_notebook('data_telescope.ipynb', store_file, store_password)
         os.chdir('../sagemaker')
