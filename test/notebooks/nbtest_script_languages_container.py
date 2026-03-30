@@ -29,7 +29,8 @@ def test_script_languages_container(backend, backend_setup, cleanup_slc_repo_dir
     store_path, store_password = backend_setup
     store_file = str(store_path)
     try:
-        run_notebook('main_config.ipynb', store_file, store_password)
+        # main_config.ipynb is not required in tests:
+        # run_notebook() injects ai_lab_config based on store_file/store_password.
         os.chdir('./script_languages_container')
         run_notebook('configure_slc_repository.ipynb', store_file, store_password)
         run_notebook('export_as_is.ipynb', store_file, store_password)
