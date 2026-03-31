@@ -2,7 +2,7 @@ import json
 from argparse import ArgumentParser, Namespace
 from enum import Enum
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict, Tuple
 
 import yaml
 from pydantic import BaseModel
@@ -102,6 +102,41 @@ def _get_tests_for_classification(test_classification: TestClassification) -> Te
     }
     return mapping[test_classification]
 
+
+def _group_notebook_tests(tests: TestList) -> TestList:
+    """
+    Group notebook tests that share the same backend and WIP image so they can
+    run in a single CI job while preserving coverage.
+    """
+    grouped: Dict[Tuple[NBTestBackend, WipStatus], List[NBTestDescription]] = {}
+    group_order: List[Tuple[NBTestBackend, WipStatus]] = []
+
+    for test in tests.tests:
+        key = (test.test_backend, test.wip)
+        if key not in grouped:
+            grouped[key] = []
+            group_order.append(key)
+        grouped[key].append(test)
+
+    merged: List[NBTestDescription] = []
+    for key in group_order:
+        group = grouped[key]
+        if len(group) == 1:
+            merged.append(group[0])
+            continue
+
+        backend, wip = key
+        merged.append(
+            NBTestDescription(
+                name=" + ".join(test.name for test in group),
+                test_file=" ".join(test.test_file for test in group),
+                test_backend=backend,
+                wip=wip,
+            )
+        )
+
+    return TestList(tests=merged)
+
 @nox.session(name="get-notebook-tests", python=False)
 def get_notebook_tests(session: nox.Session):
     """
@@ -110,7 +145,7 @@ def get_notebook_tests(session: nox.Session):
     args = _parse_args(session)
     nb_tests = _get_tests_for_classification(args.test_classification)
     tests = nb_tests.stable if args.test_status == TestStatus.stable else nb_tests.unstable
-    print(tests.model_dump_json())
+    print(_group_notebook_tests(tests).model_dump_json())
 
 
 @nox.session(name="get-runner", python=False)
