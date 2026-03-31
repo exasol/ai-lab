@@ -29,7 +29,7 @@ def notebook_test_dockerfile_content(dss_docker_image, work_in_progress_notebook
         f"""
         FROM {dss_docker_image.image_name}
         COPY notebooks/* /tmp/notebooks/
-        RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_DEFAULTS" && sudo rmdir /tmp/notebooks/
+        RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_DEFAULTS" && sudo rm -rf /tmp/notebooks/
         RUN sudo chown -R jupyter:jupyter "$NOTEBOOK_DEFAULTS"
         WORKDIR $NOTEBOOK_DEFAULTS
         RUN sudo "$JUPYTER_VENV/bin/python3" -m pip install -r test_dependencies.txt
