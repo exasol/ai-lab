@@ -50,8 +50,14 @@ def notebook_test_build_context(notebook_test_dockerfile_content) -> io.BytesIO:
 
 
 @pytest.fixture(scope="session")
-def notebook_test_image(request, notebook_test_build_context):
-    _logger.debug('building docker image "notebook_test"')
+def notebook_test_image(request):
+    _logger.debug('resolving docker image "notebook_test"')
+
+    if request.config.getoption("--docker-image-notebook-test"):
+        yield from image(request, name="notebook_test", print_log=True)
+        return
+
+    notebook_test_build_context = request.getfixturevalue("notebook_test_build_context")
     yield from image(request,
                      name="notebook_test",
                      fileobj=notebook_test_build_context,

@@ -52,8 +52,8 @@ jobs:
     runs-on: ${{ needs.fetch-notebook-tests.outputs.runner }}
     env:
       DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
-      DOCKER_IMG_ARTIFACT: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}"
-      DOCKER_IMG_FILENAME: "ai-lab-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
+      NOTEBOOK_TEST_DOCKER_IMG_ARTIFACT: "notebook-test-${{ matrix.nb_test.wip }}-${{ github.sha }}"
+      NOTEBOOK_TEST_DOCKER_IMG_FILENAME: "notebook-test-${{ matrix.nb_test.wip }}-${{ github.sha }}.tar"
     strategy:
       fail-fast: false
       matrix:
@@ -66,15 +66,15 @@ jobs:
 
       - uses: ./.github/actions/prepare_test_env/
 
-      - name: Download AI Lab image ${{matrix.nb_test.wip}}
+      - name: Download notebook test image ${{matrix.nb_test.wip}}
         id: download-image
         uses: actions/download-artifact@v5
         with:
-          name: "${{ env.DOCKER_IMG_ARTIFACT }}"
+          name: "${{ env.NOTEBOOK_TEST_DOCKER_IMG_ARTIFACT }}"
           path: "."
 
-      - name: Load AI Lab image ${{matrix.nb_test.wip}}
-        run: docker load -i "./$DOCKER_IMG_FILENAME"
+      - name: Load notebook test image ${{matrix.nb_test.wip}}
+        run: docker load -i "./$NOTEBOOK_TEST_DOCKER_IMG_FILENAME"
 
       - name: Run notebook tests
         run: |
@@ -82,7 +82,7 @@ jobs:
             --capture=no \
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
-            --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
+            --docker-image-notebook-test="exasol/notebook-test:$DOCKER_TAG" \
             --nb-test-backend=${{ matrix.nb_test.test_backend }} \
             --nb-test-file=${{ matrix.nb_test.test_file }} \
             ${{ needs.fetch-notebook-tests.outputs.additional-pytest-parameters }} \
