@@ -28,14 +28,6 @@ def pytest_addoption(parser):
         help="Name and version of existing Docker image to use for tests",
     )
     parser.addoption(
-        "--dss-docker-image-wip", default=None,
-        help="Name and version of existing Docker image to use for tests with work in progress notebooks enabled",
-    )
-    parser.addoption(
-        "--dss-docker-image-no-wip", default=None,
-        help="Name and version of existing Docker image to use for tests with work in progress notebooks disabled",
-    )
-    parser.addoption(
         "--keep-dss-docker-image", action="store_true", default=False,
         help="Keep the created dss docker image for inspection or reuse."
     )
@@ -74,16 +66,7 @@ def dss_docker_image(request, work_in_progress_notebooks):
     --ds-docker-image-name.
     """
     existing = request.config.getoption("--dss-docker-image")
-    existing_variant = (
-        request.config.getoption("--dss-docker-image-wip")
-        if work_in_progress_notebooks
-        else request.config.getoption("--dss-docker-image-no-wip")
-    )
     keep_image = request.config.getoption(f"--keep-dss-docker-image")
-    if existing_variant and ":" in existing_variant:
-        name, version = existing_variant.split(":")
-        yield DssDockerImage(name, version)
-        return
     if existing and ":" in existing:
         name, version = existing.split(":")
         yield DssDockerImage(name, version)

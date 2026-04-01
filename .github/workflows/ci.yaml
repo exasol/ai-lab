@@ -32,6 +32,26 @@ jobs:
          --override-ini=log_cli_level=INFO
          test/unit
 
+  run-integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-24.04
+    needs: run-unit-tests
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/prepare_test_env/
+
+      - name: Run Integration Tests
+        run: >
+          poetry run -- pytest
+          --capture=no
+          --override-ini=log_cli=true
+          --override-ini=log_cli_level=INFO
+          test/integration
+
   approval-for-notebook-tests:
     name: Run Jupyter Notebook Tests?
     runs-on: ubuntu-24.04
@@ -41,53 +61,9 @@ jobs:
     environment:
       approve-test-execution
 
-  run-docker-image-builder:
+  run-notebook-docker-image-builder:
     uses: ./.github/workflows/notebook_docker_image_builder.yaml
-    needs: run-unit-tests
-
-  run-integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-24.04
-    needs: [run-unit-tests, run-docker-image-builder]
-    env:
-      DOCKER_IMG_ARTIFACT_NO_WIP: "ai-lab-no-wip-${{ github.sha }}"
-      DOCKER_IMG_FILENAME_NO_WIP: "ai-lab-no-wip-${{ github.sha }}.tar"
-      DOCKER_IMG_ARTIFACT_WIP: "ai-lab-wip-${{ github.sha }}"
-      DOCKER_IMG_FILENAME_WIP: "ai-lab-wip-${{ github.sha }}.tar"
-
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - uses: ./.github/actions/prepare_test_env/
-
-      - name: Download AI Lab image no-wip
-        uses: actions/download-artifact@v5
-        with:
-          name: "${{ env.DOCKER_IMG_ARTIFACT_NO_WIP }}"
-          path: "."
-
-      - name: Download AI Lab image wip
-        uses: actions/download-artifact@v5
-        with:
-          name: "${{ env.DOCKER_IMG_ARTIFACT_WIP }}"
-          path: "."
-
-      - name: Load AI Lab images
-        run: |
-          docker load -i "./$DOCKER_IMG_FILENAME_NO_WIP"
-          docker load -i "./$DOCKER_IMG_FILENAME_WIP"
-
-      - name: Run Integration Tests
-        run: >
-          poetry run -- pytest
-          --capture=no
-          --override-ini=log_cli=true
-          --override-ini=log_cli_level=INFO
-          --dss-docker-image-no-wip="exasol/ai-lab:no-wip-${{ github.sha }}"
-          --dss-docker-image-wip="exasol/ai-lab:wip-${{ github.sha }}"
-          test/integration
+    needs: approval-for-notebook-tests
 
   run-stable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
@@ -99,7 +75,7 @@ jobs:
     with:
       status-filter: stable
       test-classification: ${{ matrix.class }}
-    needs: [approval-for-notebook-tests, run-docker-image-builder]
+    needs: run-notebook-docker-image-builder
 
   run-unstable-notebook-tests:
     uses: ./.github/workflows/notebook_tests.yaml
@@ -111,7 +87,7 @@ jobs:
     with:
       status-filter: unstable
       test-classification: ${{ matrix.class }}
-    needs: [approval-for-notebook-tests, run-docker-image-builder]
+    needs: run-notebook-docker-image-builder
 
   approval-for-gpu-notebook-tests:
     name: Run Jupyter GPU Notebook Tests?
@@ -128,7 +104,7 @@ jobs:
     with:
       status-filter: stable
       test-classification: gpu
-    needs: [run-docker-image-builder, approval-for-gpu-notebook-tests]
+    needs: [run-notebook-docker-image-builder, approval-for-gpu-notebook-tests]
 
   gate-2:
     if: ${{ !cancelled() }}

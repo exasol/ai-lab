@@ -29,7 +29,7 @@ def notebook_test_dockerfile_content(dss_docker_image, work_in_progress_notebook
         f"""
         FROM {dss_docker_image.image_name}
         COPY notebooks/* /tmp/notebooks/
-        RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_DEFAULTS" && sudo rm -rf /tmp/notebooks/
+        RUN sudo mv /tmp/notebooks/* "$NOTEBOOK_DEFAULTS" && sudo rmdir /tmp/notebooks/
         RUN sudo chown -R jupyter:jupyter "$NOTEBOOK_DEFAULTS"
         WORKDIR $NOTEBOOK_DEFAULTS
         RUN sudo "$JUPYTER_VENV/bin/python3" -m pip install -r test_dependencies.txt
@@ -50,14 +50,8 @@ def notebook_test_build_context(notebook_test_dockerfile_content) -> io.BytesIO:
 
 
 @pytest.fixture(scope="session")
-def notebook_test_image(request):
-    _logger.debug('resolving docker image "notebook_test"')
-
-    if request.config.getoption("--docker-image-notebook-test"):
-        yield from image(request, name="notebook_test", print_log=True)
-        return
-
-    notebook_test_build_context = request.getfixturevalue("notebook_test_build_context")
+def notebook_test_image(request, notebook_test_build_context):
+    _logger.debug('building docker image "notebook_test"')
     yield from image(request,
                      name="notebook_test",
                      fileobj=notebook_test_build_context,
