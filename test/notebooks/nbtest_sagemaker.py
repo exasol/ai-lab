@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Tuple
 
 import boto3
+from botocore.exceptions import ClientError as BotoClientError
 from exasol.nb_connector.ai_lab_config import AILabConfig as CKey
 from exasol.nb_connector.secret_store import Secrets
 # We need to manually import all fixtures that we use, directly or indirectly,
@@ -180,6 +181,115 @@ def get_job_polling_hack() -> Tuple[str, str]:
     )
 
 
+def get_deploy_model_hack() -> Tuple[str, str]:
+    """
+    Returns a notebook hack that cleans up any pre-existing SageMaker endpoint and endpoint
+    configuration before the deployment step runs in sme_deploy_model.ipynb.
+
+    Background / Why this is needed:
+        The notebook hard-codes the endpoint name as 'APSPredictor'. AWS SageMaker does not
+        allow creating an endpoint configuration that already exists - it raises a
+        ValidationException: "Cannot create already existing endpoint configuration".
+        When a previous test run is interrupted or the endpoint was not deleted at the end of
+        the notebook (e.g. due to a test failure), the leftover endpoint config causes every
+        subsequent test run to fail at the deploy step.
+
+        This hack is injected into the notebook immediately after the cell tagged
+        'endpoint_setup' (where ENDPOINT_NAME is defined), so ENDPOINT_NAME is already in
+        scope when the cleanup runs.  It:
+          1. Checks whether an endpoint with the same name is active and, if so, deletes it
+             and waits until the deletion is confirmed by AWS.
+          2. Checks whether an endpoint configuration with the same name exists and, if so,
+             deletes it.
+        Both steps handle the case where the resource does not exist yet (idempotent), so the
+        hack is safe to run on a clean environment as well.
+    """
+    return (
+        'endpoint_setup',
+        textwrap.dedent("""
+        def cleanup_existing_endpoint(endpoint_name):
+            import boto3
+            from botocore.exceptions import ClientError
+
+            sm_client = boto3.client('sagemaker')
+
+            # Delete existing endpoint if it exists
+            try:
+                sm_client.describe_endpoint(EndpointName=endpoint_name)
+                print(f"Deleting existing endpoint '{endpoint_name}'...")
+                sm_client.delete_endpoint(EndpointName=endpoint_name)
+                waiter = sm_client.get_waiter('endpoint_deleted')
+                waiter.wait(EndpointName=endpoint_name)
+                print(f"Endpoint '{endpoint_name}' deleted.")
+            except ClientError as e:
+                if e.response['Error']['Code'] == 'ValidationException':
+                    print(f"Endpoint '{endpoint_name}' does not exist, skipping deletion.")
+                else:
+                    raise
+
+            # Delete existing endpoint configuration if it exists
+            try:
+                sm_client.describe_endpoint_config(EndpointConfigName=endpoint_name)
+                print(f"Deleting existing endpoint config '{endpoint_name}'...")
+                sm_client.delete_endpoint_config(EndpointConfigName=endpoint_name)
+                print(f"Endpoint config '{endpoint_name}' deleted.")
+            except ClientError as e:
+                if e.response['Error']['Code'] == 'ValidationException':
+                    print(f"Endpoint config '{endpoint_name}' does not exist, skipping deletion.")
+                else:
+                    raise
+
+        cleanup_existing_endpoint(ENDPOINT_NAME)
+        """)
+    )
+
+
+def _remove_sagemaker_endpoint_and_config(endpoint_name: str) -> None:
+    """
+    Deletes the SageMaker endpoint and its endpoint configuration by name.
+
+    Why this is needed:
+        The notebook's built-in delete step (SME_DELETE_SAGEMAKER_AUTOPILOT_ENDPOINT) only
+        deletes the active endpoint itself, but leaves the endpoint *configuration* behind in
+        AWS.  On the next test run, when the notebook tries to call CreateEndpointConfig with
+        the same hard-coded name ('APSPredictor'), AWS raises:
+            ValidationException: Cannot create already existing endpoint configuration.
+
+        This function is called in the test's finally block so that both the endpoint and its
+        configuration are always removed after the test, regardless of whether the notebook
+        succeeded or failed mid-way.  Combined with get_deploy_model_hack() (which cleans up
+        any pre-existing leftovers before the deploy step), this makes the test fully
+        idempotent across consecutive runs.
+    """
+    sm_client = boto3.client('sagemaker')
+
+    # Delete endpoint if it still exists (the notebook may or may not have deleted it already)
+    try:
+        sm_client.describe_endpoint(EndpointName=endpoint_name)
+        print(f"Teardown: deleting endpoint '{endpoint_name}'...")
+        sm_client.delete_endpoint(EndpointName=endpoint_name)
+        waiter = sm_client.get_waiter('endpoint_deleted')
+        waiter.wait(EndpointName=endpoint_name)
+        print(f"Teardown: endpoint '{endpoint_name}' deleted.")
+    except BotoClientError as e:
+        if e.response['Error']['Code'] == 'ValidationException':
+            print(f"Teardown: endpoint '{endpoint_name}' not found, skipping.")
+        else:
+            raise
+
+    # Always delete the endpoint config — the notebook never removes it
+    try:
+        sm_client.describe_endpoint_config(EndpointConfigName=endpoint_name)
+        print(f"Teardown: deleting endpoint config '{endpoint_name}'...")
+        sm_client.delete_endpoint_config(EndpointConfigName=endpoint_name)
+        print(f"Teardown: endpoint config '{endpoint_name}' deleted.")
+    except BotoClientError as e:
+        if e.response['Error']['Code'] == 'ValidationException':
+            print(f"Teardown: endpoint config '{endpoint_name}' not found, skipping.")
+        else:
+            raise
+
+
 def test_sagemaker(backend_setup, uploading_hack):
 
     store_path, store_password = backend_setup
@@ -201,7 +311,9 @@ def test_sagemaker(backend_setup, uploading_hack):
                      hacks=[uploading_hack])
         run_notebook('sme_train_model.ipynb', store_file, store_password,
                      hacks=[get_job_polling_hack()])
-        run_notebook('sme_deploy_model.ipynb', store_file, store_password)
+        run_notebook('sme_deploy_model.ipynb', store_file, store_password,
+                     hacks=[get_deploy_model_hack()])
     finally:
         os.chdir(current_dir)
         _remove_aws_s3_bucket_content(bucket_name)
+        _remove_sagemaker_endpoint_and_config("APSPredictor")
