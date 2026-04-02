@@ -80,7 +80,8 @@ def notebook_test_container_with_log(notebook_test_container):
 
 
 def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook_test_backend,
-                  notebook_test_mem_size, notebook_test_with_gpu):
+                  notebook_test_mem_size, notebook_test_with_gpu,
+                  backend_aware_saas_database_id):
     _logger.info(f"Running notebook tests for {notebook_test_file} at {notebook_test_backend}")
     container = notebook_test_container_with_log
     command_echo_virtual_env = 'bash -c "echo $JUPYTER_VENV"'
@@ -92,6 +93,13 @@ def test_notebook(notebook_test_container_with_log, notebook_test_file, notebook
         f"--itde-db-version='external' "
         f"{notebook_test_file}"
     )
+    # When testing against SaaS, pass the ID of the already-running database so
+    # the inner pytest session reuses it directly.  Without this, the inner
+    # session creates a brand-new SaaS database and waits up to 30 minutes for
+    # it to reach RUNNING status — which can exceed the startup timeout and cause
+    # an ERROR at setup of every test in the session.
+    if notebook_test_backend == 'saas' and backend_aware_saas_database_id:
+        command_run_test += f" --saas-database-id={backend_aware_saas_database_id}"
     environ = os.environ.copy()
     environ["NBTEST_ACTIVE"] = "TRUE"
     nbtest_environ = {key: value for key, value in environ.items() if (

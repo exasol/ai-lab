@@ -150,9 +150,15 @@ def backend_setup(backend,
         secrets.save(CKey.saas_url, saas_host)
         secrets.save(CKey.saas_token, saas_pat)
         secrets.save(CKey.saas_account_id, saas_account_id)
-        # Although we know the database id, we want to test the
-        # case when we don't and have to look up the db name.
         secrets.save(CKey.saas_database_name, database_name)
+        # Store the database ID so the connection code can use it directly and
+        # skip the list_databases() lookup.  The lookup path calls
+        # list_databases.sync() which returns an ApiError object (instead of
+        # raising) when the SaaS API responds with a non-200 status.  That
+        # ApiError is then passed to filter(), producing:
+        #   TypeError: 'ApiError' object is not iterable
+        # Providing the ID avoids that lookup entirely.
+        secrets.save(CKey.saas_database_id, backend_aware_saas_database_id)
         yield store_path, store_password
 
     else:
