@@ -29,6 +29,6 @@ jobs:
      - name: Check Hyperlinks in Jupyter Notebooks
        run: >
          poetry run -- pytest --check-links
-         --check-links-ignore https://www.transtats.bts.gov
-         --check-links-ignore https://docs.python.org
+         --check-links-ignore https://www.transtats.bts.gov  # blocks CI scrapers
+         --check-links-ignore https://docs.python.org  # returns 503 transiently in CI
          exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
