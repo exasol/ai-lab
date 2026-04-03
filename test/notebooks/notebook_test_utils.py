@@ -159,8 +159,7 @@ def backend_setup(backend,
         # Although we know the database id, we want to test the
         # case when we don't and have to look up the db name.
         secrets.save(CKey.saas_database_name, database_name)
-        # Save empty-string defaults for optional keys that UI widgets require
-        # to be non-None (ipywidgets raises TraitError when value=None is passed).
+        # '' avoids ipywidgets TraitError; saas_database_id='' is falsy so lookup-by-name still runs.
         secrets.save(CKey.saas_database_id, '')
         secrets.save(CKey.trusted_ca, '')
         secrets.save(CKey.cert_vld, 'True')
