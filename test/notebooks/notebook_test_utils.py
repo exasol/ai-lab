@@ -139,8 +139,7 @@ def backend_setup(backend,
             secrets.save(CKey.accelerator, Accelerator.nvidia.value)
         if db_mem_size := os.getenv("NBTEST_MEMSIZE"):
             secrets.save(CKey.mem_size, db_mem_size)
-        # Save empty-string defaults for optional keys that UI widgets require
-        # to be non-None (ipywidgets raises TraitError when value=None is passed).
+        # '' avoids ipywidgets TraitError (value=None); falsy so no effect on connection logic.
         secrets.save(CKey.cert_vld, 'True')
         secrets.save(CKey.trusted_ca, '')
         secrets.save(CKey.client_cert, '')
