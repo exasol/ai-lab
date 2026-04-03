@@ -139,7 +139,10 @@ def backend_setup(backend,
             secrets.save(CKey.accelerator, Accelerator.nvidia.value)
         if db_mem_size := os.getenv("NBTEST_MEMSIZE"):
             secrets.save(CKey.mem_size, db_mem_size)
-        # '' avoids ipywidgets TraitError (value=None); falsy so no effect on connection logic.
+        # cert_vld, trusted_ca, client_cert, client_key: optional TLS keys read by
+        # get_onprem() in nb_connector ui/config/onprem.py via widgets.Text/Checkbox.
+        # '' avoids ipywidgets TraitError when value=None; falsy so _extract_ssl_options
+        # skips them and connection logic is unaffected.
         secrets.save(CKey.cert_vld, 'True')
         secrets.save(CKey.trusted_ca, '')
         secrets.save(CKey.client_cert, '')
@@ -158,7 +161,10 @@ def backend_setup(backend,
         # Although we know the database id, we want to test the
         # case when we don't and have to look up the db name.
         secrets.save(CKey.saas_database_name, database_name)
-        # '' avoids ipywidgets TraitError; saas_database_id='' is falsy so lookup-by-name still runs.
+        # saas_database_id, trusted_ca, cert_vld: optional keys read by get_saas() in
+        # nb_connector ui/config/saas.py via widgets.Text/Checkbox. '' avoids ipywidgets
+        # TraitError when value=None. saas_database_id='' is falsy so get_saas_database_id()
+        # still falls through to the name-lookup path via saas_api.get_database_id().
         secrets.save(CKey.saas_database_id, '')
         secrets.save(CKey.trusted_ca, '')
         secrets.save(CKey.cert_vld, 'True')
