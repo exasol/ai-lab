@@ -215,9 +215,21 @@ def get_deploy_model_hack() -> Tuple[str, str]:
 
             # Delete existing endpoint if it exists
             try:
-                sm_client.describe_endpoint(EndpointName=endpoint_name)
-                print(f"Deleting existing endpoint '{endpoint_name}'...")
-                sm_client.delete_endpoint(EndpointName=endpoint_name)
+                response = sm_client.describe_endpoint(EndpointName=endpoint_name)
+                status = response['EndpointStatus']
+                print(f"Found endpoint '{endpoint_name}' in status '{status}'.")
+
+                if status == 'Deleting':
+                    # Already being deleted by a previous run — just wait for completion
+                    print(f"Endpoint '{endpoint_name}' is already deleting, waiting...")
+                else:
+                    if status in ('Creating', 'Updating'):
+                        # Must reach a stable state before deletion is accepted
+                        print(f"Endpoint '{endpoint_name}' is '{status}', waiting for InService...")
+                        sm_client.get_waiter('endpoint_in_service').wait(EndpointName=endpoint_name)
+                    print(f"Deleting existing endpoint '{endpoint_name}'...")
+                    sm_client.delete_endpoint(EndpointName=endpoint_name)
+
                 waiter = sm_client.get_waiter('endpoint_deleted')
                 waiter.wait(EndpointName=endpoint_name)
                 print(f"Endpoint '{endpoint_name}' deleted.")
@@ -265,9 +277,23 @@ def _remove_sagemaker_endpoint_and_config(endpoint_name: str) -> None:
 
     # Delete endpoint if it still exists (the notebook may or may not have deleted it already)
     try:
-        sm_client.describe_endpoint(EndpointName=endpoint_name)
-        print(f"Teardown: deleting endpoint '{endpoint_name}'...")
-        sm_client.delete_endpoint(EndpointName=endpoint_name)
+        response = sm_client.describe_endpoint(EndpointName=endpoint_name)
+        status = response['EndpointStatus']
+        print(f"Teardown: found endpoint '{endpoint_name}' in status '{status}'.")
+
+        if status == 'Deleting':
+            # Already being deleted (e.g. by the notebook's own cleanup step) — just wait
+            print(f"Teardown: endpoint '{endpoint_name}' already deleting, waiting...")
+        else:
+            if status in ('Creating', 'Updating'):
+                print(f"Teardown: endpoint '{endpoint_name}' is '{status}', waiting for stable state...")
+                try:
+                    sm_client.get_waiter('endpoint_in_service').wait(EndpointName=endpoint_name)
+                except Exception:
+                    pass  # endpoint may have failed; proceed with deletion attempt
+            print(f"Teardown: deleting endpoint '{endpoint_name}'...")
+            sm_client.delete_endpoint(EndpointName=endpoint_name)
+
         waiter = sm_client.get_waiter('endpoint_deleted')
         waiter.wait(EndpointName=endpoint_name)
         print(f"Teardown: endpoint '{endpoint_name}' deleted.")
