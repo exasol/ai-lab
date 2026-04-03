@@ -27,7 +27,7 @@ jobs:
 
       - id: set-tests
         run: |
-          TESTS=`poetry run -- nox -s get-notebook-tests-ci -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
+          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
       - id: set-runner
@@ -65,6 +65,8 @@ jobs:
           fetch-depth: 0
 
       - uses: ./.github/actions/prepare_test_env/
+        with:
+          free-disk-space: "false"
 
       - name: Download AI Lab image ${{matrix.nb_test.wip}}
         id: download-image
