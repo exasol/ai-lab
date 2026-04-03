@@ -27,7 +27,7 @@ jobs:
 
       - id: set-tests
         run: |
-          TESTS=`poetry run -- nox -s get-notebook-tests -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
+          TESTS=`poetry run -- nox -s get-notebook-tests-ci -- --test-status ${{ inputs.status-filter }} --test-classification ${{ inputs.test-classification }}`
           echo "tests=$TESTS" >> "$GITHUB_OUTPUT"
 
       - id: set-runner
@@ -83,8 +83,8 @@ jobs:
             --override-ini=log_cli=true \
             --override-ini=log_cli_level=INFO \
             --dss-docker-image="exasol/ai-lab:$DOCKER_TAG" \
-            --nb-test-backend=${{ matrix.nb_test.test_backend }} \
-            --nb-test-file=${{ matrix.nb_test.test_file }} \
+            --nb-test-backend="${{ matrix.nb_test.test_backend }}" \
+            --nb-test-file="${{ matrix.nb_test.test_file }}" \
             ${{ needs.fetch-notebook-tests.outputs.additional-pytest-parameters }} \
             test/notebook_test_runner/test_notebooks_in_dss_docker_image.py
 

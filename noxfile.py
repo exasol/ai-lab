@@ -1,4 +1,5 @@
 import json
+import shlex
 from argparse import ArgumentParser, Namespace
 from enum import Enum
 from pathlib import Path
@@ -102,6 +103,53 @@ def _get_tests_for_classification(test_classification: TestClassification) -> Te
     }
     return mapping[test_classification]
 
+
+def _split_notebook_test_files(raw_test_file_value: str) -> List[str]:
+    return [
+        test_file
+        for token in shlex.split(raw_test_file_value)
+        for test_file in token.split()
+        if test_file
+    ]
+
+
+def _merge_test_batch(batch: List[NBTestDescription]) -> NBTestDescription:
+    base = batch[0]
+    test_files: List[str] = []
+    for test in batch:
+        test_files.extend(_split_notebook_test_files(test.test_file))
+    return NBTestDescription(
+        name=f"SaaS notebook batch ({len(batch)} tests)",
+        test_file=" ".join(test_files),
+        test_backend=base.test_backend,
+        wip=base.wip,
+    )
+
+
+def _batch_saas_tests_for_ci(tests: TestList) -> TestList:
+    batches: List[List[NBTestDescription]] = []
+    saas_batch_index_by_wip: dict[WipStatus, int] = {}
+
+    for test in tests.tests:
+        if test.test_backend != NBTestBackend.saas:
+            batches.append([test])
+            continue
+
+        batch_index = saas_batch_index_by_wip.get(test.wip)
+        if batch_index is None:
+            batch_index = len(batches)
+            batches.append([])
+            saas_batch_index_by_wip[test.wip] = batch_index
+        batches[batch_index].append(test)
+
+    optimized_tests: List[NBTestDescription] = []
+    for batch in batches:
+        if len(batch) == 1:
+            optimized_tests.append(batch[0])
+        else:
+            optimized_tests.append(_merge_test_batch(batch))
+    return TestList(tests=optimized_tests)
+
 @nox.session(name="get-notebook-tests", python=False)
 def get_notebook_tests(session: nox.Session):
     """
@@ -111,6 +159,17 @@ def get_notebook_tests(session: nox.Session):
     nb_tests = _get_tests_for_classification(args.test_classification)
     tests = nb_tests.stable if args.test_status == TestStatus.stable else nb_tests.unstable
     print(tests.model_dump_json())
+
+
+@nox.session(name="get-notebook-tests-ci", python=False)
+def get_notebook_tests_ci(session: nox.Session):
+    """
+    Same as get-notebook-tests, but groups SaaS tests into batches to reduce CI setup overhead.
+    """
+    args = _parse_args(session)
+    nb_tests = _get_tests_for_classification(args.test_classification)
+    tests = nb_tests.stable if args.test_status == TestStatus.stable else nb_tests.unstable
+    print(_batch_saas_tests_for_ci(tests).model_dump_json())
 
 
 @nox.session(name="get-runner", python=False)

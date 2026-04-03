@@ -45,7 +45,7 @@ normal:
         test_backend: onprem
         wip: no-wip
       - name: short notebook tests
-        test_file: "\"nbtest_environment_test.py nbtest_itde.py\""
+        test_file: "nbtest_environment_test.py nbtest_itde.py"
         test_backend: ''
         wip: no-wip
 

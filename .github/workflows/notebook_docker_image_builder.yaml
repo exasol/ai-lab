@@ -3,12 +3,44 @@ name: Notebook Docker Image Builder
 on:
   workflow_call:
 jobs:
+  get-required-wip-image-matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - id: set-matrix
+        shell: bash
+        run: |
+          MATRIX_JSON=$(python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          content = Path("nb_tests.yaml").read_text(encoding="utf-8")
+          wips = []
+          for line in content.splitlines():
+              match = re.match(r"^\s*wip:\s*(\S+)\s*$", line)
+              if match:
+                  value = match.group(1)
+                  if value not in wips:
+                      wips.append(value)
+          if not wips:
+              wips = ["no-wip"]
+          print(json.dumps({"wip": wips}))
+          PY
+          )
+          echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+
   notebook-tests-docker-image-builder:
+    needs: [get-required-wip-image-matrix]
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: true
-      matrix:
-        wip: [no-wip, wip]
+      matrix: ${{ fromJson(needs.get-required-wip-image-matrix.outputs.matrix) }}
     name: Running Build Docker image - ${{ matrix.wip }}
     env:
       DOCKER_TAG: "${{ matrix.wip }}-${{ github.sha }}"
