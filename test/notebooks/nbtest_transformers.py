@@ -63,6 +63,7 @@ def test_transformers(notebook_runner, uploading_hack, notebook_file, hacks) -> 
 
     current_dir = os.getcwd()
     try:
+        notebook_runner('main_config.ipynb')
         os.chdir('./transformers')
         notebook_runner(notebook_file='te_init.ipynb', hacks=[uploading_hack])
         notebook_runner(notebook_file=notebook_file,

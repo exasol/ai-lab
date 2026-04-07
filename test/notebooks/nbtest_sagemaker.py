@@ -328,8 +328,7 @@ def test_sagemaker(backend_setup, uploading_hack):
 
     current_dir = os.getcwd()
     try:
-        # main_config.ipynb is not required in tests:
-        # run_notebook() injects ai_lab_config based on store_file/store_password.
+        run_notebook('main_config.ipynb', store_file, store_password)
         os.chdir('./data')
         run_notebook('data_telescope.ipynb', store_file, store_password)
         os.chdir('../sagemaker')
