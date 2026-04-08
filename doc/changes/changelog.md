@@ -1,6 +1,6 @@
 # Changes
 
-* [5.0.0](changes_5.0.0.md) - Added support for overriding the default password and replaced UI notebook imports with staJupytendard Python imports from `exasol-notebook-connector`.
+* [5.0.0](changes_5.0.0.md)
 * [4.0.0](changes_4.0.0.md)
 * [3.4.0](changes_3.4.0.md)
 * [3.3.0](changes_3.3.0.md)
