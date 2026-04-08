@@ -1,10 +1,11 @@
-# AI-Lab 4.1.0 released ????-??-??
+# AI-Lab 5.0.0 released 2026-03-08
 
-Code name:
+Code name: Password Override and UI Refactor
 
 ## Summary
 
 This release supports overriding the default password by passing an environment variable when running the Docker container. See the [User guide](https://github.com/exasol/ai-lab/blob/main/doc/user_guide/docker/docker-usage.md) for details.
+This release replaces Jupyter UI imports with normal Python imports from `exasol-notebook-connector`.
 
 ## Features
 
@@ -32,3 +33,6 @@ This release supports overriding the default password by passing an environment 
 
 * #458: Switched docker hub credentials
 * #460: Updated notebook-connector
+* #482: Updated `exasol-notebook-connector` version to support python import for UI notebooks
+* #487: Replaced UI notebooks with standard Python imports from `exasol-notebook-connector`
+* #492: Fixed vulnerabilities by updating dependencies
