@@ -36,3 +36,30 @@ This release replaces Jupyter UI imports with normal Python imports from `exasol
 * #482: Updated `exasol-notebook-connector` version to support python import for UI notebooks
 * #487: Replaced UI notebooks with standard Python imports from `exasol-notebook-connector`
 * #492: Fixed vulnerabilities by updating dependencies
+
+### Example: Replace Jupyter UI notebooks with Python imports
+
+Let see example code snippets to demonstrate the replacement of Jupyter UI notebooks with standard Python imports from `exasol-notebook-connector`.
+we will import access store and JupySQL initialization code, which were previously imported via `%run` in the notebooks.
+
+The notebooks earlier used UI helper-notebooks via `%run`like below:
+
+```python
+%run utils/access_store_ui.ipynb
+%run ../utils/jupysql_init.ipynb
+```
+
+Now we can directly import the necessary modules from `exasol-notebook-connector` like below:
+```python
+from pathlib import Path
+from exasol.nb_connector.secret_store import Secrets
+from exasol.nb_connector.ui.common import jupysql
+from exasol.nb_connector.ui.access import access_store
+
+# get access store instance
+access_store.get_access_store()
+# Load AI Lab config from secret store
+ai_lab_config = Secrets(Path("ai_lab_config.sqlite"), "your-password")
+# Initialize JupySQL with the loaded configuration
+jupysql.init(ai_lab_config)
+```
