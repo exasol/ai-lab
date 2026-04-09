@@ -1,11 +1,11 @@
 import requests
-from utils.useful_urls import UsefulURLs
+from exasol.nb_connector.ui.common.useful_urls import Urls
 
 
 def test_urls() -> None:
 
     bad_urls = []
-    for url in UsefulURLs:
+    for url in Urls:
         try:
             response = requests.head(url.value, allow_redirects=True)
             if response.status_code >= 400:
