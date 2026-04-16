@@ -1,4 +1,4 @@
-# Exasol AI Lab
+# Exasol AI Lab 
 
 The Exasol AI Lab is a pre-configured container designed to empower data scientists to build AI & ML workflows on top of their Exasol database. It streamlines common data science and AI tasks, including data loading, preparation, exploration, model training, and deployment. Whether you’re a seasoned practitioner or just getting started, AI Lab is your one-stop-shop for AI and machine learning on Exasol.
 
