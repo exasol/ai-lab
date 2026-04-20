@@ -38,11 +38,9 @@ importlib_resources = "^6.4.3"
 rich = "^13.7.1"
 pandas = "^2.2.2"
 humanfriendly = "^10.0"
+tenacity = "^9.0.0"
 pygithub = "^2.2.0"
 importlib-metadata = "^8.4.0"
-# See https://github.com/exasol/ai-lab/issues/500
-exasol-python-extension-common = "<0.14"
-tenacity = ">=8.3.0, <9"
 
 [tool.poetry.group.dev.dependencies]
 pytest-check-links = ">=0.10.1"
