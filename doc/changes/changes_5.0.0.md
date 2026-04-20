@@ -1,4 +1,4 @@
-# AI-Lab 5.0.0 released 2026-03-08
+# AI-Lab 5.0.0 released 2026-04-20
 
 Code name: Password Override and UI Refactor
 
