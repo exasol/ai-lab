@@ -43,9 +43,9 @@ pygithub = "^2.2.0"
 importlib-metadata = "^8.4.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest-check-links = ">=0.10.1,<1.0.0"
+pytest-check-links = ">=0.10.1"
 toml = ">=0.10.2"
-pytest = "^8.3.2"
+pytest = ">=8.3.2"
 pytest-mock = "^3.7.0"
 cfn-lint = "^1.10.3"
 gitpython = ">=2.1.0"
@@ -55,6 +55,7 @@ fabric = "^3.2.2"
 requests = "^2.32.3"
 nox = "^2025.5.1"
 pre-commit = ">=4,<5"
+pip-audit = ">=2.10, <3"
 
 [build-system]
 requires = [

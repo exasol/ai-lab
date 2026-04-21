@@ -6,3 +6,4 @@ __pycache__/
 .vagrant
 log.txt
 elog.txt
+.python-version
