@@ -11,3 +11,4 @@ ipyfilechooser==0.6.0 # required for SLC notebooks
 ipywidgets==8.1.8 # enable interactive Javascript widgets in the notebooks
 exasol-notebook-connector [sqlalchemy, pyexasol, pyexasol-extra, bucketfs, docker-db, slc, ibis, transformers, text-ai, sagemaker] ==2.5.1
 pydantic==2.11.5 # See https://github.com/exasol/ai-lab/issues/428
+exasol-python-extension-common==0.13.1 # See https://github.com/exasol/ai-lab/issues/500

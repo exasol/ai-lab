@@ -28,10 +28,6 @@ normal:
         test_file: nbtest_pyexasol.py
         test_backend: onprem
         wip: no-wip
-      - name: SME notebooks onprem
-        test_file: nbtest_sagemaker.py
-        test_backend: onprem
-        wip: no-wip
       - name: sklearn notebook
         test_file: nbtest_sklearn.py
         test_backend: onprem
@@ -59,7 +55,11 @@ normal:
         test_file: nbtest_ibis.py
         test_backend: saas
         wip: no-wip
-      - name: SME notebooks
+      - name: SME notebooks onprem
+        test_file: nbtest_sagemaker.py
+        test_backend: onprem
+        wip: no-wip
+      - name: SME notebooks saas
         test_file: nbtest_sagemaker.py
         test_backend: saas
         wip: no-wip
