@@ -19,7 +19,7 @@ Once you have Docker installed, you can pull the latest AI Lab image from Docker
 
 ```shell
 docker run --publish 0.0.0.0:49494:49494 exasol/ai-lab
-```
+```   
 
 For additional options, more details, and limitations please see the dedicated instructions for the [AI Lab's Docker Edition](doc/user_guide/docker/docker-usage.md).
 
