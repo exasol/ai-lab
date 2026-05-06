@@ -1,6 +1,6 @@
 [project]
 name = "exasol-ai-lab"
-version = "5.0.1"
+version = "5.0.0"
 description = "Exasol AI Lab"
 authors = [
     {name="Torsten Kilias", email="torsten.kilias@exasol.com"},
@@ -32,15 +32,15 @@ python = ">=3.10.0,<3.13" # we are currently using crypt, which was removed in P
 click = "^8.1.3"
 boto3 = "^1.22.0"
 jinja2 = ">=3.1.6"
-ansible-runner = "^2.2.1"
-ansible = "^10.7.0"
+exasol-ansible-runner-wrapper = ">=1, <2"
 importlib_resources = "^6.4.3"
 rich = "^13.7.1"
 pandas = "^2.2.2"
 humanfriendly = "^10.0"
 tenacity = "^9.0.0"
 pygithub = "^2.2.0"
-importlib-metadata = "^8.4.0"
+importlib-metadata = ">=9, <10"
+docker = {version = "^7.1.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
 pytest-check-links = ">=0.10.1"
@@ -50,7 +50,6 @@ pytest-mock = "^3.7.0"
 cfn-lint = "^1.10.3"
 gitpython = ">=2.1.0"
 localstack = "^4.0.3"
-docker = {version = "^7.1.0", markers = "sys_platform != 'win32'"}
 fabric = "^3.2.2"
 requests = "^2.32.3"
 nox = "^2025.5.1"
