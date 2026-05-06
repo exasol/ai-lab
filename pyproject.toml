@@ -7,6 +7,7 @@ authors = [
     {name="Mikhail Beck", email="mikhail.beck@exasol.com"},
     {name="Christoph Kuhnke", email="christoph.kuhnke@exasol.com"},
     {name="Maxim Lapan", email="maxim.lapan@exasol.com"},
+    {name="Mykhailo Skliar", email="mykhailo.skliar@exasol.com"},
 ]
 readme = "README.md"
 license = "MIT"
