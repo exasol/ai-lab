@@ -1,4 +1,5 @@
 import pathlib
+import tempfile
 from collections import namedtuple
 from typing import Callable, Optional
 
@@ -51,7 +52,7 @@ def test_run_ansible_default_values(test_config):
         playbook="ec2_playbook.yml",
         extra_vars=_extra_vars(test_config),
     )
-    assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
+    assert ansible_access.call_arguments.private_data_dir.startswith(tempfile.gettempdir())
     assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
 
 
@@ -65,7 +66,7 @@ def test_run_ansible_custom_playbook(test_config):
 
     expected_ansible_run_context = AnsibleRunContext(
         playbook="my_playbook.yml", extra_vars=_extra_vars(test_config))
-    assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
+    assert ansible_access.call_arguments.private_data_dir.startswith(tempfile.gettempdir())
     assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
 
 
@@ -81,7 +82,7 @@ def test_run_ansible_custom_variables(test_config):
     extra_vars.update({"my_var": True})
     expected_ansible_run_context = AnsibleRunContext(
         playbook="my_playbook.yml", extra_vars=extra_vars)
-    assert ansible_access.call_arguments.private_data_dir.startswith("/tmp")
+    assert ansible_access.call_arguments.private_data_dir.startswith(tempfile.gettempdir())
     assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
 
 
