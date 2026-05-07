@@ -1,155 +1,120 @@
-import pathlib
-import tempfile
-from collections import namedtuple
-from typing import Callable, Optional
+from typing import Any
+from unittest.mock import Mock
 
+import exasol.ansible as ansible
 import pytest
 
-from exasol.ds.sandbox.lib.ansible.ansible_repository import default_repositories, \
-    AnsibleResourceRepository
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext, \
-    default_ansible_run_context
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleEvent
+from exasol.ds.sandbox.lib.config import ConfigObject
+from exasol.ds.sandbox.lib.setup_ec2 import run_install_dependencies as module
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import DEFAULT_REPOSITORIES
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
-import test.ansible
-import test.unit.resources.ansible_conflict
+
+class RecordingRunner:
+    def __init__(self, result: dict[str, Any]):
+        self.result = result
+        self.calls = []
+
+    def run(self, playbook: ansible.Playbook, host_infos: tuple[Any, ...]):
+        self.calls.append((playbook, host_infos))
+        return self.result
 
 
-class AnsibleTestAccess:
+class RecordingContext:
+    instances = []
+    runner_result = {"facts": True}
 
-    def __init__(self, delegate: Optional[Callable[[str, AnsibleRunContext], None]] = None):
-        self.call_arguments = None
-        self.arguments = namedtuple("Arguments", "private_data_dir run_ctx")
-        self.delegate = delegate
+    def __init__(
+        self,
+        ansible_access: ansible.Access,
+        repositories: tuple[ansible.Repository, ...],
+    ):
+        self.ansible_access = ansible_access
+        self.repositories = repositories
+        self.runner = RecordingRunner(self.runner_result)
+        self.instances.append(self)
 
-    def run(self,
-            private_data_dir: str,
-            run_ctx: AnsibleRunContext,
-            event_handler: Callable[[AnsibleEvent], bool],
-            event_logger: Callable[[str], None],
-            ):
-        self.call_arguments = self.arguments(private_data_dir, run_ctx)
-        if self.delegate is not None:
-            self.delegate(private_data_dir, run_ctx)
+    def __enter__(self) -> RecordingRunner:
+        return self.runner
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        pass
 
 
-def _extra_vars(config):
+@pytest.fixture
+def recording_context(monkeypatch):
+    RecordingContext.instances = []
+    monkeypatch.setattr(module.ansible, "Context", RecordingContext)
+    return RecordingContext
+
+
+def _extra_vars(config: ConfigObject) -> dict[str, Any]:
     return {
         "ai_lab_version": config.ai_lab_version,
-        'work_in_progress_notebooks': False,
+        "work_in_progress_notebooks": False,
     }
 
 
-def test_run_ansible_default_values(test_config):
-    """
-    Test which executes run_install_dependencies with default values (default playbook and default ansible variables)
-    """
-    ansible_access = AnsibleTestAccess()
-    run_install_dependencies(ansible_access, test_config)
-    expected_ansible_run_context = AnsibleRunContext(
-        playbook="ec2_playbook.yml",
-        extra_vars=_extra_vars(test_config),
+def test_run_ansible_default_values(test_config, recording_context):
+    ansible_access = Mock()
+
+    result = run_install_dependencies(ansible_access, test_config)
+
+    expected_playbook = ansible.Playbook("ec2_playbook.yml", _extra_vars(test_config))
+    context = recording_context.instances[0]
+    assert result == recording_context.runner_result
+    assert context.ansible_access is ansible_access
+    assert context.repositories == DEFAULT_REPOSITORIES
+    assert context.runner.calls == [(expected_playbook, tuple())]
+
+
+def test_run_ansible_custom_playbook(test_config, recording_context):
+    ansible_access = Mock()
+    playbook = ansible.Playbook("my_playbook.yml")
+
+    run_install_dependencies(
+        ansible_access,
+        test_config,
+        host_infos=tuple(),
+        playbook=playbook,
     )
-    assert ansible_access.call_arguments.private_data_dir.startswith(tempfile.gettempdir())
-    assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
+
+    expected_playbook = ansible.Playbook("my_playbook.yml", _extra_vars(test_config))
+    context = recording_context.instances[0]
+    assert context.runner.calls == [(expected_playbook, tuple())]
 
 
-def test_run_ansible_custom_playbook(test_config):
-    """
-    Test which executes run_install_dependencies with default ansible variable, but a custom playbook
-    """
-    ansible_access = AnsibleTestAccess()
-    ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml", extra_vars=dict())
-    run_install_dependencies(ansible_access, test_config, host_infos=tuple(), ansible_run_context=ansible_run_context)
+def test_run_ansible_custom_variables(test_config, recording_context):
+    ansible_access = Mock()
+    playbook = ansible.Playbook("my_playbook.yml", {"my_var": True})
 
-    expected_ansible_run_context = AnsibleRunContext(
-        playbook="my_playbook.yml", extra_vars=_extra_vars(test_config))
-    assert ansible_access.call_arguments.private_data_dir.startswith(tempfile.gettempdir())
-    assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
+    run_install_dependencies(
+        ansible_access,
+        test_config,
+        host_infos=tuple(),
+        playbook=playbook,
+    )
 
-
-def test_run_ansible_custom_variables(test_config):
-    """
-    Test which executes run_install_dependencies with custam playbook and custom ansible variables
-    """
-    ansible_access = AnsibleTestAccess()
-    ansible_run_context = AnsibleRunContext(playbook="my_playbook.yml", extra_vars={"my_var": True})
-    run_install_dependencies(ansible_access, test_config, host_infos=tuple(),
-                             ansible_run_context=ansible_run_context)
     extra_vars = _extra_vars(test_config)
     extra_vars.update({"my_var": True})
-    expected_ansible_run_context = AnsibleRunContext(
-        playbook="my_playbook.yml", extra_vars=extra_vars)
-    assert ansible_access.call_arguments.private_data_dir.startswith(tempfile.gettempdir())
-    assert ansible_access.call_arguments.run_ctx == expected_ansible_run_context
+    expected_playbook = ansible.Playbook("my_playbook.yml", extra_vars)
+    context = recording_context.instances[0]
+    assert context.runner.calls == [(expected_playbook, tuple())]
 
 
-def test_run_ansible_check_inventory_empty_host(test_config):
-    empty_inventory = "[ec2]\n\n"
+def test_run_ansible_forwards_hosts_and_repositories(test_config, recording_context):
+    ansible_access = Mock()
+    host_infos = (HostInfo("my_host", "my_key"),)
+    repositories = (Mock(),)
 
-    def check_inventory(work_dir: str, ansible_run_context: AnsibleRunContext):
-        with open(f"{work_dir}/inventory", ) as f:
-            inventory_content = f.read()
-        assert inventory_content == empty_inventory
+    run_install_dependencies(
+        ansible_access,
+        test_config,
+        host_infos=host_infos,
+        ansible_repositories=repositories,
+    )
 
-    run_install_dependencies(AnsibleTestAccess(check_inventory), test_config)
-
-
-def test_run_ansible_check_inventory_custom_host(test_config):
-    custom_inventory = "[ec2]\n\nmy_host ansible_ssh_private_key_file=my_key\n\n"
-
-    def check_inventory(work_dir: str, ansible_run_context: AnsibleRunContext):
-        with open(f"{work_dir}/inventory", ) as f:
-            inventory_content = f.read()
-        assert inventory_content == custom_inventory
-
-    run_install_dependencies(AnsibleTestAccess(check_inventory), test_config,
-                             host_infos=(HostInfo("my_host", "my_key"),))
-
-
-def test_run_ansible_check_default_repository(test_config):
-    """
-    Test that default repository is being copied correctly.
-    For simplicity, we check only if:
-     1. the playbook of the default repository exists on target.
-     2. One of the role files exists (Validate deep copy)
-    """
-
-    def check_playbook(work_dir: str, ansible_run_context: AnsibleRunContext):
-        p = pathlib.Path(work_dir) / "ai_lab_docker_playbook.yml"
-        assert p.exists()
-        p = pathlib.Path(work_dir) / "roles" / "jupyter" / "tasks" / "main.yml"
-        assert p.exists()
-
-    run_install_dependencies(AnsibleTestAccess(check_playbook), test_config)
-
-
-def test_run_ansible_check_multiple_repositories(test_config):
-    """
-    Test that multiple repositories are being copied correctly.
-    For simplicity, we check only if the playbook of the repositories exists on target.
-    """
-
-    def check_playbooks(work_dir: str, ansible_run_context: AnsibleRunContext):
-        p = pathlib.Path(f"{work_dir}/general_setup_tasks.yml")
-        assert p.exists()
-        p = pathlib.Path(f"{work_dir}/ansible_sample_playbook.yml")
-        assert p.exists()
-
-    test_repositories = default_repositories + (AnsibleResourceRepository(test.ansible),)
-    run_install_dependencies(AnsibleTestAccess(check_playbooks), test_config, host_infos=tuple(),
-                             ansible_run_context=default_ansible_run_context, ansible_repositories=test_repositories)
-
-
-def test_run_ansible_check_multiple_repositories_with_same_content_causes_exception(test_config):
-    """
-    Test that multiple repositories containing same files raises an runtime exception.
-    """
-    conflict = AnsibleResourceRepository(test.unit.resources.ansible_conflict)
-    test_repositories = default_repositories + (conflict,)
-    with pytest.raises(RuntimeError):
-        run_install_dependencies(AnsibleTestAccess(), test_config, host_infos=tuple(),
-                                 ansible_run_context=default_ansible_run_context,
-                                 ansible_repositories=test_repositories)
+    context = recording_context.instances[0]
+    assert context.repositories == repositories
+    assert context.runner.calls[0][1] == host_infos

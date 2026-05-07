@@ -2,6 +2,7 @@ import os
 from typing import Optional, Tuple
 
 import click
+import exasol.ansible as ansible
 
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
@@ -10,7 +11,6 @@ from exasol.ds.sandbox.cli.options.ec2_options import ec2_instance_options, ec2_
 from exasol.ds.sandbox.cli.options.id_options import id_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.cli.options.vm_options import vm_options
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -53,7 +53,7 @@ def create_vm(
         ec2_source_ami=ec2_source_ami,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
-        ansible_access=AnsibleAccess(),
+        ansible_access=ansible.Access(),
         default_password=default_password,
         vm_image_formats=current_vm_image_formats,
         asset_id=AssetId(asset_id),

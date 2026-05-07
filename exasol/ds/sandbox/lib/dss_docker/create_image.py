@@ -2,26 +2,17 @@ from datetime import datetime
 from functools import reduce
 from typing import (
     Any,
-    Dict,
     List,
-    Optional,
 )
 
 import docker
+import exasol.ansible as ansible
 import humanfriendly
 import importlib_resources
 from docker.models.containers import Container as DockerContainer
 from docker.models.images import Image as DockerImage
-from importlib_metadata import version
 
 from exasol.ds.sandbox.lib import pretty_print
-from exasol.ds.sandbox.lib.ansible import ansible_repository
-from exasol.ds.sandbox.lib.ansible.ansible_access import (
-    AnsibleAccess,
-    AnsibleFacts as OldAnsibleFacts,
-)
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
 from exasol.ds.sandbox.lib.config import (
     AI_LAB_VERSION,
     ConfigObject,
@@ -30,7 +21,7 @@ from exasol.ds.sandbox.lib.logging import (
     LogType,
     get_status_logger,
 )
-from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import DEFAULT_REPOSITORIES
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import (
     run_install_dependencies,
 )
@@ -43,7 +34,7 @@ def to_docker_env(env: dict[str, Any]) -> list[str]:
     return [f'{var}={val}' for var, val in env.items()]
 
 
-def jupyter_env_vars(facts: AnsibleFacts) -> dict[str, Any]:
+def jupyter_env_vars(facts: ansible.Facts) -> dict[str, Any]:
     if facts.get("jupyter", "server") is None:
         return {}
 
@@ -55,7 +46,7 @@ def jupyter_env_vars(facts: AnsibleFacts) -> dict[str, Any]:
     return facts.as_dict(env_spec)
 
 
-def build_entrypoint(facts: AnsibleFacts) -> List[str]:
+def build_entrypoint(facts: ansible.Facts) -> List[str]:
     def jupyter():
         command = facts.get("jupyter", "server")
         if command is None:
@@ -116,15 +107,12 @@ class DssDockerImage:
     def image_name(self):
         return f"{self.repository}:{self.version}"
 
-    def _ansible_run_context(self) -> AnsibleRunContext:
+    def _ansible_playbook(self) -> ansible.Playbook:
         extra_vars = {
             "docker_container": self.container_name,
             "work_in_progress_notebooks": self.work_in_progress_notebooks
         }
-        return AnsibleRunContext(
-            playbook="ai_lab_docker_playbook.yml",
-            extra_vars=extra_vars,
-        )
+        return ansible.Playbook("ai_lab_docker_playbook.yml", extra_vars)
 
     def _ansible_config(self) -> ConfigObject:
         return ConfigObject(
@@ -170,21 +158,22 @@ class DssDockerImage:
         container.start()
         return container
 
-    def _install_dependencies(self) -> AnsibleFacts:
+    def _install_dependencies(self) -> ansible.Facts:
         _logger.info("Installing dependencies")
-        host_infos = (HostInfo(self.container_name, None),)
-        return run_install_dependencies(
-            AnsibleAccess(),
+        host = ansible.InventoryHost(self.container_name)
+        fact_cache = run_install_dependencies(
+            ansible.Access(retrieve_facts_from=host.host_name),
             configuration=self._ansible_config(),
-            host_infos=host_infos,
-            ansible_run_context=self._ansible_run_context(),
-            ansible_repositories=ansible_repository.default_repositories,
+            host_infos=(host,),
+            playbook=self._ansible_playbook(),
+            ansible_repositories=DEFAULT_REPOSITORIES,
         )
+        return ansible.Facts(fact_cache, prefixes=["dss_facts"])
 
     def _commit_container(
             self,
             container: DockerContainer,
-            facts: AnsibleFacts,
+            facts: ansible.Facts,
     ) -> DockerImage:
         _logger.debug(f'AI Lab facts: {facts.get()}')
         _logger.info("Committing changes to docker container")

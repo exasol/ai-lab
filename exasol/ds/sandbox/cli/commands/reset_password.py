@@ -1,10 +1,10 @@
 import click
+import exasol.ansible as ansible
 
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.ec2_options import ec2_host_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_reset_password import run_reset_password
@@ -25,4 +25,4 @@ def reset_password(
     Ansible.
     """
     set_log_level(log_level)
-    run_reset_password(AnsibleAccess(), default_password, (HostInfo(host_name, ssh_private_key),))
+    run_reset_password(ansible.Access(), default_password, (HostInfo(host_name, ssh_private_key),))

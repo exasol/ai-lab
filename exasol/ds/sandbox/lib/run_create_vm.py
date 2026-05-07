@@ -1,12 +1,8 @@
 import time
 from typing import Optional, Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
-from exasol.ds.sandbox.lib.ansible.ansible_repository import (
-    AnsibleRepository, default_repositories)
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import (
-    AnsibleRunContext, default_ansible_run_context,
-    reset_password_ansible_run_context)
+import exasol.ansible as ansible
+
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import ConfigObject
@@ -14,6 +10,11 @@ from exasol.ds.sandbox.lib.export_vm.run_export_vm import export_vm
 from exasol.ds.sandbox.lib.export_vm.run_make_ami_public import \
     run_make_ami_public
 from exasol.ds.sandbox.lib.logging import LogType, get_status_logger
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import (
+    DEFAULT_REPOSITORIES,
+    default_install_dependencies_playbook,
+    default_reset_password_playbook,
+)
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import \
     run_install_dependencies
@@ -32,16 +33,16 @@ def run_create_vm(
     ec2_source_ami: Optional[str],
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
-    ansible_access: AnsibleAccess,
+    ansible_access: ansible.Access,
     default_password: str,
     vm_image_formats: Tuple[str, ...],
     asset_id: AssetId,
     configuration: ConfigObject,
     user_name: Optional[str],
     make_ami_public: bool,
-    ansible_run_context: AnsibleRunContext = default_ansible_run_context,
-    ansible_reset_password_context: AnsibleRunContext = reset_password_ansible_run_context,
-    ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories,
+    playbook: ansible.Playbook | None = None,
+    reset_password_playbook: ansible.Playbook | None = None,
+    ansible_repositories: tuple[ansible.Repository, ...] = DEFAULT_REPOSITORIES,
 ) -> None:
     """
     Runs setup of an EC2 instance and then installs all dependencies via Ansible,
@@ -77,14 +78,14 @@ def run_create_vm(
             ansible_access,
             configuration,
             (HostInfo(host_name, key_file_location),),
-            ansible_run_context,
+            playbook or default_install_dependencies_playbook(),
             ansible_repositories,
         )
         run_reset_password(
             ansible_access,
             default_password,
             (HostInfo(host_name, key_file_location),),
-            ansible_reset_password_context,
+            reset_password_playbook or default_reset_password_playbook(),
             ansible_repositories,
         )
         export_vm(

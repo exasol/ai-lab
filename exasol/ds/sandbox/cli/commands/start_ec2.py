@@ -1,6 +1,8 @@
 from typing import Optional
 
 import click
+import exasol.ansible as ansible
+
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.aws_options import aws_options
@@ -8,13 +10,11 @@ from exasol.ds.sandbox.cli.options.ec2_options import (ec2_instance_options,
                                                        ec2_key_options)
 from exasol.ds.sandbox.cli.options.id_options import id_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
-from exasol.ds.sandbox.lib.ansible.dependency_installer import \
-    AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.logging import set_log_level
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_setup_ec2
 
 
@@ -44,7 +44,7 @@ def start_ec2(
     """
     set_log_level(log_level)
     dependency_installer = (
-        AnsibleDependencyInstaller(AnsibleAccess())
+        AnsibleDependencyInstaller(ansible.Access())
         if install_dependencies else None
     )
     run_setup_ec2(

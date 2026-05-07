@@ -1,39 +1,34 @@
-from importlib.metadata import version
-from typing import Tuple
+from typing import Any
 
-from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
-from exasol.ds.sandbox.lib.ansible.ansible_context_manager import AnsibleContextManager
-from exasol.ds.sandbox.lib.ansible.ansible_repository import AnsibleRepository, \
-    default_repositories
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext, \
-    default_ansible_run_context
+import exasol.ansible as ansible
+
 from exasol.ds.sandbox.lib.config import ConfigObject
-
-from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import (
+    DEFAULT_REPOSITORIES,
+    default_install_dependencies_playbook,
+)
 
 
 def run_install_dependencies(
-    ansible_access: AnsibleAccess,
+    ansible_access: ansible.Access,
     configuration: ConfigObject,
-    host_infos: Tuple[HostInfo, ...] = tuple(),
-    ansible_run_context: AnsibleRunContext = default_ansible_run_context,
-    ansible_repositories: Tuple[AnsibleRepository, ...] = default_repositories,
-) -> AnsibleFacts:
+    host_infos: tuple[Any, ...] = tuple(),
+    playbook: ansible.Playbook | None = None,
+    ansible_repositories: tuple[ansible.Repository, ...] = DEFAULT_REPOSITORIES,
+) -> dict[str, Any]:
     """
     Runs ansible installation. The ansible working dir is created dynamically and removed afterwards.
     Any hosts, given by variable host_infos, are added to the ansible inventory in the dynamic working directory.
     All ansible repositories, given by variable ansible_repositories,
     are copied as flat copy to the dynamic working copy, too.
-    The playbook is indicated by variable ansible_run_context, which also might contain additional ansible variables.
+    The playbook parameter indicates which playbook to run and can contain additional Ansible variables.
     """
     new_extra_vars = {
         "ai_lab_version": configuration.ai_lab_version,
         "work_in_progress_notebooks": False
     }
-    if ansible_run_context.extra_vars is not None:
-        new_extra_vars.update(ansible_run_context.extra_vars)
-    new_ansible_run_context = AnsibleRunContext(ansible_run_context.playbook, new_extra_vars)
-    with AnsibleContextManager(ansible_access, ansible_repositories) as ansible_runner:
-        facts = ansible_runner.run(new_ansible_run_context, host_infos=host_infos)
-    return facts
+    playbook = playbook or default_install_dependencies_playbook()
+    new_extra_vars.update(playbook.vars)
+    playbook = ansible.Playbook(playbook.file, new_extra_vars)
+    with ansible.Context(ansible_access, ansible_repositories) as runner:
+        return runner.run(playbook, host_infos=host_infos)

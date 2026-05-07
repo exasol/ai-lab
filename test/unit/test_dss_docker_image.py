@@ -2,10 +2,9 @@ from datetime import datetime
 from typing import Dict, List
 from unittest.mock import MagicMock, Mock, create_autospec, patch
 
+import exasol.ansible as ansible
 import pytest
 
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
 from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
 from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
 from exasol.ds.sandbox.lib.dss_docker.create_image import DssDockerImage
@@ -56,7 +55,7 @@ def test_entrypoint_with_copy_args():
                 "initial": "/path/to/initial",
                 "final": "/path/to/final",
             }}}
-    facts = AnsibleFacts(raw_facts)
+    facts = ansible.Facts(raw_facts, prefixes=["dss_facts"])
 
     def fact(*args):
         return facts.get(*args)
@@ -122,11 +121,38 @@ def test_push_called(mocker, mocked_docker_image):
 
 @patch("exasol.ds.sandbox.lib.dss_docker.create_image.run_install_dependencies")
 def test_work_in_progress_notebooks(mocked_run_install_dependencies: Mock,
-                                    mocked_docker_image: DssDockerImage):
+                                    mocked_docker_image: DssDockerImage,
+                                    mocker):
+    class Host:
+        def __init__(self, host_name: str):
+            self.host_name = host_name
+
     testee = mocked_docker_image
     testee._install_dependencies = create_testee()._install_dependencies
+    mocked_run_install_dependencies.return_value = {}
+    access = object()
+    mocked_access = mocker.patch.object(
+        create_image.ansible,
+        "Access",
+        return_value=access,
+    )
+    mocked_inventory_host = mocker.patch.object(
+        create_image.ansible,
+        "InventoryHost",
+        side_effect=Host,
+        create=True,
+    )
+
     testee.create()
+
     assert len(mocked_run_install_dependencies.mock_calls) == 1
-    ansible_run_context = mocked_run_install_dependencies.mock_calls[0].kwargs["ansible_run_context"]
-    assert isinstance(ansible_run_context, AnsibleRunContext)
-    assert ansible_run_context.extra_vars["work_in_progress_notebooks"] == False
+    assert len(mocked_inventory_host.mock_calls) == 1
+    host = mocked_run_install_dependencies.mock_calls[0].kwargs["host_infos"][0]
+    mocked_access.assert_called_once_with(
+        retrieve_facts_from=host.host_name,
+    )
+    assert mocked_run_install_dependencies.mock_calls[0].args[0] is access
+    playbook = mocked_run_install_dependencies.mock_calls[0].kwargs["playbook"]
+    assert isinstance(playbook, ansible.Playbook)
+    assert playbook.vars["work_in_progress_notebooks"] == False
+    assert "docker_container" in playbook.vars

@@ -1,15 +1,14 @@
 from typing import Any
 
+import exasol.ansible as ansible
 import pytest
-
-from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
 
 SAMPLE_FACTS = {"a": {"b": {"c": "value"}}}
 
 
 @pytest.fixture
-def sample_facts() -> AnsibleFacts:
-    return AnsibleFacts({"dss_facts": SAMPLE_FACTS})
+def sample_facts() -> ansible.Facts:
+    return ansible.Facts({"dss_facts": SAMPLE_FACTS}, prefixes=["dss_facts"])
 
 
 @pytest.mark.parametrize("keys, expected", [
@@ -19,7 +18,7 @@ def sample_facts() -> AnsibleFacts:
     (["a", "b", "c"], "value"),
 ])
 def test_ansible_facts(
-    sample_facts: AnsibleFacts,
+    sample_facts: ansible.Facts,
     keys: list[str],
     expected: Any,
 ) -> None:
@@ -31,7 +30,7 @@ def test_as_dict() -> None:
         "a": {"a1": "AA"},
         "b": {"b1": "BB"},
     }
-    facts = AnsibleFacts({"dss_facts": inner})
+    facts = ansible.Facts({"dss_facts": inner}, prefixes=["dss_facts"])
     spec = {
         "MISSING": ("c",),
         "VA": ("a", "a1"),

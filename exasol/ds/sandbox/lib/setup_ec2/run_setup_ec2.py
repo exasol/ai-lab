@@ -3,14 +3,12 @@ import time
 from enum import Enum
 from typing import Iterator, Optional, Tuple
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
-from exasol.ds.sandbox.lib.ansible.dependency_installer import \
-    AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
 from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.logging import LogType, get_status_logger
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.setup_ec2.cf_stack import (
     CloudformationStack, CloudformationStackContextManager)
 from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
@@ -170,7 +168,7 @@ def _ec2_status_with_optional_dependencies(
             ansible_access=installer.ansible_access,
             configuration=configuration,
             host_infos=(host_info,),
-            ansible_run_context=installer.run_context,
+            playbook=installer.playbook,
             ansible_repositories=installer.repositories,
         )
     except Exception as e:

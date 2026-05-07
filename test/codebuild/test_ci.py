@@ -7,11 +7,11 @@ import paramiko
 import pytest
 
 import fabric
+import exasol.ansible as ansible
 import requests
 
 from invoke import Responder
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object, AI_LAB_VERSION
@@ -76,7 +76,7 @@ def new_ec2_from_ami(test_ec2_instance_type):
         ec2_source_ami=None,
         ec2_key_file=None,
         ec2_key_name=None,
-        ansible_access=AnsibleAccess(),
+        ansible_access=ansible.Access(),
         default_password=default_password,
         vm_image_formats=tuple(),
         asset_id=asset_id,

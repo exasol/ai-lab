@@ -21,7 +21,8 @@ class LogType(Enum):
 
 
 def get_status_logger(log_type: LogType) -> logging.Logger:
-    return logging.getLogger(f"ai-lab-{log_type.value}")
+    prefix = "exasol." if log_type == LogType.ANSIBLE else "ai-lab-"
+    return logging.getLogger(f"{prefix}{log_type.value}")
 
 
 def set_log_level(level: str):
