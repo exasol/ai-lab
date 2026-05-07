@@ -4,8 +4,8 @@ Code name: Ansible Runner Wrapper
 
 ## Summary
 
-This release integrates the ansible-runner wrapper into the sandbox setup flow.
+This release replaces the former ansible wrapper in the AI Lab by external dependency to `ansible-runner wrapper`.
 
 ## Refactorings
 
-* #504: Replaced exasol.ds.sandbox.lib.ansible by ansible-runner-wrapper.
+* #504: Replaced `exasol.ds.sandbox.lib.ansible` by `ansible-runner-wrapper`.
