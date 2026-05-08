@@ -15,7 +15,4 @@ This release fixes multiple security vulnerabilities in dependencies and upgrade
 
 ## Refactorings
 
-* Upgraded minimum Python version from 3.10 to 3.11 (required by ansible >=12)
-* Updated CI/CD workflows and AWS CodeBuild specs to use Python 3.11
-* Removed `pytest-check-links` dependency (incompatible with pytest >=9)
-* Updated ansible virtualenv tasks to use `python3.11`
+* #512: Fixed CVEs and Upgraded minimum Python version to 3.11 (required by ansible >=12)
