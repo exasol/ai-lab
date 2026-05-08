@@ -7,3 +7,4 @@ __pycache__/
 log.txt
 elog.txt
 .python-version
+.venv-check-links

@@ -26,8 +26,15 @@ jobs:
          fail: true
          args: --exclude localhost --verbose --no-progress 'doc/**/*.md' 'README.md'
 
+     - name: Install pytest-check-links
+       run: |
+         # pytest-check-links only works with pytest < 9, but our main project requires pytest >= 9.0.3 (CVE fix).
+         # So we create a separate isolated venv just for this step to avoid downgrading pytest in the main environment.
+         python -m venv .venv-check-links
+         .venv-check-links/bin/pip install -r requirements-check-links.txt
+
      - name: Check Hyperlinks in Jupyter Notebooks
        run: >
-         poetry run -- pytest --check-links
+         .venv-check-links/bin/pytest --check-links
          --check-links-ignore https://www.transtats.bts.gov
          exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/
