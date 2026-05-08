@@ -19,7 +19,7 @@ jobs:
      - name: Setup Python & Poetry Environment
        uses: exasol/python-toolbox/.github/actions/python-environment@v1
        with:
-          python-version: "3.11"
+         python-version: "3.11"
 
      - name: Check Version Number
        run: poetry run -- python3 -u "./scripts/build/check_release.py"
