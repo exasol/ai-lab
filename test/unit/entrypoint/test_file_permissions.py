@@ -12,8 +12,9 @@ from unittest.mock import MagicMock
 
 def test_file_inspector_non_existing_file(mocker):
     mocker.patch("os.stat")
-    # need to mock os.path.exists as os.path.exists seems to call os.stat :)
-    mocker.patch("os.path.exists", return_value=False)
+    # need to mock Path.exists as FileInspector uses path.exists() directly
+    # done this as part of python3.11 uprgade
+    mocker.patch("pathlib.Path.exists", return_value=False)
     testee = entrypoint.FileInspector(Path("/non/existing/file"))
     actual = testee.is_group_accessible()
     assert actual == False
