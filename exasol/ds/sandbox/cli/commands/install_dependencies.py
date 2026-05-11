@@ -1,5 +1,3 @@
-import exasol.ansible as ansible
-
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.ec2_options import ec2_host_options
@@ -22,7 +20,6 @@ def install_dependencies(
     """
     set_log_level(log_level)
     run_install_dependencies(
-        ansible.Access(),
         default_config_object,
         (HostInfo(host_name, ssh_private_key),),
     )

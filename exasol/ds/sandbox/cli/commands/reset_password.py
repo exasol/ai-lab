@@ -1,5 +1,4 @@
 import click
-import exasol.ansible as ansible
 
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
@@ -25,4 +24,4 @@ def reset_password(
     Ansible.
     """
     set_log_level(log_level)
-    run_reset_password(ansible.Access(), default_password, (HostInfo(host_name, ssh_private_key),))
+    run_reset_password(default_password, (HostInfo(host_name, ssh_private_key),))

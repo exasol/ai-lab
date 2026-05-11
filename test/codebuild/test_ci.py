@@ -7,7 +7,6 @@ import paramiko
 import pytest
 
 import fabric
-import exasol.ansible as ansible
 import requests
 
 from invoke import Responder
@@ -76,7 +75,6 @@ def new_ec2_from_ami(test_ec2_instance_type):
         ec2_source_ami=None,
         ec2_key_file=None,
         ec2_key_name=None,
-        ansible_access=ansible.Access(),
         default_password=default_password,
         vm_image_formats=tuple(),
         asset_id=asset_id,

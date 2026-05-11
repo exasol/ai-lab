@@ -1,7 +1,6 @@
 from typing import Optional
 
 import click
-import exasol.ansible as ansible
 
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
@@ -44,7 +43,7 @@ def start_ec2(
     """
     set_log_level(log_level)
     dependency_installer = (
-        AnsibleDependencyInstaller(ansible.Access())
+        AnsibleDependencyInstaller()
         if install_dependencies else None
     )
     run_setup_ec2(

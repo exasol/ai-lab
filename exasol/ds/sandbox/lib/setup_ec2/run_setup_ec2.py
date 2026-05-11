@@ -165,7 +165,6 @@ def _ec2_status_with_optional_dependencies(
     host_info = HostInfo(host_name, key_file_location)
     try:
         run_install_dependencies(
-            ansible_access=installer.ansible_access,
             configuration=configuration,
             host_infos=(host_info,),
             playbook=installer.playbook,
