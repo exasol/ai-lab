@@ -12,41 +12,32 @@ from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install
 
 
 class RecordingRunner:
-    def __init__(self, result: dict[str, Any]):
-        self.result = result
-        self.calls = []
-
-    def run(self, playbook: ansible.Playbook, host_infos: tuple[Any, ...]):
-        self.calls.append((playbook, host_infos))
-        return self.result
-
-
-class RecordingContext:
     instances = []
     runner_result = {"facts": True}
 
     def __init__(
         self,
-        ansible_access: ansible.Access,
         repositories: tuple[ansible.Repository, ...],
     ):
-        self.ansible_access = ansible_access
         self.repositories = repositories
-        self.runner = RecordingRunner(self.runner_result)
+        self.calls = []
         self.instances.append(self)
 
-    def __enter__(self) -> RecordingRunner:
-        return self.runner
-
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
-        pass
+    def run(
+        self,
+        playbook: ansible.Playbook,
+        hosts: tuple[ansible.Host, ...],
+        retrieve_facts_from: str,
+    ):
+        self.calls.append((playbook, hosts, retrieve_facts_from))
+        return self.runner_result
 
 
 @pytest.fixture
-def recording_context(monkeypatch):
-    RecordingContext.instances = []
-    monkeypatch.setattr(module.ansible, "Context", RecordingContext)
-    return RecordingContext
+def recording_runner(monkeypatch):
+    RecordingRunner.instances = []
+    monkeypatch.setattr(module.ansible, "Runner", RecordingRunner)
+    return RecordingRunner
 
 
 def _extra_vars(config: ConfigObject) -> dict[str, Any]:
@@ -56,41 +47,34 @@ def _extra_vars(config: ConfigObject) -> dict[str, Any]:
     }
 
 
-def test_run_ansible_default_values(test_config, recording_context):
-    ansible_access = Mock()
-
-    result = run_install_dependencies(ansible_access, test_config)
+def test_run_ansible_default_values(test_config, recording_runner):
+    result = run_install_dependencies(test_config)
 
     expected_playbook = ansible.Playbook("ec2_playbook.yml", _extra_vars(test_config))
-    context = recording_context.instances[0]
-    assert result == recording_context.runner_result
-    assert context.ansible_access is ansible_access
-    assert context.repositories == DEFAULT_REPOSITORIES
-    assert context.runner.calls == [(expected_playbook, tuple())]
+    runner = recording_runner.instances[0]
+    assert result == recording_runner.runner_result
+    assert runner.repositories == DEFAULT_REPOSITORIES
+    assert runner.calls == [(expected_playbook, tuple(), "")]
 
 
-def test_run_ansible_custom_playbook(test_config, recording_context):
-    ansible_access = Mock()
+def test_run_ansible_custom_playbook(test_config, recording_runner):
     playbook = ansible.Playbook("my_playbook.yml")
 
     run_install_dependencies(
-        ansible_access,
         test_config,
         host_infos=tuple(),
         playbook=playbook,
     )
 
     expected_playbook = ansible.Playbook("my_playbook.yml", _extra_vars(test_config))
-    context = recording_context.instances[0]
-    assert context.runner.calls == [(expected_playbook, tuple())]
+    runner = recording_runner.instances[0]
+    assert runner.calls == [(expected_playbook, tuple(), "")]
 
 
-def test_run_ansible_custom_variables(test_config, recording_context):
-    ansible_access = Mock()
+def test_run_ansible_custom_variables(test_config, recording_runner):
     playbook = ansible.Playbook("my_playbook.yml", {"my_var": True})
 
     run_install_dependencies(
-        ansible_access,
         test_config,
         host_infos=tuple(),
         playbook=playbook,
@@ -99,22 +83,32 @@ def test_run_ansible_custom_variables(test_config, recording_context):
     extra_vars = _extra_vars(test_config)
     extra_vars.update({"my_var": True})
     expected_playbook = ansible.Playbook("my_playbook.yml", extra_vars)
-    context = recording_context.instances[0]
-    assert context.runner.calls == [(expected_playbook, tuple())]
+    runner = recording_runner.instances[0]
+    assert runner.calls == [(expected_playbook, tuple(), "")]
 
 
-def test_run_ansible_forwards_hosts_and_repositories(test_config, recording_context):
-    ansible_access = Mock()
+def test_run_ansible_forwards_hosts_and_repositories(test_config, recording_runner):
     host_infos = (HostInfo("my_host", "my_key"),)
     repositories = (Mock(),)
 
     run_install_dependencies(
-        ansible_access,
         test_config,
         host_infos=host_infos,
         ansible_repositories=repositories,
     )
 
-    context = recording_context.instances[0]
-    assert context.repositories == repositories
-    assert context.runner.calls[0][1] == host_infos
+    runner = recording_runner.instances[0]
+    assert runner.repositories == repositories
+    assert runner.calls[0][1] == (ansible.Host("my_host", "my_key"),)
+
+
+def test_run_ansible_uses_docker_container_for_fact_retrieval(test_config, recording_runner):
+    playbook = ansible.Playbook("my_playbook.yml", {"docker_container": "container"})
+
+    run_install_dependencies(
+        test_config,
+        playbook=playbook,
+    )
+
+    runner = recording_runner.instances[0]
+    assert runner.calls[0][2] == "container"

@@ -160,13 +160,13 @@ class DssDockerImage:
 
     def _install_dependencies(self) -> ansible.Facts:
         _logger.info("Installing dependencies")
-        host = ansible.InventoryHost(self.container_name)
+        host = ansible.Host(self.container_name)
         fact_cache = run_install_dependencies(
-            ansible.Access(retrieve_facts_from=host.host_name),
             configuration=self._ansible_config(),
             host_infos=(host,),
             playbook=self._ansible_playbook(),
             ansible_repositories=DEFAULT_REPOSITORIES,
+            retrieve_facts_from=host.name,
         )
         return ansible.Facts(fact_cache, prefixes=["dss_facts"])
 

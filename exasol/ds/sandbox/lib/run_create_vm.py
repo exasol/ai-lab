@@ -33,7 +33,6 @@ def run_create_vm(
     ec2_source_ami: Optional[str],
     ec2_key_file: Optional[str],
     ec2_key_name: Optional[str],
-    ansible_access: ansible.Access,
     default_password: str,
     vm_image_formats: Tuple[str, ...],
     asset_id: AssetId,
@@ -75,14 +74,12 @@ def run_create_vm(
 
         host_name = ec2_instance.public_dns_name
         run_install_dependencies(
-            ansible_access,
             configuration,
             (HostInfo(host_name, key_file_location),),
             playbook or default_install_dependencies_playbook(),
             ansible_repositories,
         )
         run_reset_password(
-            ansible_access,
             default_password,
             (HostInfo(host_name, key_file_location),),
             reset_password_playbook or default_reset_password_playbook(),

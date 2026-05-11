@@ -123,35 +123,24 @@ def test_push_called(mocker, mocked_docker_image):
 def test_work_in_progress_notebooks(mocked_run_install_dependencies: Mock,
                                     mocked_docker_image: DssDockerImage,
                                     mocker):
-    class Host:
-        def __init__(self, host_name: str):
-            self.host_name = host_name
-
     testee = mocked_docker_image
     testee._install_dependencies = create_testee()._install_dependencies
     mocked_run_install_dependencies.return_value = {}
-    access = object()
-    mocked_access = mocker.patch.object(
+    mocked_host = mocker.patch.object(
         create_image.ansible,
-        "Access",
-        return_value=access,
-    )
-    mocked_inventory_host = mocker.patch.object(
-        create_image.ansible,
-        "InventoryHost",
-        side_effect=Host,
-        create=True,
+        "Host",
+        wraps=ansible.Host,
     )
 
     testee.create()
 
     assert len(mocked_run_install_dependencies.mock_calls) == 1
-    assert len(mocked_inventory_host.mock_calls) == 1
+    assert len(mocked_host.mock_calls) == 1
     host = mocked_run_install_dependencies.mock_calls[0].kwargs["host_infos"][0]
-    mocked_access.assert_called_once_with(
-        retrieve_facts_from=host.host_name,
+    assert (
+        mocked_run_install_dependencies.mock_calls[0].kwargs["retrieve_facts_from"]
+        == host.name
     )
-    assert mocked_run_install_dependencies.mock_calls[0].args[0] is access
     playbook = mocked_run_install_dependencies.mock_calls[0].kwargs["playbook"]
     assert isinstance(playbook, ansible.Playbook)
     assert playbook.vars["work_in_progress_notebooks"] == False
