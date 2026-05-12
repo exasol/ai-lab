@@ -1,4 +1,8 @@
 import importlib
+from pathlib import Path
+
+import exasol.ansible as ansible
+import exasol.ds.sandbox.cli.commands as commands
 from unittest.mock import Mock
 
 import pytest
@@ -12,25 +16,22 @@ def _module(name: str):
 
 
 @pytest.fixture
-def private_key(tmp_path):
+def private_key(tmp_path) -> Path:
     key = tmp_path / "key.pem"
     key.write_text("private-key")
     return key
 
 
-def test_install_dependencies_command_passes_configuration_and_host_info(
-    mocker,
-    private_key,
-):
-    module = _module("install_dependencies")
-    run_install_dependencies = mocker.patch.object(module, "run_install_dependencies")
+def test_install_dependencies(monkeypatch, private_key):
+    mock = Mock()
+    monkeypatch.setattr(commands.install_dependencies, "run_install_dependencies", mock)
 
-    cli = CliRunner(module.install_dependencies)
+    cli = CliRunner(commands.install_dependencies)
     cli.run("--host-name", "host", "--ssh-private-key", str(private_key))
 
     assert cli.succeeded
-    assert run_install_dependencies.call_count == 1
-    assert len(run_install_dependencies.call_args.args) == 2
+    assert mock.call_count == 1
+    assert mock.call_args.args[1] == ansible.Host("host", str(private_key))
 
 
 def test_reset_password_command_passes_password_and_host_info(mocker, private_key):

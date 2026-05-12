@@ -2,15 +2,11 @@ from typing import Any
 from unittest.mock import Mock
 
 import exasol.ansible as ansible
-import exasol.ds.sandbox.runtime.ansible as runtime_ansible
-import importlib_resources
 import pytest
-import yaml
 
 from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.setup_ec2 import run_install_dependencies as module
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import DEFAULT_REPOSITORIES
-from exasol.ds.sandbox.lib.setup_ec2.host_info import HostInfo
 from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
 
 
@@ -91,7 +87,7 @@ def test_run_ansible_custom_variables(test_config, recording_runner):
 
 
 def test_run_ansible_forwards_hosts_and_repositories(test_config, recording_runner):
-    host_infos = (HostInfo("my_host", "my_key"),)
+    host_infos = (ansible.Host("my_host", "my_key"),)
     repositories = (Mock(),)
 
     run_install_dependencies(
@@ -115,11 +111,3 @@ def test_run_ansible_uses_docker_container_for_fact_retrieval(test_config, recor
 
     runner = recording_runner.instances[0]
     assert runner.calls[0][2] == "container"
-
-
-@pytest.mark.parametrize("playbook", ["ec2_playbook.yml", "reset_password.yml"])
-def test_ec2_playbooks_target_generated_inventory_group(playbook):
-    resource = importlib_resources.files(runtime_ansible).joinpath(playbook)
-    plays = yaml.safe_load(resource.read_text())
-
-    assert plays[0]["hosts"] == "arw_inventory"

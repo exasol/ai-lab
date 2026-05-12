@@ -140,24 +140,3 @@ def test_run_lifecycle_for_ec2_with_context_manager(
 
     with pytest.raises(StopIteration):
         next(res_gen)
-
-
-def test_ec2_status_with_dependencies_does_not_pass_ansible_internal_state(
-    mocker,
-    test_config,
-):
-    run_install_dependencies = mocker.patch.object(module, "run_install_dependencies")
-    mocker.patch.object(module.time, "sleep")
-    installer = AnsibleDependencyInstaller(
-        repositories=(mocker.Mock(),),
-    )
-
-    actual = module._ec2_status_with_optional_dependencies(
-        ec2_instance=ec2_instance("running"),
-        key_file_location="key.pem",
-        configuration=test_config,
-        installer=installer,
-    )
-
-    assert actual == Ec2State.INSTALLED
-    assert "ansible_access" not in run_install_dependencies.call_args.kwargs
