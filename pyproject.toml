@@ -81,6 +81,9 @@ filterwarnings = [
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
 ]
 
+[tool.black]
+target-version = ["py310"]
+
 [tool.isort]
 profile = "black"
 force_grid_wrap = 2
