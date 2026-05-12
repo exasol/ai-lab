@@ -2,12 +2,9 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import exasol.ansible as ansible
+import exasol.ds.sandbox.cli.commands as commands
 import pytest
 
-from exasol.ds.sandbox.cli.commands.create_vm import create_vm
-from exasol.ds.sandbox.cli.commands.install_dependencies import install_dependencies
-from exasol.ds.sandbox.cli.commands.reset_password import reset_password
-from exasol.ds.sandbox.cli.commands.start_ec2 import start_ec2
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from test.unit.cli import CliRunner
@@ -24,17 +21,17 @@ def test_install_dependencies(monkeypatch, private_key):
     mock = Mock()
     set_log_level = Mock()
     monkeypatch.setitem(
-        install_dependencies.callback.__globals__,
+        commands.install_dependencies.callback.__globals__,
         "run_install_dependencies",
         mock,
     )
     monkeypatch.setitem(
-        install_dependencies.callback.__globals__,
+        commands.install_dependencies.callback.__globals__,
         "set_log_level",
         set_log_level,
     )
 
-    cli = CliRunner(install_dependencies)
+    cli = CliRunner(commands.install_dependencies)
     cli.run(
         "--host-name",
         "host",
@@ -56,17 +53,17 @@ def test_reset_password(monkeypatch, private_key):
     run_reset_password = Mock()
     set_log_level = Mock()
     monkeypatch.setitem(
-        reset_password.callback.__globals__,
+        commands.reset_password.callback.__globals__,
         "run_reset_password",
         run_reset_password,
     )
     monkeypatch.setitem(
-        reset_password.callback.__globals__,
+        commands.reset_password.callback.__globals__,
         "set_log_level",
         set_log_level,
     )
 
-    cli = CliRunner(reset_password)
+    cli = CliRunner(commands.reset_password)
     cli.run(
         "--host-name",
         "host",
@@ -95,22 +92,22 @@ def test_start_ec2_command(
     run_setup_ec2 = Mock()
     set_log_level = Mock()
     monkeypatch.setitem(
-        start_ec2.callback.__globals__,
+        commands.start_ec2.callback.__globals__,
         "run_setup_ec2",
         run_setup_ec2,
     )
     monkeypatch.setitem(
-        start_ec2.callback.__globals__,
+        commands.start_ec2.callback.__globals__,
         "AwsAccess",
         aws_access_factory,
     )
     monkeypatch.setitem(
-        start_ec2.callback.__globals__,
+        commands.start_ec2.callback.__globals__,
         "set_log_level",
         set_log_level,
     )
 
-    cli = CliRunner(start_ec2)
+    cli = CliRunner(commands.start_ec2)
     cli.run(
         "--aws-profile",
         "profile",
@@ -152,22 +149,22 @@ def test_create_vm_command(
     run_create_vm = Mock()
     set_log_level = Mock()
     monkeypatch.setitem(
-        create_vm.callback.__globals__,
+        commands.create_vm.callback.__globals__,
         "run_create_vm",
         run_create_vm,
     )
     monkeypatch.setitem(
-        create_vm.callback.__globals__,
+        commands.create_vm.callback.__globals__,
         "AwsAccess",
         aws_access_factory,
     )
     monkeypatch.setitem(
-        create_vm.callback.__globals__,
+        commands.create_vm.callback.__globals__,
         "set_log_level",
         set_log_level,
     )
 
-    cli = CliRunner(create_vm, env={"AWS_USER_NAME": "user-name"})
+    cli = CliRunner(commands.create_vm, env={"AWS_USER_NAME": "user-name"})
     cli.run(
         "--aws-profile",
         "profile",
