@@ -114,14 +114,21 @@ def test_custom_hosts(test_config, mock_ansible_runner):
 
 
 def test_fact_retrieval(test_config, mocked_run_method):
-    playbook = ansible.Playbook("my_playbook.yml")
+    """
+    This test also verified, that variable "docker_container" is no longer
+    used when retrieving the facts.
+    """
+
+    docker_var = {"docker_container": "container"}
+    playbook = ansible.Playbook("my_playbook.yml", docker_var)
     lib.run_install_dependencies(
         test_config,
         host_infos=tuple(),
         playbook=playbook,
         retrieve_facts_from="host",
     )
+    extravars = _extra_vars(test_config) | docker_var
     assert mocked_run_method.call_args == expected_call(
-        expected_playbook(playbook.file, test_config),
+        ansible.Playbook(playbook.file, extravars),
         retrieve_facts_from = "host",
     )
