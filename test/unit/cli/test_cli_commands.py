@@ -1,18 +1,16 @@
-import importlib
 from pathlib import Path
-
-import exasol.ansible as ansible
-import exasol.ds.sandbox.cli.commands as commands
 from unittest.mock import Mock
 
+import exasol.ansible as ansible
 import pytest
 
+from exasol.ds.sandbox.cli.commands.create_vm import create_vm
+from exasol.ds.sandbox.cli.commands.install_dependencies import install_dependencies
+from exasol.ds.sandbox.cli.commands.reset_password import reset_password
+from exasol.ds.sandbox.cli.commands.start_ec2 import start_ec2
+from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from test.unit.cli import CliRunner
-
-
-def _module(name: str):
-    return importlib.import_module(f"exasol.ds.sandbox.cli.commands.{name}")
 
 
 @pytest.fixture
@@ -24,21 +22,51 @@ def private_key(tmp_path) -> Path:
 
 def test_install_dependencies(monkeypatch, private_key):
     mock = Mock()
-    monkeypatch.setattr(commands.install_dependencies, "run_install_dependencies", mock)
+    set_log_level = Mock()
+    monkeypatch.setitem(
+        install_dependencies.callback.__globals__,
+        "run_install_dependencies",
+        mock,
+    )
+    monkeypatch.setitem(
+        install_dependencies.callback.__globals__,
+        "set_log_level",
+        set_log_level,
+    )
 
-    cli = CliRunner(commands.install_dependencies)
-    cli.run("--host-name", "host", "--ssh-private-key", str(private_key))
+    cli = CliRunner(install_dependencies)
+    cli.run(
+        "--host-name",
+        "host",
+        "--ssh-private-key",
+        str(private_key),
+        "--log-level",
+        "debug",
+    )
 
     assert cli.succeeded
-    assert mock.call_count == 1
-    assert mock.call_args.args[1] == ansible.Host("host", str(private_key))
+    assert set_log_level.call_args.args == ("debug",)
+    assert mock.call_args.args == (
+        default_config_object,
+        (ansible.Host("host", str(private_key)),),
+    )
 
 
-def test_reset_password_command_passes_password_and_host_info(mocker, private_key):
-    module = _module("reset_password")
-    run_reset_password = mocker.patch.object(module, "run_reset_password")
+def test_reset_password(monkeypatch, private_key):
+    run_reset_password = Mock()
+    set_log_level = Mock()
+    monkeypatch.setitem(
+        reset_password.callback.__globals__,
+        "run_reset_password",
+        run_reset_password,
+    )
+    monkeypatch.setitem(
+        reset_password.callback.__globals__,
+        "set_log_level",
+        set_log_level,
+    )
 
-    cli = CliRunner(module.reset_password)
+    cli = CliRunner(reset_password)
     cli.run(
         "--host-name",
         "host",
@@ -46,34 +74,137 @@ def test_reset_password_command_passes_password_and_host_info(mocker, private_ke
         str(private_key),
         "--default-password",
         "secret",
+        "--log-level",
+        "debug",
     )
 
     assert cli.succeeded
-    assert run_reset_password.call_count == 1
-    assert len(run_reset_password.call_args.args) == 2
+    assert set_log_level.call_args.args == ("debug",)
+    assert run_reset_password.call_args.args == (
+        "secret",
+        (ansible.Host("host", str(private_key)),),
+    )
 
 
-def test_start_ec2_command_passes_dependency_installer_when_requested(mocker):
-    module = _module("start_ec2")
+def test_start_ec2_command(
+    monkeypatch,
+    private_key,
+):
     aws_access = Mock()
-    run_setup_ec2 = mocker.patch.object(module, "run_setup_ec2")
-    mocker.patch.object(module, "AwsAccess", return_value=aws_access)
+    aws_access_factory = Mock(return_value=aws_access)
+    run_setup_ec2 = Mock()
+    set_log_level = Mock()
+    monkeypatch.setitem(
+        start_ec2.callback.__globals__,
+        "run_setup_ec2",
+        run_setup_ec2,
+    )
+    monkeypatch.setitem(
+        start_ec2.callback.__globals__,
+        "AwsAccess",
+        aws_access_factory,
+    )
+    monkeypatch.setitem(
+        start_ec2.callback.__globals__,
+        "set_log_level",
+        set_log_level,
+    )
 
-    cli = CliRunner(module.start_ec2)
-    cli.run("--install-dependencies")
+    cli = CliRunner(start_ec2)
+    cli.run(
+        "--aws-profile",
+        "profile",
+        "--ec2-instance-type",
+        "m5.large",
+        "--ec2-source-ami",
+        "ami-123",
+        "--ec2-key-file",
+        str(private_key),
+        "--ec2-key-name",
+        "key-name",
+        "--asset-id",
+        "asset-id",
+        "--log-level",
+        "debug",
+        "--install-dependencies",
+    )
 
     assert cli.succeeded
-    installer = run_setup_ec2.call_args.kwargs["dependency_installer"]
-    assert isinstance(installer, AnsibleDependencyInstaller)
+    assert set_log_level.call_args.args == ("debug",)
+    assert aws_access_factory.call_args.args == ("profile",)
+    actual = run_setup_ec2.call_args.kwargs
+    assert actual["aws_access"] == aws_access
+    assert actual["ec2_instance_type"] == "m5.large"
+    assert actual["ec2_source_ami"] == "ami-123"
+    assert actual["ec2_key_file"] == str(private_key)
+    assert actual["ec2_key_name"] == "key-name"
+    assert actual["asset_id"].tag_value == "asset-id"
+    assert actual["configuration"] == default_config_object
+    assert isinstance(actual["dependency_installer"], AnsibleDependencyInstaller)
 
 
-def test_create_vm_command_does_not_pass_ansible_internal_state(mocker):
-    module = _module("create_vm")
-    run_create_vm = mocker.patch.object(module, "run_create_vm")
-    mocker.patch.object(module, "AwsAccess", return_value=Mock())
+def test_create_vm_command(
+    monkeypatch,
+    private_key,
+):
+    aws_access = Mock()
+    aws_access_factory = Mock(return_value=aws_access)
+    run_create_vm = Mock()
+    set_log_level = Mock()
+    monkeypatch.setitem(
+        create_vm.callback.__globals__,
+        "run_create_vm",
+        run_create_vm,
+    )
+    monkeypatch.setitem(
+        create_vm.callback.__globals__,
+        "AwsAccess",
+        aws_access_factory,
+    )
+    monkeypatch.setitem(
+        create_vm.callback.__globals__,
+        "set_log_level",
+        set_log_level,
+    )
 
-    cli = CliRunner(module.create_vm)
-    cli.run("--default-password", "secret")
+    cli = CliRunner(create_vm, env={"AWS_USER_NAME": "user-name"})
+    cli.run(
+        "--aws-profile",
+        "profile",
+        "--ec2-instance-type",
+        "m5.large",
+        "--ec2-source-ami",
+        "ami-123",
+        "--ec2-key-file",
+        str(private_key),
+        "--ec2-key-name",
+        "key-name",
+        "--default-password",
+        "secret",
+        "--vm-image-format",
+        "RAW",
+        "--vm-image-format",
+        "VHD",
+        "--asset-id",
+        "asset-id",
+        "--make-ami-public",
+        "--log-level",
+        "debug",
+    )
 
     assert cli.succeeded
-    assert "ansible_access" not in run_create_vm.call_args.kwargs
+    assert set_log_level.call_args.args == ("debug",)
+    assert aws_access_factory.call_args.args == ("profile",)
+    actual = run_create_vm.call_args.kwargs
+    assert actual["aws_access"] == aws_access
+    assert actual["ec2_instance_type"] == "m5.large"
+    assert actual["ec2_source_ami"] == "ami-123"
+    assert actual["ec2_key_file"] == str(private_key)
+    assert actual["ec2_key_name"] == "key-name"
+    assert actual["default_password"] == "secret"
+    assert actual["vm_image_formats"] == ("RAW", "VHD")
+    assert actual["asset_id"].tag_value == "asset-id"
+    assert actual["configuration"] == default_config_object
+    assert actual["user_name"] == "user-name"
+    assert actual["make_ami_public"] is True
+    assert "ansible_access" not in actual
