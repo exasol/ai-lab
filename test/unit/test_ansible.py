@@ -1,42 +1,18 @@
-from typing import Any
-from unittest.mock import Mock
+from typing import (
+    Any,
+    Callable,
+)
+from unittest.mock import (
+    Mock,
+    call,
+)
 
 import exasol.ansible as ansible
 import pytest
 
 from exasol.ds.sandbox.lib.config import ConfigObject
-from exasol.ds.sandbox.lib.setup_ec2 import run_install_dependencies as module
+from exasol.ds.sandbox.lib.setup_ec2 import run_install_dependencies as lib
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import DEFAULT_REPOSITORIES
-from exasol.ds.sandbox.lib.setup_ec2.run_install_dependencies import run_install_dependencies
-
-
-class RecordingRunner:
-    instances = []
-    runner_result = {"facts": True}
-
-    def __init__(
-        self,
-        repositories: tuple[ansible.Repository, ...],
-    ):
-        self.repositories = repositories
-        self.calls = []
-        self.instances.append(self)
-
-    def run(
-        self,
-        playbook: ansible.Playbook,
-        hosts: tuple[ansible.Host, ...],
-        retrieve_facts_from: str,
-    ):
-        self.calls.append((playbook, hosts, retrieve_facts_from))
-        return self.runner_result
-
-
-@pytest.fixture
-def recording_runner(monkeypatch):
-    RecordingRunner.instances = []
-    monkeypatch.setattr(module.ansible, "Runner", RecordingRunner)
-    return RecordingRunner
 
 
 def _extra_vars(config: ConfigObject) -> dict[str, Any]:
@@ -46,71 +22,113 @@ def _extra_vars(config: ConfigObject) -> dict[str, Any]:
     }
 
 
-def test_run_ansible_default_values(test_config, recording_runner):
-    result = run_install_dependencies(test_config)
-
-    expected_playbook = ansible.Playbook("ec2_playbook.yml", _extra_vars(test_config))
-    runner = recording_runner.instances[0]
-    assert result == recording_runner.runner_result
-    assert runner.repositories == DEFAULT_REPOSITORIES
-    assert runner.calls == [(expected_playbook, tuple(), "")]
+def expected_playbook(filename: str, test_config) -> ansible.Playbook:
+    return ansible.Playbook(filename, _extra_vars(test_config))
 
 
-def test_run_ansible_custom_playbook(test_config, recording_runner):
+def expected_call(
+    playbook: ansible.Playbook,
+    hosts=tuple(),
+    retrieve_facts_from="",
+):
+    return call(
+        playbook,
+        hosts=hosts,
+        retrieve_facts_from=retrieve_facts_from,
+    )
+
+
+@pytest.fixture
+def mock_ansible_runner(monkeypatch) -> Callable[[Mock], Mock]:
+    """
+    Return a callable to mock the constructor of ansible.Runner and
+    install the specified run method.
+    """
+
+    def func(run_method: Mock):
+        runner = Mock(run=run_method)
+        mock = Mock(return_value=runner)
+        monkeypatch.setattr(lib.ansible, "Runner", mock)
+        return mock
+
+    return func
+
+
+@pytest.fixture
+def mocked_run_method(mock_ansible_runner):
+    run_method = Mock()
+    mock_ansible_runner(run_method)
+    return run_method
+
+
+def test_default_values(mock_ansible_runner, test_config):
+    fact_cache = {"a": 1}
+    run_method = Mock(return_value=fact_cache)
+    constructor = mock_ansible_runner(run_method)
+
+    actual = lib.run_install_dependencies(test_config)
+    assert actual == fact_cache
+    assert constructor.call_args == call(DEFAULT_REPOSITORIES)
+    assert run_method.call_args == expected_call(
+        expected_playbook("ec2_playbook.yml", test_config)
+    )
+
+
+def test_custom_playbook(test_config, mocked_run_method):
     playbook = ansible.Playbook("my_playbook.yml")
-
-    run_install_dependencies(
+    lib.run_install_dependencies(
         test_config,
         host_infos=tuple(),
         playbook=playbook,
     )
+    assert mocked_run_method.call_args == expected_call(
+        expected_playbook(playbook.file, test_config)
+    )
 
-    expected_playbook = ansible.Playbook("my_playbook.yml", _extra_vars(test_config))
-    runner = recording_runner.instances[0]
-    assert runner.calls == [(expected_playbook, tuple(), "")]
 
-
-def test_run_ansible_custom_variables(test_config, recording_runner):
+def test_custom_variables(test_config, mocked_run_method):
     playbook = ansible.Playbook("my_playbook.yml", {"my_var": True})
-
-    run_install_dependencies(
+    lib.run_install_dependencies(
         test_config,
         host_infos=tuple(),
         playbook=playbook,
     )
-
-    extra_vars = _extra_vars(test_config)
-    extra_vars.update({"my_var": True})
-    expected_playbook = ansible.Playbook("my_playbook.yml", extra_vars)
-    runner = recording_runner.instances[0]
-    assert runner.calls == [(expected_playbook, tuple(), "")]
+    extravars = _extra_vars(test_config) | {"my_var": True}
+    assert mocked_run_method.call_args == expected_call(
+        ansible.Playbook("my_playbook.yml", extravars),
+    )
 
 
-def test_run_ansible_forwards_hosts_and_repositories(test_config, recording_runner):
+def test_custom_hosts(test_config, mock_ansible_runner):
+    run_method = Mock()
+    mock = mock_ansible_runner(run_method)
     host_infos = (ansible.Host("my_host", "my_key"),)
     repositories = (Mock(),)
-
-    run_install_dependencies(
+    lib.run_install_dependencies(
         test_config,
         host_infos=host_infos,
         ansible_repositories=repositories,
     )
-
-    runner = recording_runner.instances[0]
-    assert runner.repositories == repositories
-    assert runner.calls[0][1] == (ansible.Host("my_host", "my_key"),)
+    assert mock.call_args == call(repositories)
+    assert run_method.call_args.kwargs["hosts"] == (ansible.Host("my_host", "my_key"),)
 
 
-def test_run_ansible_does_not_use_docker_container_for_fact_retrieval(test_config, recording_runner):
-    playbook = ansible.Playbook("my_playbook.yml", {"docker_container": "container"})
-    host = ansible.Host("host")
+def test_fact_retrieval(test_config, mocked_run_method):
+    """
+    This test also verified, that variable "docker_container" is no longer
+    used when retrieving the facts.
+    """
 
-    run_install_dependencies(
+    docker_var = {"docker_container": "container"}
+    playbook = ansible.Playbook("my_playbook.yml", docker_var)
+    lib.run_install_dependencies(
         test_config,
-        host_infos=(host,),
+        host_infos=tuple(),
         playbook=playbook,
-        retrieve_facts_from=host.name,
+        retrieve_facts_from="host",
     )
-
-    runner = recording_runner.instances[0]
-    assert runner.calls[0][2] == "host"
+    extravars = _extra_vars(test_config) | docker_var
+    assert mocked_run_method.call_args == expected_call(
+        ansible.Playbook(playbook.file, extravars),
+        retrieve_facts_from = "host",
+    )
