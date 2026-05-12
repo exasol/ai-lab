@@ -101,13 +101,16 @@ def test_run_ansible_forwards_hosts_and_repositories(test_config, recording_runn
     assert runner.calls[0][1] == (ansible.Host("my_host", "my_key"),)
 
 
-def test_run_ansible_uses_docker_container_for_fact_retrieval(test_config, recording_runner):
+def test_run_ansible_does_not_use_docker_container_for_fact_retrieval(test_config, recording_runner):
     playbook = ansible.Playbook("my_playbook.yml", {"docker_container": "container"})
+    host = ansible.Host("host")
 
     run_install_dependencies(
         test_config,
+        host_infos=(host,),
         playbook=playbook,
+        retrieve_facts_from=host.name,
     )
 
     runner = recording_runner.instances[0]
-    assert runner.calls[0][2] == "container"
+    assert runner.calls[0][2] == "host"
