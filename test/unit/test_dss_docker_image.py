@@ -121,27 +121,19 @@ def test_push_called(mocker, mocked_docker_image):
 
 @patch("exasol.ds.sandbox.lib.dss_docker.create_image.run_install_dependencies")
 def test_work_in_progress_notebooks(mocked_run_install_dependencies: Mock,
-                                    mocked_docker_image: DssDockerImage,
-                                    mocker):
+                                    mocked_docker_image: DssDockerImage):
     testee = mocked_docker_image
     testee._install_dependencies = create_testee()._install_dependencies
     mocked_run_install_dependencies.return_value = {}
-    mocked_host = mocker.patch.object(
-        create_image.ansible,
-        "Host",
-        wraps=ansible.Host,
-    )
 
     testee.create()
 
-    assert len(mocked_run_install_dependencies.mock_calls) == 1
-    assert len(mocked_host.mock_calls) == 1
-    host = mocked_run_install_dependencies.mock_calls[0].kwargs["host_infos"][0]
-    assert (
-        mocked_run_install_dependencies.mock_calls[0].kwargs["retrieve_facts_from"]
-        == host.name
-    )
-    playbook = mocked_run_install_dependencies.mock_calls[0].kwargs["playbook"]
+    mocked_run_install_dependencies.assert_called_once()
+    actual = mocked_run_install_dependencies.call_args.kwargs
+    host = ansible.Host(testee.container_name)
+    assert actual["host_infos"] == (host,)
+    assert actual["retrieve_facts_from"] == host.name
+    playbook = actual["playbook"]
     assert isinstance(playbook, ansible.Playbook)
     assert playbook.vars["work_in_progress_notebooks"] == False
-    assert "docker_container" in playbook.vars
+    assert playbook.vars["docker_container"] == testee.container_name

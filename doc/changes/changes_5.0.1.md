@@ -1,4 +1,4 @@
-# AI-Lab 5.0.1 released 2026-??-??
+# AI-Lab 5.0.1 released 2026-05-13
 
 Code name: Ansible Runner Wrapper
 
