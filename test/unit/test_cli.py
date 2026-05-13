@@ -15,9 +15,6 @@ from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from test.unit.cli import CliRunner
 
-package_prefix = commands.__name__
-
-
 def command_module(name: str):
     return import_module(f".{name}", commands.__name__)
 
@@ -40,8 +37,8 @@ def private_key(tmp_path) -> Path:
     return key
 
 
-@patch(f"{package_prefix}.install_dependencies.set_log_level")
-@patch(f"{package_prefix}.install_dependencies.run_install_dependencies")
+@patch.object(command_module("install_dependencies"), "set_log_level")
+@patch.object(command_module("install_dependencies"), "run_install_dependencies")
 def test_install_dependencies(
     mock_run_install_dependencies,
     mock_set_log_level,
@@ -67,8 +64,8 @@ def test_install_dependencies(
     )
 
 
-@patch(f"{package_prefix}.reset_password.set_log_level")
-@patch(f"{package_prefix}.reset_password.run_reset_password")
+@patch.object(command_module("reset_password"), "set_log_level")
+@patch.object(command_module("reset_password"), "run_reset_password")
 def test_reset_password(
     mock_run_reset_password,
     mock_set_log_level,
@@ -96,9 +93,9 @@ def test_reset_password(
     )
 
 
-@patch(f"{package_prefix}.start_ec2.set_log_level")
-@patch(f"{package_prefix}.start_ec2.AwsAccess")
-@patch(f"{package_prefix}.start_ec2.run_setup_ec2")
+@patch.object(command_module("start_ec2"), "set_log_level")
+@patch.object(command_module("start_ec2"), "AwsAccess")
+@patch.object(command_module("start_ec2"), "run_setup_ec2")
 def test_start_ec2_command(
     mock_run_setup_ec2,
     mock_aws_access_factory,
@@ -143,9 +140,9 @@ def test_start_ec2_command(
     )
 
 
-@patch(f"{package_prefix}.create_vm.set_log_level")
-@patch(f"{package_prefix}.create_vm.AwsAccess")
-@patch(f"{package_prefix}.create_vm.run_create_vm")
+@patch.object(command_module("create_vm"), "set_log_level")
+@patch.object(command_module("create_vm"), "AwsAccess")
+@patch.object(command_module("create_vm"), "run_create_vm")
 def test_create_vm_command(
     mock_run_create_vm,
     mock_aws_access_factory,
