@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import (
     Mock,
     call,
+    patch,
 )
 
 import exasol.ansible as ansible
@@ -15,8 +16,9 @@ from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyI
 from test.unit.cli import CliRunner
 
 
-def command_module(name: str):
-    return import_module(f".{name}", commands.__name__)
+def patch_command(module: str, name: str):
+    command_module = import_module(f".{module}", commands.__name__)
+    return patch.object(command_module, name)
 
 
 class AssetIdMatcher:
@@ -37,18 +39,14 @@ def private_key(tmp_path) -> Path:
     return key
 
 
-def test_install_dependencies(monkeypatch, private_key):
-    module = command_module("install_dependencies")
-    run_install_dependencies = Mock()
-    set_log_level = Mock()
-    monkeypatch.setattr(
-        module,
-        "run_install_dependencies",
-        run_install_dependencies,
-    )
-    monkeypatch.setattr(module, "set_log_level", set_log_level)
-
-    cli = CliRunner(module.install_dependencies)
+@patch_command("install_dependencies", "set_log_level")
+@patch_command("install_dependencies", "run_install_dependencies")
+def test_install_dependencies(
+    run_install_dependencies,
+    set_log_level,
+    private_key,
+):
+    cli = CliRunner(commands.install_dependencies)
     cli.run(
         "--host-name",
         "host",
@@ -66,14 +64,14 @@ def test_install_dependencies(monkeypatch, private_key):
     )
 
 
-def test_reset_password(monkeypatch, private_key):
-    module = command_module("reset_password")
-    run_reset_password = Mock()
-    set_log_level = Mock()
-    monkeypatch.setattr(module, "run_reset_password", run_reset_password)
-    monkeypatch.setattr(module, "set_log_level", set_log_level)
-
-    cli = CliRunner(module.reset_password)
+@patch_command("reset_password", "set_log_level")
+@patch_command("reset_password", "run_reset_password")
+def test_reset_password(
+    run_reset_password,
+    set_log_level,
+    private_key,
+):
+    cli = CliRunner(commands.reset_password)
     cli.run(
         "--host-name",
         "host",
@@ -93,20 +91,19 @@ def test_reset_password(monkeypatch, private_key):
     )
 
 
+@patch_command("start_ec2", "set_log_level")
+@patch_command("start_ec2", "AwsAccess")
+@patch_command("start_ec2", "run_setup_ec2")
 def test_start_ec2_command(
-    monkeypatch,
+    run_setup_ec2,
+    aws_access_factory,
+    set_log_level,
     private_key,
 ):
-    module = command_module("start_ec2")
     aws_access = Mock()
-    aws_access_factory = Mock(return_value=aws_access)
-    run_setup_ec2 = Mock()
-    set_log_level = Mock()
-    monkeypatch.setattr(module, "run_setup_ec2", run_setup_ec2)
-    monkeypatch.setattr(module, "AwsAccess", aws_access_factory)
-    monkeypatch.setattr(module, "set_log_level", set_log_level)
+    aws_access_factory.return_value = aws_access
 
-    cli = CliRunner(module.start_ec2)
+    cli = CliRunner(commands.start_ec2)
     cli.run(
         "--aws-profile",
         "profile",
@@ -140,20 +137,19 @@ def test_start_ec2_command(
     )
 
 
+@patch_command("create_vm", "set_log_level")
+@patch_command("create_vm", "AwsAccess")
+@patch_command("create_vm", "run_create_vm")
 def test_create_vm_command(
-    monkeypatch,
+    run_create_vm,
+    aws_access_factory,
+    set_log_level,
     private_key,
 ):
-    module = command_module("create_vm")
     aws_access = Mock()
-    aws_access_factory = Mock(return_value=aws_access)
-    run_create_vm = Mock()
-    set_log_level = Mock()
-    monkeypatch.setattr(module, "run_create_vm", run_create_vm)
-    monkeypatch.setattr(module, "AwsAccess", aws_access_factory)
-    monkeypatch.setattr(module, "set_log_level", set_log_level)
+    aws_access_factory.return_value = aws_access
 
-    cli = CliRunner(module.create_vm, env={"AWS_USER_NAME": "user-name"})
+    cli = CliRunner(commands.create_vm, env={"AWS_USER_NAME": "user-name"})
     cli.run(
         "--aws-profile",
         "profile",
