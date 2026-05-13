@@ -15,10 +15,11 @@ from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from test.unit.cli import CliRunner
 
+package_prefix = commands.__name__
 
-def patch_command(module: str, name: str):
-    command_module = import_module(f".{module}", commands.__name__)
-    return patch.object(command_module, name)
+
+def command_module(name: str):
+    return import_module(f".{name}", commands.__name__)
 
 
 class AssetIdMatcher:
@@ -39,14 +40,16 @@ def private_key(tmp_path) -> Path:
     return key
 
 
-@patch_command("install_dependencies", "set_log_level")
-@patch_command("install_dependencies", "run_install_dependencies")
+@patch(f"{package_prefix}.install_dependencies.set_log_level")
+@patch(f"{package_prefix}.install_dependencies.run_install_dependencies")
 def test_install_dependencies(
-    run_install_dependencies,
-    set_log_level,
+    mock_run_install_dependencies,
+    mock_set_log_level,
     private_key,
 ):
-    cli = CliRunner(commands.install_dependencies)
+    module = command_module("install_dependencies")
+
+    cli = CliRunner(module.install_dependencies)
     cli.run(
         "--host-name",
         "host",
@@ -57,21 +60,23 @@ def test_install_dependencies(
     )
 
     assert cli.succeeded
-    assert set_log_level.call_args == call("debug")
-    assert run_install_dependencies.call_args == call(
+    assert mock_set_log_level.call_args == call("debug")
+    assert mock_run_install_dependencies.call_args == call(
         default_config_object,
         (ansible.Host("host", str(private_key)),),
     )
 
 
-@patch_command("reset_password", "set_log_level")
-@patch_command("reset_password", "run_reset_password")
+@patch(f"{package_prefix}.reset_password.set_log_level")
+@patch(f"{package_prefix}.reset_password.run_reset_password")
 def test_reset_password(
-    run_reset_password,
-    set_log_level,
+    mock_run_reset_password,
+    mock_set_log_level,
     private_key,
 ):
-    cli = CliRunner(commands.reset_password)
+    module = command_module("reset_password")
+
+    cli = CliRunner(module.reset_password)
     cli.run(
         "--host-name",
         "host",
@@ -84,26 +89,27 @@ def test_reset_password(
     )
 
     assert cli.succeeded
-    assert set_log_level.call_args == call("debug")
-    assert run_reset_password.call_args == call(
+    assert mock_set_log_level.call_args == call("debug")
+    assert mock_run_reset_password.call_args == call(
         "secret",
         (ansible.Host("host", str(private_key)),),
     )
 
 
-@patch_command("start_ec2", "set_log_level")
-@patch_command("start_ec2", "AwsAccess")
-@patch_command("start_ec2", "run_setup_ec2")
+@patch(f"{package_prefix}.start_ec2.set_log_level")
+@patch(f"{package_prefix}.start_ec2.AwsAccess")
+@patch(f"{package_prefix}.start_ec2.run_setup_ec2")
 def test_start_ec2_command(
-    run_setup_ec2,
-    aws_access_factory,
-    set_log_level,
+    mock_run_setup_ec2,
+    mock_aws_access_factory,
+    mock_set_log_level,
     private_key,
 ):
+    module = command_module("start_ec2")
     aws_access = Mock()
-    aws_access_factory.return_value = aws_access
+    mock_aws_access_factory.return_value = aws_access
 
-    cli = CliRunner(commands.start_ec2)
+    cli = CliRunner(module.start_ec2)
     cli.run(
         "--aws-profile",
         "profile",
@@ -123,9 +129,9 @@ def test_start_ec2_command(
     )
 
     assert cli.succeeded
-    assert set_log_level.call_args == call("debug")
-    assert aws_access_factory.call_args == call("profile")
-    assert run_setup_ec2.call_args == call(
+    assert mock_set_log_level.call_args == call("debug")
+    assert mock_aws_access_factory.call_args == call("profile")
+    assert mock_run_setup_ec2.call_args == call(
         aws_access=aws_access,
         ec2_instance_type="m5.large",
         ec2_source_ami="ami-123",
@@ -137,19 +143,20 @@ def test_start_ec2_command(
     )
 
 
-@patch_command("create_vm", "set_log_level")
-@patch_command("create_vm", "AwsAccess")
-@patch_command("create_vm", "run_create_vm")
+@patch(f"{package_prefix}.create_vm.set_log_level")
+@patch(f"{package_prefix}.create_vm.AwsAccess")
+@patch(f"{package_prefix}.create_vm.run_create_vm")
 def test_create_vm_command(
-    run_create_vm,
-    aws_access_factory,
-    set_log_level,
+    mock_run_create_vm,
+    mock_aws_access_factory,
+    mock_set_log_level,
     private_key,
 ):
+    module = command_module("create_vm")
     aws_access = Mock()
-    aws_access_factory.return_value = aws_access
+    mock_aws_access_factory.return_value = aws_access
 
-    cli = CliRunner(commands.create_vm, env={"AWS_USER_NAME": "user-name"})
+    cli = CliRunner(module.create_vm, env={"AWS_USER_NAME": "user-name"})
     cli.run(
         "--aws-profile",
         "profile",
@@ -175,9 +182,9 @@ def test_create_vm_command(
     )
 
     assert cli.succeeded
-    assert set_log_level.call_args == call("debug")
-    assert aws_access_factory.call_args == call("profile")
-    assert run_create_vm.call_args == call(
+    assert mock_set_log_level.call_args == call("debug")
+    assert mock_aws_access_factory.call_args == call("profile")
+    assert mock_run_create_vm.call_args == call(
         aws_access=aws_access,
         ec2_instance_type="m5.large",
         ec2_source_ami="ami-123",
