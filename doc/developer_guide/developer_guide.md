@@ -2,15 +2,15 @@
 
 ## Overview
 
-The overall idea of this project is to set-up an AWS EC-2 instance, using cloudformation templates, then install all
-dependencies via _Ansible_, generate an AMI image based on the final EC-2 instance, and finally export the AMI image to
-the virtual image formats.
+The current release flow runs from a tag-triggered GitHub Actions workflow after PR CI validates the release logic.
+GitHub Actions authenticates to AWS via OIDC for the AMI and VM build steps, and the workflow also publishes the
+Docker edition.
 
 ## Table of Contents
 
 1. [Requirements and Setup](dev-requirements-and-setup.md)
 2. [Design Goals](design_goals.md)
-3. [AWS Build and Release Workflow](aws.md)
+3. [AWS Infrastructure Workflow](aws.md)
 4. [Command Line Usage](commands.md)
 5. [Testing](testing.md)
 6. [Running tests in the CI](ci.md)

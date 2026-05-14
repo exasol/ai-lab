@@ -29,8 +29,10 @@ Always
   * [ ] [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml)
 
 Ship the Actual Release
-* [ ] Run release droid `java -jar ~/java/jar/release-droid-*.jar -n ai-lab --goal release`
-* [ ] Edit the Release on GitHub making the draft final
+* [ ] Ensure PR CI completed the release validation job successfully
+* [ ] Merge the release PR
+* [ ] Push the release version tag
+* [ ] Verify the `Release` workflow published the AWS and Docker artifacts for that tag
 
 Post-Release Actions
 * [ ] Update links in file `README.md` to point to the tag on GitHub

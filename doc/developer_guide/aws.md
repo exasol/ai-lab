@@ -1,4 +1,4 @@
-## How to Release the AI Lab
+## Tagged Release Workflow
 
 1. Take care to update latest file `doc/changes/changes_*.md`
    * Correct version number
@@ -6,18 +6,12 @@
    * Code name
    * Summary
    * Remove sections without tickets or add `n/a`
-2. Push and merge your current Pull-request
-3. Run [release-droid](https://github.com/exasol/release-droid)
-4. Edit draft release on GitHub and make it final
+2. Open a pull request and let the PR CI validate `start-release-build`
+3. Merge the pull request
+4. Push the release version tag
+5. The `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
 
-Release-droid command line:
-```shell
-java -jar ~/path/to/release-droid-*.jar \
-     -n ai-lab -goal release \
-     -guide /tmp/release-guide.html
-```
-
-## AWS Build and Release Workflow
+## AWS Infrastructure Workflow
 
 The following diagram shows the high-level steps to generate the images:
 
@@ -44,9 +38,9 @@ The export creates an AMI based on the running EC2 instance and exports the AMI 
 
 ## Release
 
-The release is executed in a AWS Codebuild job, the following diagram shows the flow.
-
-![image info](./img/create-vm-release.drawio.png)
+The release now runs in GitHub Actions instead of AWS CodeBuild. PR CI performs a dry-run of
+the release logic through unit tests, while the tagged `Release` workflow authenticates to AWS via OIDC, builds the
+AMI and VM artifacts, and publishes the Docker image.
 
 ## AWS S3 Bucket
 
@@ -65,7 +59,6 @@ The following diagram shows the involved cloudformation stacks:
 The following resources are permanent and need to be deployed using the "deploy" [commands](commands.md#deployment-commands):
 * `DATA-SCIENCE-SANDBOX-VM-Bucket`
 * `DATA-SCIENCE-SANDBOX-CI-TEST-CODEBUILD`
-* `DATA-SCIENCE-SANDBOX-RELEASE-CODEBUILD`
 
 The EC2-stack lives only during the creation of a new sandbox image.
 
