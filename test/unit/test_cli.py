@@ -1,4 +1,3 @@
-from importlib import import_module
 from pathlib import Path
 from unittest.mock import (
     Mock,
@@ -8,15 +7,13 @@ from unittest.mock import (
 
 import exasol.ansible as ansible
 import exasol.ds.sandbox.cli.commands as commands
+import exasol.ds.sandbox.lib.cli_api as cli_api
 import pytest
 
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from test.unit.cli import CliRunner
-
-def command_module(name: str):
-    return import_module(f".{name}", commands.__name__)
 
 
 class AssetIdMatcher:
@@ -37,16 +34,14 @@ def private_key(tmp_path) -> Path:
     return key
 
 
-@patch.object(command_module("install_dependencies"), "set_log_level")
-@patch.object(command_module("install_dependencies"), "run_install_dependencies")
+@patch.object(cli_api, "set_log_level")
+@patch.object(cli_api, "run_install_dependencies")
 def test_install_dependencies(
     mock_run_install_dependencies,
     mock_set_log_level,
     private_key,
 ):
-    module = command_module("install_dependencies")
-
-    cli = CliRunner(module.install_dependencies)
+    cli = CliRunner(commands.install_dependencies)
     cli.run(
         "--host-name",
         "host",
@@ -64,16 +59,14 @@ def test_install_dependencies(
     )
 
 
-@patch.object(command_module("reset_password"), "set_log_level")
-@patch.object(command_module("reset_password"), "run_reset_password")
+@patch.object(cli_api, "set_log_level")
+@patch.object(cli_api, "run_reset_password")
 def test_reset_password(
     mock_run_reset_password,
     mock_set_log_level,
     private_key,
 ):
-    module = command_module("reset_password")
-
-    cli = CliRunner(module.reset_password)
+    cli = CliRunner(commands.reset_password)
     cli.run(
         "--host-name",
         "host",
@@ -93,20 +86,19 @@ def test_reset_password(
     )
 
 
-@patch.object(command_module("start_ec2"), "set_log_level")
-@patch.object(command_module("start_ec2"), "AwsAccess")
-@patch.object(command_module("start_ec2"), "run_setup_ec2")
+@patch.object(cli_api, "set_log_level")
+@patch.object(cli_api, "AwsAccess")
+@patch.object(cli_api, "run_setup_ec2")
 def test_start_ec2_command(
     mock_run_setup_ec2,
     mock_aws_access_factory,
     mock_set_log_level,
     private_key,
 ):
-    module = command_module("start_ec2")
     aws_access = Mock()
     mock_aws_access_factory.return_value = aws_access
 
-    cli = CliRunner(module.start_ec2)
+    cli = CliRunner(commands.start_ec2)
     cli.run(
         "--aws-profile",
         "profile",
@@ -140,20 +132,19 @@ def test_start_ec2_command(
     )
 
 
-@patch.object(command_module("create_vm"), "set_log_level")
-@patch.object(command_module("create_vm"), "AwsAccess")
-@patch.object(command_module("create_vm"), "run_create_vm")
+@patch.object(cli_api, "set_log_level")
+@patch.object(cli_api, "AwsAccess")
+@patch.object(cli_api, "run_create_vm")
 def test_create_vm_command(
     mock_run_create_vm,
     mock_aws_access_factory,
     mock_set_log_level,
     private_key,
 ):
-    module = command_module("create_vm")
     aws_access = Mock()
     mock_aws_access_factory.return_value = aws_access
 
-    cli = CliRunner(module.create_vm, env={"AWS_USER_NAME": "user-name"})
+    cli = CliRunner(commands.create_vm, env={"AWS_USER_NAME": "user-name"})
     cli.run(
         "--aws-profile",
         "profile",

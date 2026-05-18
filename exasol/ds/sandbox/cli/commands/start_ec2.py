@@ -1,6 +1,7 @@
 from typing import Optional
 
 import click
+import exasol.ds.sandbox.lib.cli_api as cli_api
 
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
@@ -10,11 +11,8 @@ from exasol.ds.sandbox.cli.options.ec2_options import (ec2_instance_options,
 from exasol.ds.sandbox.cli.options.id_options import id_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.lib.asset_id import AssetId
-from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
-from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
-from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import run_setup_ec2
 
 
 @cli.command()
@@ -41,13 +39,13 @@ def start_ec2(
     Developer command starting an EC-2 instance, optionally installing
     dependencies via ansible.
     """
-    set_log_level(log_level)
+    cli_api.set_log_level(log_level)
     dependency_installer = (
         AnsibleDependencyInstaller()
         if install_dependencies else None
     )
-    run_setup_ec2(
-        aws_access=AwsAccess(aws_profile),
+    cli_api.run_setup_ec2(
+        aws_access=cli_api.AwsAccess(aws_profile),
         ec2_instance_type=ec2_instance_type,
         ec2_source_ami=ec2_source_ami,
         ec2_key_file=ec2_key_file,
