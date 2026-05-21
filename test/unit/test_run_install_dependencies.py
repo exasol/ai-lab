@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import (
     Any,
     Callable,
@@ -7,12 +8,18 @@ from unittest.mock import (
     call,
 )
 
-import exasol.ansible as ansible
+import exasol.ansible as ansible_runner_wrapper
+import exasol.ds.sandbox.runtime.ansible as runtime_ansible
 import pytest
+import yaml
 
+from exasol.ansible.inventory import INVENTORY_GROUP
 from exasol.ds.sandbox.lib.config import ConfigObject
 from exasol.ds.sandbox.lib.setup_ec2 import run_install_dependencies as lib
 from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import DEFAULT_REPOSITORIES
+
+
+RUNTIME_ANSIBLE_DIR = Path(runtime_ansible.__path__[0])
 
 
 def _extra_vars(config: ConfigObject) -> dict[str, Any]:
@@ -22,12 +29,12 @@ def _extra_vars(config: ConfigObject) -> dict[str, Any]:
     }
 
 
-def expected_playbook(filename: str, test_config) -> ansible.Playbook:
-    return ansible.Playbook(filename, _extra_vars(test_config))
+def expected_playbook(filename: str, test_config) -> ansible_runner_wrapper.Playbook:
+    return ansible_runner_wrapper.Playbook(filename, _extra_vars(test_config))
 
 
 def expected_call(
-    playbook: ansible.Playbook,
+    playbook: ansible_runner_wrapper.Playbook,
     hosts=tuple(),
     retrieve_facts_from="",
 ):
@@ -75,7 +82,7 @@ def test_default_values(mock_ansible_runner, test_config):
 
 
 def test_custom_playbook(test_config, mocked_run_method):
-    playbook = ansible.Playbook("my_playbook.yml")
+    playbook = ansible_runner_wrapper.Playbook("my_playbook.yml")
     lib.run_install_dependencies(
         test_config,
         host_infos=tuple(),
@@ -87,7 +94,7 @@ def test_custom_playbook(test_config, mocked_run_method):
 
 
 def test_custom_variables(test_config, mocked_run_method):
-    playbook = ansible.Playbook("my_playbook.yml", {"my_var": True})
+    playbook = ansible_runner_wrapper.Playbook("my_playbook.yml", {"my_var": True})
     lib.run_install_dependencies(
         test_config,
         host_infos=tuple(),
@@ -95,14 +102,14 @@ def test_custom_variables(test_config, mocked_run_method):
     )
     extravars = _extra_vars(test_config) | {"my_var": True}
     assert mocked_run_method.call_args == expected_call(
-        ansible.Playbook("my_playbook.yml", extravars),
+        ansible_runner_wrapper.Playbook("my_playbook.yml", extravars),
     )
 
 
 def test_custom_hosts(test_config, mock_ansible_runner):
     run_method = Mock()
     mock = mock_ansible_runner(run_method)
-    host_infos = (ansible.Host("my_host", "my_key"),)
+    host_infos = (ansible_runner_wrapper.Host("my_host", "my_key"),)
     repositories = (Mock(),)
     lib.run_install_dependencies(
         test_config,
@@ -110,7 +117,7 @@ def test_custom_hosts(test_config, mock_ansible_runner):
         ansible_repositories=repositories,
     )
     assert mock.call_args == call(repositories)
-    assert run_method.call_args.kwargs["hosts"] == (ansible.Host("my_host", "my_key"),)
+    assert run_method.call_args.kwargs["hosts"] == (ansible_runner_wrapper.Host("my_host", "my_key"),)
 
 
 def test_fact_retrieval(test_config, mocked_run_method):
@@ -120,7 +127,7 @@ def test_fact_retrieval(test_config, mocked_run_method):
     """
 
     docker_var = {"docker_container": "container"}
-    playbook = ansible.Playbook("my_playbook.yml", docker_var)
+    playbook = ansible_runner_wrapper.Playbook("my_playbook.yml", docker_var)
     lib.run_install_dependencies(
         test_config,
         host_infos=tuple(),
@@ -129,6 +136,19 @@ def test_fact_retrieval(test_config, mocked_run_method):
     )
     extravars = _extra_vars(test_config) | docker_var
     assert mocked_run_method.call_args == expected_call(
-        ansible.Playbook(playbook.file, extravars),
+        ansible_runner_wrapper.Playbook(playbook.file, extravars),
         retrieve_facts_from = "host",
     )
+
+
+@pytest.mark.parametrize(
+    "playbook",
+    [
+        "ec2_playbook.yml",
+        "reset_password.yml",
+    ],
+)
+def test_ec2_playbooks_target_runner_inventory_group(playbook):
+    plays = yaml.safe_load((RUNTIME_ANSIBLE_DIR / playbook).read_text())
+
+    assert plays[0]["hosts"] == INVENTORY_GROUP

@@ -1,5 +1,5 @@
 - name: Setup EC2 instance
-  hosts: ec2
+  hosts: arw_inventory
   vars:
       ansible_python_interpreter: /usr/bin/python3
       user_name: jupyter
