@@ -1,4 +1,4 @@
-from importlib_metadata import version
+from importlib.metadata import version
 
 # name of the project as specified in file pyproject.toml
 AI_LAB_VERSION = version("exasol-ai-lab")

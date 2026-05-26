@@ -5,7 +5,7 @@ The Exasol AI Lab is a pre-configured container designed to empower data scienti
 Key Features:
 * **Jupyter Notebook Environment**: The heart of the AI Lab is a robust Jupyter Notebook environment. It is where you will work on your AI and Data Science projects.
 * **Exasol Integration**: Leverage Exasol’s power for your AI and machine learning use cases. The AI Lab includes essential Exasol packages, extensions, and configuration tasks.
-* **Example Notebooks**: Jumpstart your work with ready-to-use example notebooks. Explore classic machine learning scenarios (think scikit-learn), seamlessly integrate Exasol with AWS SageMaker, and tap into Hugging Face models directly within Exasol.
+* **Example Notebooks**: Jumpstart your work with ready-to-use example notebooks. Explore classic machine learning scenarios (think scikit-learn) and tap into Hugging Face models directly within Exasol.
 * **Generative AI Support**: AI Lab is equipped with tools and libraries to help you explore generative AI techniques, including transformer models and large language models (LLMs).
 * **Traditional ML and Data Science**: AI Lab supports traditional machine learning and data science workflows, making it a versatile tool for various projects.
 

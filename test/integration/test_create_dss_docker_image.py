@@ -147,7 +147,6 @@ def test_install_notebooks(dss_docker_container, work_in_progress_notebooks):
         transformers/
         sklearn/
         cloud/
-        sagemaker/
     """)
     if work_in_progress_notebooks:
         expected.add("work_in_progress/")
