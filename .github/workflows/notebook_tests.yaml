@@ -48,7 +48,6 @@ jobs:
 
   notebook_tests-runner:
     needs: [fetch-notebook-tests]
-    environment: AWS_SAGEMAKER
     runs-on: ${{ needs.fetch-notebook-tests.outputs.runner }}
     env:
       DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
