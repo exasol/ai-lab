@@ -45,12 +45,11 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
-    args = parse_args()
+def validate_release(release_tag: str = "") -> None:
     poetry_version = get_poetry_version()
     latest_tag = get_git_version()
     changelog_version = get_change_log_version()
-    release_tag = args.release_tag.removeprefix("refs/tags/").removeprefix("v")
+    release_tag = release_tag.removeprefix("refs/tags/").removeprefix("v")
     print(f'Changelog version: "{changelog_version}"', file=sys.stderr)
     print(f'Current version: "{poetry_version}"', file=sys.stderr)
     print(f'Latest git tag: "{latest_tag}"', file=sys.stderr)
@@ -70,3 +69,8 @@ if __name__ == '__main__':
         raise ValueError("Poetry version differs from Changelog version!")
 
     print("Everything looks good", file=sys.stderr)
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    validate_release(args.release_tag)
