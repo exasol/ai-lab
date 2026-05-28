@@ -1,8 +1,8 @@
 import re
 import sys
 from pathlib import Path
-import argparse
 
+import click
 from git import Repo
 import toml
 
@@ -35,16 +35,6 @@ def get_change_log_version():
         return version_match.groups()[0]
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--release-tag",
-        default="",
-        help="Validate a tagged release. The tag must match the project version.",
-    )
-    return parser.parse_args()
-
-
 def validate_release(release_tag: str = "") -> None:
     poetry_version = get_poetry_version()
     latest_tag = get_git_version()
@@ -71,6 +61,15 @@ def validate_release(release_tag: str = "") -> None:
     print("Everything looks good", file=sys.stderr)
 
 
+@click.command()
+@click.option(
+    "--release-tag",
+    default="",
+    help="Validate a tagged release. The tag must match the project version.",
+)
+def main(release_tag: str) -> None:
+    validate_release(release_tag)
+
+
 if __name__ == '__main__':
-    args = parse_args()
-    validate_release(args.release_tag)
+    main()

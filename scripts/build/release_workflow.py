@@ -1,8 +1,9 @@
-import argparse
 import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+import click
 
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
@@ -102,108 +103,50 @@ def run_publish(context: ReleaseContext) -> None:
     release_title = (release_dir / "release_title.txt").read_text().strip()
     release_notes = str(release_dir / "release_notes.md")
     artifacts_file = str(release_dir / "artifacts.md")
-
+    gh_args = [
+        "release",
+        "create",
+        context.release_ref,
+    ]
     if context.release_is_manual:
-        if _release_exists(context.release_ref):
-            _run_gh(
-                [
-                    "release",
-                    "edit",
-                    context.release_ref,
-                    "--title",
-                    release_title,
-                    "--notes-file",
-                    release_notes,
-                ]
-            )
-            _run_gh([
-                "release",
-                "upload",
-                context.release_ref,
-                f"{artifacts_file}#artifacts.md",
-                "--clobber",
-            ])
-        else:
-            _run_gh(
-                [
-                    "release",
-                    "create",
-                    context.release_ref,
-                    "--draft",
-                    "--title",
-                    release_title,
-                    "--notes-file",
-                    release_notes,
-                    f"{artifacts_file}#artifacts.md",
-                ]
-            )
-        return
-
-    if _release_exists(context.release_ref):
-        _run_gh(
-            [
-                "release",
-                "edit",
-                context.release_ref,
-                "--title",
-                release_title,
-                "--notes-file",
-                release_notes,
-            ]
-        )
-        _run_gh([
-            "release",
-            "upload",
-            context.release_ref,
-            f"{artifacts_file}#artifacts.md",
-            "--clobber",
-        ])
-    else:
-        _run_gh(
-            [
-                "release",
-                "create",
-                context.release_ref,
-                "--title",
-                release_title,
-                "--notes-file",
-                release_notes,
-                f"{artifacts_file}#artifacts.md",
-            ]
-        )
+        gh_args.append("--draft")
+    gh_args.extend([
+        "--title",
+        release_title,
+        "--notes-file",
+        release_notes,
+        f"{artifacts_file}#artifacts.md",
+    ])
+    _run_gh(gh_args)
 
 
-def _release_exists(release_ref: str) -> bool:
-    try:
-        subprocess.run(["gh", "release", "view", release_ref], check=True)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("check")
-    subparsers.add_parser("build")
-    subparsers.add_parser("notes")
-    subparsers.add_parser("publish")
-    return parser.parse_args()
-
-
+@click.group()
 def main() -> None:
-    args = parse_args()
+    """Release workflow commands."""
+
+
+@main.command()
+def check() -> None:
     context = load_context()
-    if args.command == "check":
-        run_check(context)
-    elif args.command == "build":
-        run_build(context)
-    elif args.command == "notes":
-        run_notes(context)
-    elif args.command == "publish":
-        run_publish(context)
-    else:
-        raise RuntimeError(f"Unknown command {args.command}")
+    run_check(context)
+
+
+@main.command()
+def build() -> None:
+    context = load_context()
+    run_build(context)
+
+
+@main.command()
+def notes() -> None:
+    context = load_context()
+    run_notes(context)
+
+
+@main.command()
+def publish() -> None:
+    context = load_context()
+    run_publish(context)
 
 
 if __name__ == "__main__":

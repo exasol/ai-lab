@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import Mock, call
 
 from scripts.build.release_workflow import (
     ReleaseContext,
@@ -9,6 +9,7 @@ from scripts.build.release_workflow import (
     run_notes,
     run_publish,
 )
+from exasol.ds.sandbox.lib.config import default_config_object
 
 
 def test_load_context_manual(monkeypatch, tmp_path):
@@ -18,7 +19,10 @@ def test_load_context_manual(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_RUN_ID", "123")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
     monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
-    monkeypatch.setattr("scripts.build.release_workflow.get_poetry_version", lambda: "5.1.0")
+    monkeypatch.setattr(
+        "scripts.build.release_workflow.get_poetry_version",
+        Mock(return_value="5.1.0"),
+    )
 
     context = load_context()
 
@@ -30,8 +34,8 @@ def test_load_context_manual(monkeypatch, tmp_path):
 
 
 def test_run_check_routes_by_mode(monkeypatch):
-    calls = []
-    monkeypatch.setattr("scripts.build.release_workflow.validate_release", lambda release_tag: calls.append(release_tag))
+    validate_release = Mock()
+    monkeypatch.setattr("scripts.build.release_workflow.validate_release", validate_release)
     manual_context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -56,14 +60,15 @@ def test_run_check_routes_by_mode(monkeypatch):
     run_check(manual_context)
     run_check(tag_context)
 
-    assert calls == ["", "5.1.0"]
+    assert validate_release.call_args_list == [call(""), call("5.1.0")]
 
 
 def test_run_build_uses_asset_id(monkeypatch):
-    captured = {}
-    monkeypatch.setattr("scripts.build.release_workflow.run_start_release_build", lambda config, publish, asset_id: captured.update(
-        {"publish": publish, "asset_id": asset_id}
-    ))
+    run_start_release_build = Mock()
+    monkeypatch.setattr(
+        "scripts.build.release_workflow.run_start_release_build",
+        run_start_release_build,
+    )
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -77,19 +82,19 @@ def test_run_build_uses_asset_id(monkeypatch):
 
     run_build(context)
 
-    assert captured == {"publish": True, "asset_id": "Draft Release"}
+    run_start_release_build.assert_called_once_with(
+        default_config_object,
+        publish=True,
+        asset_id="Draft Release",
+    )
 
 
 def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
-    captured = {}
-    monkeypatch.setattr("scripts.build.release_workflow.write_release_notes", lambda release_ref, aws_access, output_dir, asset_id=None, release_title=None: captured.update(
-        {
-            "release_ref": release_ref,
-            "asset_id": asset_id,
-            "release_title": release_title,
-            "output_dir": output_dir,
-        }
-    ))
+    write_release_notes = Mock()
+    monkeypatch.setattr(
+        "scripts.build.release_workflow.write_release_notes",
+        write_release_notes,
+    )
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -103,10 +108,11 @@ def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
 
     run_notes(context)
 
-    assert captured["release_ref"] == "5.1.0"
-    assert captured["asset_id"] == "Draft Release"
-    assert captured["release_title"] == "Draft Release"
-    assert captured["output_dir"] == tmp_path / "release-notes"
+    write_release_notes.assert_called_once()
+    args, kwargs = write_release_notes.call_args
+    assert args[0] == "5.1.0"
+    assert args[2] == tmp_path / "release-notes"
+    assert kwargs == {"asset_id": "Draft Release", "release_title": "Draft Release"}
 
 
 def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
@@ -116,9 +122,8 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
     (release_dir / "release_notes.md").write_text("notes")
     (release_dir / "artifacts.md").write_text("artifacts")
 
-    calls = []
-    monkeypatch.setattr("scripts.build.release_workflow._release_exists", lambda release_ref: False)
-    monkeypatch.setattr("scripts.build.release_workflow._run_gh", lambda args: calls.append(args))
+    run_gh = Mock()
+    monkeypatch.setattr("scripts.build.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -132,7 +137,7 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
 
     run_publish(context)
 
-    assert calls == [[
+    run_gh.assert_called_once_with([
         "release",
         "create",
         "manual-123-2",
@@ -142,19 +147,18 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
         "--notes-file",
         str(release_dir / "release_notes.md"),
         f"{release_dir / 'artifacts.md'}#artifacts.md",
-    ]]
+    ])
 
 
-def test_run_publish_tag_updates_existing_release(monkeypatch, tmp_path):
+def test_run_publish_tag_creates_release(monkeypatch, tmp_path):
     release_dir = tmp_path / "release-notes"
     release_dir.mkdir()
     (release_dir / "release_title.txt").write_text("5.1.0: Test Release\n")
     (release_dir / "release_notes.md").write_text("notes")
     (release_dir / "artifacts.md").write_text("artifacts")
 
-    calls = []
-    monkeypatch.setattr("scripts.build.release_workflow._release_exists", lambda release_ref: True)
-    monkeypatch.setattr("scripts.build.release_workflow._run_gh", lambda args: calls.append(args))
+    run_gh = Mock()
+    monkeypatch.setattr("scripts.build.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="push",
         release_tag="5.1.0",
@@ -168,7 +172,13 @@ def test_run_publish_tag_updates_existing_release(monkeypatch, tmp_path):
 
     run_publish(context)
 
-    assert calls == [
-        ["release", "edit", "5.1.0", "--title", "5.1.0: Test Release", "--notes-file", str(release_dir / "release_notes.md")],
-        ["release", "upload", "5.1.0", f"{release_dir / 'artifacts.md'}#artifacts.md", "--clobber"],
-    ]
+    run_gh.assert_called_once_with([
+        "release",
+        "create",
+        "5.1.0",
+        "--title",
+        "5.1.0: Test Release",
+        "--notes-file",
+        str(release_dir / "release_notes.md"),
+        f"{release_dir / 'artifacts.md'}#artifacts.md",
+    ])
