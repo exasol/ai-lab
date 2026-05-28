@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 
 import click
 
+import exasol.ds.sandbox.lib.cli_api as cli_api
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.aws_options import aws_options
@@ -10,12 +11,8 @@ from exasol.ds.sandbox.cli.options.ec2_options import ec2_instance_options, ec2_
 from exasol.ds.sandbox.cli.options.id_options import id_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
 from exasol.ds.sandbox.cli.options.vm_options import vm_options
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.asset_id import AssetId
-from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.logging import set_log_level
 from exasol.ds.sandbox.lib.config import default_config_object
-from exasol.ds.sandbox.lib.run_create_vm import run_create_vm
 
 
 @cli.command()
@@ -46,14 +43,13 @@ def create_vm(
     Developer command creating a new VM image from a fresh EC-2 Ubuntu AMI.
     """
     current_vm_image_formats = tuple() if no_vm else vm_image_format
-    set_log_level(log_level)
-    run_create_vm(
-        aws_access=AwsAccess(aws_profile),
+    cli_api.set_log_level(log_level)
+    cli_api.run_create_vm(
+        aws_access=cli_api.AwsAccess(aws_profile),
         ec2_instance_type=ec2_instance_type,
         ec2_source_ami=ec2_source_ami,
         ec2_key_file=ec2_key_file,
         ec2_key_name=ec2_key_name,
-        ansible_access=AnsibleAccess(),
         default_password=default_password,
         vm_image_formats=current_vm_image_formats,
         asset_id=AssetId(asset_id),

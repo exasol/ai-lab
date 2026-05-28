@@ -2,10 +2,9 @@ from datetime import datetime
 from typing import Dict, List
 from unittest.mock import MagicMock, Mock, create_autospec, patch
 
+import exasol.ansible as ansible
 import pytest
 
-from exasol.ds.sandbox.lib.ansible.ansible_run_context import AnsibleRunContext
-from exasol.ds.sandbox.lib.ansible.facts import AnsibleFacts
 from exasol.ds.sandbox.lib.config import AI_LAB_VERSION
 from exasol.ds.sandbox.lib.dss_docker import create_image, DockerRegistry
 from exasol.ds.sandbox.lib.dss_docker.create_image import DssDockerImage
@@ -56,7 +55,7 @@ def test_entrypoint_with_copy_args():
                 "initial": "/path/to/initial",
                 "final": "/path/to/final",
             }}}
-    facts = AnsibleFacts(raw_facts)
+    facts = ansible.Facts(raw_facts, prefixes=["dss_facts"])
 
     def fact(*args):
         return facts.get(*args)
@@ -125,8 +124,16 @@ def test_work_in_progress_notebooks(mocked_run_install_dependencies: Mock,
                                     mocked_docker_image: DssDockerImage):
     testee = mocked_docker_image
     testee._install_dependencies = create_testee()._install_dependencies
+    mocked_run_install_dependencies.return_value = {}
+
     testee.create()
-    assert len(mocked_run_install_dependencies.mock_calls) == 1
-    ansible_run_context = mocked_run_install_dependencies.mock_calls[0].kwargs["ansible_run_context"]
-    assert isinstance(ansible_run_context, AnsibleRunContext)
-    assert ansible_run_context.extra_vars["work_in_progress_notebooks"] == False
+
+    mocked_run_install_dependencies.assert_called_once()
+    actual = mocked_run_install_dependencies.call_args.kwargs
+    host = ansible.Host(testee.container_name)
+    assert actual["host_infos"] == (host,)
+    assert actual["retrieve_facts_from"] == host.name
+    playbook = actual["playbook"]
+    assert isinstance(playbook, ansible.Playbook)
+    assert playbook.vars["work_in_progress_notebooks"] == False
+    assert playbook.vars["docker_container"] == testee.container_name

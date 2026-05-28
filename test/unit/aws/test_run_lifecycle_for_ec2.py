@@ -1,13 +1,17 @@
+from unittest.mock import Mock
+from unittest.mock import MagicMock
+
 import pytest
 
-from unittest.mock import MagicMock
 from exasol.ds.sandbox.lib.aws_access.ec2_instance import EC2Instance
 from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
+from exasol.ds.sandbox.lib.setup_ec2 import run_setup_ec2
+from exasol.ds.sandbox.lib.setup_ec2.ansible_execution import AnsibleDependencyInstaller
 from exasol.ds.sandbox.lib.setup_ec2.run_setup_ec2 import (
-    run_lifecycle_for_ec2,
     EC2StackLifecycleContextManager,
+    Ec2State,
+    run_lifecycle_for_ec2,
 )
-
 
 
 def ec2_instance(state: str):
@@ -137,3 +141,21 @@ def test_run_lifecycle_for_ec2_with_context_manager(
 
     with pytest.raises(StopIteration):
         next(res_gen)
+
+
+def test_ec2_status_with_dependencies_does_not_pass_ansible_internal_state(
+    monkeypatch,
+    test_config,
+):
+    mock = Mock()
+    monkeypatch.setattr(run_setup_ec2, "run_install_dependencies", mock)
+    installer = AnsibleDependencyInstaller(repositories=(Mock(),))
+    actual = run_setup_ec2._ec2_status_with_optional_dependencies(
+        ec2_instance=ec2_instance("running"),
+        key_file_location="key.pem",
+        configuration=test_config,
+        installer=installer,
+    )
+
+    assert actual == Ec2State.INSTALLED
+    assert "ansible_access" not in mock.call_args.kwargs
