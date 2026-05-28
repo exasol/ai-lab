@@ -63,6 +63,27 @@ def test_release_build_with_publish(
     creator.create.assert_called_once_with()
 
 
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.run_create_vm")
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.DssDockerImage")
+def test_release_build_with_asset_override(
+        dss_docker_image_mock,
+        run_create_vm_mock,
+        test_config,
+        monkeypatch,
+):
+    monkeypatch.setenv(RELEASE_PASSWORD_ENV, "release-default-password")
+
+    run_start_release_build(test_config, asset_id="manual-release")
+
+    run_create_vm_kwargs = run_create_vm_mock.call_args.kwargs
+    assert isinstance(run_create_vm_kwargs["asset_id"], AssetId)
+    assert run_create_vm_kwargs["asset_id"].tag_value == "manual-release"
+    dss_docker_image_mock.assert_called_once_with(
+        DEFAULT_ORG_AND_REPOSITORY,
+        "manual-release",
+    )
+
+
 @pytest.mark.parametrize(
     ("missing_env", "expected_message"),
     [

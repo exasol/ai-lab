@@ -48,11 +48,13 @@ def run_start_release_build(
         config: ConfigObject,
         publish: bool = False,
         repository: str = DEFAULT_ORG_AND_REPOSITORY,
+        asset_id: str | None = None,
 ) -> None:
+    release_asset_id = asset_id or config.ai_lab_version
     logging.info(
-        "run_start_release_build for repository %s and version %s",
+        "run_start_release_build for repository %s and asset id %s",
         repository,
-        config.ai_lab_version,
+        release_asset_id,
     )
     registry = _docker_registry(publish)
     run_create_vm(
@@ -63,11 +65,11 @@ def run_start_release_build(
         ec2_key_name=None,
         default_password=_release_default_password(),
         vm_image_formats=VmDiskImageFormat.default_formats(),
-        asset_id=AssetId(config.ai_lab_version),
+        asset_id=AssetId(release_asset_id),
         configuration=config,
         user_name=os.getenv("AWS_USER_NAME", DEFAULT_RELEASE_USER),
         make_ami_public=True,
     )
-    creator = DssDockerImage(repository, config.ai_lab_version)
+    creator = DssDockerImage(repository, release_asset_id)
     creator.registry = registry
     creator.create()

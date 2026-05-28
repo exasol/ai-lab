@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
+      release_title:
+        description: 'Title for the draft test release.'
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -31,10 +37,30 @@ jobs:
           aws-region: ${{ vars.AWS_CI_REGION }}
 
       - name: Check Release
-        run: poetry run -- python3 -u "./scripts/build/check_release.py" --release-tag "$GITHUB_REF_NAME"
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            poetry run -- python3 -u "./scripts/build/check_release.py"
+          else
+            poetry run -- python3 -u "./scripts/build/check_release.py" --release-tag "$GITHUB_REF_NAME"
+          fi
+
+      - name: Set Release Metadata
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "RELEASE_IS_MANUAL=true" >> "$GITHUB_ENV"
+            echo "RELEASE_REF=manual-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+            echo "RELEASE_VERSION=$(poetry version --short)" >> "$GITHUB_ENV"
+            echo "RELEASE_TITLE_INPUT=${{ github.event.inputs.release_title }}" >> "$GITHUB_ENV"
+            echo "RELEASE_ASSET_ID=${{ github.event.inputs.release_title }}" >> "$GITHUB_ENV"
+          else
+            echo "RELEASE_IS_MANUAL=false" >> "$GITHUB_ENV"
+            echo "RELEASE_REF=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+            echo "RELEASE_VERSION=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+            echo "RELEASE_ASSET_ID=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+          fi
 
       - name: Publish Release Build
-        run: poetry run -- python3 -m exasol.ds.sandbox.main start-release-build --publish
+        run: poetry run -- python3 -m exasol.ds.sandbox.main start-release-build --publish --asset-id "$RELEASE_ASSET_ID"
         env:
           AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
           AWS_USER_NAME: release_user
@@ -43,7 +69,19 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
       - name: Generate Release Notes
-        run: poetry run -- python3 ./scripts/build/generate_release_notes.py --release-tag "$GITHUB_REF_NAME" --output-dir "$RUNNER_TEMP/release-notes"
+        run: |
+          if [ "$RELEASE_IS_MANUAL" = "true" ]; then
+            poetry run -- python3 ./scripts/build/generate_release_notes.py \
+              --release-version "$RELEASE_VERSION" \
+              --asset-id "$RELEASE_ASSET_ID" \
+              --release-title "$RELEASE_TITLE_INPUT" \
+              --output-dir "$RUNNER_TEMP/release-notes"
+          else
+            poetry run -- python3 ./scripts/build/generate_release_notes.py \
+              --release-version "$RELEASE_VERSION" \
+              --asset-id "$RELEASE_ASSET_ID" \
+              --output-dir "$RUNNER_TEMP/release-notes"
+          fi
         env:
           AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
 
@@ -56,14 +94,29 @@ jobs:
           RELEASE_NOTES="$RELEASE_DIR/release_notes.md"
           ARTIFACTS_FILE="$RELEASE_DIR/artifacts.md"
 
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" \
-              --title "$RELEASE_TITLE" \
-              --notes-file "$RELEASE_NOTES"
-            gh release upload "$GITHUB_REF_NAME" "$ARTIFACTS_FILE#artifacts.md" --clobber
+          if [ "$RELEASE_IS_MANUAL" = "true" ]; then
+            if gh release view "$RELEASE_REF" >/dev/null 2>&1; then
+              gh release edit "$RELEASE_REF" \
+                --title "$RELEASE_TITLE_INPUT" \
+                --notes-file "$RELEASE_NOTES"
+              gh release upload "$RELEASE_REF" "$ARTIFACTS_FILE#artifacts.md" --clobber
+            else
+              gh release create "$RELEASE_REF" \
+                --draft \
+                --title "$RELEASE_TITLE_INPUT" \
+                --notes-file "$RELEASE_NOTES" \
+                "$ARTIFACTS_FILE#artifacts.md"
+            fi
           else
-            gh release create "$GITHUB_REF_NAME" \
-              --title "$RELEASE_TITLE" \
-              --notes-file "$RELEASE_NOTES" \
-              "$ARTIFACTS_FILE#artifacts.md"
+            if gh release view "$RELEASE_REF" >/dev/null 2>&1; then
+              gh release edit "$RELEASE_REF" \
+                --title "$RELEASE_TITLE" \
+                --notes-file "$RELEASE_NOTES"
+              gh release upload "$RELEASE_REF" "$ARTIFACTS_FILE#artifacts.md" --clobber
+            else
+              gh release create "$RELEASE_REF" \
+                --title "$RELEASE_TITLE" \
+                --notes-file "$RELEASE_NOTES" \
+                "$ARTIFACTS_FILE#artifacts.md"
+            fi
           fi

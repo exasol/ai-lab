@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
+
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.asset_printing.print_assets import (
     AssetTypes,
@@ -55,24 +56,29 @@ def _split_changelog(version: str, changelog: str) -> tuple[str, str]:
     return code_name, "\n".join(lines[line_index:]).strip()
 
 
-def _release_artifacts(version: str, aws_access: AwsAccess) -> str:
+def _release_artifacts(asset_id: str, aws_access: AwsAccess) -> str:
     buffer = StringIO()
     print_assets(
         aws_access=aws_access,
-        asset_id=AssetId(version),
+        asset_id=AssetId(asset_id),
         out_file_obj=buffer,
         asset_types=(AssetTypes.DOCKER, AssetTypes.AMI, AssetTypes.VM_S3),
     )
     return buffer.getvalue().strip()
 
 
-def build_release_notes(release_tag: str, aws_access: AwsAccess) -> ReleaseNotes:
-    version = _release_version(release_tag)
+def build_release_notes(
+        release_ref: str,
+        aws_access: AwsAccess,
+        asset_id: str | None = None,
+        release_title: str | None = None,
+) -> ReleaseNotes:
+    version = _release_version(release_ref)
     changelog = _read_changes(version).strip()
     code_name, changelog_body = _split_changelog(version, changelog)
-    title = f"{version}: {code_name}"
+    title = release_title if release_title else f"{version}: {code_name}"
     additional_notes = render_template("additional_release_notes.jinja").strip()
-    artifacts = _release_artifacts(version, aws_access)
+    artifacts = _release_artifacts(asset_id or version, aws_access)
 
     notes_parts = [changelog_body, additional_notes]
     if artifacts:
@@ -83,9 +89,20 @@ def build_release_notes(release_tag: str, aws_access: AwsAccess) -> ReleaseNotes
     return ReleaseNotes(title=title, notes=notes, artifacts=artifacts_text)
 
 
-def write_release_notes(release_tag: str, aws_access: AwsAccess, output_dir: Path) -> ReleaseNotes:
+def write_release_notes(
+        release_ref: str,
+        aws_access: AwsAccess,
+        output_dir: Path,
+        asset_id: str | None = None,
+        release_title: str | None = None,
+) -> ReleaseNotes:
     output_dir.mkdir(parents=True, exist_ok=True)
-    release_notes = build_release_notes(release_tag, aws_access)
+    release_notes = build_release_notes(
+        release_ref,
+        aws_access,
+        asset_id=asset_id,
+        release_title=release_title,
+    )
     (output_dir / "release_title.txt").write_text(f"{release_notes.title}\n")
     (output_dir / "release_notes.md").write_text(release_notes.notes)
     (output_dir / "artifacts.md").write_text(release_notes.artifacts)

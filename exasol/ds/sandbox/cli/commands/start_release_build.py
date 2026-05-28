@@ -23,13 +23,25 @@ from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_rele
     show_default=True,
     help="Docker repository used for the release image.",
 )
+@click.option(
+    "--asset-id",
+    type=str,
+    default=None,
+    help="Optional asset identifier used for the release images.",
+)
 def start_release_build(
         log_level: str,
         publish: bool,
-        repository: str):
+        repository: str,
+        asset_id: str | None = None):
     """
     Release command building the AI Lab release artifacts in the current
     environment.
     """
     set_log_level(log_level)
-    run_start_release_build(default_config_object, publish=publish, repository=repository)
+    run_start_release_build(
+        default_config_object,
+        publish=publish,
+        repository=repository,
+        asset_id=asset_id,
+    )

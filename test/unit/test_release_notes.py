@@ -69,3 +69,43 @@ def test_write_release_notes(tmp_path, monkeypatch):
     assert (tmp_path / "release" / "release_title.txt").read_text() == "1.2.3: Test Release\n"
     assert (tmp_path / "release" / "release_notes.md").read_text() == release_notes.notes
     assert (tmp_path / "release" / "artifacts.md").read_text() == release_notes.artifacts
+
+
+def test_build_release_notes_with_manual_title_and_asset_id(tmp_path, monkeypatch):
+    repo_root = tmp_path
+    changes_dir = repo_root / "doc" / "changes"
+    changes_dir.mkdir(parents=True)
+    (changes_dir / "changes_1.2.3.md").write_text(
+        "# AI-Lab 1.2.3 released 2026-01-01\n"
+        "Code name: Test Release\n"
+        "\n"
+        "## Summary\n"
+        "\n"
+        "This is the summary.\n"
+    )
+
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_notes.REPO_ROOT", repo_root)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_notes.CHANGELOG_DIR", changes_dir)
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_notes.render_template",
+        lambda template: "### AMI Region availability\n\nRegion text.",
+    )
+
+    observed_assets = {}
+
+    def fake_print_assets(**kwargs):
+        observed_assets["asset_id"] = kwargs["asset_id"].tag_value
+        kwargs["out_file_obj"].write("#### Docker Images\n\n```shell\nexample/image:draft\n```\n")
+
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_notes.print_assets", fake_print_assets)
+
+    notes = build_release_notes(
+        "1.2.3",
+        MagicMock(),
+        asset_id="draft-release",
+        release_title="Draft Release",
+    )
+
+    assert notes.title == "Draft Release"
+    assert observed_assets["asset_id"] == "draft-release"
+    assert "example/image:draft" in notes.artifacts
