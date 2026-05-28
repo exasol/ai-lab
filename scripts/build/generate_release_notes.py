@@ -12,7 +12,7 @@ from exasol.ds.sandbox.lib.release_notes import write_release_notes
     "--release-tag",
     "release_version",
     required=True,
-    help="The release version or refs/tags/... reference to generate notes for.",
+    help="The bare release version or refs/tags/... reference to generate notes for.",
 )
 @click.option(
     "--output-dir",

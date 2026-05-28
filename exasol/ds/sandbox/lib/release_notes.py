@@ -9,6 +9,7 @@ from exasol.ds.sandbox.lib.asset_printing.print_assets import (
 )
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.render_template import render_template
+from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CHANGELOG_DIR = REPO_ROOT / "doc" / "changes"
@@ -22,7 +23,7 @@ class ReleaseNotes:
 
 
 def _release_version(release_tag: str) -> str:
-    return release_tag.removeprefix("refs/tags/").removeprefix("v")
+    return release_version_from_tag(release_tag)
 
 
 def _changes_file(version: str) -> Path:

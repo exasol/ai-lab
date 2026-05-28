@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 from unittest.mock import Mock, call
 
@@ -31,6 +32,15 @@ def test_load_context_manual(monkeypatch, tmp_path):
     assert context.release_version == "5.1.0"
     assert context.release_asset_id == "Draft Release"
     assert context.release_title_input == "Draft Release"
+
+
+def test_load_context_rejects_v_prefixed_tag(monkeypatch):
+    monkeypatch.setenv("RELEASE_MODE", "push")
+    monkeypatch.setenv("RELEASE_TAG", "v5.1.0")
+    monkeypatch.setenv("GITHUB_REF_NAME", "v5.1.0")
+
+    with pytest.raises(ValueError, match="bare versions without a leading 'v'"):
+        load_context()
 
 
 def test_run_check_routes_by_mode(monkeypatch):

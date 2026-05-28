@@ -9,6 +9,7 @@ from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_release_build
 from exasol.ds.sandbox.lib.release_notes import write_release_notes
+from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
 from scripts.build.check_release import get_poetry_version, validate_release
 
 
@@ -33,7 +34,7 @@ def _is_manual(mode: str) -> bool:
 
 
 def _release_version_from_tag(release_tag: str) -> str:
-    return release_tag.removeprefix("refs/tags/").removeprefix("v")
+    return release_version_from_tag(release_tag)
 
 
 def load_context() -> ReleaseContext:

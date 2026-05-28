@@ -12,10 +12,10 @@ def test_check_release_cli_invokes_validator(monkeypatch):
     monkeypatch.setattr("scripts.build.check_release.validate_release", validate_release)
 
     cli = CliRunner(check_release_cli)
-    cli.run("--release-tag", "refs/tags/v5.1.0")
+    cli.run("--release-tag", "refs/tags/5.1.0")
 
     assert cli.succeeded
-    validate_release.assert_called_once_with("refs/tags/v5.1.0")
+    validate_release.assert_called_once_with("refs/tags/5.1.0")
 
 
 def test_generate_release_notes_cli_invokes_writer(monkeypatch, tmp_path):
@@ -28,7 +28,7 @@ def test_generate_release_notes_cli_invokes_writer(monkeypatch, tmp_path):
     cli = CliRunner(generate_release_notes_cli)
     cli.run(
         "--release-tag",
-        "v5.1.0",
+        "5.1.0",
         "--output-dir",
         str(tmp_path / "release-notes"),
         "--asset-id",
@@ -40,7 +40,7 @@ def test_generate_release_notes_cli_invokes_writer(monkeypatch, tmp_path):
     assert cli.succeeded
     write_release_notes.assert_called_once()
     args, kwargs = write_release_notes.call_args
-    assert args[0] == "v5.1.0"
+    assert args[0] == "5.1.0"
     assert args[2] == Path(tmp_path / "release-notes")
     assert kwargs == {"asset_id": "release-assets", "release_title": "Draft Release"}
 

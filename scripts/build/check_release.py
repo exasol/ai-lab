@@ -6,6 +6,8 @@ import click
 from git import Repo
 import toml
 
+from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
+
 
 def get_git_version():
     repo = Repo()
@@ -39,7 +41,7 @@ def validate_release(release_tag: str = "") -> None:
     poetry_version = get_poetry_version()
     latest_tag = get_git_version()
     changelog_version = get_change_log_version()
-    release_tag = release_tag.removeprefix("refs/tags/").removeprefix("v")
+    release_tag = release_version_from_tag(release_tag)
     print(f'Changelog version: "{changelog_version}"', file=sys.stderr)
     print(f'Current version: "{poetry_version}"', file=sys.stderr)
     print(f'Latest git tag: "{latest_tag}"', file=sys.stderr)
@@ -65,7 +67,7 @@ def validate_release(release_tag: str = "") -> None:
 @click.option(
     "--release-tag",
     default="",
-    help="Validate a tagged release. The tag must match the project version.",
+    help="Validate a tagged release. Use a bare tag or refs/tags/... and match the project version.",
 )
 def main(release_tag: str) -> None:
     validate_release(release_tag)
