@@ -19,6 +19,12 @@ jobs:
   release:
     environment: AWS_RELEASE
     runs-on: ubuntu-24.04
+    env:
+      RELEASE_MODE: ${{ github.event_name }}
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_TITLE: ${{ github.event.inputs.release_title }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
+      RELEASE_NOTES_DIR: ${{ runner.temp }}/release-notes
 
     steps:
       - uses: actions/checkout@v5
@@ -38,18 +44,6 @@ jobs:
 
       - name: Check Release
         run: poetry run -- python3 -m scripts.build.release_workflow check
-        env:
-          RELEASE_MODE: ${{ github.event_name }}
-          RELEASE_TAG: ${{ github.ref_name }}
-          RELEASE_TITLE: ${{ github.event.inputs.release_title }}
-
-      - name: Set Release Metadata
-        run: poetry run -- python3 -m scripts.build.release_workflow context
-        env:
-          AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
-          RELEASE_MODE: ${{ github.event_name }}
-          RELEASE_TAG: ${{ github.ref_name }}
-          RELEASE_TITLE: ${{ github.event.inputs.release_title }}
 
       - name: Publish Release Build
         run: poetry run -- python3 -m scripts.build.release_workflow build

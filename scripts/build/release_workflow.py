@@ -68,26 +68,6 @@ def load_context() -> ReleaseContext:
     )
 
 
-def write_workflow_env(context: ReleaseContext) -> None:
-    github_env_path = _workflow_env("GITHUB_ENV")
-    if not github_env_path:
-        raise RuntimeError("GITHUB_ENV must be set")
-    lines = {
-        "AWS_DEFAULT_REGION": _workflow_env("AWS_DEFAULT_REGION"),
-        "RELEASE_MODE": context.mode,
-        "RELEASE_TAG": context.release_tag,
-        "RELEASE_VERSION": context.release_version,
-        "RELEASE_REF": context.release_ref,
-        "RELEASE_TITLE_INPUT": context.release_title_input,
-        "RELEASE_ASSET_ID": context.release_asset_id,
-        "RELEASE_IS_MANUAL": "true" if context.release_is_manual else "false",
-        "RELEASE_NOTES_DIR": str(context.release_notes_dir),
-    }
-    with open(github_env_path, "a", encoding="utf-8") as handle:
-        for key, value in lines.items():
-            handle.write(f"{key}={value}\n")
-
-
 def run_check(context: ReleaseContext) -> None:
     if context.release_is_manual:
         validate_release("")
@@ -204,7 +184,6 @@ def _release_exists(release_ref: str) -> bool:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
-    subparsers.add_parser("context")
     subparsers.add_parser("check")
     subparsers.add_parser("build")
     subparsers.add_parser("notes")
@@ -215,9 +194,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     context = load_context()
-    if args.command == "context":
-        write_workflow_env(context)
-    elif args.command == "check":
+    if args.command == "check":
         run_check(context)
     elif args.command == "build":
         run_build(context)

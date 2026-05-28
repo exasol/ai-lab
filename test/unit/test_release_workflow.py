@@ -8,7 +8,6 @@ from scripts.build.release_workflow import (
     run_check,
     run_notes,
     run_publish,
-    write_workflow_env,
 )
 
 
@@ -28,32 +27,6 @@ def test_load_context_manual(monkeypatch, tmp_path):
     assert context.release_version == "5.1.0"
     assert context.release_asset_id == "Draft Release"
     assert context.release_title_input == "Draft Release"
-
-
-def test_write_workflow_env(monkeypatch, tmp_path):
-    env_file = tmp_path / "github_env"
-    monkeypatch.setenv("GITHUB_ENV", str(env_file))
-    monkeypatch.setenv("AWS_DEFAULT_REGION", "eu-central-1")
-    context = ReleaseContext(
-        mode="workflow_dispatch",
-        release_tag="feature-branch",
-        release_version="5.1.0",
-        release_ref="manual-123-2",
-        release_title_input="Draft Release",
-        release_asset_id="Draft Release",
-        release_is_manual=True,
-        release_notes_dir=tmp_path / "release-notes",
-    )
-
-    write_workflow_env(context)
-
-    content = env_file.read_text()
-    assert "AWS_DEFAULT_REGION=eu-central-1" in content
-    assert "RELEASE_IS_MANUAL=true" in content
-    assert "RELEASE_REF=manual-123-2" in content
-    assert "RELEASE_VERSION=5.1.0" in content
-    assert "RELEASE_ASSET_ID=Draft Release" in content
-    assert f"RELEASE_NOTES_DIR={tmp_path / 'release-notes'}" in content
 
 
 def test_run_check_routes_by_mode(monkeypatch):
