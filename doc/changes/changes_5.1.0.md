@@ -1,4 +1,4 @@
-# AI-Lab 5.1.0 released 2026-05-19
+# AI-Lab 5.1.0 released 2026-05-28
 
 Code name: Ansible Runner Wrapper dependency and Sagemaker tests removal
 
@@ -11,9 +11,14 @@ It also removes Sagemaker tests from CI testing pipeline and fixes AWS CodeBuild
 
 * #518: Removed Sagemaker tests from CI testing pipeline
 
+## Documentation
+
+* #519: Removed Sagemaker mentions from jupyter notebooks
+
 ## Refactorings
 
-* #504: Replaced `exasol.ds.sandbox.lib.ansible` by `ansible-runner-wrapper`.
+* #504: Replaced `exasol.ds.sandbox.lib.ansible` by `ansible-runner-wrapper`
+* #521: Removed some Ansible unit tests
 
 ## Bug Fixes
 

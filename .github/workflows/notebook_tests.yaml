@@ -48,7 +48,6 @@ jobs:
 
   notebook_tests-runner:
     needs: [fetch-notebook-tests]
-    environment: AWS_SAGEMAKER
     runs-on: ${{ needs.fetch-notebook-tests.outputs.runner }}
     env:
       DOCKER_TAG: "${{ matrix.nb_test.wip }}-${{ github.sha }}"
@@ -92,9 +91,6 @@ jobs:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
-          NBTEST_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          NBTEST_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-          NBTEST_AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
           PROJECT_SHORT_TAG: XAIL-NB
           TARGET_DOCKER_USERNAME: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
           TARGET_DOCKER_PASSWORD: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
