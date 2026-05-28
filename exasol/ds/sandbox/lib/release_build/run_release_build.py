@@ -1,7 +1,6 @@
 import logging
 import os
 
-from exasol.ds.sandbox.lib.ansible.ansible_access import AnsibleAccess
 from exasol.ds.sandbox.lib.asset_id import AssetId
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import ConfigObject
@@ -62,7 +61,6 @@ def run_start_release_build(
         ec2_source_ami=None,
         ec2_key_file=None,
         ec2_key_name=None,
-        ansible_access=AnsibleAccess(),
         default_password=_release_default_password(),
         vm_image_formats=VmDiskImageFormat.default_formats(),
         asset_id=AssetId(config.ai_lab_version),
