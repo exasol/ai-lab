@@ -7,7 +7,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   release:
@@ -41,3 +41,29 @@ jobs:
           RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
           DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Generate Release Notes
+        run: poetry run -- python3 ./scripts/build/generate_release_notes.py --release-tag "$GITHUB_REF_NAME" --output-dir "$RUNNER_TEMP/release-notes"
+        env:
+          AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE_DIR="$RUNNER_TEMP/release-notes"
+          RELEASE_TITLE="$(cat "$RELEASE_DIR/release_title.txt")"
+          RELEASE_NOTES="$RELEASE_DIR/release_notes.md"
+          ARTIFACTS_FILE="$RELEASE_DIR/artifacts.md"
+
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" \
+              --title "$RELEASE_TITLE" \
+              --notes-file "$RELEASE_NOTES"
+            gh release upload "$GITHUB_REF_NAME" "$ARTIFACTS_FILE#artifacts.md" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$RELEASE_TITLE" \
+              --notes-file "$RELEASE_NOTES" \
+              "$ARTIFACTS_FILE#artifacts.md"
+          fi
