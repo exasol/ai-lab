@@ -90,14 +90,14 @@ def test_run_build_uses_asset_id(monkeypatch):
         release_is_manual=True,
         release_notes_dir=Path("/tmp/release-notes"),
     )
+    aws_access = AwsAccess(None)
 
-    run_build(context)
+    run_build(context, aws_access)
 
     run_start_release_build.assert_called_once()
     args, kwargs = run_start_release_build.call_args
     assert args == (default_config_object,)
-    assert isinstance(kwargs["aws_access"], AwsAccess)
-    assert kwargs["aws_access"].aws_profile is None
+    assert kwargs["aws_access"] is aws_access
     assert kwargs["publish"] is True
     assert kwargs["asset_id"] == "Draft Release"
 

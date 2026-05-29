@@ -1,4 +1,5 @@
 from exasol.ds.sandbox.cli.cli import cli
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib import release_workflow as release_workflow_lib
 
 
@@ -16,7 +17,7 @@ def check() -> None:
 @release_workflow.command()
 def build() -> None:
     context = release_workflow_lib.load_context()
-    release_workflow_lib.run_build(context)
+    release_workflow_lib.run_build(context, AwsAccess(None))
 
 
 @release_workflow.command()
