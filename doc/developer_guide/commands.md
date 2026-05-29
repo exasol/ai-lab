@@ -17,16 +17,18 @@ The commands are organized in 3 groups:
 
 The following commands are used during the GitHub Actions release flow:
 * `create-vm`: Create a new AMI and VM images, see also [options for EC2 instances](#options-for-ec2-instances).
-* `start-release-build`: Build the AI Lab release artifacts in the current environment.
+* `release-workflow`: Release workflow entrypoint used by GitHub Actions.
 * `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
 
-Script `start-release-build`:
-* Is called from the tag-triggered `Release` workflow with option `--publish`.
-* Creates the AMI and VM images via AWS APIs and publishes the Docker image.
-* Does not require a GitHub token.
-* Requires AWS credentials in the environment when building the AMI and VM images.
-* Requires environment variable `RELEASE_DEFAULT_PASSWORD` for the temporary VM login password used during the build.
-* Publishes only when environment variables `DOCKER_REGISTRY_USER` and `DOCKER_REGISTRY_PASSWORD` are set and option `--publish` is enabled.
+`release-workflow` commands:
+* `check`: Validate that the repository versions and changelog are ready for a release.
+* `build`: Create the AMI and VM images via AWS APIs and publish the Docker image.
+* `notes`: Generate the GitHub release notes and artifact list.
+* `publish`: Create the GitHub release from the generated notes.
+
+The release workflow commands require AWS credentials when building the AMI and VM images.
+The `build` command requires environment variable `RELEASE_DEFAULT_PASSWORD` for the temporary VM login password used during the build.
+The `build` command publishes only when environment variables `DOCKER_REGISTRY_USER` and `DOCKER_REGISTRY_PASSWORD` are set.
 
 ## Developer commands
 

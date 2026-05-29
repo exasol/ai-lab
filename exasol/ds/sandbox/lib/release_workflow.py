@@ -3,14 +3,12 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-import click
-
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.check_release import get_poetry_version, validate_release
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_release_build
 from exasol.ds.sandbox.lib.release_notes import write_release_notes
 from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
-from scripts.build.check_release import get_poetry_version, validate_release
 
 
 @dataclass(frozen=True)
@@ -80,6 +78,7 @@ def run_check(context: ReleaseContext) -> None:
 def run_build(context: ReleaseContext) -> None:
     run_start_release_build(
         default_config_object,
+        aws_access=AwsAccess(None),
         publish=True,
         asset_id=context.release_asset_id,
     )
@@ -119,36 +118,3 @@ def run_publish(context: ReleaseContext) -> None:
         f"{artifacts_file}#artifacts.md",
     ])
     _run_gh(gh_args)
-
-
-@click.group()
-def main() -> None:
-    """Release workflow commands."""
-
-
-@main.command()
-def check() -> None:
-    context = load_context()
-    run_check(context)
-
-
-@main.command()
-def build() -> None:
-    context = load_context()
-    run_build(context)
-
-
-@main.command()
-def notes() -> None:
-    context = load_context()
-    run_notes(context)
-
-
-@main.command()
-def publish() -> None:
-    context = load_context()
-    run_publish(context)
-
-
-if __name__ == "__main__":
-    main()

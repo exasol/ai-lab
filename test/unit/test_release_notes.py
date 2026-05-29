@@ -100,6 +100,31 @@ def test_build_release_notes_rejects_v_prefixed_tag(tmp_path, monkeypatch):
         build_release_notes("v1.2.3", MagicMock())
 
 
+def test_build_release_notes_reports_missing_code_name(tmp_path, monkeypatch):
+    repo_root = tmp_path
+    changes_dir = repo_root / "doc" / "changes"
+    changes_dir.mkdir(parents=True)
+    (changes_dir / "changes_1.2.3.md").write_text(
+        "# AI-Lab 1.2.3 released 2026-01-01\n"
+        "\n"
+        "## Summary\n"
+    )
+
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_notes.REPO_ROOT", repo_root)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_notes.CHANGELOG_DIR", changes_dir)
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_notes.render_template",
+        lambda template: "### AMI Region availability\n\nRegion text.",
+    )
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_notes.print_assets",
+        lambda **kwargs: None,
+    )
+
+    with pytest.raises(ValueError, match="unable to detect code name"):
+        build_release_notes("1.2.3", MagicMock())
+
+
 def test_build_release_notes_with_manual_title_and_asset_id(tmp_path, monkeypatch):
     repo_root = tmp_path
     changes_dir = repo_root / "doc" / "changes"

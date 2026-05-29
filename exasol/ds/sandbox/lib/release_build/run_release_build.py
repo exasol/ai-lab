@@ -46,6 +46,7 @@ def _release_default_password() -> str:
 
 def run_start_release_build(
         config: ConfigObject,
+        aws_access: AwsAccess,
         publish: bool = False,
         repository: str = DEFAULT_ORG_AND_REPOSITORY,
         asset_id: str | None = None,
@@ -58,7 +59,7 @@ def run_start_release_build(
     )
     registry = _docker_registry(publish)
     run_create_vm(
-        aws_access=AwsAccess(None),
+        aws_access=aws_access,
         ec2_instance_type="t2.medium",
         ec2_source_ami=None,
         ec2_key_file=None,
@@ -68,7 +69,7 @@ def run_start_release_build(
         asset_id=AssetId(release_asset_id),
         configuration=config,
         user_name=os.getenv("AWS_USER_NAME", DEFAULT_RELEASE_USER),
-        make_ami_public=True,
+        make_ami_public=publish,
     )
     creator = DssDockerImage(repository, release_asset_id)
     creator.registry = registry

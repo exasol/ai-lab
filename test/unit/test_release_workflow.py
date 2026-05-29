@@ -2,7 +2,8 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, call
 
-from scripts.build.release_workflow import (
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.release_workflow import (
     ReleaseContext,
     load_context,
     run_build,
@@ -21,7 +22,7 @@ def test_load_context_manual(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
     monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
     monkeypatch.setattr(
-        "scripts.build.release_workflow.get_poetry_version",
+        "exasol.ds.sandbox.lib.release_workflow.get_poetry_version",
         Mock(return_value="5.1.0"),
     )
 
@@ -45,7 +46,7 @@ def test_load_context_rejects_v_prefixed_tag(monkeypatch):
 
 def test_run_check_routes_by_mode(monkeypatch):
     validate_release = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow.validate_release", validate_release)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow.validate_release", validate_release)
     manual_context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -76,7 +77,7 @@ def test_run_check_routes_by_mode(monkeypatch):
 def test_run_build_uses_asset_id(monkeypatch):
     run_start_release_build = Mock()
     monkeypatch.setattr(
-        "scripts.build.release_workflow.run_start_release_build",
+        "exasol.ds.sandbox.lib.release_workflow.run_start_release_build",
         run_start_release_build,
     )
     context = ReleaseContext(
@@ -92,17 +93,19 @@ def test_run_build_uses_asset_id(monkeypatch):
 
     run_build(context)
 
-    run_start_release_build.assert_called_once_with(
-        default_config_object,
-        publish=True,
-        asset_id="Draft Release",
-    )
+    run_start_release_build.assert_called_once()
+    args, kwargs = run_start_release_build.call_args
+    assert args == (default_config_object,)
+    assert isinstance(kwargs["aws_access"], AwsAccess)
+    assert kwargs["aws_access"].aws_profile is None
+    assert kwargs["publish"] is True
+    assert kwargs["asset_id"] == "Draft Release"
 
 
 def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
     write_release_notes = Mock()
     monkeypatch.setattr(
-        "scripts.build.release_workflow.write_release_notes",
+        "exasol.ds.sandbox.lib.release_workflow.write_release_notes",
         write_release_notes,
     )
     context = ReleaseContext(
@@ -133,7 +136,7 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
     (release_dir / "artifacts.md").write_text("artifacts")
 
     run_gh = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow._run_gh", run_gh)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -168,7 +171,7 @@ def test_run_publish_tag_creates_release(monkeypatch, tmp_path):
     (release_dir / "artifacts.md").write_text("artifacts")
 
     run_gh = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow._run_gh", run_gh)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="push",
         release_tag="5.1.0",

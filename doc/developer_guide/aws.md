@@ -6,10 +6,10 @@
    * Code name
    * Summary
    * Remove sections without tickets or add `n/a`
-2. Open a pull request and let the PR CI validate `start-release-build`
+2. Open a pull request and let the PR CI validate the release version through the `Check Version Number` step in [.github/workflows/ci.yaml](https://github.com/exasol/ai-lab/blob/main/.github/workflows/ci.yaml)
 3. Merge the pull request
 4. Push the release version tag
-5. The `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
+5. The `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, runs `ai-lab release-workflow check`, `build`, `notes`, and `publish`, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
 
 ## AWS Infrastructure Workflow
 
@@ -38,9 +38,9 @@ The export creates an AMI based on the running EC2 instance and exports the AMI 
 
 ## Release
 
-The release now runs in GitHub Actions instead of AWS CodeBuild. PR CI performs a dry-run of
-the release logic through unit tests, while the tagged `Release` workflow authenticates to AWS via OIDC, builds the
-AMI and VM artifacts, and publishes the Docker image.
+The release now runs in GitHub Actions instead of AWS CodeBuild. PR CI validates the release version,
+while the tagged `Release` workflow authenticates to AWS via OIDC, runs the release workflow commands,
+builds the AMI and VM artifacts, and publishes the Docker image.
 
 ## AWS S3 Bucket
 

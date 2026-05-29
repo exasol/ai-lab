@@ -32,7 +32,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v1
+        uses: exasol/python-toolbox/.github/actions/python-environment@v8
         with:
           python-version: "3.10"
 
@@ -43,10 +43,10 @@ jobs:
           aws-region: ${{ vars.AWS_CI_REGION }}
 
       - name: Check Release
-        run: poetry run -- python3 -m scripts.build.release_workflow check
+        run: poetry run -- ai-lab release-workflow check
 
       - name: Publish Release Build
-        run: poetry run -- python3 -m scripts.build.release_workflow build
+        run: poetry run -- ai-lab release-workflow build
         env:
           AWS_USER_NAME: release_user
           RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
@@ -54,9 +54,9 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
       - name: Generate Release Notes
-        run: poetry run -- python3 -m scripts.build.release_workflow notes
+        run: poetry run -- ai-lab release-workflow notes
 
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: poetry run -- python3 -m scripts.build.release_workflow publish
+        run: poetry run -- ai-lab release-workflow publish
