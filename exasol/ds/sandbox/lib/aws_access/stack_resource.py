@@ -40,9 +40,5 @@ class StackResource:
         return self.resource_type == "AWS::EC2::SecurityGroup"
 
     @property
-    def is_code_build(self) -> bool:
-        return self.resource_type == "AWS::CodeBuild::Project"
-
-    @property
     def is_complete(self) -> bool:
         return self.status in ("CREATE_COMPLETE", "UPDATE_COMPLETE")

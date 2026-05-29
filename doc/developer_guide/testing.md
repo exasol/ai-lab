@@ -8,7 +8,7 @@ AI Lab comes with a number of tests in the directory `test`.
 | `integration`          | Integration tests          | arbitrary              | pytest test cases                                            |
 | `ansible`              | Unit tests                 | ansible                | Resources                                                    |
 | `aws`                  | Unit and Integration tests | AWS                    | Fixtures etc.                                                |
-| `codebuild`            | AWS CodeBuild tests        | test cases             | see [Executing AWS CodeBuild](ci.md#executing-aws-codebuild) |
+| `aws-ci`               | AWS-backed CI tests        | test cases             | see [Executing AWS-backed CI](ci.md#executing-aws-backed-ci) |
 | `docker`               | Integration tests          | Docker                 | Fixtures etc.                                                |
 | `notebook_test_runner` | End-2-end tests            | Jupyter notebooks      | Runner for executing the test cases                          |
 | `notebooks`            | End-2-end tests            | Jupyter notebooks      | pytest test cases                                            |
@@ -96,7 +96,8 @@ After that, you can set an environment variable and execute the tests involving 
 
 ```shell
 export AWS_PROFILE=dss_aws_tests_mfa
-poetry run -- pytest test/test_deploy_codebuild.py
+export DSS_RUN_CI_TEST=true
+poetry run -- pytest test/aws_ci/test_ci*.py
 ```
 
 ## Executing Tests Involving Ansible

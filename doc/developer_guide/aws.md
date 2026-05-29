@@ -38,9 +38,9 @@ The export creates an AMI based on the running EC2 instance and exports the AMI 
 
 ## Release
 
-The release now runs in GitHub Actions instead of AWS CodeBuild. PR CI validates the release version,
-while the tagged `Release` workflow authenticates to AWS via OIDC, runs the release workflow commands,
-builds the AMI and VM artifacts, and publishes the Docker image.
+The release now runs in GitHub Actions. PR CI validates the release version, while the AWS-backed CI tests and the
+tagged `Release` workflow both authenticate to AWS via OIDC, run the release workflow commands, build the AMI and VM
+artifacts, and publish the Docker image.
 
 ## AWS S3 Bucket
 
