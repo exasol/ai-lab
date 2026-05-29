@@ -42,6 +42,82 @@ The release now runs in GitHub Actions. PR CI validates the release version, whi
 tagged `Release` workflow both authenticate to AWS via OIDC, run the release workflow commands, build the AMI and VM
 artifacts, and publish the Docker image.
 
+### IAM permissions for GitHub Actions
+
+The AWS-backed CI and the tagged release workflow both authenticate to AWS via GitHub OIDC. The CI role should get the
+shared permission block below, and the release role should get the same block plus one additional release-only
+permission.
+
+Shared permissions used by AWS CI and release:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SharedCiAndReleasePermissions",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:ValidateTemplate",
+        "cloudformation:ListStackResources",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DeleteStack",
+        "ec2:RunInstances",
+        "ec2:CreateKeyPair",
+        "ec2:DeleteKeyPair",
+        "ec2:CreateSecurityGroup",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:DeleteSecurityGroup",
+        "ec2:TerminateInstances",
+        "ec2:CreateTags",
+        "ec2:DescribeInstances",
+        "ec2:DescribeImages",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeSnapshots",
+        "ec2:DescribeExportImageTasks",
+        "ec2:DescribeKeyPairs",
+        "ec2:CreateImage",
+        "ec2:ExportImage",
+        "ec2:DeregisterImage",
+        "ec2:DeleteSnapshot",
+        "s3:ListBucket",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+These EC2 permissions are required because CloudFormation executes the stack directly and creates the EC2 instance and
+security group on behalf of the GitHub Actions role.
+
+Release-only permission:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReleaseOnlyPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:ModifyImageAttribute"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+`AWS_USER_NAME` is only a workflow input used to label AWS resources created by the build. It is not an IAM
+authorization mechanism.
+
 ## AWS S3 Bucket
 
 The bucket has private access. In order to control access, the Bucket cloudformation stack also contains a Cloudfront distribution. Public Https access is only possibly through Cloudfront. Another stack contains a Web application firewall (WAF), which will be used by the Cloudfront distribution. Due to restrictions in AWS, the WAF stack needs to be deployed in region "us-east-1". The WAF stack provides two rules which aim to minimize a possible bot attack:

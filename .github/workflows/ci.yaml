@@ -53,7 +53,7 @@ jobs:
     env:
       DSS_RUN_CI_TEST: "true"
       AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
-      AWS_USER_NAME: release_user
+      AWS_USER_NAME: ci-user
 
     steps:
       - uses: actions/checkout@v5
@@ -67,7 +67,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ vars.AWS_CI_ROLE }}
+          role-to-assume: github-ai-lab-ci-role
           role-session-name: github-actions-ai-lab-ci
           aws-region: ${{ vars.AWS_CI_REGION }}
 
