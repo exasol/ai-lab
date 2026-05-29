@@ -23,6 +23,9 @@ jobs:
          python-version: "3.10"
 
      - name: Check Version Number
+       env:
+         RELEASE_MODE: workflow_dispatch
+         RELEASE_TITLE: CI validation
        run: poetry run -- ai-lab release-workflow check
 
      - name: Run Unit Tests
