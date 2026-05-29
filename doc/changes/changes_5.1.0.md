@@ -18,6 +18,7 @@ It also removes Sagemaker tests from CI testing pipeline and fixes AWS CodeBuild
 ## Refactorings
 
 * #504: Replaced `exasol.ds.sandbox.lib.ansible` by `ansible-runner-wrapper`
+* #515: Moved AI-Lab release CodeBuild from AWS to GitHub
 * #521: Removed some Ansible unit tests
 
 ## Bug Fixes

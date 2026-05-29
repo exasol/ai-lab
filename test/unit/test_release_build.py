@@ -1,87 +1,114 @@
-import datetime
-from typing import Union
-from unittest.mock import create_autospec, Mock
+from unittest.mock import patch
 
-from dateutil.tz import tzutc
+import pytest
 
-from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
-from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
-from exasol.ds.sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
-from exasol.ds.sandbox.lib.github_release_access import GithubReleaseAccess
-from exasol.ds.sandbox.lib.release_build.run_release_build import run_start_release_build, \
-    run_start_test_release_build
-from test.mock_cast import mock_cast
-
-UPLOAD_URL = "https://uploads.github.com/repos/exasol/ai-lab/releases/123/assets{?name,label}"
-BRANCH = "main"
-GITHUB_TOKEN = "gh_secret"
-
-DUMMY_RESOURCES = [
-    StackResource({'LogicalResourceId': 'CodeBuildLogGroup',
-     'PhysicalResourceId': '/aws/codebuild/log-id',
-     'ResourceType': 'AWS::Logs::LogGroup',
-     'LastUpdatedTimestamp': datetime.datetime(2022, 5, 4, 18, 39, 11, 935000, tzinfo=tzutc()),
-     'ResourceStatus': 'CREATE_COMPLETE', 'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}
-     }),
-    StackResource({'LogicalResourceId': 'CodeBuildRole',
-     'PhysicalResourceId': 'role-id',
-     'ResourceType': 'AWS::IAM::Role',
-     'LastUpdatedTimestamp': datetime.datetime(2022, 5, 4, 18, 39, 1, 806000, tzinfo=tzutc()),
-     'ResourceStatus': 'CREATE_COMPLETE', 'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}
-     }),
-    StackResource({'LogicalResourceId': 'dataScienceSandboxReleaseCodeBuild',
-     'PhysicalResourceId': 'codebuild-id-123',
-     'ResourceType': 'AWS::CodeBuild::Project',
-     'LastUpdatedTimestamp': datetime.datetime(2022, 5, 4, 18, 39, 7, 850000, tzinfo=tzutc()),
-     'ResourceStatus': 'CREATE_COMPLETE', 'DriftInformation': {'StackResourceDriftStatus': 'NOT_CHECKED'}
-     })
-]
+from exasol.ds.sandbox.lib.asset_id import AssetId
+from exasol.ds.sandbox.lib.dss_docker import DEFAULT_ORG_AND_REPOSITORY
+from exasol.ds.sandbox.lib.release_build.run_release_build import (
+    RELEASE_PASSWORD_ENV,
+    run_start_release_build,
+)
 
 
-def test_release_build(test_config):
-    """
-    Test that serialization and deserialization of KeyFileManager work!
-    """
-    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
-    mock_cast(aws_access_mock.get_all_stack_resources).return_value = DUMMY_RESOURCES
-    mock_cast(aws_access_mock.start_codebuild).return_value = (123, create_autospec(CodeBuildWaiter))
-    run_start_release_build(aws_access_mock, test_config, UPLOAD_URL, BRANCH, GITHUB_TOKEN)
-    expected_overrides = [
-        {"name": "RELEASE_ID", "value": "123", "type": "PLAINTEXT"},
-        {"name": "ASSET_ID", "value": test_config.ai_lab_version, "type": "PLAINTEXT"},
-        {"name": "GITHUB_TOKEN", "value": GITHUB_TOKEN, "type": "PLAINTEXT"},
-        {"name": "MAKE_AMI_PUBLIC_OPTION", "value": "--make-ami-public", "type": "PLAINTEXT"}
-    ]
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.run_create_vm")
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.DssDockerImage")
+def test_release_build_without_publish(
+        dss_docker_image_mock,
+        run_create_vm_mock,
+        test_config,
+        monkeypatch,
+):
+    monkeypatch.setenv(RELEASE_PASSWORD_ENV, "release-default-password")
+    run_start_release_build(test_config)
 
-    mock_cast(aws_access_mock.start_codebuild).\
-        assert_called_once_with(
-            "codebuild-id-123",
-            environment_variables_overrides=expected_overrides,
-            branch=BRANCH)
+    run_create_vm_mock.assert_called_once()
+    run_create_vm_kwargs = run_create_vm_mock.call_args.kwargs
+    assert isinstance(run_create_vm_kwargs["asset_id"], AssetId)
+    assert run_create_vm_kwargs["asset_id"].tag_value == test_config.ai_lab_version
+    assert run_create_vm_kwargs["make_ami_public"] is True
+    assert run_create_vm_kwargs["default_password"] == "release-default-password"
+    assert run_create_vm_kwargs["user_name"] == "release_user"
+    dss_docker_image_mock.assert_called_once_with(
+        DEFAULT_ORG_AND_REPOSITORY,
+        test_config.ai_lab_version,
+    )
+    creator = dss_docker_image_mock.return_value
+    assert creator.registry is None
+    creator.create.assert_called_once_with()
 
 
-def test_test_release_build(test_config):
-    """
-    Test that serialization and deserialization of KeyFileManager work!
-    """
-    aws_access_mock: Union[AwsAccess, Mock] = create_autospec(AwsAccess, spec_set=True)
-    mock_cast(aws_access_mock.start_codebuild).return_value = (123, create_autospec(CodeBuildWaiter))
-    gh_release_access_mock: Union[GithubReleaseAccess, Mock] = create_autospec(GithubReleaseAccess, spec_set=True)
-    release_title = "Test Release"
-    release_id = 12345
-    mock_cast(gh_release_access_mock.create_release).return_value = release_id
-    mock_cast(aws_access_mock.get_all_stack_resources).return_value = DUMMY_RESOURCES
-    run_start_test_release_build(aws_access_mock, gh_release_access_mock, BRANCH, release_title, GITHUB_TOKEN)
-    expected_env_variable_overrides = [
-        {"name": "RELEASE_ID", "value": str(release_id), "type": "PLAINTEXT"},
-        {"name": "ASSET_ID", "value": release_title, "type": "PLAINTEXT"},
-        {"name": "GITHUB_TOKEN", "value": GITHUB_TOKEN, "type": "PLAINTEXT"},
-        {"name": "MAKE_AMI_PUBLIC_OPTION", "value": "--no-make-ami-public", "type": "PLAINTEXT"}
-    ]
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.run_create_vm")
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.DockerRegistry")
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.DssDockerImage")
+def test_release_build_with_publish(
+        dss_docker_image_mock,
+        docker_registry_mock,
+        run_create_vm_mock,
+        test_config,
+        monkeypatch,
+):
+    monkeypatch.setenv(RELEASE_PASSWORD_ENV, "release-default-password")
+    monkeypatch.setenv("DOCKER_REGISTRY_USER", "release-user")
+    monkeypatch.setenv("DOCKER_REGISTRY_PASSWORD", "release-password")
+    monkeypatch.setenv("AWS_USER_NAME", "oidc-release-user")
 
-    mock_cast(gh_release_access_mock.create_release).assert_called_once_with(BRANCH, release_title)
+    run_start_release_build(test_config, publish=True, repository="example/release")
 
-    mock_cast(aws_access_mock.start_codebuild).\
-        assert_called_once_with("codebuild-id-123",
-                                environment_variables_overrides=expected_env_variable_overrides,
-                                branch=BRANCH)
+    run_create_vm_mock.assert_called_once()
+    assert run_create_vm_mock.call_args.kwargs["user_name"] == "oidc-release-user"
+    dss_docker_image_mock.assert_called_once_with("example/release", test_config.ai_lab_version)
+    docker_registry_mock.assert_called_once_with("release-user", "release-password")
+    creator = dss_docker_image_mock.return_value
+    assert creator.registry == docker_registry_mock.return_value
+    creator.create.assert_called_once_with()
+
+
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.run_create_vm")
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.DssDockerImage")
+def test_release_build_with_asset_override(
+        dss_docker_image_mock,
+        run_create_vm_mock,
+        test_config,
+        monkeypatch,
+):
+    monkeypatch.setenv(RELEASE_PASSWORD_ENV, "release-default-password")
+
+    run_start_release_build(test_config, asset_id="manual-release")
+
+    run_create_vm_kwargs = run_create_vm_mock.call_args.kwargs
+    assert isinstance(run_create_vm_kwargs["asset_id"], AssetId)
+    assert run_create_vm_kwargs["asset_id"].tag_value == "manual-release"
+    dss_docker_image_mock.assert_called_once_with(
+        DEFAULT_ORG_AND_REPOSITORY,
+        "manual-release",
+    )
+
+
+@pytest.mark.parametrize(
+    ("missing_env", "expected_message"),
+    [
+        (RELEASE_PASSWORD_ENV, f"Environment variable {RELEASE_PASSWORD_ENV} must be set"),
+        ("DOCKER_REGISTRY_USER", "Environment variable DOCKER_REGISTRY_USER must be set"),
+        ("DOCKER_REGISTRY_PASSWORD", "Environment variable DOCKER_REGISTRY_PASSWORD must be set"),
+    ],
+)
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.run_create_vm")
+@patch("exasol.ds.sandbox.lib.release_build.run_release_build.DssDockerImage")
+def test_release_build_publish_requires_registry_credentials(
+        dss_docker_image_mock,
+        run_create_vm_mock,
+        test_config,
+        monkeypatch,
+        missing_env,
+        expected_message,
+):
+    monkeypatch.setenv(RELEASE_PASSWORD_ENV, "release-default-password")
+    monkeypatch.setenv("DOCKER_REGISTRY_USER", "release-user")
+    monkeypatch.setenv("DOCKER_REGISTRY_PASSWORD", "release-password")
+    monkeypatch.delenv(missing_env)
+
+    with pytest.raises(RuntimeError, match=expected_message):
+        run_start_release_build(test_config, publish=True)
+
+    run_create_vm_mock.assert_not_called()
+    dss_docker_image_mock.return_value.create.assert_not_called()

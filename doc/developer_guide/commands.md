@@ -15,18 +15,18 @@ The commands are organized in 3 groups:
 
 ## Release commands
 
-The following commands are used during the release AWS Codebuild job:
+The following commands are used during the GitHub Actions release flow:
 * `create-vm`: Create a new AMI and VM images, see also [options for EC2 instances](#options-for-ec2-instances).
-* `update-release`: Update release notes of an existing Github release.
-* `start-release-build`: Start the release on AWS codebuild.
+* `start-release-build`: Build the AI Lab release artifacts in the current environment.
 * `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
 
 Script `start-release-build`:
-* Is usually called from github workflow `release_droid_upload_github_release_assets.yml`.
-* Requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
-* Requires to specify CLI option `--upload-url`.
-
-This operation usually takes around than 1:40 hours.
+* Is called from the tag-triggered `Release` workflow with option `--publish`.
+* Creates the AMI and VM images via AWS APIs and publishes the Docker image.
+* Does not require a GitHub token.
+* Requires AWS credentials in the environment when building the AMI and VM images.
+* Requires environment variable `RELEASE_DEFAULT_PASSWORD` for the temporary VM login password used during the build.
+* Publishes only when environment variables `DOCKER_REGISTRY_USER` and `DOCKER_REGISTRY_PASSWORD` are set and option `--publish` is enabled.
 
 ## Developer commands
 
@@ -40,16 +40,12 @@ All other commands provide a subset of the features of the release commands, and
   * The script will print the required SSH login for manual inspection or interaction with the EC2 instance.
   * The instance is kept running until the user presses Ctrl-C.
 * `show-aws-assets`: Show AWS entities associated with a specific keyword (called __asset-id__).
-* `start-test-release-build`: (For testing) Creates a release on Github and forwards it to the AWS Codebuild which creates VM images in various formats and attaches them to the Github release.
 * `make-ami-public`: Change permissions of an existing AMI such that it becomes public.
-
-Script `start-test-release-build` requires environment variable `GH_TOKEN` to contain a valid token for access to Github.
 
 ## Deployment commands
 
 The following commands can be used to deploy the infrastructure onto a given AWS account:
 * `setup-ci-codebuild`: Deploy the AWS Codebuild cloudformation stack which will run the ci-test.
-* `setup-release-codebuild`: Deploy the AWS Codebuild cloudformation stack which will be used for the release-build.
 * `setup-s3-bucket`: Deploy an AWS cloudformation stack with an S3 bucket, requires option `--purpose` (see below).
 * `setup-waf`: Deploy an AWS cloudformation stack with a Web Application Firefall (WAF ACL) configuration for the Cloudfront distribution of an S3 bucket, requires option `--purpose` (see below).
 
@@ -62,7 +58,7 @@ For all deployment commands:
 * Don't forget to specify CLI option `--aws-profile`.
 * Ensure the related AWS stack does not exist. If there was a rollback then please delete the stack manually, otherwise the script will fail.
 
-If `setup-release-codebuild` or `setup-ci-codebuild` fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
+If `setup-ci-codebuild` fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
 * Ensure to grant sufficient access permissions to the Github user used by the script.
 * You can use a Github "_Repository role_" for that.
 * The repository role must include the following permissions

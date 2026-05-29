@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      release_title:
+        description: 'Title for the draft test release.'
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  release:
+    environment: AWS_RELEASE
+    runs-on: ubuntu-24.04
+    env:
+      RELEASE_MODE: ${{ github.event_name }}
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_TITLE: ${{ github.event.inputs.release_title }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
+      RELEASE_NOTES_DIR: ${{ runner.temp }}/release-notes
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@v1
+        with:
+          python-version: "3.10"
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_CI_ROLE }}
+          role-session-name: github-actions-ai-lab-release
+          aws-region: ${{ vars.AWS_CI_REGION }}
+
+      - name: Check Release
+        run: poetry run -- python3 -m scripts.build.release_workflow check
+
+      - name: Publish Release Build
+        run: poetry run -- python3 -m scripts.build.release_workflow build
+        env:
+          AWS_USER_NAME: release_user
+          RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
+          DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
+          DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Generate Release Notes
+        run: poetry run -- python3 -m scripts.build.release_workflow notes
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: poetry run -- python3 -m scripts.build.release_workflow publish

@@ -2,8 +2,11 @@ import re
 import sys
 from pathlib import Path
 
+import click
 from git import Repo
 import toml
+
+from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
 
 
 def get_git_version():
@@ -34,20 +37,41 @@ def get_change_log_version():
         return version_match.groups()[0]
 
 
-if __name__ == '__main__':
+def validate_release(release_tag: str = "") -> None:
     poetry_version = get_poetry_version()
     latest_tag = get_git_version()
     changelog_version = get_change_log_version()
+    release_tag = release_version_from_tag(release_tag)
     print(f'Changelog version: "{changelog_version}"', file=sys.stderr)
     print(f'Current version: "{poetry_version}"', file=sys.stderr)
     print(f'Latest git tag: "{latest_tag}"', file=sys.stderr)
+    if release_tag:
+        print(f'Release tag: "{release_tag}"', file=sys.stderr)
 
-    # We expect that the current version in pyproject.toml is always greater than the latest tag.
-    # Thus, we avoid creating a release without having the version number updated.
-    if poetry_version == latest_tag:
-        raise ValueError("Poetry version needs to be updated!")
+    if release_tag:
+        if release_tag != poetry_version:
+            raise ValueError("Release tag differs from Poetry version!")
+    else:
+        # We expect that the current version in pyproject.toml is always greater than the latest tag.
+        # Thus, we avoid creating a release without having the version number updated.
+        if poetry_version == latest_tag:
+            raise ValueError("Poetry version needs to be updated!")
 
     if changelog_version != poetry_version:
         raise ValueError("Poetry version differs from Changelog version!")
 
     print("Everything looks good", file=sys.stderr)
+
+
+@click.command()
+@click.option(
+    "--release-tag",
+    default="",
+    help="Validate a tagged release. Use a bare tag or refs/tags/... and match the project version.",
+)
+def main(release_tag: str) -> None:
+    validate_release(release_tag)
+
+
+if __name__ == '__main__':
+    main()

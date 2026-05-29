@@ -20,17 +20,6 @@ def ci_codebuild_template():
     )
 
 
-# pattern for valid ARNs:
-# (^arn:(aws|aws-cn|aws-us-gov):[^:]+:[^:]*(:(?:\\d{12}|\\*|aws)?:.+|)|\\*)$
-def release_codebuild_template():
-    return render_template(
-        "release_code_build.jinja.yaml",
-        vm_bucket="test-bucket-123",
-        path_in_bucket=AssetId.BUCKET_PREFIX,
-        dockerhub_secret_arn="arn:aws:_:_",
-    )
-
-
 def ec2_template():
     # why isn't this a fixture?
     return render_template(
