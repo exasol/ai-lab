@@ -14,5 +14,5 @@ def test_ci_workflow_uses_python_toolbox_and_oidc_for_aws_ci():
     assert "RELEASE_MODE: workflow_dispatch" in workflow
     assert "RELEASE_TITLE: CI validation" in workflow
     assert "DSS_RUN_CI_TEST: \"true\"" in workflow
-    assert "AWS_USER_NAME: ci_user" in workflow
+    assert "AWS_USER_NAME: release_user" in workflow
     assert "test/aws_ci/test_ci*.py" in workflow
