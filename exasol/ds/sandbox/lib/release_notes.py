@@ -10,8 +10,9 @@ from exasol.ds.sandbox.lib.asset_printing.print_assets import (
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.render_template import render_template
 from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
+from exasol.ds.sandbox.lib.repo_paths import get_repo_root
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = get_repo_root()
 CHANGELOG_DIR = REPO_ROOT / "doc" / "changes"
 
 

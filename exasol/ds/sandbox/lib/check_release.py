@@ -1,11 +1,14 @@
 import re
 import sys
-from pathlib import Path
 
 from git import Repo
 import toml
 
 from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
+from exasol.ds.sandbox.lib.repo_paths import get_repo_root
+
+REPO_ROOT = get_repo_root()
+CHANGELOG_FILE = REPO_ROOT / "doc" / "changes" / "changelog.md"
 
 
 def get_git_version() -> str:
@@ -27,9 +30,11 @@ def get_poetry_version() -> str:
 
 
 def get_change_log_version() -> str:
-    with open(Path(__file__).parent / ".." / ".." / "doc" / "changes" / "changelog.md") as changelog:
+    with open(CHANGELOG_FILE) as changelog:
         changelog_str = changelog.read()
         version_match = re.search(r"\* \[([0-9]+.[0-9]+.[0-9]+)]\(\S+\)", changelog_str)
+        if version_match is None:
+            raise ValueError(f"Unable to find release version in {CHANGELOG_FILE}")
         return version_match.groups()[0]
 
 
