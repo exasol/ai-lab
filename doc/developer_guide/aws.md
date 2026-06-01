@@ -48,6 +48,10 @@ The AWS-backed CI and the tagged release workflow both authenticate to AWS via G
 shared permission block below, and the release role should get the same block plus one additional release-only
 permission.
 
+The release workflow also requests a 5-hour OIDC session from `aws-actions/configure-aws-credentials` so the long
+running test release can complete stack cleanup before the temporary credentials expire. The CI workflow uses a
+shorter session because it finishes much faster.
+
 Shared permissions used by AWS CI and release:
 
 ```json

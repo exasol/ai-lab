@@ -40,6 +40,8 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_CI_ROLE }}
           role-session-name: github-actions-ai-lab-release
+          # Release runs long enough that we request a longer OIDC session so cleanup can finish safely.
+          role-duration-seconds: 18000
           aws-region: ${{ vars.AWS_CI_REGION }}
 
       - name: Check Release
