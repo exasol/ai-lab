@@ -24,7 +24,7 @@ jobs:
       RELEASE_TAG: ${{ github.ref_name }}
       RELEASE_TITLE: ${{ github.event.inputs.release_title }}
       AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
-      RELEASE_NOTES_DIR: ${{ runner.temp }}/release-notes
+      RELEASE_NOTES_DIR: /tmp/release-notes
 
     steps:
       - uses: actions/checkout@v5
