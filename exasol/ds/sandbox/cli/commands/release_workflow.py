@@ -1,6 +1,7 @@
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib import release_workflow as release_workflow_lib
+from exasol.ds.sandbox.lib.logging import set_log_level
 
 
 @cli.group(name="release-workflow")
@@ -16,6 +17,8 @@ def check() -> None:
 
 @release_workflow.command()
 def build() -> None:
+    # Release builds are long-running; surface progress by default.
+    set_log_level("info")
     context = release_workflow_lib.load_context()
     release_workflow_lib.run_build(context, AwsAccess(None))
 
