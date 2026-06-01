@@ -50,8 +50,8 @@ jobs:
         env:
           AWS_USER_NAME: release_user
           RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
-          DOCKER_REGISTRY_USER: ${{ CI4_DOCKERHUB_USERNAME }}
-          DOCKER_REGISTRY_PASSWORD: ${{ CI4_DOCKERHUB_TOKEN }}
+          DOCKER_REGISTRY_USER: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          DOCKER_REGISTRY_PASSWORD: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
 
       - name: Generate Release Notes
         run: poetry run -- ai-lab release-workflow notes
