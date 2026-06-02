@@ -9,7 +9,7 @@
 2. Open a pull request and let the PR CI validate the release version through the `Check Version Number` step in [.github/workflows/ci.yaml](https://github.com/exasol/ai-lab/blob/main/.github/workflows/ci.yaml)
 3. Merge the pull request
 4. Push the release version tag
-5. The `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, runs `ai-lab release check`, `build`, `notes`, and `publish`, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
+5. The tagged `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, runs `ai-lab release check`, `build`, `notes`, and `publish`, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
 
 ## AWS Infrastructure Workflow
 
@@ -41,6 +41,9 @@ The export creates an AMI based on the running EC2 instance and exports the AMI 
 The release now runs in GitHub Actions. PR CI validates the release version, while the AWS-backed CI tests and the
 tagged `Release` workflow both authenticate to AWS via OIDC, run the release workflow commands, build the AMI and VM
 artifacts, and publish the Docker image.
+
+Manual `workflow_dispatch` runs are treated as draft test releases: they still generate release notes and a draft GitHub
+release, but they do not make the AMI public or publish the Docker image.
 
 ### IAM permissions for GitHub Actions
 

@@ -22,13 +22,14 @@ The following commands are used during the GitHub Actions release flow:
 
 `release` commands:
 * `check`: Validate that the repository versions and changelog are ready for a release.
-* `build`: Create the AMI and VM images via AWS APIs and publish the Docker image.
+* `build`: Create the AMI and VM images via AWS APIs and publish the Docker image for tagged releases.
 * `notes`: Generate the GitHub release notes and artifact list.
 * `publish`: Create the GitHub release from the generated notes.
 
 The release workflow commands require AWS credentials when building the AMI and VM images.
 The `build` command requires environment variable `RELEASE_DEFAULT_PASSWORD` for the temporary VM login password used during the build.
-The `build` command publishes only when environment variables `DOCKER_REGISTRY_USER` and `DOCKER_REGISTRY_PASSWORD` are set.
+The `build` command publishes only for tagged releases, and only then when environment variables `DOCKER_REGISTRY_USER`
+and `DOCKER_REGISTRY_PASSWORD` are set. Manual `workflow_dispatch` test releases skip publication.
 
 ## Developer commands
 

@@ -79,7 +79,7 @@ def run_build(context: ReleaseContext, aws_access: AwsAccess) -> None:
     run_start_release_build(
         default_config_object,
         aws_access=aws_access,
-        publish=True,
+        publish=not context.release_is_manual,
         asset_id=context.release_asset_id,
     )
 

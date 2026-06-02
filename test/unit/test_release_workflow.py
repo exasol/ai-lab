@@ -98,8 +98,31 @@ def test_run_build_uses_asset_id(monkeypatch):
     args, kwargs = run_start_release_build.call_args
     assert args == (default_config_object,)
     assert kwargs["aws_access"] is aws_access
-    assert kwargs["publish"] is True
+    assert kwargs["publish"] is False
     assert kwargs["asset_id"] == "Draft Release"
+
+
+def test_run_build_publishes_tagged_releases(monkeypatch):
+    run_start_release_build = Mock()
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_workflow.run_start_release_build",
+        run_start_release_build,
+    )
+    context = ReleaseContext(
+        mode="push",
+        release_tag="5.1.0",
+        release_version="5.1.0",
+        release_ref="5.1.0",
+        release_title_input="",
+        release_asset_id="5.1.0",
+        release_is_manual=False,
+        release_notes_dir=Path("/tmp/release-notes"),
+    )
+    aws_access = AwsAccess(None)
+
+    run_build(context, aws_access)
+
+    assert run_start_release_build.call_args.kwargs["publish"] is True
 
 
 def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
