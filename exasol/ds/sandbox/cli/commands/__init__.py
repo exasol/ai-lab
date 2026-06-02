@@ -5,8 +5,7 @@ from .export_vm import export_vm
 from .create_vm import create_vm
 from .show_aws_assets import show_aws_assets
 from .start_release_build import start_release_build
-# Avoid shadowing the release_workflow submodule name with the Click group object.
-from .release_workflow import release_workflow as release_workflow_command
+from .release_workflow import release  # noqa: F401
 from .make_ami_public import make_ami_public
 from .create_docker_image import create_docker_image
 from .setup_s3_bucket import setup_s3_bucket

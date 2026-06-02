@@ -26,7 +26,7 @@ jobs:
        env:
          RELEASE_MODE: workflow_dispatch
          RELEASE_TITLE: CI validation
-       run: poetry run -- ai-lab release-workflow check
+       run: poetry run -- ai-lab release check
 
      - name: Run Unit Tests
        run: >

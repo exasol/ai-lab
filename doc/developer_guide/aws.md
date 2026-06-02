@@ -9,7 +9,7 @@
 2. Open a pull request and let the PR CI validate the release version through the `Check Version Number` step in [.github/workflows/ci.yaml](https://github.com/exasol/ai-lab/blob/main/.github/workflows/ci.yaml)
 3. Merge the pull request
 4. Push the release version tag
-5. The `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, runs `ai-lab release-workflow check`, `build`, `notes`, and `publish`, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
+5. The `Release` GitHub Actions workflow authenticates to AWS via GitHub OIDC, runs `ai-lab release check`, `build`, `notes`, and `publish`, builds the AMI and VM artifacts, and publishes the Docker release image for that tag
 
 ## AWS Infrastructure Workflow
 

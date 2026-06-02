@@ -17,10 +17,10 @@ The commands are organized in 3 groups:
 
 The following commands are used during the GitHub Actions release flow:
 * `create-vm`: Create a new AMI and VM images, see also [options for EC2 instances](#options-for-ec2-instances).
-* `release-workflow`: Release workflow entrypoint used by GitHub Actions.
+* `release`: Release workflow entrypoint used by GitHub Actions.
 * `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
 
-`release-workflow` commands:
+`release` commands:
 * `check`: Validate that the repository versions and changelog are ready for a release.
 * `build`: Create the AMI and VM images via AWS APIs and publish the Docker image.
 * `notes`: Generate the GitHub release notes and artifact list.

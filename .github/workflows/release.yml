@@ -45,10 +45,10 @@ jobs:
           aws-region: ${{ vars.AWS_CI_REGION }}
 
       - name: Check Release
-        run: poetry run -- ai-lab release-workflow check
+        run: poetry run -- ai-lab release check
 
       - name: Publish Release Build
-        run: poetry run -- ai-lab release-workflow build
+        run: poetry run -- ai-lab release build
         env:
           AWS_USER_NAME: release_user
           RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
@@ -56,9 +56,9 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
 
       - name: Generate Release Notes
-        run: poetry run -- ai-lab release-workflow notes
+        run: poetry run -- ai-lab release notes
 
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: poetry run -- ai-lab release-workflow publish
+        run: poetry run -- ai-lab release publish
