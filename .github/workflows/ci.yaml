@@ -53,7 +53,7 @@ jobs:
     env:
       DSS_RUN_CI_TEST: "true"
       AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
-      AWS_USER_NAME: ci-user
+      AWS_USER_NAME: ailab-ci-user
 
     steps:
       - uses: actions/checkout@v5

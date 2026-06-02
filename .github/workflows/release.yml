@@ -51,7 +51,7 @@ jobs:
       - name: Publish Release Build
         run: poetry run -- ai-lab release build
         env:
-          AWS_USER_NAME: release_user
+          AWS_USER_NAME: ailab-cd-user
           RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
           DOCKER_REGISTRY_USER: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
           DOCKER_REGISTRY_PASSWORD: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
