@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   release:
+    name: Release
     environment: AWS_RELEASE
     runs-on: ubuntu-24.04
     env:
