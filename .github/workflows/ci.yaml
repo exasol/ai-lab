@@ -65,7 +65,7 @@ jobs:
         with:
           python-version: "3.10"
 
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_CI_ROLE }}
           role-session-name: github-actions-ai-lab-ci
