@@ -10,7 +10,6 @@ class LogType(Enum):
     SETUP = "setup"
     EXPORT = "export"
     S3_BUCKETS = "s3_buckets"
-    SETUP_CI_CODEBUILD = "setup_ci_codebuild"
     AWS_ACCESS = "aws_access"
     ANSIBLE = "ansible"
     DOCKER_IMAGE = "docker_image"

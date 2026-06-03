@@ -12,14 +12,6 @@ TEST_IP = "1.1.1.1"
 TEST_ACL_ARN = "TEST-DOWNLOAD-ACL"
 TEST_DUMMY_AMI_ID = "ami-00000000000000000"
 
-
-def ci_codebuild_template():
-    return render_template(
-        "ci_code_build.jinja.yaml",
-        vm_bucket="test-bucket-123",
-    )
-
-
 def ec2_template():
     # why isn't this a fixture?
     return render_template(

@@ -10,8 +10,9 @@ from exasol.ds.sandbox.lib.asset_printing.print_assets import (
 from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.render_template import render_template
 from exasol.ds.sandbox.lib.release_tag import release_version_from_tag
+from exasol.ds.sandbox.lib.repo_paths import get_repo_root
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = get_repo_root()
 CHANGELOG_DIR = REPO_ROOT / "doc" / "changes"
 
 
@@ -20,10 +21,6 @@ class ReleaseNotes:
     title: str
     notes: str
     artifacts: str
-
-
-def _release_version(release_tag: str) -> str:
-    return release_version_from_tag(release_tag)
 
 
 def _changes_file(version: str) -> Path:
@@ -40,14 +37,18 @@ def _read_changes(version: str) -> str:
 def _split_changelog(version: str, changelog: str) -> tuple[str, str]:
     lines = changelog.splitlines()
     if not lines or not lines[0].startswith("# "):
-        raise ValueError(f"Could not parse release notes file {_changes_file(version)}")
+        raise ValueError(
+            f"Could not parse release notes file {_changes_file(version)}: missing headline."
+        )
 
     line_index = 1
     if line_index < len(lines) and lines[line_index] == "":
         line_index += 1
 
     if line_index >= len(lines) or not lines[line_index].startswith("Code name:"):
-        raise ValueError(f"Could not parse release notes file {_changes_file(version)}")
+        raise ValueError(
+            f"Could not parse release notes file {_changes_file(version)}: unable to detect code name."
+        )
 
     code_name = lines[line_index].split("Code name:", 1)[1].strip()
     line_index += 1
@@ -74,7 +75,7 @@ def build_release_notes(
         asset_id: str | None = None,
         release_title: str | None = None,
 ) -> ReleaseNotes:
-    version = _release_version(release_ref)
+    version = release_version_from_tag(release_ref)
     changelog = _read_changes(version).strip()
     code_name, changelog_body = _split_changelog(version, changelog)
     title = release_title if release_title else f"{version}: {code_name}"

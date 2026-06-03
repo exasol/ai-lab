@@ -29,7 +29,7 @@ Always
   * [ ] [pyproject.toml](https://github.com/exasol/ai-lab/blob/main/pyproject.toml)
 
 Ship the Actual Release
-* [ ] Ensure PR CI completed the release validation job successfully
+* [ ] Ensure PR CI completed the `Check Version Number` step in [.github/workflows/ci.yaml](https://github.com/exasol/ai-lab/blob/main/.github/workflows/ci.yaml) successfully
 * [ ] Merge the release PR
 * [ ] Push the release version tag
 * [ ] Verify the `Release` workflow published the AWS and Docker artifacts for that tag

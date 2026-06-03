@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   release:
+    name: Release
     environment: AWS_RELEASE
     runs-on: ubuntu-24.04
     env:
@@ -24,7 +25,7 @@ jobs:
       RELEASE_TAG: ${{ github.ref_name }}
       RELEASE_TITLE: ${{ github.event.inputs.release_title }}
       AWS_DEFAULT_REGION: ${{ vars.AWS_CI_REGION }}
-      RELEASE_NOTES_DIR: ${{ runner.temp }}/release-notes
+      RELEASE_NOTES_DIR: /tmp/release-notes
 
     steps:
       - uses: actions/checkout@v5
@@ -32,31 +33,33 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v1
+        uses: exasol/python-toolbox/.github/actions/python-environment@v8
         with:
           python-version: "3.10"
 
-      - uses: aws-actions/configure-aws-credentials@v5
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_CI_ROLE }}
+          role-to-assume: ${{ vars.AWS_CD_ROLE }}
           role-session-name: github-actions-ai-lab-release
+          # Release runs long enough that we request a longer OIDC session so cleanup can finish safely.
+          role-duration-seconds: 18000
           aws-region: ${{ vars.AWS_CI_REGION }}
 
       - name: Check Release
-        run: poetry run -- python3 -m scripts.build.release_workflow check
+        run: poetry run -- ai-lab release check
 
       - name: Publish Release Build
-        run: poetry run -- python3 -m scripts.build.release_workflow build
+        run: poetry run -- ai-lab release build
         env:
-          AWS_USER_NAME: release_user
+          AWS_USER_NAME: ailab-cd-user
           RELEASE_DEFAULT_PASSWORD: ${{ secrets.RELEASE_DEFAULT_PASSWORD }}
-          DOCKER_REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
-          DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          DOCKER_REGISTRY_USER: ${{ secrets.CI4_DOCKERHUB_USERNAME }}
+          DOCKER_REGISTRY_PASSWORD: ${{ secrets.CI4_DOCKERHUB_TOKEN }}
 
       - name: Generate Release Notes
-        run: poetry run -- python3 -m scripts.build.release_workflow notes
+        run: poetry run -- ai-lab release notes
 
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: poetry run -- python3 -m scripts.build.release_workflow publish
+        run: poetry run -- ai-lab release publish

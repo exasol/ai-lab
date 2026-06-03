@@ -17,16 +17,19 @@ The commands are organized in 3 groups:
 
 The following commands are used during the GitHub Actions release flow:
 * `create-vm`: Create a new AMI and VM images, see also [options for EC2 instances](#options-for-ec2-instances).
-* `start-release-build`: Build the AI Lab release artifacts in the current environment.
+* `release`: Release workflow entrypoint used by GitHub Actions.
 * `create-docker-image`: Create a Docker image for ai-lab and deploy it to hub.docker.com/exasol/ai-lab.
 
-Script `start-release-build`:
-* Is called from the tag-triggered `Release` workflow with option `--publish`.
-* Creates the AMI and VM images via AWS APIs and publishes the Docker image.
-* Does not require a GitHub token.
-* Requires AWS credentials in the environment when building the AMI and VM images.
-* Requires environment variable `RELEASE_DEFAULT_PASSWORD` for the temporary VM login password used during the build.
-* Publishes only when environment variables `DOCKER_REGISTRY_USER` and `DOCKER_REGISTRY_PASSWORD` are set and option `--publish` is enabled.
+`release` commands:
+* `check`: Validate that the repository versions and changelog are ready for a release.
+* `build`: Create the AMI and VM images via AWS APIs and publish the Docker image for tagged releases.
+* `notes`: Generate the GitHub release notes and artifact list.
+* `publish`: Create the GitHub release from the generated notes.
+
+The release workflow commands require AWS credentials when building the AMI and VM images.
+The `build` command requires environment variable `RELEASE_DEFAULT_PASSWORD` for the temporary VM login password used during the build.
+The `build` command publishes only for tagged releases, and only then when environment variables `DOCKER_REGISTRY_USER`
+and `DOCKER_REGISTRY_PASSWORD` are set. Manual `workflow_dispatch` test releases skip publication.
 
 ## Developer commands
 
@@ -45,7 +48,6 @@ All other commands provide a subset of the features of the release commands, and
 ## Deployment commands
 
 The following commands can be used to deploy the infrastructure onto a given AWS account:
-* `setup-ci-codebuild`: Deploy the AWS Codebuild cloudformation stack which will run the ci-test.
 * `setup-s3-bucket`: Deploy an AWS cloudformation stack with an S3 bucket, requires option `--purpose` (see below).
 * `setup-waf`: Deploy an AWS cloudformation stack with a Web Application Firefall (WAF ACL) configuration for the Cloudfront distribution of an S3 bucket, requires option `--purpose` (see below).
 
@@ -57,27 +59,6 @@ Option `--purpose` is required for both commands `setup-s3-bucket` and `setup-s3
 For all deployment commands:
 * Don't forget to specify CLI option `--aws-profile`.
 * Ensure the related AWS stack does not exist. If there was a rollback then please delete the stack manually, otherwise the script will fail.
-
-If `setup-ci-codebuild` fails with error message "_Failed to create webhook. Repository not found or permission denied._" then
-* Ensure to grant sufficient access permissions to the Github user used by the script.
-* You can use a Github "_Repository role_" for that.
-* The repository role must include the following permissions
-  * Inherit the permissions from default role "Write"
-  * Additional repository permission "Manage webhooks"
-* In AWS you can configure the Github token by a resource with logical ID `CodeBuildCredentials`
-  * Please note: There must be only one stack containing such a resource.
-  * The definition of the AWS resource `CodeBuildCredentials` can use credentials from tha AWS secret manager.
-
-```yaml
-Resources:
-  CodeBuildCredentials:
-    Type: AWS::CodeBuild::SourceCredential
-    Properties:
-      ServerType: GITHUB
-      AuthType: PERSONAL_ACCESS_TOKEN
-      Username: "{{resolve:secretsmanager:github_personal_token:SecretString:github_user_name}}"
-      Token: "{{resolve:secretsmanager:github_personal_token:SecretString:github_personal_token}}"
-```
 
 ## Options for EC2 Instances
 

@@ -2,6 +2,7 @@
 
 ## Overview
 
+This guide covers the AI Lab project, its release flow, infrastructure, and development tooling.
 The current release flow runs from a tag-triggered GitHub Actions workflow after PR CI validates the release logic.
 GitHub Actions authenticates to AWS via OIDC for the AMI and VM build steps, and the workflow also publishes the
 Docker edition.

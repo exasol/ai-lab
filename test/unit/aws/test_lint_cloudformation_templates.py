@@ -7,7 +7,6 @@ import subprocess
 
 from test.aws.templates import (
     ec2_template,
-    ci_codebuild_template,
     vm_bucket_template,
     vm_bucket_waf_template,
     example_data_bucket_template,
@@ -32,7 +31,6 @@ def validate_using_cfn_lint(tmp_path, cloudformation_yml):
 
 
 TEMPLATES = {
-    "ci-codebuild": ci_codebuild_template(),
     "ec2": ec2_template(),
     "vm-bucket": vm_bucket_template(),
     "vm-bucket-waf": vm_bucket_waf_template(),

@@ -17,7 +17,6 @@ from exasol.ds.sandbox.lib.aws_access.key_pair import KeyPair
 from exasol.ds.sandbox.lib.aws_access.s3_object import S3Object
 from exasol.ds.sandbox.lib.aws_access.snapshot import Snapshot
 from exasol.ds.sandbox.lib.aws_access.stack_resource import StackResource
-from exasol.ds.sandbox.lib.aws_access.waiter.codebuild_waiter import CodeBuildWaiter
 from exasol.ds.sandbox.lib.export_vm.vm_disk_image_format import VmDiskImageFormat
 from exasol.ds.sandbox.lib.logging import get_status_logger, LogType
 from exasol.ds.sandbox.lib.tags import create_default_asset_tag
@@ -403,29 +402,6 @@ class AwsAccess(object):
         iam_client = self._get_aws_client("iam")
         cu = iam_client.get_user()
         return cu["User"]["UserName"]
-
-    @_log_function_start
-    def start_codebuild(self, project: str, environment_variables_overrides: List[Dict[str, str]], branch: str) \
-            -> Tuple[int, CodeBuildWaiter]:
-        """
-        This functions uses Boto3 to start a build.
-        It forwards all variables from parameter env_variables as environment variables to the CodeBuild project.
-        It starts the codebuild for the given branch and then immediately returns the build-id and of the new build
-        and a CodeBuildWaiter-object which can be used to wait for the build finish.
-        :param project: Codebuild project name to start
-        :param environment_variables_overrides: List of environment variables which will be overwritten in build
-        :param branch: Branch on which the build will run
-        :raises `RuntimeError`: if build fails or AWS Batch build returns unknown status
-        :required actions: codebuild:StartBuild
-        """
-        codebuild_client = self._get_aws_client("codebuild")
-        ret_val = codebuild_client.start_build(projectName=project,
-                                               sourceVersion=branch,
-                                               environmentVariablesOverride=list(
-                                                   environment_variables_overrides))
-        build_id = ret_val['build']['id']
-        LOG.debug(f"Codebuild for project {project} with branch {branch} triggered. Id is {build_id}.")
-        return build_id, CodeBuildWaiter(codebuild_client, build_id)
 
     @_log_function_start
     def modify_image_launch_permission(self, ami_id: str, launch_permissions: Dict[str, Any]):

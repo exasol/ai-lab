@@ -2,7 +2,8 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, call
 
-from scripts.build.release_workflow import (
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
+from exasol.ds.sandbox.lib.release_workflow import (
     ReleaseContext,
     load_context,
     run_build,
@@ -21,7 +22,7 @@ def test_load_context_manual(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
     monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
     monkeypatch.setattr(
-        "scripts.build.release_workflow.get_poetry_version",
+        "exasol.ds.sandbox.lib.release_workflow.get_poetry_version",
         Mock(return_value="5.1.0"),
     )
 
@@ -45,7 +46,7 @@ def test_load_context_rejects_v_prefixed_tag(monkeypatch):
 
 def test_run_check_routes_by_mode(monkeypatch):
     validate_release = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow.validate_release", validate_release)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow.validate_release", validate_release)
     manual_context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -76,7 +77,7 @@ def test_run_check_routes_by_mode(monkeypatch):
 def test_run_build_uses_asset_id(monkeypatch):
     run_start_release_build = Mock()
     monkeypatch.setattr(
-        "scripts.build.release_workflow.run_start_release_build",
+        "exasol.ds.sandbox.lib.release_workflow.run_start_release_build",
         run_start_release_build,
     )
     context = ReleaseContext(
@@ -89,20 +90,45 @@ def test_run_build_uses_asset_id(monkeypatch):
         release_is_manual=True,
         release_notes_dir=Path("/tmp/release-notes"),
     )
+    aws_access = AwsAccess(None)
 
-    run_build(context)
+    run_build(context, aws_access)
 
-    run_start_release_build.assert_called_once_with(
-        default_config_object,
-        publish=True,
-        asset_id="Draft Release",
+    run_start_release_build.assert_called_once()
+    args, kwargs = run_start_release_build.call_args
+    assert args == (default_config_object,)
+    assert kwargs["aws_access"] is aws_access
+    assert kwargs["publish"] is False
+    assert kwargs["asset_id"] == "Draft Release"
+
+
+def test_run_build_publishes_tagged_releases(monkeypatch):
+    run_start_release_build = Mock()
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_workflow.run_start_release_build",
+        run_start_release_build,
     )
+    context = ReleaseContext(
+        mode="push",
+        release_tag="5.1.0",
+        release_version="5.1.0",
+        release_ref="5.1.0",
+        release_title_input="",
+        release_asset_id="5.1.0",
+        release_is_manual=False,
+        release_notes_dir=Path("/tmp/release-notes"),
+    )
+    aws_access = AwsAccess(None)
+
+    run_build(context, aws_access)
+
+    assert run_start_release_build.call_args.kwargs["publish"] is True
 
 
 def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
     write_release_notes = Mock()
     monkeypatch.setattr(
-        "scripts.build.release_workflow.write_release_notes",
+        "exasol.ds.sandbox.lib.release_workflow.write_release_notes",
         write_release_notes,
     )
     context = ReleaseContext(
@@ -133,7 +159,7 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
     (release_dir / "artifacts.md").write_text("artifacts")
 
     run_gh = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow._run_gh", run_gh)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
@@ -168,7 +194,7 @@ def test_run_publish_tag_creates_release(monkeypatch, tmp_path):
     (release_dir / "artifacts.md").write_text("artifacts")
 
     run_gh = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow._run_gh", run_gh)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="push",
         release_tag="5.1.0",

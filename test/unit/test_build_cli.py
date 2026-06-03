@@ -1,60 +1,53 @@
-from pathlib import Path
 from unittest.mock import Mock
 
-from scripts.build.check_release import main as check_release_cli
-from scripts.build.generate_release_notes import main as generate_release_notes_cli
-from scripts.build.release_workflow import main as release_workflow_cli
+import exasol.ds.sandbox.cli.commands.release_workflow as release_workflow_module
+from exasol.ds.sandbox.cli.commands.release_workflow import release as release_cli
 from test.unit.cli import CliRunner
 
 
-def test_check_release_cli_invokes_validator(monkeypatch):
-    validate_release = Mock()
-    monkeypatch.setattr("scripts.build.check_release.validate_release", validate_release)
-
-    cli = CliRunner(check_release_cli)
-    cli.run("--release-tag", "refs/tags/5.1.0")
-
-    assert cli.succeeded
-    validate_release.assert_called_once_with("refs/tags/5.1.0")
-
-
-def test_generate_release_notes_cli_invokes_writer(monkeypatch, tmp_path):
-    write_release_notes = Mock()
-    monkeypatch.setattr(
-        "scripts.build.generate_release_notes.write_release_notes",
-        write_release_notes,
-    )
-
-    cli = CliRunner(generate_release_notes_cli)
-    cli.run(
-        "--release-tag",
-        "5.1.0",
-        "--output-dir",
-        str(tmp_path / "release-notes"),
-        "--asset-id",
-        "release-assets",
-        "--release-title",
-        "Draft Release",
-    )
-
-    assert cli.succeeded
-    write_release_notes.assert_called_once()
-    args, kwargs = write_release_notes.call_args
-    assert args[0] == "5.1.0"
-    assert args[2] == Path(tmp_path / "release-notes")
-    assert kwargs == {"asset_id": "release-assets", "release_title": "Draft Release"}
-
-
-def test_release_workflow_cli_routes_to_check(monkeypatch):
+def test_release_workflow_check_cli_invokes_validator(monkeypatch):
     run_check = Mock()
-    monkeypatch.setattr("scripts.build.release_workflow.run_check", run_check)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow.run_check", run_check)
     monkeypatch.setattr(
-        "scripts.build.release_workflow.load_context",
+        "exasol.ds.sandbox.lib.release_workflow.load_context",
         Mock(return_value=Mock()),
     )
 
-    cli = CliRunner(release_workflow_cli)
+    cli = CliRunner(release_cli)
     cli.run("check")
 
     assert cli.succeeded
     run_check.assert_called_once()
+
+
+def test_release_workflow_notes_cli_invokes_writer(monkeypatch):
+    run_notes = Mock()
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow.run_notes", run_notes)
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_workflow.load_context",
+        Mock(return_value=Mock()),
+    )
+
+    cli = CliRunner(release_cli)
+    cli.run("notes")
+
+    assert cli.succeeded
+    run_notes.assert_called_once()
+
+
+def test_release_workflow_build_cli_sets_default_log_level_and_invokes_builder(monkeypatch):
+    set_log_level = Mock()
+    run_build = Mock()
+    monkeypatch.setattr(release_workflow_module, "set_log_level", set_log_level)
+    monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow.run_build", run_build)
+    monkeypatch.setattr(
+        "exasol.ds.sandbox.lib.release_workflow.load_context",
+        Mock(return_value=Mock()),
+    )
+
+    cli = CliRunner(release_cli)
+    cli.run("build")
+
+    assert cli.succeeded
+    set_log_level.assert_called_once_with("info")
+    run_build.assert_called_once()

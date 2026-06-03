@@ -1,39 +1,36 @@
 ## Running tests in the CI
 
-The project has two types of CI tests:
-* Unit tests and integration tests which run in a Github workflow
-* Special integration tests verifying the content of the Jupyter notebook files
-* A system test which runs in a AWS Codebuild
+The GitHub workflow runs on each pull request and contains these test groups:
+* Unit tests
+* AWS-backed CI tests, which run after manual approval and provision AWS resources directly from GitHub Actions
+* Integration tests, which include Docker-image build and validation checks in `test/integration`
+* Notebook tests, which verify the notebook content and run in a separate workflow chain
+* A system test suite that can be run locally against AWS resources
 
-All these tests need to pass before the approval of a Github PR.
-The Github workflow will run on each push to a branch in the Github repository.
-
-However, the notebook tests and the AWS Codebuild will only run under specific conditions, e.g. manual approval or push a commit containing a special string in the commit message, see the following sections.
+All required checks need to pass before a Github PR can be approved. The AWS-backed CI job stays blocked until the approval environment is granted.
 
 ### Executing Jupyter Notebook Tests
 
 The regular CI build will ask for confirmation (aka. "review") before executing these tests, see [ETAJ developer guide](https://github.com/exasol/exasol-test-setup-abstraction-java/blob/main/doc/developer_guide/developer_guide.md#ci-build) for details.
 
-### Executing AWS CodeBuild
+### Executing AWS-backed CI
 
-Use the following git commands to execute the AWS CodeBuild script:
-
-```shell
-git commit -m "[CodeBuild]" --allow-empty && git push
-```
-
-This will trigger a webhook that was installed by an AWS template into the git-Repository.
-* The webhook is defined in file `exasol/ds/sandbox/templates/ci_code_build.jinja.yaml`
-* and calls `aws-code-build/ci/buildspec.yaml`
-* which then executes `test/codebuild/test_ci*.py`
-
-The CodeBuild will take about 20 minutes to complete.
-
-## Running AWS CodeBuild locally
+The AWS-backed CI tests are executed by the GitHub Actions workflow using AWS OIDC credentials and the
+`test/aws_ci/test_ci*.py` suite.
 
 To run these tests locally please use
 
 ```shell
-export DSS_RUN_CI_TEST=true; poetry run -- test/codebuild/test_ci.py
+export DSS_RUN_CI_TEST=true; poetry run -- pytest test/aws_ci/test_ci*.py
 ```
 
+### Executing Integration Tests
+
+The integration job in the GitHub workflow runs `test/integration`, which includes tests that build and validate the
+AI Lab Docker image, for example `test/integration/test_create_dss_docker_image.py`.
+
+To run these tests locally please use
+
+```shell
+poetry run -- pytest test/integration
+```

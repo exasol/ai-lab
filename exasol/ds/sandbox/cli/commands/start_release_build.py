@@ -3,6 +3,7 @@ import click
 from exasol.ds.sandbox.cli.cli import cli
 from exasol.ds.sandbox.cli.common import add_options
 from exasol.ds.sandbox.cli.options.logging import logging_options
+from exasol.ds.sandbox.lib.aws_access.aws_access import AwsAccess
 from exasol.ds.sandbox.lib.config import default_config_object
 from exasol.ds.sandbox.lib.dss_docker import DEFAULT_ORG_AND_REPOSITORY
 from exasol.ds.sandbox.lib.logging import set_log_level
@@ -41,6 +42,7 @@ def start_release_build(
     set_log_level(log_level)
     run_start_release_build(
         default_config_object,
+        AwsAccess(None),
         publish=publish,
         repository=repository,
         asset_id=asset_id,

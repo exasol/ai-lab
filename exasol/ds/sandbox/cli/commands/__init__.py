@@ -4,8 +4,8 @@ from .reset_password import reset_password
 from .export_vm import export_vm
 from .create_vm import create_vm
 from .show_aws_assets import show_aws_assets
-from .setup_ci_codebuild import setup_ci_codebuild
 from .start_release_build import start_release_build
+from .release_workflow import release  # noqa: F401
 from .make_ami_public import make_ami_public
 from .create_docker_image import create_docker_image
 from .setup_s3_bucket import setup_s3_bucket
