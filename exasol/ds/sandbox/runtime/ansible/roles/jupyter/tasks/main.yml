@@ -29,7 +29,7 @@
       vars:
         requirements_file: "notebook_requirements.txt"
 
-    - name: Copy tutorial notebook
+    - name: Deploy notebook content
       ansible.builtin.import_tasks: tutorial.yml
 
     - name: Change owner of all files and dirs in home directory
@@ -45,4 +45,3 @@
 
     - name: Setup motd
       ansible.builtin.import_tasks: motd.yml
-

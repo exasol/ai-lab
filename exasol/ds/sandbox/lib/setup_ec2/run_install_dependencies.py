@@ -25,7 +25,6 @@ def run_install_dependencies(
     """
     extra_vars = {
         "ai_lab_version": configuration.ai_lab_version,
-        "work_in_progress_notebooks": False
     }
     extra_vars.update(playbook.vars)
     enhanced_playbook = ansible.Playbook(playbook.file, extra_vars)

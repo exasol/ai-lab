@@ -22,9 +22,7 @@ _logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
-def notebook_test_dockerfile_content(dss_docker_image, work_in_progress_notebooks) -> str:
-    if not work_in_progress_notebooks:
-        pytest.skip("Skip because work in progress notebooks are not enabled")
+def notebook_test_dockerfile_content(dss_docker_image) -> str:
     yield cleandoc(
         f"""
         FROM {dss_docker_image.image_name}

@@ -25,7 +25,6 @@ RUNTIME_ANSIBLE_DIR = Path(runtime_ansible.__path__[0])
 def _extra_vars(config: ConfigObject) -> dict[str, Any]:
     return {
         "ai_lab_version": config.ai_lab_version,
-        "work_in_progress_notebooks": False,
     }
 
 
