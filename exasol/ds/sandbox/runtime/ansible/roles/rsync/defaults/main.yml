@@ -1,4 +1,4 @@
 ---
 
 apt_dependencies:
-  - rsync
+  - rsync=3.2.7-0ubuntu0.22.04.7
