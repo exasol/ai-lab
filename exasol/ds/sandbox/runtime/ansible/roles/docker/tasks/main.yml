@@ -20,8 +20,8 @@
 
 - name: Update apt and install docker-ce
   apt:
-    name: docker-ce=5:29.5.3-1~ubuntu.22.04~jammy
-    state: present
+    name: docker-ce
+    state: latest
     update_cache: true
     install_recommends: false
   become: "{{need_sudo}}"
