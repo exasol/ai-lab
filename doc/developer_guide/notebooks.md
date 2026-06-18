@@ -26,7 +26,7 @@ outside the notebook test runner.
 Environment variables with the prefix `NBTEST_` are forwarded into the Docker container and
 to the notebook test. You can use this to forward secrets to the notebook tests.
 
-By default all created containers and images are removed after running the tests regardless
+By default, all created containers and images are removed after running the tests regardless
 of success or failure.
 However, with the following pytest command line parameters you can keep them or reuse them
 to speed up local testing:
