@@ -13,7 +13,7 @@ Its dependencies are still listed in
 and are installed into the Jupyter virtual environment during the build.
 
 When you need to update notebooks, change them in the Notebook Connector project and
-rebuild the AI Lab image. This repository no longer carries a separate notebook source tree.
+rebuild the AI Lab image.
 
 ## Notebook Testing
 
