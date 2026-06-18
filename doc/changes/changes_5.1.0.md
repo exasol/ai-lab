@@ -21,7 +21,7 @@ This release removes the SageMaker Notebooks. Furthermore, it replaces the forme
 * #521: Removed some Ansible unit tests
 * #525: Moved the release workflow into the package CLI layer and removed the legacy release script tree
 * #526: Migrated the AWS-backed CI from CodeBuild to GitHub Actions
-* #530: Migrated notebook deployment to Notebook Connector and removed the repo-local notebook source tree
+* #530: Migrated notebook deployment to Notebook Connector 3.0.0 from PyPI and removed the repo-local notebook source tree
 
 ## Bug Fixes
 
