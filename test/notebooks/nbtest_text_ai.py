@@ -19,8 +19,7 @@ set_log_level_for_libraries()
 
 def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
     """
-    This test currently requires some specific Jupyter notebooks which are work in progress
-    and is only executed if the folder work_in_progress exists.
+    Integration test for the text AI notebooks.
     """
     store_path, store_password = backend_setup
 
@@ -35,5 +34,4 @@ def test_text_ai(notebook_runner, backend_setup, uploading_hack) -> None:
         notebook_runner(notebook_file="txaie_preprocessing.ipynb", hacks=[uploading_hack])
     finally:
         os.chdir(current_dir)
-
 

@@ -23,22 +23,22 @@ def test_load_context_manual(monkeypatch, tmp_path):
     monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
     monkeypatch.setattr(
         "exasol.ds.sandbox.lib.release_workflow.get_poetry_version",
-        Mock(return_value="5.1.0"),
+        Mock(return_value="6.0.0"),
     )
 
     context = load_context()
 
     assert context.release_is_manual is True
     assert context.release_ref == "manual-123-2"
-    assert context.release_version == "5.1.0"
+    assert context.release_version == "6.0.0"
     assert context.release_asset_id == "Draft Release"
     assert context.release_title_input == "Draft Release"
 
 
 def test_load_context_rejects_v_prefixed_tag(monkeypatch):
     monkeypatch.setenv("RELEASE_MODE", "push")
-    monkeypatch.setenv("RELEASE_TAG", "v5.1.0")
-    monkeypatch.setenv("GITHUB_REF_NAME", "v5.1.0")
+    monkeypatch.setenv("RELEASE_TAG", "v6.0.0")
+    monkeypatch.setenv("GITHUB_REF_NAME", "v6.0.0")
 
     with pytest.raises(ValueError, match="bare versions without a leading 'v'"):
         load_context()
@@ -50,7 +50,7 @@ def test_run_check_routes_by_mode(monkeypatch):
     manual_context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
-        release_version="5.1.0",
+        release_version="6.0.0",
         release_ref="manual-123-2",
         release_title_input="Draft Release",
         release_asset_id="Draft Release",
@@ -59,11 +59,11 @@ def test_run_check_routes_by_mode(monkeypatch):
     )
     tag_context = ReleaseContext(
         mode="push",
-        release_tag="5.1.0",
-        release_version="5.1.0",
-        release_ref="5.1.0",
+        release_tag="6.0.0",
+        release_version="6.0.0",
+        release_ref="6.0.0",
         release_title_input="",
-        release_asset_id="5.1.0",
+        release_asset_id="6.0.0",
         release_is_manual=False,
         release_notes_dir=Path("/tmp/release-notes"),
     )
@@ -71,7 +71,7 @@ def test_run_check_routes_by_mode(monkeypatch):
     run_check(manual_context)
     run_check(tag_context)
 
-    assert validate_release.call_args_list == [call(""), call("5.1.0")]
+    assert validate_release.call_args_list == [call(""), call("6.0.0")]
 
 
 def test_run_build_uses_asset_id(monkeypatch):
@@ -83,7 +83,7 @@ def test_run_build_uses_asset_id(monkeypatch):
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
-        release_version="5.1.0",
+        release_version="6.0.0",
         release_ref="manual-123-2",
         release_title_input="Draft Release",
         release_asset_id="Draft Release",
@@ -110,11 +110,11 @@ def test_run_build_publishes_tagged_releases(monkeypatch):
     )
     context = ReleaseContext(
         mode="push",
-        release_tag="5.1.0",
-        release_version="5.1.0",
-        release_ref="5.1.0",
+        release_tag="6.0.0",
+        release_version="6.0.0",
+        release_ref="6.0.0",
         release_title_input="",
-        release_asset_id="5.1.0",
+        release_asset_id="6.0.0",
         release_is_manual=False,
         release_notes_dir=Path("/tmp/release-notes"),
     )
@@ -134,7 +134,7 @@ def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
-        release_version="5.1.0",
+        release_version="6.0.0",
         release_ref="manual-123-2",
         release_title_input="Draft Release",
         release_asset_id="Draft Release",
@@ -146,7 +146,7 @@ def test_run_notes_uses_manual_title(monkeypatch, tmp_path):
 
     write_release_notes.assert_called_once()
     args, kwargs = write_release_notes.call_args
-    assert args[0] == "5.1.0"
+    assert args[0] == "6.0.0"
     assert args[2] == tmp_path / "release-notes"
     assert kwargs == {"asset_id": "Draft Release", "release_title": "Draft Release"}
 
@@ -163,7 +163,7 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
     context = ReleaseContext(
         mode="workflow_dispatch",
         release_tag="feature-branch",
-        release_version="5.1.0",
+        release_version="6.0.0",
         release_ref="manual-123-2",
         release_title_input="Draft Release",
         release_asset_id="Draft Release",
@@ -189,7 +189,7 @@ def test_run_publish_manual_creates_draft_release(monkeypatch, tmp_path):
 def test_run_publish_tag_creates_release(monkeypatch, tmp_path):
     release_dir = tmp_path / "release-notes"
     release_dir.mkdir()
-    (release_dir / "release_title.txt").write_text("5.1.0: Test Release\n")
+    (release_dir / "release_title.txt").write_text("6.0.0: Test Release\n")
     (release_dir / "release_notes.md").write_text("notes")
     (release_dir / "artifacts.md").write_text("artifacts")
 
@@ -197,11 +197,11 @@ def test_run_publish_tag_creates_release(monkeypatch, tmp_path):
     monkeypatch.setattr("exasol.ds.sandbox.lib.release_workflow._run_gh", run_gh)
     context = ReleaseContext(
         mode="push",
-        release_tag="5.1.0",
-        release_version="5.1.0",
-        release_ref="5.1.0",
+        release_tag="6.0.0",
+        release_version="6.0.0",
+        release_ref="6.0.0",
         release_title_input="",
-        release_asset_id="5.1.0",
+        release_asset_id="6.0.0",
         release_is_manual=False,
         release_notes_dir=release_dir,
     )
@@ -211,9 +211,9 @@ def test_run_publish_tag_creates_release(monkeypatch, tmp_path):
     run_gh.assert_called_once_with([
         "release",
         "create",
-        "5.1.0",
+        "6.0.0",
         "--title",
-        "5.1.0: Test Release",
+        "6.0.0: Test Release",
         "--notes-file",
         str(release_dir / "release_notes.md"),
         f"{release_dir / 'artifacts.md'}#artifacts.md",

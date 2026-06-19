@@ -19,7 +19,6 @@ def test_constructor_defaults(sample_repo):
     testee = DssDockerImage(sample_repo)
     assert testee.image_name == f"{sample_repo}:{AI_LAB_VERSION}"
     assert testee.keep_container == False
-    assert testee.work_in_progress_notebooks == False
 
 
 def test_constructor(sample_repo):
@@ -28,11 +27,9 @@ def test_constructor(sample_repo):
         repository=sample_repo,
         version=version,
         keep_container=True,
-        work_in_progress_notebooks=True
     )
     assert testee.image_name == f"{sample_repo}:{version}"
     assert testee.keep_container == True
-    assert testee.work_in_progress_notebooks == True
 
 
 def test_entrypoint_with_copy_args():
@@ -120,8 +117,10 @@ def test_push_called(mocker, mocked_docker_image):
 
 
 @patch("exasol.ds.sandbox.lib.dss_docker.create_image.run_install_dependencies")
-def test_work_in_progress_notebooks(mocked_run_install_dependencies: Mock,
-                                    mocked_docker_image: DssDockerImage):
+def test_playbook_uses_only_docker_container_extra_vars(
+        mocked_run_install_dependencies: Mock,
+        mocked_docker_image: DssDockerImage,
+):
     testee = mocked_docker_image
     testee._install_dependencies = create_testee()._install_dependencies
     mocked_run_install_dependencies.return_value = {}
@@ -135,5 +134,4 @@ def test_work_in_progress_notebooks(mocked_run_install_dependencies: Mock,
     assert actual["retrieve_facts_from"] == host.name
     playbook = actual["playbook"]
     assert isinstance(playbook, ansible.Playbook)
-    assert playbook.vars["work_in_progress_notebooks"] == False
-    assert playbook.vars["docker_container"] == testee.container_name
+    assert playbook.vars == {"docker_container": testee.container_name}

@@ -45,9 +45,6 @@ from exasol.ds.sandbox.lib.logging import set_log_level
         "--keep-container", type=bool, is_flag=True,
         help="""Keep the Docker Container running after creating the image.
         Otherwise stop and remove the container."""),
-    click.option(
-        "--work-in-progress-notebooks", type=bool, is_flag=True, default=False,
-        help="""Adds work in progress notebooks to the container."""),
 ])
 @add_options(logging_options)
 def create_docker_image(
@@ -56,7 +53,6 @@ def create_docker_image(
         publish: bool,
         registry_user: str,
         keep_container: bool,
-        work_in_progress_notebooks: bool,
         log_level: str,
 ):
     """
@@ -73,7 +69,7 @@ def create_docker_image(
         return os.environ.get(PASSWORD_ENV, None)
 
     set_log_level(log_level)
-    creator = DssDockerImage(repository, version, keep_container, work_in_progress_notebooks)
+    creator = DssDockerImage(repository, version, keep_container)
     if publish:
         creator.registry = DockerRegistry(registry_user, registry_password())
     creator.create()

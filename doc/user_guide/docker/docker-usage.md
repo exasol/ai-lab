@@ -31,7 +31,7 @@ The AI Lab can connect to an _External Exasol database_, as well as using an _In
 
 You can use the command shown below with some limitations:
 * Does not support Integrated Exasol Docker-DB.
-* Does not allow creating Script Language Containers (SLCs), as is done in the examples in the notebooks [Exporting a flavor](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/export_as_is.ipynb) and [Customizing a flavor](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/runtime/ansible/roles/jupyter/files/notebook/script_languages_container/customize.ipynb).
+* Does not allow creating Script Language Containers (SLCs), as shown in the notebooks "Exporting a flavor" and "Customizing a flavor".
 
 The command will
 * Run a Docker container using the specified version of the AI Lab.

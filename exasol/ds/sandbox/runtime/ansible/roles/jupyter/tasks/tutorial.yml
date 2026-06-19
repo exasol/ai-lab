@@ -1,16 +1,11 @@
 ---
 
-- name: Copy notebook content
-  ansible.builtin.synchronize:
-    src: "notebook/"
-    dest: "{{ jupyterlab_notebook_folder_initial }}"
-  become: "{{ need_sudo }}"
-
-- name: Remove work in progress notebooks
-  ansible.builtin.file:
-    path: "{{ jupyterlab_notebook_folder_initial }}/work_in_progress"
-    state: absent
-  when: not work_in_progress_notebooks
+- name: Deploy notebook content
+  ansible.builtin.command:
+    cmd: >-
+      {{ jupyterlab_virtualenv }}/bin/ai-lab deploy-notebooks
+      --target-dir {{ jupyterlab_notebook_folder_initial }}
+      --overwrite
   become: "{{ need_sudo }}"
 
 # 1. create_image.py adds this directory as volume mount point to the Docker

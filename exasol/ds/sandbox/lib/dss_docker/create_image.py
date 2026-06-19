@@ -92,9 +92,7 @@ class DssDockerImage:
             repository: str,
             version: str = None,
             keep_container: bool = False,
-            work_in_progress_notebooks: bool = False
     ):
-        self.work_in_progress_notebooks = work_in_progress_notebooks
         version = version if version else AI_LAB_VERSION
         self.container_name = f"ds-sandbox-{DssDockerImage.timestamp()}"
         self.repository = repository
@@ -108,10 +106,7 @@ class DssDockerImage:
         return f"{self.repository}:{self.version}"
 
     def _ansible_playbook(self) -> ansible.Playbook:
-        extra_vars = {
-            "docker_container": self.container_name,
-            "work_in_progress_notebooks": self.work_in_progress_notebooks
-        }
+        extra_vars = {"docker_container": self.container_name}
         return ansible.Playbook("ai_lab_docker_playbook.yml", extra_vars)
 
     def _ansible_config(self) -> ConfigObject:
