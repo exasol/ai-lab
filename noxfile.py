@@ -26,11 +26,6 @@ class TestClassification(Enum):
     gpu = "gpu"
 
 
-class WipStatus(Enum):
-    wip = "wip"
-    no_wip = "no-wip"
-
-
 class NBTestBackend(Enum):
     on_prem = "onprem"
     saas = "saas"
@@ -44,7 +39,7 @@ class NBTestDescription(BaseModel):
     name: str
     test_file: str
     test_backend: NBTestBackend
-    wip: WipStatus
+
 
 class TestList(BaseModel):
     tests: List[NBTestDescription]
@@ -60,12 +55,12 @@ class TestRepository(BaseModel):
     large: TestSets
     gpu: TestSets
 
+
 def _load_test_repository() -> TestRepository:
     yaml_file_path = Path('nb_tests.yaml')
     with open(yaml_file_path, 'r') as file:
         yaml_data = yaml.safe_load(file)
         return TestRepository(**yaml_data)
-
 
 
 def _parse_args(session: nox.Session) -> Namespace:

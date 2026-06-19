@@ -11,15 +11,12 @@ normal:
       - name: First Steps notebook
         test_file: nbtest_first_steps.py
         test_backend: onprem
-        wip: no-wip
       - name: SLC notebook
         test_file: nbtest_script_languages_container.py
         test_backend: onprem
-        wip: no-wip
       - name: short notebook tests
         test_file: "\"nbtest_environment_test.py nbtest_itde.py\""
         test_backend: ''
-        wip: no-wip
   unstable:
     tests: []
 large:
@@ -37,6 +34,5 @@ gpu:
       - name: GPU UDF notebooks
         test_file: nbtest_gpu.py
         test_backend: onprem
-        wip: no-wip
   unstable:
     tests: []

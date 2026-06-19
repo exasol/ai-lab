@@ -117,7 +117,7 @@ def test_push_called(mocker, mocked_docker_image):
 
 
 @patch("exasol.ds.sandbox.lib.dss_docker.create_image.run_install_dependencies")
-def test_playbook_does_not_include_work_in_progress_notebooks(
+def test_playbook_uses_only_docker_container_extra_vars(
         mocked_run_install_dependencies: Mock,
         mocked_docker_image: DssDockerImage,
 ):
@@ -134,5 +134,4 @@ def test_playbook_does_not_include_work_in_progress_notebooks(
     assert actual["retrieve_facts_from"] == host.name
     playbook = actual["playbook"]
     assert isinstance(playbook, ansible.Playbook)
-    assert "work_in_progress_notebooks" not in playbook.vars
-    assert playbook.vars["docker_container"] == testee.container_name
+    assert playbook.vars == {"docker_container": testee.container_name}
