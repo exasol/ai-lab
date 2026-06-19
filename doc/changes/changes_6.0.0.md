@@ -1,10 +1,10 @@
-# AI-Lab 5.1.0 released 2026-06-03
+# AI-Lab 6.0.0 released 2026-06-19
 
-Code name: SageMaker Notebook Removal, Ansible-Runner-Wrapper, CI/CD now on Github Action
+Code name: Notebook Connector 3.0.0, SageMaker Notebook Removal
 
 ## Summary
 
-This release removes the SageMaker Notebooks. Furthermore, it replaces the former ansible wrapper in the AI Lab by external dependency to `ansible-runner wrapper` and the CI/CD workflows moved from AWS CodeBuild to Github Actions
+This release uses [exasol-notebook-connector 3.0.0](https://github.com/exasol/notebook-connector/releases/tag/3.0.0) and removes the remaining SageMaker notebooks. The notebooks are now hosted in the [notebook-connector](https://github.com/exasol/notebook-connector/tree/3.0.0/exasol/nb_connector/resources/notebooks).
 
 ## Features
 
