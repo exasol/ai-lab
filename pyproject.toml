@@ -81,6 +81,13 @@ filterwarnings = [
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
 ]
 
+[tool.pylint.master]
+fail-under = 6.5
+
+[tool.pylint.format]
+max-line-length = 88
+max-module-lines = 800
+
 [tool.black]
 target-version = ["py310"]
 

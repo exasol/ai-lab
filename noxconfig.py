@@ -20,7 +20,7 @@ class Config(BaseConfig):
         return False
 
 
-PROJECT_CONFIG = BaseConfig(
+PROJECT_CONFIG = Config(
     project_name="ds/sandbox",
     root_path=Path(__file__).parent,
     python_versions=("3.10",),
