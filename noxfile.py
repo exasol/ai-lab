@@ -9,6 +9,12 @@ from pydantic import BaseModel
 
 import nox
 
+# imports all nox task provided by the toolbox
+from exasol.toolbox.nox.tasks import *  # pylint: disable=wildcard-import disable=unused-wildcard-import
+
+# default actions to be run if nothing is explicitly specified with the -s option
+nox.options.sessions = ["format:fix"]
+
 ROOT = Path(__file__).parent
 
 # default actions to be run if nothing is explicitly specified with the -s option

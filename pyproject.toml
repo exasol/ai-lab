@@ -1,6 +1,6 @@
 [project]
 name = "exasol-ai-lab"
-version = "6.0.0"
+version = "6.0.1"
 description = "Exasol AI Lab"
 authors = [
     {name="Torsten Kilias", email="torsten.kilias@exasol.com"},
@@ -55,7 +55,7 @@ fabric = "^3.2.2"
 requests = "^2.32.3"
 nox = "^2025.5.1"
 pre-commit = ">=4,<5"
-pip-audit = ">=2.10, <3"
+exasol-toolbox = "^11.0.0"
 
 [build-system]
 requires = [
@@ -80,6 +80,42 @@ filterwarnings = [
     "ignore:the imp module is deprecated:DeprecationWarning",
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
 ]
+
+[[tool.mypy.overrides]]
+# This will be analyzed further in:
+#   https://github.com/exasol/ai-lab/issues/549
+module = [
+    "boto3",
+    "exasol.ansible", # exasol-ansible-runner-wrapper lacks a py.typed file at 3.0.0
+    "exasol.nb_connector", # lacks a py.typed file at 3.0.0
+    "toml",
+    "yaml",
+    # within this project
+    "test.*",
+    "exasol.ds.sandbox.runtime.ansible.roles.entrypoint.files.entrypoint",
+    "exasol.ds.sandbox.templates.cloudformation.example_data_s3.lambda",
+    "exasol.ds.sandbox.cli.commands.create_docker_image",
+    "exasol.ds.sandbox.cli.commands.show_aws_assets",
+    "exasol.ds.sandbox.cli.options.ec2_options",
+    "exasol.ds.sandbox.lib.asset_printing.*",
+    "exasol.ds.sandbox.lib.aws_access.*",
+    "exasol.ds.sandbox.lib.cloudformation_templates.*",
+    "exasol.ds.sandbox.lib.dss_docker.*",
+    "exasol.ds.sandbox.lib.export_vm.run_export_vm",
+    "exasol.ds.sandbox.lib.release_build.run_release_build",
+    "exasol.ds.sandbox.lib.release_notes",
+    "exasol.ds.sandbox.lib.run_create_vm",
+    "exasol.ds.sandbox.lib.setup_ec2.*",
+]
+ignore_missing_imports = true
+ignore_errors = true
+
+[tool.pylint.master]
+fail-under = 6.5
+
+[tool.pylint.format]
+max-line-length = 88
+max-module-lines = 800
 
 [tool.black]
 target-version = ["py310"]
