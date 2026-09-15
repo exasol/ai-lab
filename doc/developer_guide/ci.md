@@ -11,7 +11,7 @@ All required checks need to pass before a Github PR can be approved. The AWS-bac
 
 ### Executing Jupyter Notebook Tests
 
-The regular CI build will ask for confirmation (aka. "review") before executing these tests, see [ETAJ developer guide](https://github.com/exasol/exasol-test-setup-abstraction-java/blob/main/doc/developer_guide/developer_guide.md#ci-build) for details.
+The regular CI build will ask for confirmation (aka. "review") before executing these tests.
 
 ### Executing AWS-backed CI
 
