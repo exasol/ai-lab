@@ -55,7 +55,7 @@ fabric = "^3.2.2"
 requests = "^2.32.3"
 nox = "^2025.5.1"
 pre-commit = ">=4,<5"
-pip-audit = ">=2.10, <3"
+exasol-toolbox = "^11.0.0"
 
 [build-system]
 requires = [
