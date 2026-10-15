@@ -20,7 +20,7 @@ def aws_mock(specs: list[AmiSpec]) -> Mock:
             "ImageId": spec.id,
             "OwnerId": "099720109477",
             "State": "available",
-            "Name": f"ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-{suffix}",
+            "Name": f"ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-{suffix}",
         })
 
     aws = Mock()
@@ -65,7 +65,7 @@ def test_latest_success(test_config):
     The list is based on a dump of data returned from aws cli:
     aws ec2 --profile exa_individual_mfa describe-images \
       --owners 099720109477 \
-      --filters Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*
+      --filters Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*
     """
     latest_ami = AmiSpec("2022-06-28", "ami-0d203747b007677da")
     specs = [

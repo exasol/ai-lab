@@ -30,7 +30,7 @@
   remote_user: "ubuntu"
   gather_facts: true
   vars:
-    ansible_python_interpreter: python3
+    ansible_python_interpreter: /usr/bin/python3.12
     user_name: jupyter
     user_group: jupyter
     docker_group: docker

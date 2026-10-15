@@ -80,9 +80,9 @@ By default the `ai-lab` CLI commands will search for AMIs matching the pattern d
 
 You can find AMIs in the [AMI Catalog](https://eu-west-1.console.aws.amazon.com/ec2/home?region=eu-west-1#AMICatalog).
 
-As the AI Lab currently only supports Python 3.10, you should select an AMI that has this version of Python installed, too. In particular Ubuntu 22.04 is recommended.
+AI Lab images use Python 3.12. You should select an AMI that has this version of Python installed, too. In particular Ubuntu 24.04 is recommended.
 
-For GPU acceleration as of August 2025 the AI Lab proposes
+For GPU acceleration, select a compatible Ubuntu 24.04 GPU AMI. The following Ubuntu 22.04 example is retained for historical reference only and does not provide the Python 3.12 environment used by current images:
 * `--ec2-source-ami ami-006d6fd69373fa0fa`, which
   * is using a 64-bit x86 CPU
   * is labeled _Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 22.04) 20250801_.
