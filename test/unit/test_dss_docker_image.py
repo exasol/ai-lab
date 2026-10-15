@@ -122,7 +122,7 @@ def test_playbook_uses_only_docker_container_extra_vars(
         mocked_docker_image: DssDockerImage,
 ):
     testee = mocked_docker_image
-    testee._install_dependencies = create_testee()._install_dependencies
+    testee._install_dependencies = DssDockerImage._install_dependencies.__get__(testee)
     mocked_run_install_dependencies.return_value = {}
 
     testee.create()
