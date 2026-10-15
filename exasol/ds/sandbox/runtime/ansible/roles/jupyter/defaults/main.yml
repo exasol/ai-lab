@@ -15,6 +15,7 @@ jupyterlab_notebook_folder: "{{ user_home }}/notebooks"
 apt_dependencies:
   - python3.12
   - python3.12-venv
+  - python3-packaging
   - virtualenv
   - git
   - unzip
