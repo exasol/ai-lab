@@ -1,4 +1,4 @@
 # added to avoid installation of nvidia packages, because they are very large and currently not needed
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-exasol-notebook-connector [sqlalchemy, pyexasol, pyexasol-extra, bucketfs, docker-db, slc, ibis, transformers, text-ai, notebook-dependencies] @ git+https://github.com/exasol/notebook-connector.git@ce9b607d7c5adb490d8967a6958b8c5488f8b624
+exasol-notebook-connector [sqlalchemy, pyexasol, pyexasol-extra, bucketfs, docker-db, slc, ibis, transformers, text-ai, notebook-dependencies] ==3.1.0
