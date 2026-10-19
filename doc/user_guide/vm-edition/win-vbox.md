@@ -9,7 +9,7 @@
 ## Select Virtual machine Name and Operating System
 
 * Create a new virtual machine
-* Enter a name for your virtual machine, e.g. "Exasol-AI-Lab-6.0.0"
+* Enter a name for your virtual machine, e.g. "Exasol-AI-Lab-6.1.0"
 * Select a folder to store the VM image to
 * Select operating system "Linux", e.g. version "Ubuntu 24.04"
 * Click button "Next"

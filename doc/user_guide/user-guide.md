@@ -15,7 +15,8 @@ Recommendations
 | [Docker Edition](docker/docker-usage.md)          | Docker Image                                                             |
 | [Virtual Machine Edition](vm-edition/vm-usage.md) | VMware Virtual Machine Disk (VMDK), Virtual Hard Disk by Microsoft (VHD) |
 
-Each image contains all necessary dependencies and automatically launches Jupyterlab when booting or running the image.
+Each image contains all necessary dependencies and automatically launches JupyterLab when booting or running the image.
+Exasol Personal Local is not fully supported for AI Lab, as it will not have access to the BucketFS.
 
 Please
 * [Download](https://github.com/exasol/ai-lab/releases/latest) your favorite image from the latest AI Lab release on GitHub,
