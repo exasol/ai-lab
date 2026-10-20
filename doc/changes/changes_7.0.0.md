@@ -1,4 +1,4 @@
-# AI-Lab 6.1.0 released 2026-10-20
+# AI-Lab 7.0.0 released 2026-10-20
 
 Code name: AI-Function integration
 
