@@ -1,5 +1,3 @@
-from typing import Any
-
 import exasol.ansible as ansible
 
 from exasol.ds.sandbox.lib.config import ConfigObject
@@ -14,8 +12,7 @@ def run_install_dependencies(
     host_infos: tuple[ansible.Host, ...] = tuple(),
     playbook: ansible.Playbook = DEFAULT_INSTALL_DEPENDENCIES_PLAYBOOK,
     ansible_repositories: tuple[ansible.Repository, ...] = DEFAULT_REPOSITORIES,
-    retrieve_facts_from: str = "",
-) -> dict[str, Any]:
+) -> ansible.Result:
     """
     Runs ansible installation. The ansible working dir is created dynamically and removed afterwards.
     Any hosts, given by variable host_infos, are added to the ansible inventory in the dynamic working directory.
@@ -32,5 +29,4 @@ def run_install_dependencies(
     return runner.run(
         enhanced_playbook,
         hosts=host_infos,
-        retrieve_facts_from=retrieve_facts_from,
     )
