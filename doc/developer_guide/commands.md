@@ -82,11 +82,15 @@ You can find AMIs in the [AMI Catalog](https://eu-west-1.console.aws.amazon.com/
 
 AI Lab images use Python 3.12. You should select an AMI that has this version of Python installed, too. In particular Ubuntu 24.04 is recommended.
 
-For GPU acceleration, select a compatible Ubuntu 24.04 GPU AMI. The following Ubuntu 22.04 example is retained for historical reference only and does not provide the Python 3.12 environment used by current images:
-* `--ec2-source-ami ami-006d6fd69373fa0fa`, which
-  * is using a 64-bit x86 CPU
-  * is labeled _Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 22.04) 20250801_.
-  * supports EC2 instances G4dn, G5, G6, Gr6, G6e, P4d, P4de, P5, P5e, P5en, P6-B200.
-  * Requires `time_to_wait_for_polling: 60.0` seconds in file [config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py#L8).
-  * Requires `Ebs: VolumeSize: 250` GB in file [ec2_cloudformation.jinja.yaml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/templates/ec2_cloudformation.jinja.yaml#L35).
+For GPU acceleration, use the latest [Deep Learning Base OSS Nvidia Driver GPU AMI for Ubuntu 24.04](https://docs.aws.amazon.com/dlami/latest/devguide/aws-deep-learning-x86-base-gpu-ami-ubuntu-24-04.html). Query its region-specific AMI ID from the public SSM parameter and pass the result to `--ec2-source-ami`:
+
+```shell
+aws ssm get-parameter \
+  --region <region> \
+  --name /aws/service/deeplearning/ami/x86_64/base-oss-nvidia-driver-gpu-ubuntu-24.04/latest/ami-id \
+  --query Parameter.Value \
+  --output text
+```
+
+The AMI uses x86_64 Ubuntu 24.04 with Python 3.12 and supports the GPU instance families listed in the AWS documentation. GPU AMIs require `time_to_wait_for_polling: 60.0` seconds in [config.py](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/lib/config.py#L8) and `Ebs: VolumeSize: 250` GB in [ec2_cloudformation.jinja.yaml](https://github.com/exasol/ai-lab/blob/main/exasol/ds/sandbox/templates/ec2_cloudformation.jinja.yaml#L35).
 * The 64-bit ARM variant is not supported by the DB
