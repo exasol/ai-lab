@@ -14,7 +14,7 @@
   hosts: ansible-test
   gather_facts: false
   vars:
-      ansible_python_interpreter: python3
+      ansible_python_interpreter: /usr/bin/python3.12
       user_name: root
       user_home: /root
       need_sudo: false

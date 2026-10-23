@@ -122,8 +122,8 @@ def test_playbook_uses_only_docker_container_extra_vars(
         mocked_docker_image: DssDockerImage,
 ):
     testee = mocked_docker_image
-    testee._install_dependencies = create_testee()._install_dependencies
-    mocked_run_install_dependencies.return_value = {}
+    testee._install_dependencies = DssDockerImage._install_dependencies.__get__(testee)
+    mocked_run_install_dependencies.return_value.get_facts.return_value = {}
 
     testee.create()
 
@@ -131,7 +131,9 @@ def test_playbook_uses_only_docker_container_extra_vars(
     actual = mocked_run_install_dependencies.call_args.kwargs
     host = ansible.Host(testee.container_name)
     assert actual["host_infos"] == (host,)
-    assert actual["retrieve_facts_from"] == host.name
+    mocked_run_install_dependencies.return_value.get_facts.assert_called_once_with(
+        host.name
+    )
     playbook = actual["playbook"]
     assert isinstance(playbook, ansible.Playbook)
     assert playbook.vars == {"docker_container": testee.container_name}

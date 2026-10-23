@@ -35,12 +35,10 @@ def expected_playbook(filename: str, test_config) -> ansible_runner_wrapper.Play
 def expected_call(
     playbook: ansible_runner_wrapper.Playbook,
     hosts=tuple(),
-    retrieve_facts_from="",
 ):
     return call(
         playbook,
         hosts=hosts,
-        retrieve_facts_from=retrieve_facts_from,
     )
 
 
@@ -117,27 +115,6 @@ def test_custom_hosts(test_config, mock_ansible_runner):
     )
     assert mock.call_args == call(repositories)
     assert run_method.call_args.kwargs["hosts"] == (ansible_runner_wrapper.Host("my_host", "my_key"),)
-
-
-def test_fact_retrieval(test_config, mocked_run_method):
-    """
-    This test also verified, that variable "docker_container" is no longer
-    used when retrieving the facts.
-    """
-
-    docker_var = {"docker_container": "container"}
-    playbook = ansible_runner_wrapper.Playbook("my_playbook.yml", docker_var)
-    lib.run_install_dependencies(
-        test_config,
-        host_infos=tuple(),
-        playbook=playbook,
-        retrieve_facts_from="host",
-    )
-    extravars = _extra_vars(test_config) | docker_var
-    assert mocked_run_method.call_args == expected_call(
-        ansible_runner_wrapper.Playbook(playbook.file, extravars),
-        retrieve_facts_from = "host",
-    )
 
 
 @pytest.mark.parametrize(

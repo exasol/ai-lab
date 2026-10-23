@@ -96,7 +96,7 @@ docker start ${CONTAINER_NAME}
 ```
 
 **Please note**
-* If you accidently created a new AI Lab Docker container and the stopped container still exists please remove the new container and restart the existing one.
+* If you accidentally created a new AI Lab Docker container and the stopped container still exists please remove the new container and restart the existing one.
 * If there is no stopped AI Lab container and you are using Exasol Docker-DB you need to link the newly created container to the Exasol Docker-DB network `db_network_DemoDb`.
 
 ```shell
