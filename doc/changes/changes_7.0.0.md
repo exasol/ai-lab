@@ -17,3 +17,4 @@ Ansible Runner Wrapper was upgraded to version 3.0.0.
 * #551: Integrated new AI-Functions with exasol-notebook-connector version 3.1.0. 
 * #551: Switched AI-lab ansible images to Ubuntu 24.04/Python 3.12.
 * #552: Updated ansible-runner-wrapper to version 3.0.0 and Python to 3.12.
+* #554: Fixed 30 Dependabot alerts by updating affected dependencies.
